@@ -1,0 +1,7 @@
+language: postgres
+dialect: 10.7
+connection: ./connection.config.js
+strict: true
+definitions:
+  - ./sql/init.yml
+  - ./sql/domain.yml

@@ -1,0 +1,49 @@
+service: @declapract{variable.serviceName}
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  memorySize: 1024 # optional, in MB, default is 1024
+  timeout: 10
+  stage: ${opt:stage}
+  stackTags:
+    app: @declapract{variable.organizationName}
+    environment: ${self:provider.stage}
+    product: ${self:service}
+  environment:
+    SERVERLESS_STAGE: ${self:provider.stage}
+    NODE_ENV: ${self:custom.stageToNodeEnvMapping.${self:provider.stage}}
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
+  deploymentBucket: serverless-deployment-@delapract{variable.infrastructureNamespaceId}-${self:provider.stage}
+  vpc:
+    securityGroupIds:
+      - ${ssm:/tf/infrastructure/vpc/main/lambdaSecurityGroupId}
+    subnetIds:
+      - ${ssm:/tf/infrastructure/vpc/main/lambdaSubnet1Id}
+      - ${ssm:/tf/infrastructure/vpc/main/lambdaSubnet2Id}
+      - ${ssm:/tf/infrastructure/vpc/main/lambdaSubnet3Id}
+  iamRoleStatements:
+    ## paramstore access
+    - Effect: 'Allow'
+      Action: 'ssm:DescribeParameters'
+      Resource: '*'
+    - Effect: 'Allow'
+      Action: 'ssm:GetParameters'
+      Resource: arn:aws:ssm:${aws:region}:${aws:accountId}:parameter/*
+    - Effect: 'Allow'
+      Action: 'kms:Decrypt'
+      Resource: arn:aws:kms:${aws:region}:${aws:accountId}:alias/aws/ssm*
+    ## allow invocation of other lambdas
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
+      Resource: '*'
+
+custom:
+  stageToNodeEnvMapping:
+    test: 'test'
+    dev: 'development'
+    prod: 'production'
+
+functions:

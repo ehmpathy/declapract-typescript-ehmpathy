@@ -1,0 +1,7 @@
+dist
+node_modules
+coverage
+.serverless
+.env
+.terraform
+.terraform.lock

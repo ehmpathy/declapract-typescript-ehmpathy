@@ -1,0 +1,15 @@
+language: postgres
+dialect: 10.7
+resources: # where to find your tables, functions, views, procedures
+  - 'provision/schema/sql/tables/**/*.sql'
+  - 'provision/schema/sql/views/**/*.sql'
+  - 'provision/schema/sql/functions/**/*.sql'
+queries: # where to find your queries (each file must `export const query = `...`);
+  - 'src/data/dao/**/*.ts'
+  - '!src/data/dao/**/index.ts'
+  - '!src/data/dao/**/castFromDatabaseObject.ts'
+  - '!src/**/*.test.ts'
+  - '!src/**/*.test.integration.ts'
+generates: # where to output the generated code
+  types: src/data/dao/.generated/types.ts
+  queryFunctions: src/data/dao/.generated/queryFunctions.ts

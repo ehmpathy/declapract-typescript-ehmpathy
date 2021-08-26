@@ -1,0 +1,9 @@
+- type: change
+  id: init_default_txn_isolation
+  author: declapract
+  path: ./init/default_transaction_isolation.sql
+
+- type: change
+  id: init_service_user
+  author: declapract
+  path: ./init/user.service.sql

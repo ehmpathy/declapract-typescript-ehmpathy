@@ -1,0 +1,21 @@
+{
+  "parameterStoreNamespace": "@declapract{variable.organizationName}.@declapract{variable.serviceName}.dev",
+  "database": {
+    "admin": {
+      "host": "@declapract{variable.databaseClusterHost.dev}",
+      "port": 5432,
+      "database": "@declapract{variable.databaseName}",
+      "schema": "@declapract{variable.databaseName}",
+      "username": "@declapract{variable.databaseUserName.cicdUser}",
+      "password": "__CHANG3_ME__"
+    },
+    "service": {
+      "host": "@declapract{variable.databaseClusterHost.dev}",
+      "port": 5432,
+      "database": "@declapract{variable.databaseName}",
+      "schema": "@declapract{variable.databaseName}",
+      "username": "@declapract{variable.databaseUserName.serviceUser}",
+      "password": "__CHANG3_ME__"
+    }
+  }
+}

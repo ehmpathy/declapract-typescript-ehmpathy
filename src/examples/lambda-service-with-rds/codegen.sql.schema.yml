@@ -1,0 +1,8 @@
+language: postgres
+dialect: 10.7
+declarations: provision/schema/declarations/index.ts
+generates:
+  erd:
+    to: provision/schema/erd
+  sql:
+    to: provision/schema/sql
