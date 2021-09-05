@@ -1,8 +1,9 @@
 import expect from 'expect';
 import { defineMinPackageVersionRegex } from 'declapract';
+import { withJSONContentsParsing } from '../../../withJSONContentsParsing';
 
-export const check = (contents: string | null) =>
-  expect(JSON.parse(contents ?? '')).toMatchObject(
+export const check = withJSONContentsParsing((contents) => {
+  expect(contents).toMatchObject(
     expect.objectContaining({
       dependencies: expect.objectContaining({
         'domain-objects': expect.stringMatching(defineMinPackageVersionRegex('0.7.2')),
@@ -13,3 +14,4 @@ export const check = (contents: string | null) =>
       }),
     }),
   );
+});

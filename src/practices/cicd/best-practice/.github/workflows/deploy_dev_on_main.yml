@@ -1,4 +1,4 @@
-name: deploy_dev_on_master
+name: deploy_dev_on_main
 
 on:
   push:
