@@ -4,6 +4,7 @@ export const getServiceVariables = createGetVariables({
   organizationName: 'awesum',
   serviceName: 'svc-awesome-thing',
   infrastructureNamespaceId: 'abcde12345',
+  slackWebhookUrl: 'https://...',
 });
 
 export const getRdsVariables = createGetVariables({

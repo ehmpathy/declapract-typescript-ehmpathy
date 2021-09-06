@@ -22,7 +22,7 @@
     "change-case": "4.1.2",
     "config-with-paramstore": "1.1.1",
     "date-fns": "2.14.0",
-    "declapract": "0.1.0",
+    "declapract": "0.2.0",
     "domain-objects": "0.6.1",
     "expect": "^27.0.6",
     "joi": "17.4.0",

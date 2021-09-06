@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@middy/core": "@declapract{check.minVersion('1.0.0')}",
+    "simple-lambda-handlers": "@declapract{check.minVersion('0.5.0')}"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "@declapract{check.minVersion('8.10.40')}"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "typescript": "@declapract{check.minVersion('4.0.0')}"
+  },
+  "scripts": {
+    "build:clean": "rm dist/ -rf",
+    "build:compile": "tsc -p ./tsconfig.build.json",
+    "build": "npm run build:clean && npm run build:compile",
+    "test:types": "tsc -p ./tsconfig.build.json --noEmit"
+  }
+}

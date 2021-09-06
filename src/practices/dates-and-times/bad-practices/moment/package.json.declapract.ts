@@ -1,12 +1,12 @@
+import { FileCheckFunction } from 'declapract';
 import expect from 'expect';
-import { withJSONContentsParsing } from '../../../../withJSONContentsParsing';
 
-export const check = withJSONContentsParsing((contents) => {
-  expect(contents).toMatchObject(
+export const check: FileCheckFunction = (contents) => {
+  expect(JSON.stringify(contents ?? 'null')).toMatchObject(
     expect.objectContaining({
       dependencies: expect.objectContaining({
         moment: expect.any(String),
       }),
     }),
   );
-});
+};

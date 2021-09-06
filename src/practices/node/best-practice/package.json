@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "name": "@declapract{variable.serviceName}",
+  "author": "ahbode",
+  "version": "@declapract{check.minVersion('0.0.0')}",
+  "scripts": {
+    "prepush": "npm run test && npm run build",
+    "preversion": "npm run prepush",
+    "postversion": "git push origin HEAD --tags --no-verify"
+  }
+}

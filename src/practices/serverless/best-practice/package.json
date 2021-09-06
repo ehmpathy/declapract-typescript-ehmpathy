@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "serverless": "@declapract{check.version('2.50.0')}"
+  },
+  "scripts": {
+    "deploy:release": "npm run build && sls deploy -v -s $SERVERLESS_STAGE",
+    "deploy:send-notification": "curl -X POST -H 'Content-type: application/json' --data \"{\\\"text\\\":\\\"$([ -z $DEPLOYER_NAME ] && git config user.name || echo $DEPLOYER_NAME) has deployed $npm_package_name@v$npm_package_version:\nhttps://github.com/@declapract{variable.organizationName}/$npm_package_name/tree/v$npm_package_version\\\"}\" @declapract{variable.slackWebhookUrl}",
+    "deploy:dev": "SERVERLESS_STAGE=dev npm run deploy:release",
+    "deploy:prod": "SERVERLESS_STAGE=prod npm run deploy:release && npm run deploy:send-notification"
+  }
+}

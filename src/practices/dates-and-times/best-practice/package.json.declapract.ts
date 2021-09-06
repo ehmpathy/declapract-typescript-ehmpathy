@@ -1,13 +1,3 @@
-import { defineMinPackageVersionRegex } from 'declapract';
-import expect from 'expect';
-import { withJSONContentsParsing } from '../../../withJSONContentsParsing';
+import { FileCheckType } from 'declapract';
 
-export const check = withJSONContentsParsing((contents) => {
-  expect(contents).toMatchObject(
-    expect.objectContaining({
-      dependencies: expect.objectContaining({
-        'date-fns': expect.stringMatching(defineMinPackageVersionRegex('2.14.0')),
-      }),
-    }),
-  );
-});
+export const check = FileCheckType.CONTAINS;

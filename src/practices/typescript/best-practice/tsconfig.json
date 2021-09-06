@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "strict": true,
+    "strict": true, // crucial: makes sure that nulls and undefineds are properly handled
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
@@ -11,9 +11,7 @@
     "outDir": "dist",
     "strictPropertyInitialization": false,
     "lib": [
-      "es2017",
-      "es7",
-      "esnext.asynciterable"
+      "es2019",
     ]
   },
   "filesGlob": [
@@ -23,8 +21,6 @@
     "dist",
     "coverage",
     "node_modules",
+    ".declapract"
   ],
-  "atom": {
-    "rewriteTsconfig": false
-  }
 }

@@ -1,0 +1,16 @@
+{
+  "devDependencies": {
+    "@types/jest": "@declapract{check.minVersion('27.0.0')}",
+    "jest": "@declapract{check.minVersion('27.0.0')}",
+    "ts-jest": "@declapract{check.minVersion('27.0.0')}",
+    "core-js": "@declapract{check.minVersion('3.6.4')}",
+    "simple-lambda-testing-methods": "@declapract{check.minVersion('0.1.1')}"
+  },
+  "scripts": {
+    "test:unit": "jest -c ./jest.unit.config.js --forceExit --coverage --verbose --passWithNoTests",
+    "test:integration": "jest -c ./jest.integration.config.js --forceExit --coverage --verbose --passWithNoTests",
+    "test:acceptance:locally": "npm run build && LOCALLY=true jest -c ./jest.acceptance.config.js",
+    "test": "npm run test:types && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally",
+    "test:acceptance": "npm run build && jest -c ./jest.acceptance.config.js --forceExit --verbose --runInBand"
+  }
+}

@@ -1,43 +1,16 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "strict": true,
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "noImplicitAny": true,
-    "moduleResolution": "node",
-    "allowJs": true,
-    "sourceMap": true,
-    "outDir": "dist",
     "rootDir": "src",
-    "strictPropertyInitialization": false,
-    "lib": [
-      "es2017",
-      "es7",
-      "esnext.asynciterable"
-    ]
   },
-  "filesGlob": [
-    "src/**/*.ts"
-  ],
   "exclude": [
-    "acceptance",
-    "src/**/*.test.ts",
-    "src/**/*.test.js",
-    "src/**/__test_assets__/*",
     "dist",
     "coverage",
     "node_modules",
-    "jest.acceptance.config.js",
-    "jest.acceptance.env.js",
-    "jest.integration.config.js",
-    "jest.integration.env.js",
-    "jest.unit.config.js",
-    "jest.unit.env.js",
-    "jest.config.js",
-    "prettier.config.js"
+    "acceptance",
+    "provision",
+    "jest.*",
+    "prettier.*",
+    "src/**/*.test.(ts|js)",
   ],
-  "atom": {
-    "rewriteTsconfig": false
-  }
 }
