@@ -3,6 +3,10 @@
   "version": "0.1.5",
   "description": "declapract best practices declarations for typescript",
   "main": "src/index.js",
+  "files": [
+    "/dist",
+    "/declapract.declare.yml"
+  ],
   "scripts": {
     "build": "rm -rf ./dist && npx declapract compile",
     "format": "prettier --parser typescript --write 'src/**/*.ts' --config ./prettier.config.js",
