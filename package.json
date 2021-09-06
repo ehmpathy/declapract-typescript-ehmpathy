@@ -1,17 +1,23 @@
 {
   "private": true,
-  "name": "declared-practices",
+  "name": "best-practices-typescript",
   "version": "0.0.0",
-  "description": "",
+  "description": "declapract best practices declarations for typescript",
   "main": "src/index.js",
+  "files": [
+    "/src",
+    "declapract.declare.yml"
+  ],
   "scripts": {
     "test:types": "tsc -p ./tsconfig.build.json --noEmit",
-    "test:lint": "eslint -c ./.eslintrc.js src/**/*.ts",
     "test:unit": "jest -c ./jest.unit.config.js --forceExit --coverage --verbose --passWithNoTests",
-    "test:integration": "jest -c ./jest.integration.config.js --forceExit --coverage --verbose --passWithNoTests",
-    "test": "npm run test:types && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally"
+    "test:validate": "npx declapract validate",
+    "test": "npm run test:types && npm run test:validate",
+    "prepush": "npm run test",
+    "preversion": "npm run prepush",
+    "postversion": "git push origin HEAD --tags --no-verify"
   },
-  "author": "",
+  "author": "uladkasach",
   "license": "ISC",
   "dependencies": {
     "@middy/core": "1.0.0",

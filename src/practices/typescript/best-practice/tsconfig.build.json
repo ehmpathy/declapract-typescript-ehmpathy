@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src",
+    "rootDir": "src"
   },
   "exclude": [
     "dist",
@@ -11,6 +11,6 @@
     "provision",
     "jest.*",
     "prettier.*",
-    "src/**/*.test.(ts|js)",
-  ],
+    "src/**/*.test.(ts|js)"
+  ]
 }

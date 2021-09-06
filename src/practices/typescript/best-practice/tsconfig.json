@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "strict": true, // crucial: makes sure that nulls and undefineds are properly handled
+    "strict": true,
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
@@ -10,17 +10,8 @@
     "sourceMap": true,
     "outDir": "dist",
     "strictPropertyInitialization": false,
-    "lib": [
-      "es2019",
-    ]
+    "lib": ["es2019"]
   },
-  "filesGlob": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "dist",
-    "coverage",
-    "node_modules",
-    ".declapract"
-  ],
+  "filesGlob": ["src/**/*.ts"],
+  "exclude": ["dist", "coverage", "node_modules", ".declapract"]
 }

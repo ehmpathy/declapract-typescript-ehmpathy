@@ -1,15 +1,19 @@
+// https://jestjs.io/docs/en/configuration.html
 module.exports = {
+  preset: 'ts-jest',
   globals: {
     'ts-jest': {
-      tsConfig: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
     },
   },
-  moduleFileExtensions: ['ts', 'js'],
-  transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
-  },
+  verbose: true,
   testEnvironment: 'node',
+  moduleFileExtensions: ['js', 'ts'],
+  testMatch: [
+    '!**/*.acceptance.test.ts',
+    '!**/*.integration.test.ts',
+    '**/*.test.ts',
+  ],
   setupFiles: ['core-js'],
-  testMatch: ['**/*.test.ts', '!**/*.integration.test.ts', '!**/*.acceptance.test.ts'],
   setupFilesAfterEnv: ['./jest.unit.env.js'],
 };
