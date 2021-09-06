@@ -9,10 +9,12 @@
     "declapract.declare.yml"
   ],
   "scripts": {
+    "format": "prettier --parser typescript --write 'src/**/*.ts' --config ./prettier.config.js",
     "test:types": "tsc -p ./tsconfig.build.json --noEmit",
+    "test:format": "prettier --parser typescript --check 'src/**/*.ts' --config ./prettier.config.js",
     "test:unit": "jest -c ./jest.unit.config.js --forceExit --coverage --verbose --passWithNoTests",
     "test:validate": "npx declapract validate",
-    "test": "npm run test:types && npm run test:validate",
+    "test": "npm run test:types && npm run test:format && npm run test:validate",
     "prepush": "npm run test",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify"

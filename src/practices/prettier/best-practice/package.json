@@ -3,6 +3,7 @@
     "prettier": "@declapract{check.minVersion('2.0.0')}"
   },
   "scripts": {
-    "format": "prettier --write '**/*.ts' --config ./prettier.config.js"
+    "format": "prettier --write '**/*.ts' --config ./prettier.config.js",
+    "test:format": "prettier --parser typescript --check 'src/**/*.ts' --config ./prettier.config.js"
   }
 }

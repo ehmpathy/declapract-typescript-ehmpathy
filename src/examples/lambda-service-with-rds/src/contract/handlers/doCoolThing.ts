@@ -9,7 +9,11 @@ import { log } from '../../utils/logger';
 const schema = Joi.object().keys({
   doIt: Joi.boolean().required(),
 });
-export const handle = async ({ doIt }: { doIt: boolean }): Promise<{ coolThing: HasUuid<CoolThing> }> => {
+export const handle = async ({
+  doIt,
+}: {
+  doIt: boolean;
+}): Promise<{ coolThing: HasUuid<CoolThing> }> => {
   if (doIt) await doCoolThing();
   return { coolThing: {} as HasUuid<CoolThing> };
 };

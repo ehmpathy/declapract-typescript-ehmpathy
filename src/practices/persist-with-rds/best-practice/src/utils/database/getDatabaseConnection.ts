@@ -23,7 +23,8 @@ export const getDatabaseConnection = async (): Promise<DatabaseConnection> => {
   await client.connect();
   await client.query(`SET search_path TO ${dbConfig.schema}, public;`); // https://www.postgresql.org/docs/current/ddl-schemas.html#DDL-SCHEMAS-
   const dbConnection = {
-    query: ({ sql, values }: { sql: string; values?: (string | number)[] }) => client.query(sql, values),
+    query: ({ sql, values }: { sql: string; values?: (string | number)[] }) =>
+      client.query(sql, values),
     end: () => client.end(),
   };
   return dbConnection;

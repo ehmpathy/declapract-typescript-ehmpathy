@@ -21,4 +21,5 @@ const getEnvironment = () => {
 export const { stage } = getEnvironment();
 
 // export service client stage
-export const serviceClientStage = stage === Stage.PRODUCTION ? Stage.PRODUCTION : Stage.DEVELOPMENT; // i.e., if its prod, hit prod. otherwise, dev
+export const serviceClientStage =
+  stage === Stage.PRODUCTION ? Stage.PRODUCTION : Stage.DEVELOPMENT; // i.e., if its prod, hit prod. otherwise, dev

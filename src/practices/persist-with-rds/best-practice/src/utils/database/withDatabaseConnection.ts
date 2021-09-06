@@ -1,4 +1,7 @@
-import { DatabaseConnection, getDatabaseConnection } from './getDatabaseConnection';
+import {
+  DatabaseConnection,
+  getDatabaseConnection,
+} from './getDatabaseConnection';
 
 /**
  * wraps the input function and gives it a managed database connection
@@ -14,7 +17,12 @@ import { DatabaseConnection, getDatabaseConnection } from './getDatabaseConnecti
  *   await findById({ id: 821 }); // note how we dont have to pass in the dbConnection
  * ```
  */
-export const withDatabaseConnection = <P extends { dbConnection: DatabaseConnection }, R>(logic: (args: P) => R | Promise<R>) => {
+export const withDatabaseConnection = <
+  P extends { dbConnection: DatabaseConnection },
+  R
+>(
+  logic: (args: P) => R | Promise<R>,
+) => {
   return async (args: Omit<P, 'dbConnection'>) => {
     // open the db connection
     const dbConnection = await getDatabaseConnection();
