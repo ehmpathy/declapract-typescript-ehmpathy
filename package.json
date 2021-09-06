@@ -3,11 +3,8 @@
   "version": "0.1.3",
   "description": "declapract best practices declarations for typescript",
   "main": "src/index.js",
-  "files": [
-    "/src",
-    "declapract.declare.yml"
-  ],
   "scripts": {
+    "build": "rm -rf ./dist && npx declapract compile",
     "format": "prettier --parser typescript --write 'src/**/*.ts' --config ./prettier.config.js",
     "test:types": "tsc -p ./tsconfig.build.json --noEmit",
     "test:format": "prettier --parser typescript --check 'src/**/*.ts' --config ./prettier.config.js",
@@ -15,7 +12,7 @@
     "test:unit": "jest -c ./jest.unit.config.js --forceExit --coverage --verbose --passWithNoTests",
     "test:validate": "npx declapract validate",
     "test": "npm run test:types && npm run test:format && npm run test:validate",
-    "prepush": "npm run test",
+    "prepush": "npm run build && npm run test",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify"
   },
@@ -30,7 +27,7 @@
     "change-case": "4.1.2",
     "config-with-paramstore": "1.1.1",
     "date-fns": "2.14.0",
-    "declapract": "0.2.0",
+    "declapract": "0.3.0",
     "domain-objects": "0.6.1",
     "expect": "^27.0.6",
     "joi": "17.4.0",

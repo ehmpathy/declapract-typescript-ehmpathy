@@ -10,9 +10,10 @@ module.exports = {
   testEnvironment: 'node',
   moduleFileExtensions: ['js', 'ts'],
   testMatch: [
+    // note: order matters
+    '**/*.test.ts',
     '!**/*.acceptance.test.ts',
     '!**/*.integration.test.ts',
-    '**/*.test.ts',
   ],
   setupFiles: ['core-js'],
   setupFilesAfterEnv: ['./jest.unit.env.js'],
