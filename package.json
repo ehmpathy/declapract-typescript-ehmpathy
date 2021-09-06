@@ -10,7 +10,7 @@
     "test:format": "prettier --parser typescript --check 'src/**/*.ts' --config ./prettier.config.js",
     "test:lint": "echo 'todo'",
     "test:unit": "jest -c ./jest.unit.config.js --forceExit --coverage --verbose --passWithNoTests",
-    "test:validate": "npx declapract validate",
+    "test:validate": "npm run build && npx declapract validate",
     "test": "npm run test:types && npm run test:format && npm run test:validate",
     "prepush": "npm run build && npm run test",
     "preversion": "npm run prepush",
