@@ -1,5 +1,11 @@
 service: @declapract{variable.serviceName}
 
+custom:
+  stageToNodeEnvMapping:
+    test: 'test'
+    dev: 'development'
+    prod: 'production'
+
 provider:
   name: aws
   runtime: nodejs14.x
@@ -14,7 +20,7 @@ provider:
     SERVERLESS_STAGE: ${self:provider.stage}
     NODE_ENV: ${self:custom.stageToNodeEnvMapping.${self:provider.stage}}
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
-  deploymentBucket: serverless-deployment-@delapract{variable.infrastructureNamespaceId}-${self:provider.stage}
+  deploymentBucket: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-${self:provider.stage}
   vpc:
     securityGroupIds:
       - ${ssm:/tf/infrastructure/vpc/main/lambdaSecurityGroupId}
@@ -39,11 +45,5 @@ provider:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
       Resource: '*'
-
-custom:
-  stageToNodeEnvMapping:
-    test: 'test'
-    dev: 'development'
-    prod: 'production'
 
 functions:

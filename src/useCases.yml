@@ -2,12 +2,22 @@
 use-cases:
   lambda-service:
     practices:
+      - cicd
       - config
       - dates-and-times
+      - directory-structure-src
+      - domain
+      - environments
+      - git
+      - lambda-handlers
+      - linting
+      - logging
+      - node
       - prettier
+      - serverless
+      - terraform
       - testing
       - typescript
-      - serverless
   lambda-service-with-rds:
     extends:
       - lambda-service

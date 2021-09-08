@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@types/joi": "@declapract{check.minVersion('0.0.0')}"
+  }
+}

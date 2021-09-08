@@ -11,20 +11,8 @@
     "outDir": "dist",
     "skipLibCheck": true,
     "strictPropertyInitialization": false,
-    "lib": [
-      "es2019",
-      "dom"
-    ]
+    "lib": ["es2019", "dom"]
   },
-  "filesGlob": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "dist",
-    "coverage",
-    "node_modules"
-  ],
-  "atom": {
-    "rewriteTsconfig": false
-  }
+  "filesGlob": ["src/**/*.ts"],
+  "exclude": ["dist", "coverage", "node_modules"]
 }

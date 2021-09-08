@@ -13,7 +13,7 @@ provider:
   environment:
     SERVERLESS_STAGE: ${self:provider.stage}
     NODE_ENV: ${self:custom.stageToNodeEnvMapping.${self:provider.stage}}
-  deploymentBucket: serverless-deployment-@delapract{variable.infrastructureNamespaceId}-${self:provider.stage}
+  deploymentBucket: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-${self:provider.stage}
   vpc:
     securityGroupIds:
       - ${ssm:/tf/infrastructure/vpc/main/lambdaSecurityGroupId}
