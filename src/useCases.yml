@@ -13,6 +13,7 @@ use-cases:
       - linting
       - logging
       - node
+      - package-json-order
       - prettier
       - serverless
       - terraform

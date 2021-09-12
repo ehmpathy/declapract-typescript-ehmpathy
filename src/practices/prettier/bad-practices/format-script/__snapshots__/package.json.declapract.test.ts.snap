@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`format script package.json should replace "format" with "fix:format" in scripts 1`] = `
+"{
+  \\"scripts\\": {
+    \\"prior-key\\": \\"prior key value\\",
+    \\"another-key\\": \\"another key value\\"
+  },
+  \\"name\\": \\"has a name\\"
+}"
+`;

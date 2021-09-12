@@ -10,6 +10,7 @@
     "eslint-plugin-prettier": "3.1.2"
   },
   "scripts": {
+    "fix:lint": "eslint -c ./.eslintrc.js src/**/*.ts --fix",
     "test:lint": "eslint -c ./.eslintrc.js src/**/*.ts"
   }
 }
