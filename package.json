@@ -31,7 +31,7 @@
     "change-case": "4.1.2",
     "config-with-paramstore": "1.1.1",
     "date-fns": "2.14.0",
-    "declapract": "0.9.2",
+    "declapract": "0.10.0",
     "domain-objects": "0.6.1",
     "expect": "27.1.1",
     "joi": "17.4.0",
