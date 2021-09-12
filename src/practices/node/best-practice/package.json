@@ -1,8 +1,8 @@
 {
-  "private": true,
   "name": "@declapract{variable.serviceName}",
-  "author": "ahbode",
+  "author": "@declapract{variable.organizationName}",
   "version": "@declapract{check.minVersion('0.0.0')}",
+  "private": true,
   "scripts": {
     "prepush": "npm run test && npm run build",
     "preversion": "npm run prepush",

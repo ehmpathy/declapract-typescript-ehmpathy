@@ -1,9 +1,5 @@
 language: postgres
 dialect: 10.7
-for:
-  objects:
-    search:
-      - 'src/domain/objects/*.ts'
 generates:
   daos:
     to: src/data/dao
@@ -16,3 +12,7 @@ generates:
     config: provision/schema/control.yml
   code:
     config: codegen.sql.types.yml
+for:
+  objects:
+    search:
+      - 'src/domain/objects/*.ts'

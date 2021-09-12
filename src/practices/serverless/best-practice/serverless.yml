@@ -45,5 +45,3 @@ provider:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
       Resource: '*'
-
-functions:

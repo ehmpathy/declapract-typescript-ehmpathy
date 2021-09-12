@@ -1,8 +1,8 @@
 /**
-  the service user has maximally restricted permissions
-
-  this is the user that the service will be using to interact with the database
-*/
+ * the service user has maximally restricted permissions
+ * - this is the user that the service will be using to interact with the database
+ * - insert only, baby!
+ */
 CREATE USER @declapract{variable.databaseUserName.serviceUser} WITH PASSWORD '__CHANG3_ME__';
 -- ALTER USER @declapract{variable.databaseUserName.serviceUser} WITH PASSWORD '__actual_password__';
 

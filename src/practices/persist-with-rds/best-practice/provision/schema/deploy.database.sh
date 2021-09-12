@@ -52,15 +52,18 @@ INIT_SQLS_DIR=$SRC_DIR/sql/init;
 
 # run the create database command on root db
 echo "\n 🔨 creating the database..."
-psql $ROOT_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/database.sql
+psql $ROOT_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.database.sql
 
 echo "\n 🔨 installing the extensions..."
-psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/extensions.sql
+psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.extensions.sql
 
 echo "\n 🔨 creating the schema..."
-psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/schema.sql
+psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.schema.sql
 
 echo "\n 🔨 creating the cicd user..."
-psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/user.cicd.sql
+psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.user.cicd.sql
+
+echo "\n 🔨 granting reads to the datalakedb user..."
+psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.user.datalakedb.sql
 
 echo "\n 🎉 done"

@@ -1,4 +1,7 @@
-import { FileCheckType } from 'declapract';
+import { FileCheckType, FileFixFunction } from 'declapract';
 
 export const check = FileCheckType.EXISTS;
-export const fix = () => `export interface Config {}`;
+
+export const fix: FileFixFunction = () => ({
+  contents: `export interface Config {}`,
+});
