@@ -11,6 +11,7 @@
     "provision",
     "jest.*",
     "prettier.*",
+    "commitlint.*",
     "src/**/*.test.(ts|js)"
   ]
 }

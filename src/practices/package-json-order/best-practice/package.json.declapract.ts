@@ -20,6 +20,7 @@ export const desiredRelativeKeyOrder = {
     'devDependencies',
   ],
   scripts: [
+    'commit:with-cli',
     'fix:format',
     'fix:lint',
     'fix',
@@ -36,6 +37,7 @@ export const desiredRelativeKeyOrder = {
     'provision:schema:plan',
     'provision:schema:apply',
     'provision:integration-test-db',
+    'test:commits',
     'test:types',
     'test:format',
     'test:lint',

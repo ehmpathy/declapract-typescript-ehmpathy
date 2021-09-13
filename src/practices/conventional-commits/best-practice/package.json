@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "commit:with-cli": "npx cz",
+    "test:commits": "LAST_TAG=$(git describe --tags --abbrev=0 @^) && npx commitlint --from $LAST_TAG --to HEAD --verbose"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "@declapract{check.minVersion('13.1.0')}",
+    "@commitlint/config-conventional": "@declapract{check.('13.1.0')}",
+    "cz-conventional-changelog": "@declapract{check.minVersion('3.3.0')}",
+    "husky": "@declapract{check.minVersion('7.0.2')}"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
