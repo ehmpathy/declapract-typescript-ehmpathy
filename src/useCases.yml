@@ -9,6 +9,7 @@ use-cases:
       - domain
       - environments
       - git
+      - lambda-clients
       - lambda-handlers
       - linting
       - logging

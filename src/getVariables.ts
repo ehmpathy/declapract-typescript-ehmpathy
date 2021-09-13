@@ -5,13 +5,13 @@ export const getServiceVariables = createGetVariables({
   serviceName: 'svc-awesome-thing',
   infrastructureNamespaceId: 'abcde12345',
   slackWebhookUrl: 'https://...',
-});
-
-export const getRdsVariables = createGetVariables({
   awsAccountId: {
     dev: '123abc',
     prod: '456def',
   },
+});
+
+export const getRdsVariables = createGetVariables({
   databaseName: 'awesomethingdb',
   databaseClusterHost: {
     dev: 'awesomesdb.cluster-abc123.us-east-1.rds.amazonaws.com',

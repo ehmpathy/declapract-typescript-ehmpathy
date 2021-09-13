@@ -1,6 +1,6 @@
 language: postgres
 dialect: 10.7
-declarations: provision/schema/declarations/index.ts
+declarations: provision/schema/domain/index.ts
 generates:
   sql:
     to: provision/schema/sql

@@ -63,7 +63,9 @@ psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.schema.sql
 echo "\n 🔨 creating the cicd user..."
 psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.user.cicd.sql
 
-echo "\n 🔨 granting reads to the datalakedb user..."
-psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.user.datalakedb.sql
+if [ "$ENVIRONMENT" = "prod" ]; then
+  echo "\n 🔨 granting reads to the datalakedb user..." # only in prod env; we dont want dev's testing data in our datalake
+  psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.user.datalakedb.sql
+fi;
 
 echo "\n 🎉 done"

@@ -12,10 +12,10 @@
     "@types/pg": "7.14.3"
   },
   "scripts": {
-    "generate:dao": "npx sql-dao-generator generate && npm run format",
+    "generate:dao": "npx sql-dao-generator generate && npm run fix:format",
     "generate:schema": "npx sql-schema-generator generate -c codegen.sql.schema.yml",
     "generate:types-from-sql": "npx sql-code-generator generate -c codegen.sql.types.yml",
-    "provision:docker:prepare": "cp provision/schema/sql/init/.extensions.sql provision/docker/integration_test_db/init/ && cp provision/schema/sql/init/.schema.sql provision/docker/integration_test_db/init/ && cp provision/schema/sql/init/.user.cicd.sql provision/docker/integration_test_db/init/",
+    "provision:docker:prepare": "cp provision/schema/sql/init/.extensions.sql provision/docker/integration_test_db/init/extensions.sql && cp provision/schema/sql/init/.schema.sql provision/docker/integration_test_db/init/schema.sql && cp provision/schema/sql/init/.user.cicd.sql provision/docker/integration_test_db/init/user.cicd.sql",
     "provision:docker:up": "docker-compose -f ./provision/docker/integration_test_db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
     "provision:docker:await": "docker-compose -f ./provision/docker/integration_test_db/docker-compose.yml exec -T postgres /root/wait-for-postgres.sh",
     "provision:docker:down": "docker-compose -f ./provision/docker/integration_test_db/docker-compose.yml down",
