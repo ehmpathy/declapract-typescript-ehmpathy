@@ -15,3 +15,4 @@ jobs:
           token: ${{ secrets.RELEASE_PLEASE_GITHUB_TOKEN }}
           release-type: node
           pull-request-title-pattern: 'chore(release): v${version} ${component}${scope}🎉'
+          changelog-path: changelog.md
