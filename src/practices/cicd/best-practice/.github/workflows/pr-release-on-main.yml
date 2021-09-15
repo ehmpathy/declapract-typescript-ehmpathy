@@ -14,4 +14,4 @@ jobs:
         with:
           token: ${{ secrets.RELEASE_PLEASE_GITHUB_TOKEN }}
           release-type: node
-          package-name: release-please-action
+          pull-request-title-pattern: 'chore(release): v${version} ${component}${scope}🎉'
