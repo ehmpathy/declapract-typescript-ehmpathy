@@ -18,6 +18,7 @@ export const desiredRelativeKeyOrder = {
     'scripts',
     'dependencies',
     'devDependencies',
+    'config',
   ],
   scripts: [
     'commit:with-cli',

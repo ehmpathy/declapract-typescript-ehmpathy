@@ -4,6 +4,7 @@ use-cases:
     practices:
       - cicd
       - config
+      - conventional-commits
       - dates-and-times
       - directory-structure-src
       - domain

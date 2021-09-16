@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "prettier": "@declapract{check.minVersion('2.0.0')}"
+    "prettier": "@declapract{check.minVersion('2.4.0')}"
   },
   "scripts": {
     "fix:format": "prettier --write '**/*.ts' --config ./prettier.config.js",

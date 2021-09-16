@@ -34,6 +34,7 @@
     "declapract": "0.10.0",
     "domain-objects": "0.6.1",
     "expect": "27.1.1",
+    "flat": "5.0.2",
     "joi": "17.4.0",
     "lodash.uniq": "4.5.0",
     "middy": "0.33.2",
@@ -48,6 +49,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.40",
+    "@types/flat": "5.0.2",
     "@types/jest": "27.0.1",
     "@types/joi": "14.3.4",
     "@types/lodash.uniq": "4.5.6",

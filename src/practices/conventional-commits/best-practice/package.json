@@ -5,7 +5,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "@declapract{check.minVersion('13.1.0')}",
-    "@commitlint/config-conventional": "@declapract{check.('13.1.0')}",
+    "@commitlint/config-conventional": "@declapract{check.minVersion('13.1.0')}",
     "cz-conventional-changelog": "@declapract{check.minVersion('3.3.0')}",
     "husky": "@declapract{check.minVersion('7.0.2')}"
   },
