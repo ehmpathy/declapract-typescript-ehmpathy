@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "fix:format": "npm run fix:format:prettier && npm run fix:format:terraform",
+    "test:format": "npm run test:format:prettier && npm run test:format:terraform"
+  }
+}

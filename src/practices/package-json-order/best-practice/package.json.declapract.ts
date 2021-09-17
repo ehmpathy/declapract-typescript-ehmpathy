@@ -22,6 +22,8 @@ export const desiredRelativeKeyOrder = {
   ],
   scripts: [
     'commit:with-cli',
+    'fix:format:prettier',
+    'fix:format:terraform',
     'fix:format',
     'fix:lint',
     'fix',
@@ -40,6 +42,8 @@ export const desiredRelativeKeyOrder = {
     'provision:integration-test-db',
     'test:commits',
     'test:types',
+    'test:format:prettier',
+    'test:format:terraform',
     'test:format',
     'test:lint',
     'test:unit',

@@ -9,6 +9,7 @@ use-cases:
       - directory-structure-src
       - domain
       - environments
+      - format
       - git
       - lambda-clients
       - lambda-handlers

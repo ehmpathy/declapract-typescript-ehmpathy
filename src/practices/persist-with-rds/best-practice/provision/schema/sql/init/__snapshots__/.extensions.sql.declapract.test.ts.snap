@@ -5,7 +5,7 @@ exports[`.extensions.sql fix should be able to create a new file to fix case whe
  * postgres databases use extensions to increase functionality
  * - we have a minimum set of extensions that are required for sql-schema-generator
  * - services may also include their own extensions if they want additional functionality
- * - this is not managed by sql-schema-generator
+ * - this is not managed by sql-schema-control
  *   - requires superuser privileges, cicd user only has db_owner privileges
  * - this is applied
  *   - automatically for integration-test db (through \`provision/docker/.../init/\` directory, with files cp'd by npm provision scripts)
@@ -25,7 +25,7 @@ exports[`.extensions.sql fix should be able to fix a file with custom extensions
  * postgres databases use extensions to increase functionality
  * - we have a minimum set of extensions that are required for sql-schema-generator
  * - services may also include their own extensions if they want additional functionality
- * - this is not managed by sql-schema-generator
+ * - this is not managed by sql-schema-control
  *   - requires superuser privileges, cicd user only has db_owner privileges
  * - this is applied
  *   - automatically for integration-test db (through \`provision/docker/.../init/\` directory, with files cp'd by npm provision scripts)
