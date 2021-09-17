@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "serverless-offline": "@declapract{check.minVersion('0.0.0')}",
+    "serverless-pseudo-parameters": "@declapract{check.minVersion('0.0.0')}"
+  }
+}

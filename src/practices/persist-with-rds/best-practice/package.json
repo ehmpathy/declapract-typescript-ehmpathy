@@ -1,15 +1,15 @@
 {
   "dependencies": {
-    "pg": "8.2.1",
-    "yesql": "4.1.3"
+    "pg": "@declapract{check.minVersion('8.3.0')}",
+    "yesql": "@declapract{check.minVersion('4.1.3')}"
   },
   "devDependencies": {
     "sql-code-generator": "@declapract{check.minVersion('0.8.2')}",
     "sql-dao-generator": "@declapract{check.minVersion('0.2.0')}",
     "sql-schema-control": "@declapract{check.minVersion('0.7.3')}",
     "sql-schema-generator": "@declapract{check.minVersion('0.21.1')}",
-    "@types/yesql": "3.2.2",
-    "@types/pg": "7.14.3"
+    "@types/yesql": "@declapract{check.minVersion('3.2.2')}",
+    "@types/pg": "@declapract{check.minVersion('7.14.3')}"
   },
   "scripts": {
     "generate:dao": "npx sql-dao-generator generate && npm run fix:format",

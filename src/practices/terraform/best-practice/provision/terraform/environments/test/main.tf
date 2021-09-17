@@ -7,6 +7,7 @@ terraform {
     bucket = "terraform-state-@declapract{variable.infrastructureNamespaceId}-test"
     key    = "@declapract{variable.serviceName}-test"
     region = "us-east-1"
+    encrypt = true
   }
 }
 
