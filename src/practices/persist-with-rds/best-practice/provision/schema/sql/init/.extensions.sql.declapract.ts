@@ -18,9 +18,8 @@ export const fix: FileFixFunction = (contents, context) => {
   const requiredCreateExtensionLines = grabCreateExtensionLinesFromContents(
     context.declaredFileContents!,
   );
-  const foundCreateExtensionLines = grabCreateExtensionLinesFromContents(
-    contents,
-  );
+  const foundCreateExtensionLines =
+    grabCreateExtensionLinesFromContents(contents);
   const foundCustomCreateExtensionLines = foundCreateExtensionLines.filter(
     (foundCreateExtensionLine) =>
       !requiredCreateExtensionLines.some((requiredCreateExtensionLine) =>

@@ -3,7 +3,7 @@ import { DatabaseConnection } from './getDatabaseConnection';
 export const withDatabaseTransaction = <
   P extends { dbConnection: DatabaseConnection },
   R,
-  T extends (args: P) => Promise<R>
+  T extends (args: P) => Promise<R>,
 >(
   logic: T,
 ): T => {

@@ -19,7 +19,7 @@ import {
  */
 export const withDatabaseConnection = <
   P extends { dbConnection: DatabaseConnection },
-  R
+  R,
 >(
   logic: (args: P) => R | Promise<R>,
 ) => {

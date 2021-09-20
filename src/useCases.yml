@@ -18,6 +18,7 @@ use-cases:
       - node
       - package-json-order
       - prettier
+      - runtime-type-checking
       - serverless
       - terraform
       - testing
