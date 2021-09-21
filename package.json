@@ -32,7 +32,7 @@
     "config-with-paramstore": "1.1.1",
     "date-fns": "2.14.0",
     "declapract": "0.10.0",
-    "domain-objects": "0.6.1",
+    "domain-objects": "0.7.5",
     "expect": "27.1.1",
     "flat": "5.0.2",
     "joi": "17.4.0",
