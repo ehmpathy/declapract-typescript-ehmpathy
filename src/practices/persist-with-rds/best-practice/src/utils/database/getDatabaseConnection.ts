@@ -1,4 +1,5 @@
 import pg, { Client, QueryResult } from 'pg';
+
 import { getConfig } from '../config/getConfig';
 
 // https://github.com/brianc/node-postgres/pull/353#issuecomment-283709264

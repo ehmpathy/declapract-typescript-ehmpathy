@@ -1,5 +1,5 @@
-import expect from 'expect';
 import { FileCheckFunction, FileFixFunction } from 'declapract';
+import expect from 'expect';
 
 /**
  * define the relative key order of keys we care about

@@ -1,6 +1,6 @@
+import { FileCheckFunction, FileFixFunction } from 'declapract';
 import expect from 'expect';
 import uniq from 'lodash.uniq';
-import { FileCheckFunction, FileFixFunction } from 'declapract';
 
 const expectedIgnores = [
   '.env',

@@ -1,4 +1,5 @@
 import { FileCheckType, FileFixFunction } from 'declapract';
+
 import { getServiceVariables } from '../../../../../../getVariables';
 
 export const check = FileCheckType.CONTAINS; // i.e., check that the contents of the file contains what's declared (default is equals)

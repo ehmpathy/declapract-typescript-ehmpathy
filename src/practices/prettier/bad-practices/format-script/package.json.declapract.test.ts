@@ -1,4 +1,5 @@
 import { fix } from './package.json.declapract';
+
 describe('format script package.json', () => {
   it('should replace "format" with "fix:format" in scripts', async () => {
     const exampleFoundContents = `

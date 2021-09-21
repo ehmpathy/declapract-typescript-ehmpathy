@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { FileCheckFunction } from 'declapract';
 import expect from 'expect';
+
 import { defineFunctionNameFromTestFileName } from '../../../defineFunctionNameFromTestFileName';
 
 export const check: FileCheckFunction = (contents, context) => {
