@@ -15,7 +15,7 @@
     "test:lint": "echo 'todo'",
     "test:unit": "jest -c ./jest.unit.config.js --forceExit --coverage --verbose --passWithNoTests",
     "test:validate": "npm run build && npx declapract validate",
-    "test": "npm run test:format && npm run test:validate",
+    "test": "npm run test:types && npm run test:format && npm run test:validate",
     "prepush": "npm run build && npm run test",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify"
