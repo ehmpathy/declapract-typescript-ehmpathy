@@ -39,6 +39,7 @@ export const desiredRelativeKeyOrder = {
     'provision:docker:down',
     'provision:schema:plan',
     'provision:schema:apply',
+    'provision:schema:sync',
     'provision:integration-test-db',
     'test:commits',
     'test:types',
@@ -85,10 +86,9 @@ const sortObjectByRelativeKeyOrder = ({
   );
 
   // sort the keys that have relative order to eachother
-  const sortedRelativeOrderOnesOnly =
-    objectKeysWithRelativePositionDefined.sort((a, b) =>
-      order.indexOf(a) < order.indexOf(b) ? -1 : 1,
-    );
+  const sortedRelativeOrderOnesOnly = objectKeysWithRelativePositionDefined.sort(
+    (a, b) => (order.indexOf(a) < order.indexOf(b) ? -1 : 1),
+  );
 
   // then stick the ones that did not have relative order defined into the order (after the ones we relatively defined, when more than one option of position)
   const sortedKeys = [
