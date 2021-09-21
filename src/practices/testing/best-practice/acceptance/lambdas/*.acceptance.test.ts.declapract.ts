@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { FileCheckFunction } from 'declapract';
 import expect from 'expect';
+import { defineFunctionNameFromTestFileName } from '../../../defineFunctionNameFromTestFileName';
 
 export const check: FileCheckFunction = (contents, context) => {
   if (!contents)
@@ -22,10 +23,7 @@ ${chalk.green(`- Expected imports ${['', ...expectedImports].join('\n  - ')}`)}
       `.trim(),
     );
 
-  const expectedTestName = context.relativeFilePath // same name as the file
-    .split('/')
-    .slice(-1)[0]
-    .replace('.acceptance.test.ts', ''); // remove the extension from the file
+  const expectedTestName = defineFunctionNameFromTestFileName({ context });
   const expectedDescribe = `
 describe('${expectedTestName}', () => {
   `.trim();

@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`*.ts.declapract should be able to fix a test file using old acceptance test pattern 1`] = `
+Object {
+  "contents": "import { SNSEventRecord, SNSMessage, SNSEvent } from 'aws-lambda';
+
+import { exampleEmailClickEvent } from '../../src/__test_assets__/exampleEmailClickEvent';
+import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+import { stage } from '../../src/utils/environment';
+import { locally } from '../environment';
+
+describe('consumeSESEmailEventFromSNS', () => {
+  it('should be possible to invoke the lambda', async () => {
+    const exampleSnsEvent: SNSEvent = {
+      Records: [
+        {
+          Sns: {
+            Message: JSON.stringify(exampleEmailClickEvent),
+          } as SNSMessage,
+        } as SNSEventRecord,
+      ],
+    };
+    try {
+      await invokeLambdaForTesting({
+        service: 'svc-notifications',
+function: 'consumeSESEmailEventFromSNS',
+stage,
+locally,
+        event: exampleSnsEvent,
+      });
+      throw new Error('should not reach here');
+    } catch (error) {
+      expect(error.message).toContain(
+        'could not find tracked email for sesMessageId',
+      ); // since we used a fake sesMessageId
+    }
+  });
+});",
+}
+`;

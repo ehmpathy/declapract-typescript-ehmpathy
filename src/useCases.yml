@@ -16,6 +16,7 @@ use-cases:
       - linting
       - logging
       - node
+      - nonpublished-modules
       - package-json-order
       - prettier
       - runtime-type-checking
