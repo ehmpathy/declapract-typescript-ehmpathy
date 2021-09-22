@@ -9,7 +9,9 @@
   ],
   "scripts": {
     "build": "rm -rf ./dist && npx declapract compile",
-    "format": "prettier --parser typescript --write 'src/**/*.ts' --config ./prettier.config.js",
+    "fix:format:prettier": "prettier --parser typescript --write 'src/**/*.ts' --config ./prettier.config.js",
+    "fix:format:terraform": "terraform fmt -recursive",
+    "fix:format": "npm run fix:format:prettier && npm run fix:format:terraform",
     "test:types": "tsc -p ./tsconfig.build.json --noEmit",
     "test:format": "prettier --parser typescript --check 'src/**/*.ts' --config ./prettier.config.js",
     "test:lint": "echo 'todo'",

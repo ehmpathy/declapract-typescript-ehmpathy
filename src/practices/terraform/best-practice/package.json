@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "fix:format:terraform": "terraform fmt -recursive provision/terraform",
-    "test:format:terraform": "terraform fmt -recursive -check provision/terraform"
+    "fix:format:terraform": "terraform fmt -recursive provision",
+    "test:format:terraform": "terraform fmt -recursive -check provision"
   }
 }
