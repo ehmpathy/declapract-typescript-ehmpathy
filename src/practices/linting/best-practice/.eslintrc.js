@@ -16,7 +16,7 @@ module.exports = {
     'sort-imports': 'off',
     'import/prefer-default-export': 'off', // default export = bad
     'import/no-default-export': 'error', // require named exports - they make it easier to refactor, enforce consistency, and increase constraints
-    '@typescript-eslno-floating-promisesint/no-non-null-assertion': 'off', // we use these to help typescript out when we know something it doesnt, and cant easily express that
+    '@typescript-eslint/no-non-null-assertion': 'off', // we use these to help typescript out when we know something it doesnt, and cant easily express that
     'import/no-extraneous-dependencies': [
       'error',
       {
