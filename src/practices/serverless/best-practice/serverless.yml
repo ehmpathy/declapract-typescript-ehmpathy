@@ -29,17 +29,17 @@ provider:
       - ${ssm:/tf/infrastructure/vpc/main/lambdaSubnet2Id}
       - ${ssm:/tf/infrastructure/vpc/main/lambdaSubnet3Id}
   iamRoleStatements:
-    ## paramstore access
+    # parameter store access
     - Effect: 'Allow'
       Action: 'ssm:DescribeParameters'
-      Resource: '*'
+      Resource: *
     - Effect: 'Allow'
       Action: 'ssm:GetParameters'
       Resource: arn:aws:ssm:${aws:region}:${aws:accountId}:parameter/*
     - Effect: 'Allow'
       Action: 'kms:Decrypt'
       Resource: arn:aws:kms:${aws:region}:${aws:accountId}:alias/aws/ssm*
-    ## allow invocation of other lambdas
+    # allow invocation of other lambdas
     - Effect: Allow
       Action:
         - lambda:InvokeFunction
