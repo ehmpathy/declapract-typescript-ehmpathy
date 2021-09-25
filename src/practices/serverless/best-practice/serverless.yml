@@ -32,7 +32,7 @@ provider:
     # parameter store access
     - Effect: 'Allow'
       Action: 'ssm:DescribeParameters'
-      Resource: *
+      Resource: '*''
     - Effect: 'Allow'
       Action: 'ssm:GetParameters'
       Resource: arn:aws:ssm:${aws:region}:${aws:accountId}:parameter/*
