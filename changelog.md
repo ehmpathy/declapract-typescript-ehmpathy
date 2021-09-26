@@ -1,5 +1,14 @@
 # Changelog
 
+### [0.10.2](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.1...v0.10.2) (2021-09-26)
+
+
+### Bug Fixes
+
+* **config:** add checks and fixes for using old config path ([f09e818](https://www.github.com/uladkasach/best-practices-typescript/commit/f09e818b4e4128607ad125bd7e14a0061ff8e6f8))
+* **sls:** improve sls.yml fix ([f2607d3](https://www.github.com/uladkasach/best-practices-typescript/commit/f2607d32a435a8b01c5df8e17c16ecb3ea7a7672))
+* **sls:** revert sls wildcard resource format change ([b84a830](https://www.github.com/uladkasach/best-practices-typescript/commit/b84a830c517d58a84d672ddf5df2d69e5f63aca7))
+
 ### [0.10.1](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.0...v0.10.1) (2021-09-23)
 
 
