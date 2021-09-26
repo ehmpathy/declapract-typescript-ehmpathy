@@ -13,6 +13,11 @@ export const fix: FileFixFunction = (contents) => {
       .replace(/  - serverless-pseudo-parameters .*\n/, '') // a plugin we no longer use (serverless supports variables natively now)
       .replace(/\#\{AWS\:\:Region\}/g, '${aws:region}') // use the serverless native variables, instead of the pseudo-parameters format
       .replace(/\#\{AWS\:\:AccountId\}/g, '${aws:accountId}') // use the serverless native variables, instead of the pseudo-parameters format
+      .replace('## paramstore access', '# parameter store access')
+      .replace(
+        '## allow invocation of other lambdas',
+        '# allow invocation of other lambdas',
+      )
       .replace(
         'NODE_ENV: ${self:custom.stageToNodeEnvMapping.${self:provider.stage}}\n  deploymentBucket',
         'NODE_ENV: ${self:custom.stageToNodeEnvMapping.${self:provider.stage}}\n    AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html\n  deploymentBucket',
