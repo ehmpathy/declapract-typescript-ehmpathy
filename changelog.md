@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.10.3](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.2...v0.10.3) (2021-09-26)
+
+
+### Bug Fixes
+
+* **testing:** add fix to another variant of old acceptance test utils ([ff9b0fb](https://www.github.com/uladkasach/best-practices-typescript/commit/ff9b0fbb162c0daba28d9d87360290aeb3ad66c4))
+
 ### [0.10.2](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.1...v0.10.2) (2021-09-26)
 
 
