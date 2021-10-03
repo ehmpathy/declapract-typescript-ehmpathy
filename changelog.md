@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.10.4](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.3...v0.10.4) (2021-10-02)
+
+
+### Bug Fixes
+
+* **config:** ensure aws  parameterstore namespace uses tf local.service name variable instead of hardcoding ([b99695c](https://www.github.com/uladkasach/best-practices-typescript/commit/b99695c8d80eaa2c3050c4983e6aa980e87a6dd3))
+* **config:** fix parameter store namespace defiend in tf ([223bdcb](https://www.github.com/uladkasach/best-practices-typescript/commit/223bdcb539e19594877bf4d729ad3a88654050ff))
+
 ### [0.10.3](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.2...v0.10.3) (2021-09-26)
 
 
