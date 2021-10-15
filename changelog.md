@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.10.5](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.4...v0.10.5) (2021-10-14)
+
+
+### Bug Fixes
+
+* **commits:** ensure test:commits handles case where no tags have been created yet ([2a04dac](https://www.github.com/uladkasach/best-practices-typescript/commit/2a04dac9f02b45ebcbd6bcb39d5d02eba8e64662))
+* improve typing on withDatabaseTransaction; remove soon to be deprecated -v flag for sls deploy ([af7567b](https://www.github.com/uladkasach/best-practices-typescript/commit/af7567be2ac2614457d30532598fd6ff4054f8cf))
+
 ### [0.10.4](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.3...v0.10.4) (2021-10-02)
 
 
