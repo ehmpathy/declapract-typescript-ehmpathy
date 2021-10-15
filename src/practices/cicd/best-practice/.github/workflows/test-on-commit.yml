@@ -12,13 +12,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
 
       - name: install
-        run: npm install
+        run: npm ci --ignore-scripts
 
       - name: cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ github.sha }}
@@ -29,10 +38,21 @@ jobs:
     needs: [install]
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # we need all commits to test:commits
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
 
       - name: grab node_modules from cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ github.sha }}
@@ -45,10 +65,19 @@ jobs:
     needs: [install]
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
 
       - name: grab node_modules from cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ github.sha }}
@@ -61,10 +90,19 @@ jobs:
     needs: [install]
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
 
       - name: grab node_modules from cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ github.sha }}
@@ -77,10 +115,19 @@ jobs:
     needs: [install]
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
 
       - name: grab node_modules from cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ github.sha }}
@@ -93,10 +140,19 @@ jobs:
     needs: [install]
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
 
       - name: grab node_modules from cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ github.sha }}
@@ -109,7 +165,22 @@ jobs:
     needs: [install]
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
+
+      - name: grab node_modules from cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ github.sha }}
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -124,12 +195,6 @@ jobs:
           [[ ${{steps.credentials.outputs.aws-account-id}} != '@declapract{variable.awsAccountId.dev}' ]] \
             && echo 'wrong aws account' && exit 1 \
             || echo 'correct aws account';
-
-      - name: grab node_modules from cache
-        uses: actions/cache@v1
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ github.sha }}
 
       - name: provision:integration-test-db
         run: npm run provision:integration-test-db
@@ -142,7 +207,22 @@ jobs:
     needs: [install]
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
+
+      - name: grab node_modules from cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ github.sha }}
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -157,12 +237,6 @@ jobs:
           [[ ${{steps.credentials.outputs.aws-account-id}} != '@declapract{variable.awsAccountId.dev}' ]] \
             && echo 'wrong aws account' && exit 1 \
             || echo 'correct aws account';
-
-      - name: grab node_modules from cache
-        uses: actions/cache@v1
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ github.sha }}
 
       - name: provision:integration-test-db
         run: npm run provision:integration-test-db
@@ -177,7 +251,7 @@ jobs:
         working-directory: ./provision/github/environment
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: setup terraform
         uses: hashicorp/setup-terraform@v1
