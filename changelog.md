@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.10.6](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.5...v0.10.6) (2021-10-15)
+
+
+### Bug Fixes
+
+* **cicd:** ensure that github actions test and deploy with node version specified in nvmrc ([d527475](https://www.github.com/uladkasach/best-practices-typescript/commit/d527475409a4777fd2b8b77287529b8f08c26739))
+
 ### [0.10.5](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.4...v0.10.5) (2021-10-14)
 
 
