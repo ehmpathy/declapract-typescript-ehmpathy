@@ -1,1 +1,13 @@
-jest.setTimeout(90000); // we're calling downstream apis
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { stage, Stage } = require('./src/utils/environment');
+
+/**
+ *  sanity check that integration tests are only run in 'test' environment
+ * - if they are run in prod environment, we will load a bunch of junk data into our prod databases, which is no bueno
+ */
+if (stage !== Stage.TEST)
+  throw new Error(`integration-test is not targeting stage 'test'`);
+
+// set a longer timeout
+// eslint-disable-next-line no-undef
+jest.setTimeout(90000); // since we're calling downstream apis
