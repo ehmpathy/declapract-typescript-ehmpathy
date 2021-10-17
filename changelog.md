@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.10.7](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.6...v0.10.7) (2021-10-17)
+
+
+### Bug Fixes
+
+* **tests:** update test env setup files for stage safety and lint ignores ([84e12ac](https://www.github.com/uladkasach/best-practices-typescript/commit/84e12acb48ffaa4ca78bcffb1a5fe13ab08979c1))
+
 ### [0.10.6](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.5...v0.10.6) (2021-10-15)
 
 
