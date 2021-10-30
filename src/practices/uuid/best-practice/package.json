@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "uuidv4": "@declapract{check.minVersion('6.2.12')}"
+  }
+}

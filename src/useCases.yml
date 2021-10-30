@@ -24,6 +24,7 @@ use-cases:
       - terraform
       - testing
       - typescript
+      - uuid
   lambda-service-with-rds:
     extends:
       - lambda-service
@@ -48,3 +49,4 @@ use-cases:
       - prettier
       - runtime-type-checking
       - terraform
+      - uuid
