@@ -12,8 +12,8 @@ const inferStageFromNodeEnv = () => {
   throw new Error(`unexpected nodeEnv '${nodeEnv}'`);
 };
 const getEnvironment = () => {
-  const stage = process.env.SERVERLESS_STAGE ?? inferStageFromNodeEnv(); // figure it out from NODE_ENV if not explicitly defined
-  if (!stage) throw new Error('process.env.SERVERLESS_STAGE must be defined');
+  const stage = process.env.DEPLOYMENT_ENV ?? inferStageFromNodeEnv(); // figure it out from NODE_ENV if not explicitly defined
+  if (!stage) throw new Error('process.env.DEPLOYMENT_ENV must be defined');
   return { stage };
 };
 

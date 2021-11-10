@@ -57,9 +57,9 @@ Object {
     \\"prepush\\": \\"npm run test && npm run build\\",
     \\"preversion\\": \\"npm run prepush\\",
     \\"postversion\\": \\"git push origin HEAD --tags --no-verify\\",
-    \\"deploy:release\\": \\"npm run build && sls deploy -v -s $SERVERLESS_STAGE\\",
-    \\"deploy:dev\\": \\"SERVERLESS_STAGE=dev npm run deploy:release\\",
-    \\"deploy:prod\\": \\"SERVERLESS_STAGE=prod npm run deploy:release && npm run deploy:send-notification\\"
+    \\"deploy:release\\": \\"npm run build && sls deploy -v -s $DEPLOYMENT_ENV\\",
+    \\"deploy:dev\\": \\"DEPLOYMENT_ENV=dev npm run deploy:release\\",
+    \\"deploy:prod\\": \\"DEPLOYMENT_ENV=prod npm run deploy:release && npm run deploy:send-notification\\"
   },
   \\"dependencies\\": {
     \\"@middy/core\\": \\"1.0.0\\",

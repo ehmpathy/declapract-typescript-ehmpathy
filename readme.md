@@ -12,7 +12,7 @@ npm install --save-dev declapract
 2. add a declapract usage config to your repo
 ```yml
 # declapract.use.yml
-declarations: git@github.com:uladkasach/best-practices-typescript.git
+declarations: npm:best-practices-typescript
 useCase: lambda-service # specify which use case your repo is following, see `best-practices-typescript:src/useCases.yml` for options
 variables: # specify the values of the variables to use against checks
   organizationName: 'awesome-org'
