@@ -9,5 +9,5 @@ jest.mock('./src/utils/config/getConfig', () => ({
 }));
 
 // sanity check that integration tests are only run in 'test' environment (if they are run in prod environment, we will load a bunch of junk data into our prod databases, which is no bueno)
-if (stage !== Stage.TEST)
+if (stage !== Stage.TEST && process.env.I_KNOW_WHAT_IM_DOING !== 'true')
   throw new Error(`unit-test is not targeting stage 'test'`);
