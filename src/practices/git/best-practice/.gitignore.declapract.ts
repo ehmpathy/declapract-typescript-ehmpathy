@@ -3,6 +3,7 @@ import expect from 'expect';
 import uniq from 'lodash.uniq';
 
 const expectedIgnores = [
+  '.artifact', // deployment artifacts from `simple-artifact-builder` are produced here
   '.env',
   '.serverless',
   '.terraform',
