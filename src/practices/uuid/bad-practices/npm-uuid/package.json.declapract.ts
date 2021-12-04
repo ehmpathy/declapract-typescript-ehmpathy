@@ -1,17 +1,12 @@
 import { FileCheckFunction, FileFixFunction } from 'declapract';
-import expect from 'expect';
 
 export const check: FileCheckFunction = (contents) => {
-  expect(JSON.stringify(contents ?? 'null')).toMatchObject(
-    expect.objectContaining({
-      dependencies: expect.objectContaining({
-        uuid: expect.any(String),
-      }),
-      devDependencies: expect.objectContaining({
-        '@types/uuid': expect.any(String),
-      }),
-    }),
-  );
+  const packageJSONObject = JSON.parse(contents!);
+  if (Object.keys(packageJSONObject.dependencies).includes('uuid')) return; // matches
+  if (Object.keys(packageJSONObject.devDependencies).includes('uuid')) return; // matches
+  if (Object.keys(packageJSONObject.devDependencies).includes('@types/uuid'))
+    return; // matches
+  throw new Error('does not match bad practice');
 };
 
 export const fix: FileFixFunction = (contents) => {
@@ -23,6 +18,7 @@ export const fix: FileFixFunction = (contents) => {
     devDependencies: {
       ...packageJSONObject.devDependencies,
       '@types/uuid': undefined,
+      uuid: undefined,
     },
   };
   return { contents: JSON.stringify(fixedPackageJSONObject, null, 2) };
