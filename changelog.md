@@ -1,5 +1,15 @@
 # Changelog
 
+### [0.11.1](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.11.0...v0.11.1) (2021-12-04)
+
+
+### Bug Fixes
+
+* **comments:** update comments in the test env files for readability ([1e59061](https://www.github.com/uladkasach/best-practices-typescript/commit/1e59061f46a5cc4f2ba2a2be5963191409cca48e))
+* **dep:** bump min version required of simple-lambda-testing-handler ([a298a34](https://www.github.com/uladkasach/best-practices-typescript/commit/a298a3406240ed77d7b1344f63cbf0c1b4da5b4c))
+* **uuid:** ensure that the uuid bad practice catches cases more generally ([759e713](https://www.github.com/uladkasach/best-practices-typescript/commit/759e71381fe6841bb54826f29e81ff9b375bed7e))
+* **uuid:** fix uuid bad-practices declaration name ([0913821](https://www.github.com/uladkasach/best-practices-typescript/commit/091382160e988f72ea6ff1b38dcd66c5b8f29711))
+
 ## [0.11.0](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.6...v0.11.0) (2021-12-04)
 
 
