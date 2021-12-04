@@ -4,7 +4,7 @@
     "jest": "@declapract{check.minVersion('27.0.0')}",
     "ts-jest": "@declapract{check.minVersion('27.0.0')}",
     "core-js": "@declapract{check.minVersion('3.6.4')}",
-    "simple-lambda-testing-methods": "@declapract{check.minVersion('0.1.1')}"
+    "simple-lambda-testing-methods": "@declapract{check.minVersion('0.2.0')}"
   },
   "scripts": {
     "test:unit": "jest -c ./jest.unit.config.js --forceExit --coverage --verbose --passWithNoTests",
