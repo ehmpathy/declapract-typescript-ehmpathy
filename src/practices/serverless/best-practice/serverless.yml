@@ -12,7 +12,7 @@ provider:
     product: ${self:service}
   environment:
     NODE_ENV: production # deploy with production optimizations of all resources, to make `dev` and `prod` stage deployments equivalent functionally (i.e., the same code paths in dev and prod)
-    DEPLOYMENT_ENV: ${self:provider.stage} # deploy specifying which stage we're targeting, to enable targeting the correct config + resources (e.g., hit dev db -vs- prod db)
+    DEPLOYMENT_STAGE: ${self:provider.stage} # deploy specifying which stage we're targeting, to enable targeting the correct config + resources (e.g., hit dev db -vs- prod db)
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
   deploymentBucket: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-${self:provider.stage}
   vpc:

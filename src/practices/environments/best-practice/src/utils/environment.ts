@@ -3,6 +3,12 @@ export enum Stage {
   DEVELOPMENT = 'dev',
   TEST = 'test',
 }
+
+/**
+ * this allows us to infer what the stage should be in environments that do not have DEPLOYMENT_STAGE specified
+ * - e.g., when running locally
+ * - e.g., when running tests
+ */
 const inferStageFromNodeEnv = () => {
   const nodeEnv = process.env.NODE_ENV; // default to test if not defined
   if (!nodeEnv) throw new Error('process.env.NODE_ENV must be defined');
@@ -11,9 +17,13 @@ const inferStageFromNodeEnv = () => {
   if (nodeEnv === 'test') return Stage.TEST;
   throw new Error(`unexpected nodeEnv '${nodeEnv}'`);
 };
+
+/**
+ * a method that exposes relevant environmental variables in a standard way
+ */
 const getEnvironment = () => {
-  const stage = process.env.DEPLOYMENT_ENV ?? inferStageFromNodeEnv(); // figure it out from NODE_ENV if not explicitly defined
-  if (!stage) throw new Error('process.env.DEPLOYMENT_ENV must be defined');
+  const stage = process.env.DEPLOYMENT_STAGE ?? inferStageFromNodeEnv(); // figure it out from NODE_ENV if not explicitly defined
+  if (!stage) throw new Error('process.env.DEPLOYMENT_STAGE must be defined');
   return { stage };
 };
 
