@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.11.0](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.6...v0.11.0) (2021-12-04)
+
+
+### Features
+
+* **usecases:** support the nextjs web app use case ([4351a38](https://www.github.com/uladkasach/best-practices-typescript/commit/4351a389e940176416162c72494aed0fb15df162))
+
+
+### Bug Fixes
+
+* **env:** SERVERLESS_STAGE -> DEPLOYMENT_ENV ([b6f9b33](https://www.github.com/uladkasach/best-practices-typescript/commit/b6f9b3373cbde5dde9b4dc9e01f595aab24e196b))
+* **sls:** be more explicit with the sls deploy flags ([f1f7ddb](https://www.github.com/uladkasach/best-practices-typescript/commit/f1f7ddb2b9a1df2f764eb3580c1982d9e4d04c9f))
+* **tests:** allow user to say I_KNOW_WHAT_IM_DOING to run int tests in other envs ([e62bb3a](https://www.github.com/uladkasach/best-practices-typescript/commit/e62bb3ab819503d6efccc9b03fe1d6302e023433))
+* **tests:** update test env setup files for stage safety and lint ignores ([84e12ac](https://www.github.com/uladkasach/best-practices-typescript/commit/84e12acb48ffaa4ca78bcffb1a5fe13ab08979c1))
+* **uuid:** ensure uuidv4 package is used ([ed91b8e](https://www.github.com/uladkasach/best-practices-typescript/commit/ed91b8ef81632aee945f06e1acec406836800d9d))
+
 ### [0.10.6](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.10.5...v0.10.6) (2021-10-15)
 
 
