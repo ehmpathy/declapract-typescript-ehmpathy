@@ -11,6 +11,29 @@ export interface DatabaseConnection {
   end: () => Promise<void>;
 }
 
+export class DatabaseQueryError extends Error {
+  constructor({
+    sql,
+    values,
+    caught,
+  }: {
+    sql: string;
+    values?: any[];
+    caught: Error;
+  }) {
+    const message = `
+caught error querying database: ${caught.message}
+
+sql:
+  ${sql.trim()}
+
+values:
+  ${JSON.stringify(values)}
+    `.trim();
+    super(message);
+  }
+}
+
 export const getDatabaseConnection = async (): Promise<DatabaseConnection> => {
   const config = await getConfig();
   const dbConfig = config.database.service;
@@ -28,5 +51,15 @@ export const getDatabaseConnection = async (): Promise<DatabaseConnection> => {
       client.query(sql, values),
     end: () => client.end(),
   };
-  return dbConnection;
+  return {
+    query: (args: { sql: string; values?: any[] }) =>
+      dbConnection.query(args).catch((error) => {
+        throw new DatabaseQueryError({
+          sql: args.sql,
+          values: args.values,
+          caught: error,
+        });
+      }),
+    end: () => dbConnection.end(),
+  };
 };
