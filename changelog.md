@@ -1,5 +1,15 @@
 # Changelog
 
+### [0.11.2](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.11.1...v0.11.2) (2021-12-16)
+
+
+### Bug Fixes
+
+* **db-query:** add additional observability to errors thrown while querying db ([3a193e5](https://www.github.com/uladkasach/best-practices-typescript/commit/3a193e5c91ff0dfc83ecad4f792e854b4eae543a))
+* **deps:** bump deps ([95b6b8a](https://www.github.com/uladkasach/best-practices-typescript/commit/95b6b8aa679723827688392a5dd5932d89673755))
+* **deps:** bump min version of sql-code-generator ([03d7bc7](https://www.github.com/uladkasach/best-practices-typescript/commit/03d7bc75658ed7060b72f70982cf444727477a83))
+* **logger:** bump best version of logger, to fix logs in aws-lambda env ([8d2700c](https://www.github.com/uladkasach/best-practices-typescript/commit/8d2700c389dc0757d24351933141fb196cb8ca63))
+
 ### [0.11.1](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.11.0...v0.11.1) (2021-12-04)
 
 
