@@ -7,7 +7,7 @@ on:
 
 jobs:
   test-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: @declapract{variable.githubActionsRunner}
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -24,7 +24,7 @@ jobs:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
 
       - name: install
-        run: npm ci --ignore-scripts
+        run: npm ci
 
       # test in dev env
       - name: configure aws credentials

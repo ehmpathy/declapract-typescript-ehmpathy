@@ -9,6 +9,7 @@ export const getServiceVariables = createGetVariables({
     dev: '123abc',
     prod: '456def',
   },
+  githubActionsRunner: 'ubuntu-latest', // to allow for custom runners, e.g., buildjet-8vcpu-ubuntu-2004
 });
 
 export const getRdsVariables = createGetVariables({
