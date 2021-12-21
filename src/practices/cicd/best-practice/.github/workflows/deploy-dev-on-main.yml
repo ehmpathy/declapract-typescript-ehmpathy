@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-and-deploy:
-    runs-on: @declapract{variable.githubActionsRunner}
+    runs-on: ubuntu-20.04
     steps:
       - name: checkout
         uses: actions/checkout@v2

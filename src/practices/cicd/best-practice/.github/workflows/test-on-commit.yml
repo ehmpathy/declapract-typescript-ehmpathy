@@ -9,7 +9,7 @@ on:
 
 jobs:
   install:
-    runs-on: @declapract{variable.githubActionsRunner}
+    runs-on: ubuntu-20.04
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
 
   # run tests in parallel
   test-commits:
-    runs-on: @declapract{variable.githubActionsRunner}
+    runs-on: ubuntu-20.04
     needs: [install]
     steps:
       - name: checkout
@@ -61,7 +61,7 @@ jobs:
         run: npm run test:commits
 
   test-types:
-    runs-on: @declapract{variable.githubActionsRunner}
+    runs-on: ubuntu-20.04
     needs: [install]
     steps:
       - name: checkout
@@ -86,7 +86,7 @@ jobs:
         run: npm run test:types
 
   test-format:
-    runs-on: @declapract{variable.githubActionsRunner}
+    runs-on: ubuntu-20.04
     needs: [install]
     steps:
       - name: checkout
@@ -111,7 +111,7 @@ jobs:
         run: npm run test:format
 
   test-lint:
-    runs-on: @declapract{variable.githubActionsRunner}
+    runs-on: ubuntu-20.04
     needs: [install]
     steps:
       - name: checkout
@@ -136,7 +136,7 @@ jobs:
         run: npm run test:lint
 
   test-unit:
-    runs-on: @declapract{variable.githubActionsRunner}
+    runs-on: ubuntu-20.04
     needs: [install]
     steps:
       - name: checkout
@@ -161,7 +161,7 @@ jobs:
         run: npm run test:unit
 
   test-integration:
-    runs-on: @declapract{variable.githubActionsRunner}
+    runs-on: ubuntu-20.04
     needs: [install]
     steps:
       - name: checkout
@@ -203,7 +203,7 @@ jobs:
         run: npm run test:integration
 
   test-acceptance-locally:
-    runs-on: @declapract{variable.githubActionsRunner}
+    runs-on: ubuntu-20.04
     needs: [install]
     steps:
       - name: checkout
@@ -245,7 +245,7 @@ jobs:
         run: npm run test:acceptance:locally
 
   check-provisions-github:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: ./provision/github/environment
