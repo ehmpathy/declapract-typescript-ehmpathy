@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.12.1](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.12.0...v0.12.1) (2021-12-21)
+
+
+### Bug Fixes
+
+* **cicd:** remove custom github runners feature, for better consistency ([98e20bf](https://www.github.com/uladkasach/best-practices-typescript/commit/98e20bfcdce1c0d5d47a26a254d7a94c7a09c774))
+
 ## [0.12.0](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.11.1...v0.12.0) (2021-12-21)
 
 
