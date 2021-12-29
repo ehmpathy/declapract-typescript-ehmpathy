@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.12.1...v0.13.0) (2021-12-29)
+
+
+### Features
+
+* **cicd:** improve speed of cicd by leveraging setup-node ~/.npm caching ([b299b2e](https://www.github.com/uladkasach/best-practices-typescript/commit/b299b2e4e517faea2d8804653f44ab5e1fd826c6))
+
 ### [0.12.1](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.12.0...v0.12.1) (2021-12-21)
 
 
