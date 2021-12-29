@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.13.0...v0.14.0) (2021-12-29)
+
+
+### Features
+
+* **errors:** add unexpected code path error util ([f250aa0](https://www.github.com/uladkasach/best-practices-typescript/commit/f250aa0d80837d8fcebb47c1df0d475b4c7c77e4))
+
 ## [0.13.0](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.12.1...v0.13.0) (2021-12-29)
 
 
