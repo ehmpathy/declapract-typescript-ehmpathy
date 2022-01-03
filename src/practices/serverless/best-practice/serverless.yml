@@ -39,3 +39,25 @@ provider:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
       Resource: '*'
+    # allow reading and writing to sqs queues namespaced to this service
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueAttributes
+      Resource: arn:aws:sqs:${aws:region}:${aws:accountId}:${self:service}-*
+    # allow reading and writing to dynamodb tables namespaced to this service
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-*
+    # allow publishing to sns topics namespaced by this service
+    - Effect: Allow
+      Action:
+        - SNS:Publish
+      Resource: arn:aws:sns:${aws:region}:${aws:accountId}:${self:service}-*
