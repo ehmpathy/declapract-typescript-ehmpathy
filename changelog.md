@@ -1,5 +1,14 @@
 # Changelog
 
+### [0.14.1](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.14.0...v0.14.1) (2022-01-18)
+
+
+### Bug Fixes
+
+* **deps:** bump min version of simple-type-guards ([8bb0b29](https://www.github.com/uladkasach/best-practices-typescript/commit/8bb0b29e7d682f68c32efbd48aa1ab45f9e0af03))
+* **github:** enable repos to automerge prs ([53606b9](https://www.github.com/uladkasach/best-practices-typescript/commit/53606b90a3d94ff68e9726112770b92899aa361e))
+* **sls:** ensure services have perms to read/write their namespaced sqs queues, dynamodb tables, and sns topics ([2e0ada3](https://www.github.com/uladkasach/best-practices-typescript/commit/2e0ada30f58c170b3eda507b68cc05e75ba98be7))
+
 ## [0.14.0](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.13.0...v0.14.0) (2021-12-29)
 
 
