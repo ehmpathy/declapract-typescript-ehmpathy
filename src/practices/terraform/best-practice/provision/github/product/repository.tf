@@ -22,6 +22,7 @@ resource "github_repository" "this" {
   allow_squash_merge     = true  # only squash merges are allowed
   allow_merge_commit     = false # especially not merge merges. never merge merges
   allow_rebase_merge     = false
+  allow_auto_merge       = true
   delete_branch_on_merge = true # always delete branch on merging
 
   lifecycle {
