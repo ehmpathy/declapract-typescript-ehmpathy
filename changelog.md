@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.14.2](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.14.1...v0.14.2) (2022-01-21)
+
+
+### Bug Fixes
+
+* **github:** ensure that we use github tf provider 4.19.1 for auto-merge support ([ca6db9a](https://www.github.com/uladkasach/best-practices-typescript/commit/ca6db9ad097baa5290f73f049c0c3089f32302f0))
+
 ### [0.14.1](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.14.0...v0.14.1) (2022-01-18)
 
 
