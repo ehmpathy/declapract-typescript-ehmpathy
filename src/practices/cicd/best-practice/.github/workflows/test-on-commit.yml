@@ -7,6 +7,10 @@ on:
     tags-ignore: # but not for releases, as deploy_on_tag will trigger for it
       - '**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   install:
     runs-on: ubuntu-20.04
