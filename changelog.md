@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.15.0](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.14.2...v0.15.0) (2022-03-01)
+
+
+### Features
+
+* **cicd:** cancel running ci jobs when pr is updated ([90a6848](https://www.github.com/uladkasach/best-practices-typescript/commit/90a6848c8ebd0d7084981eb0c647e5f937d46fcd))
+
+
+### Bug Fixes
+
+* **deps:** upgrade min ver of simple-lambda-testing-methods to 0.2.1 ([3f10be4](https://www.github.com/uladkasach/best-practices-typescript/commit/3f10be456678c80c266b24f6939aaa5e434113fe))
+* **tests:** ensure local acceptance tests are verbose and run in band ([253f334](https://www.github.com/uladkasach/best-practices-typescript/commit/253f334e7554e2f4e53eaafb7c91346623d02e08))
+* **tsc:** remove exclusion of .declapract dir from tsc ([4f70c7d](https://www.github.com/uladkasach/best-practices-typescript/commit/4f70c7d2a5bab10cd8d4fbf76e2fd4e1729bc91f))
+
 ### [0.14.2](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.14.1...v0.14.2) (2022-01-21)
 
 
