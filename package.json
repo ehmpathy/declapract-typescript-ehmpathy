@@ -1,6 +1,6 @@
 {
   "name": "best-practices-typescript",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "declapract best practices declarations for typescript",
   "main": "src/index.js",
   "files": [
