@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.16.0](https://www.github.com/ehmpathy/ehmpathy-declapract-typescript/compare/v0.15.0...v0.16.0) (2022-12-18)
+
+
+### Features
+
+* **cicd:** upgrade to using the more stable v3 of please-release plugin ([3a37c77](https://www.github.com/ehmpathy/ehmpathy-declapract-typescript/commit/3a37c773b490aa71455157aac3552ed795eca4fa))
+* **s3:** support service-scoped s3 namespace and permissions ([886a869](https://www.github.com/ehmpathy/ehmpathy-declapract-typescript/commit/886a8694ba39e1dbcaf81e72d339d91ede3c69b3))
+
+
+### Bug Fixes
+
+* **cicd:** ensure release message has sufficient whitespace ([98fb896](https://www.github.com/ehmpathy/ehmpathy-declapract-typescript/commit/98fb8967f37cb895249c3ffce9f884b6370a9063))
+* **deps:** drop uuidv4, use uuid instead; community converged ([a50f527](https://www.github.com/ehmpathy/ehmpathy-declapract-typescript/commit/a50f527fd5220f061f421b6aae9d5613baf9889d))
+* **readme:** add a quick description of declapract to top of readme ([13be5b8](https://www.github.com/ehmpathy/ehmpathy-declapract-typescript/commit/13be5b84001846f53fc204331bb563935c713839))
+* **refs:** replace uladkasach repo refs to ehmpathy repo refs ([9f104f4](https://www.github.com/ehmpathy/ehmpathy-declapract-typescript/commit/9f104f4b11fbf4707d6521dae674f5570d4cbd89))
+* **tf:** bump tf version to 3.74.3 ([9950081](https://www.github.com/ehmpathy/ehmpathy-declapract-typescript/commit/9950081b241e119c8adab93c2eb9cc85ab11485c))
+
 ## [0.15.0](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.14.2...v0.15.0) (2022-03-01)
 
 
