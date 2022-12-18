@@ -1,5 +1,7 @@
 # ehmpathy declapract typescript
 
+declapract = declared best practices
+
 this repo contains the [ehmpathy org's](github.com/ehmpathy) declared best practices for typescript, for usage with [declapract](https://github.com/ehmpathy/declapract)
 
 # usage
