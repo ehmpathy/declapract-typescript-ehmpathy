@@ -1,7 +1,8 @@
 variable "environment" {}
 
 locals {
-  service = "@declapract{variable.serviceName}"
+  service      = "@declapract{variable.serviceName}"
+  s3_namespace = "@declapract{variable.infrastructureNamespaceId}"
 }
 
 locals {

@@ -2,7 +2,7 @@ service: @declapract{variable.serviceName}
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   memorySize: 1024 # optional, in MB, default is 1024
   timeout: 10
   stage: ${opt:stage}
@@ -39,6 +39,13 @@ provider:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
       Resource: '*'
+    # allow reading and writing to s3 buckets namespaced by this service
+    - Effect: Allow
+      Action:
+        - s3:ListObject
+        - s3:GetObject
+        - s3:PutObject
+      Resource: arn:aws:s3:${aws:region}:${aws:accountId}:${self:service}-*
     # allow reading and writing to sqs queues namespaced to this service
     - Effect: Allow
       Action:
