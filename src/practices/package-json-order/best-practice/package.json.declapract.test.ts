@@ -16,7 +16,7 @@ const exampleFoundContents = `
     "@types/yesql": "3.2.2",
     "@typescript-eslint/eslint-plugin": "2.19.0",
     "@typescript-eslint/parser": "2.19.0",
-    "best-practices-typescript": "0.1.7",
+    "ehmpathy-declapract-typescript": "0.1.7",
     "core-js": "3.6.4",
     "declapract": "0.9.2",
     "eslint": "6.1.0",

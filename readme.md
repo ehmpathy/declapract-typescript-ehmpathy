@@ -1,6 +1,6 @@
-# best practices typescript
+# ehmpathy declapract typescript
 
-this repo contains a [`declapract`](https://github.com/uladkasach/declapract) declaration of best practices for typescript projects
+this repo contains the [ehmpathy org's](github.com/ehmpathy) declared best practices for typescript, for usage with [declapract](https://github.com/ehmpathy/declapract)
 
 # usage
 
@@ -12,8 +12,8 @@ npm install --save-dev declapract
 2. add a declapract usage config to your repo
 ```yml
 # declapract.use.yml
-declarations: npm:best-practices-typescript
-useCase: lambda-service # specify which use case your repo is following, see `best-practices-typescript:src/useCases.yml` for options
+declarations: npm:ehmpathy-declared-ehmpathy-declapract-typescript
+useCase: lambda-service # specify which use case your repo is following, see `ehmpathy-declapract-typescript:src/useCases.yml` for options
 variables: # specify the values of the variables to use against checks
   organizationName: 'awesome-org'
   serviceName: 'svc-awesome-thing'
