@@ -1,6 +1,10 @@
 provider "aws" {
   region              = "us-east-1"
   allowed_account_ids = ["@declapract{variable.awsAccountId.dev}"] # `test` environment resources are provisioned in the `dev` aws account
+
+  endpoints {
+    dynamodb = "http://localhost:7337/"
+  }
 }
 
 terraform {
