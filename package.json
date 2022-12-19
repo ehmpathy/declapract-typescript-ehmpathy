@@ -1,10 +1,10 @@
 {
-  "name": "ehmpathy-declapract-typescript",
+  "name": "declapract-typescript-ehmpathy",
   "version": "0.15.0",
   "description": "declapract best practices declarations for typescript",
   "main": "src/index.js",
-  "repository": "ehmpathy/ehmpathy-declapract-typescript",
-  "homepage": "https://github.com/ehmpathy/ehmpathy-declapract-typescript",
+  "repository": "ehmpathy/declapract-typescript-ehmpathy",
+  "homepage": "https://github.com/ehmpathy/declapract-typescript-ehmpathy",
   "files": [
     "/dist",
     "/declapract.declare.yml"

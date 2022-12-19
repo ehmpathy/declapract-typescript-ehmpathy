@@ -1,4 +1,4 @@
-# ehmpathy declapract typescript
+# declapract typescript ehmpathy
 
 declapract = declared best practices
 
@@ -14,8 +14,8 @@ npm install --save-dev declapract
 2. add a declapract usage config to your repo
 ```yml
 # declapract.use.yml
-declarations: npm:ehmpathy-declapract-typescript
-useCase: lambda-service # specify which use case your repo is following, see `ehmpathy-declapract-typescript:src/useCases.yml` for options
+declarations: npm:declapract-typescript-ehmpathy
+useCase: lambda-service # specify which use case your repo is following, see `declapract-typescript-ehmpathy:src/useCases.yml` for options
 variables: # specify the values of the variables to use against checks
   organizationName: 'awesome-org'
   serviceName: 'svc-awesome-thing'
