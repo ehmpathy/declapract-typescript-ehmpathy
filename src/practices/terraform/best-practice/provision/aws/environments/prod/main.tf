@@ -6,7 +6,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket  = "terraform-state-@declapract{variable.infrastructureNamespaceId}-prod"
-    key     = "@declapract{variable.serviceName}-prod"
+    key     = "@declapract{variable.projectName}-prod"
     region  = "us-east-1"
     encrypt = true
   }

@@ -1,6 +1,6 @@
 import { FileCheckFunction, FileFixFunction } from 'declapract';
 
-import { getServiceVariables } from '../../../../../../getVariables';
+import { getProjectVariables } from '../../../../../../getVariables';
 
 export const check: FileCheckFunction = (contents) => {
   if (
@@ -12,7 +12,7 @@ export const check: FileCheckFunction = (contents) => {
 
 export const fix: FileFixFunction = async (contents, context) => {
   if (!contents) return {}; // do nothing if no contents. really, this shouldn't have been called
-  const { serviceName } = await getServiceVariables(context);
+  const { projectName } = await getProjectVariables(context);
   return {
     contents: contents
       .replace(
@@ -33,7 +33,7 @@ export const fix: FileFixFunction = async (contents, context) => {
         // replace the inputs
         /name\: '(\w+)',/g,
         [
-          `service: '${serviceName}',`,
+          `service: '${projectName}',`,
           `function: '$1',`,
           `stage,`,
           `locally,`,

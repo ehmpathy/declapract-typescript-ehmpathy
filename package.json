@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "rm -rf ./dist && npx declapract compile",
-    "fix:format:prettier": "prettier --parser typescript --write 'src/**/*.ts' --config ./prettier.config.js",
+    "fix:format:prettier": "prettier --write '**/*.ts' --config ./prettier.config.js",
     "fix:format:terraform": "terraform fmt -recursive",
     "fix:format": "npm run fix:format:prettier && npm run fix:format:terraform",
     "test:types": "tsc -p ./tsconfig.build.json --noEmit",
@@ -22,7 +22,8 @@
     "test": "npm run test:types && npm run test:format && npm run test:validate && npm run test:unit",
     "prepush": "npm run build && npm run test",
     "preversion": "npm run prepush",
-    "postversion": "git push origin HEAD --tags --no-verify"
+    "postversion": "git push origin HEAD --tags --no-verify",
+    "test:format:prettier": "prettier --parser typescript --check 'src/**/*.ts' --config ./prettier.config.js"
   },
   "author": "uladkasach",
   "license": "ISC",

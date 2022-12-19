@@ -1,3 +1,3 @@
 locals {
-  service = "@declapract{variable.serviceName}"
+  service = "@declapract{variable.projectName}"
 }

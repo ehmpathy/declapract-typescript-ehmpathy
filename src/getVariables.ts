@@ -1,8 +1,11 @@
 import { createGetVariables } from 'declapract';
 
-export const getServiceVariables = createGetVariables({
+export const getProjectVariables = createGetVariables({
   organizationName: 'awesum',
-  serviceName: 'svc-awesome-thing',
+  projectName: 'svc-awesome-thing',
+});
+
+export const getServiceVariables = createGetVariables({
   infrastructureNamespaceId: 'abcde12345',
   slackWebhookUrl: 'https://...',
   awsAccountId: {

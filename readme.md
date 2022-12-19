@@ -1,4 +1,4 @@
-# declapract typescript ehmpathy
+# declapract-typescript-ehmpathy
 
 declapract = declared best practices
 
@@ -18,7 +18,7 @@ declarations: npm:declapract-typescript-ehmpathy
 useCase: lambda-service # specify which use case your repo is following, see `declapract-typescript-ehmpathy:src/useCases.yml` for options
 variables: # specify the values of the variables to use against checks
   organizationName: 'awesome-org'
-  serviceName: 'svc-awesome-thing'
+  projectName: 'svc-awesome-thing'
   infrastructureNamespaceId: 'abcde12345'
   slackReleaseWebHook: 'https://...'
 ```

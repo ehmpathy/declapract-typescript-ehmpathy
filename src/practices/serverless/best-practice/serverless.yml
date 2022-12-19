@@ -1,4 +1,4 @@
-service: @declapract{variable.serviceName}
+service: @declapract{variable.projectName}
 
 provider:
   name: aws

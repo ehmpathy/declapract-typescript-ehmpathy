@@ -29,7 +29,7 @@ describe('addDecoratedImage', () => {
 });
     `.trim();
     const { contents: fixedContents } = await fix(exampleOldPatternContents, {
-      projectVariables: { serviceName: 'svc-notifications' },
+      projectVariables: { projectName: 'svc-notifications' },
     } as any);
     expect(fixedContents).toContain(
       `import { locally } from '../environment';`,

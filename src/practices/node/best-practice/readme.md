@@ -1,1 +1,1 @@
-# @declapract{variable.serviceName}
+# @declapract{variable.projectName}

@@ -1,5 +1,5 @@
 {
-  "name": "@declapract{variable.serviceName}",
+  "name": "@declapract{variable.projectName}",
   "author": "@declapract{variable.organizationName}",
   "version": "@declapract{check.minVersion('0.0.0')}",
   "private": true,

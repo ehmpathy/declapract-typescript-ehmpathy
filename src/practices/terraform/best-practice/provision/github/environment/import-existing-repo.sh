@@ -1,5 +1,5 @@
 # terraform... why cant you just look this stuff up given that you already have the inputs....
-REPO_NAME='@declapract{variable.serviceName}';
+REPO_NAME='@declapract{variable.projectName}';
 
 # import the repo itself
 terraform import module.product.github_repository.this $REPO_NAME;

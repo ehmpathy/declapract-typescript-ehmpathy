@@ -1,31 +1,41 @@
 # define the different types of combinations of the best practices that we support
 use-cases:
-  lambda-service:
+  typescript-project:
     practices:
-      - cicd
-      - config
+      - cicd-integrate
       - conventional-commits
-      - dates-and-times
       - directory-structure-src
       - domain
-      - environments
       - errors
       - format
       - git
-      - lambda-clients
-      - lambda-handlers
       - linting
-      - logging
       - node
       - nonpublished-modules
       - package-json-order
       - prettier
-      - runtime-type-checking
-      - serverless
-      - terraform
       - testing
       - typescript
       - uuid
+  npm-package:
+    extends:
+      - typescript-project
+    practices:
+      - cicd-deploy-package
+  lambda-service:
+    extends:
+      - typescript-project
+    practices:
+      - cicd-deploy-service
+      - config
+      - dates-and-times
+      - environments
+      - lambda-clients
+      - lambda-handlers
+      - logging
+      - runtime-type-checking
+      - serverless
+      - terraform
   lambda-service-with-rds:
     extends:
       - lambda-service
@@ -36,18 +46,3 @@ use-cases:
       - lambda-service
     practices:
       - persist-with-dynamodb
-  nextjs-web-app: # todo: flesh this one out more. so far, it contains only the ones that are fully shared (but not the ones that need tweaked to frontend -vs- backend)
-    practices:
-      - cicd
-      - conventional-commits
-      - dates-and-times
-      - domain
-      - environments
-      - format
-      - git
-      - node
-      - package-json-order
-      - prettier
-      - runtime-type-checking
-      - terraform
-      - uuid

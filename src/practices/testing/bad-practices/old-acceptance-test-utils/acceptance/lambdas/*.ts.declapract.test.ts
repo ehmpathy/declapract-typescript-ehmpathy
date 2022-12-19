@@ -34,7 +34,7 @@ describe('consumeSESEmailEventFromSNS', () => {
 });
     `.trim();
     const fixedContents = await fix(exampleOldPatternContents, {
-      projectVariables: { serviceName: 'svc-notifications' },
+      projectVariables: { projectName: 'svc-notifications' },
     } as any);
     expect(fixedContents).toMatchSnapshot();
   });
