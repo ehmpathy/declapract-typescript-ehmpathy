@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "prettier": "@declapract{check.minVersion('2.4.0')}",
+    "prettier": "@declapract{check.minVersion('2.8.1')}",
     "@trivago/prettier-plugin-sort-imports": "@declapract{check.minVersion('2.0.4')}"
   },
   "scripts": {
