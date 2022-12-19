@@ -1,6 +1,7 @@
 {
   "devDependencies": {
-    "typescript": "@declapract{check.minVersion('4.9.4')}"
+    "typescript": "@declapract{check.minVersion('4.9.4')}",
+    "@tsconfig/node-lts-strictest": "@declapract{check.minVersion('18.12.1')}"
   },
   "scripts": {
     "build:clean": "rm dist/ -rf",

@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "2.0.4",
+    "@tsconfig/node-lts-strictest": "18.12.1",
     "@types/aws-lambda": "8.10.40",
     "@types/flat": "5.0.2",
     "@types/jest": "29.2.4",
