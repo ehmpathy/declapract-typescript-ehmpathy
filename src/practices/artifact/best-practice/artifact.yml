@@ -1,0 +1,7 @@
+trace:
+  - 'dist/contract/handlers/**/*.js' # include all dependencies of the handlers
+
+pick:
+  - 'dist/**/*.js.map' # include all of the source maps # TODO: update simple-artifact-builder to do this automatically for all files it includes
+  - 'config/*'
+  - 'package.json'
