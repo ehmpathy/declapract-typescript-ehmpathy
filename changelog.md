@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.16.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.15.0...v0.16.0) (2022-12-19)
+
+
+### Features
+
+* **cicd:** upgrade to using the more stable v3 of please-release plugin ([3a37c77](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/3a37c773b490aa71455157aac3552ed795eca4fa))
+* **jest:** upgrade jest deps to latest ([2eeeea0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2eeeea0d344161ae19d215cea162e53849c58a4c))
+* **s3:** support service-scoped s3 namespace and permissions ([886a869](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/886a8694ba39e1dbcaf81e72d339d91ede3c69b3))
+* **typescript:** upgrade typescript version and config ([fbf2152](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/fbf21521e13b43fc91bcd90c349653f2afd80b68))
+* **usecases:** expose the npm-package and typescript-project usecases ([70e37d2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/70e37d244dc5c2b408be9878b4a113c17fa62498))
+
+
+### Bug Fixes
+
+* **cicd:** define test:commit and test:integration ([d033b05](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d033b0501b5c8dc4fb7f4bd1c8e40088120ec3ad))
+* **cicd:** ensure release message has sufficient whitespace ([98fb896](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/98fb8967f37cb895249c3ffce9f884b6370a9063))
+* **cicd:** remove some service specific things from test-on-commit workflow ([04f8fcd](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/04f8fcd0b8cc4945cbaa594a2ffdd81d015a9b03))
+* **cicd:** update packagelock to unblock cicd ([937ca17](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/937ca1706187ac7e1fd7f422dddf9da7ff3bc8ba))
+* **commitlint:** allow headerlength to expand to 140 ([bbd178f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/bbd178ff7c222e9529b5b07ec9e84bb34c57871e))
+* **deps:** drop uuidv4, use uuid instead; community converged ([a50f527](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/a50f527fd5220f061f421b6aae9d5613baf9889d))
+* **eslint:** upgrade eslint deps to latest ([5e82cf7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5e82cf73c10285b616c297417eae69799248ce3f))
+* **pkg:** change pkg name to suffix with org name ([cbb0f16](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/cbb0f1652346047ad76e02612a2785583c7d1695))
+* **readme:** add a quick description of declapract to top of readme ([13be5b8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/13be5b84001846f53fc204331bb563935c713839))
+* **refs:** replace uladkasach repo refs to ehmpathy repo refs ([9f104f4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/9f104f4b11fbf4707d6521dae674f5570d4cbd89))
+* **test:** fix failing unit test after name change ([1ce766e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/1ce766e384618a1269251ac2e47a8f8d45d048e0))
+* **tests:** resolve linting issues that were blocking tests ([9e1bdc4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/9e1bdc40d09b24691500442b487f55c873a13727))
+* **tf:** bump tf version to 3.74.3 ([9950081](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/9950081b241e119c8adab93c2eb9cc85ab11485c))
+* **typescript:** remove the noPropertyAccessFromIndexSignature method ([a4083c1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/a4083c183c6e4f55456120521cd8b2e3f1518fff))
+* **typescript:** set importsNotUsedAsValues to false due to preference ([6ed623e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6ed623e1bf2f91d2cbd75d235bcfd539008781cd))
+
 ## [0.15.0](https://www.github.com/uladkasach/best-practices-typescript/compare/v0.14.2...v0.15.0) (2022-03-01)
 
 
