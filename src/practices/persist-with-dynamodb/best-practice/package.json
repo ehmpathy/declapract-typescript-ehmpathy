@@ -1,5 +1,11 @@
 {
   "dependencies": {
-    "simple-dynamodb-client": "@declapract{check.minVersion('7.0.0')}"
+    "simple-dynamodb-client": "@declapract{check.minVersion('0.10.0')}"
+  },
+  "scripts": {
+    "provision:docker:up": "docker-compose -f ./provision/docker/integration_test_db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
+    "provision:docker:down": "docker-compose -f ./provision/docker/integration_test_db/docker-compose.yml down",
+    "provision:dynamodb:schema": "terraform -chdir=provision/aws/environments/test apply -auto-approve",
+    "provision:integration-test-db": "npm run provision:docker:up && npm run provision:dynamodb:schema"
   }
 }
