@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/node-lts-strictest/tsconfig.json",
   "compilerOptions": {
+    "importsNotUsedAsValues": "remove",
     "sourceMap": true,
     "outDir": "dist",
   },
