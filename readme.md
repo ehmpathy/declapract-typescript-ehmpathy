@@ -14,7 +14,7 @@ npm install --save-dev declapract
 2. add a declapract usage config to your repo
 ```yml
 # declapract.use.yml
-declarations: npm:ehmpathy-declared-ehmpathy-declapract-typescript
+declarations: npm:ehmpathy-declapract-typescript
 useCase: lambda-service # specify which use case your repo is following, see `ehmpathy-declapract-typescript:src/useCases.yml` for options
 variables: # specify the values of the variables to use against checks
   organizationName: 'awesome-org'
