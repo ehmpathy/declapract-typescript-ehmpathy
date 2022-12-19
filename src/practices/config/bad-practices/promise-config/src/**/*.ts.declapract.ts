@@ -1,4 +1,4 @@
-import { FileCheckFunction, FileCheckType, FileFixFunction } from 'declapract';
+import { FileCheckFunction, FileFixFunction } from 'declapract';
 
 export const check: FileCheckFunction = (contents) => {
   if (

@@ -9,7 +9,7 @@ export const check: FileCheckFunction = async (contents) => {
   );
 };
 
-export const fix: FileFixFunction = (contents, context) => {
+export const fix: FileFixFunction = (contents) => {
   if (!contents) return { contents }; // do nothing if no contents
   const packageJSON = JSON.parse(contents);
   const updatedPackageJSON = {

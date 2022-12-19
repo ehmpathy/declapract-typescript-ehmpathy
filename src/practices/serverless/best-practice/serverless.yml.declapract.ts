@@ -1,5 +1,5 @@
 import { FileCheckType } from 'declapract';
-import { FileCheckDeclaration, FileFixFunction } from 'declapract/dist/domain';
+import { FileFixFunction } from 'declapract/dist/domain';
 
 export const check = FileCheckType.CONTAINS; // i.e., check that the contents of the file contains what's declared (default is equals)
 

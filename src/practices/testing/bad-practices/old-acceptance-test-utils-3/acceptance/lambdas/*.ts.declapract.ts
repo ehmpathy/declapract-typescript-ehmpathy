@@ -6,7 +6,7 @@ export const check: FileCheckFunction = (contents) => {
   throw new Error('does not match bad practice');
 };
 
-export const fix: FileFixFunction = async (contents, context) => {
+export const fix: FileFixFunction = async (contents) => {
   if (!contents) return {}; // do nothing if no contents. really, this shouldn't have been called
   return {
     contents: contents.replace(

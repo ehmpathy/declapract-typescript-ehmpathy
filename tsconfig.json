@@ -3,11 +3,12 @@
   "compilerOptions": {
     "importsNotUsedAsValues": "remove",
     "noPropertyAccessFromIndexSignature": false,
+    "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "dist",
   },
-  "filesGlob": [
-    "src/**/*.ts"
+  "include": [
+    "src/**/*.declapract.ts"
   ],
   "exclude": [
     "dist",

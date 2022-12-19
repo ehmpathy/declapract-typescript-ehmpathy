@@ -1,38 +1,20 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "strict": true,
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "noImplicitAny": true,
-    "moduleResolution": "node",
-    "allowJs": true,
-    "sourceMap": true,
-    "outDir": "dist",
-    "rootDir": "src",
-    "skipLibCheck": true,
-    "strictPropertyInitialization": false,
-    "lib": ["es2019"]
+    "rootDir": "src"
   },
-  "include": ["src/**/*.declapract.ts"],
+  "include": [
+    "src/**/*.declapract.ts"
+  ],
   "exclude": [
-    "acceptance",
-    "src/**/*.test.ts",
-    "src/**/*.test.js",
     "dist",
     "coverage",
     "node_modules",
-    "jest.acceptance.config.js",
-    "jest.acceptance.env.js",
-    "jest.integration.config.js",
-    "jest.integration.env.js",
-    "jest.unit.config.js",
-    "jest.unit.env.js",
-    "jest.config.js",
-    "prettier.config.js",
-    "provision"
-  ],
-  "atom": {
-    "rewriteTsconfig": false
-  }
+    "acceptance",
+    "provision",
+    "jest.*",
+    "prettier.*",
+    "commitlint.*",
+    "src/**/*.test.(ts|js)"
+  ]
 }

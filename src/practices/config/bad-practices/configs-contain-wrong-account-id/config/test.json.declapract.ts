@@ -1,5 +1,4 @@
 import { FileCheckFunction } from 'declapract';
-import expect from 'expect';
 
 import { getServiceVariables } from '../../../../../getVariables';
 

@@ -3,10 +3,11 @@
   "compilerOptions": {
     "importsNotUsedAsValues": "remove",
     "noPropertyAccessFromIndexSignature": false,
+    "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "dist",
   },
-  "filesGlob": [
+  "include": [
     "src/**/*.ts"
   ],
   "exclude": [

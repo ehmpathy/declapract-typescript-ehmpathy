@@ -56,7 +56,7 @@ export const getDatabaseConnection = async (): Promise<DatabaseConnection> => {
       dbConnection.query(args).catch((error) => {
         throw new DatabaseQueryError({
           sql: args.sql,
-          values: args.values,
+          values: args.values ?? [],
           caught: error,
         });
       }),

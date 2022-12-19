@@ -1,7 +1,6 @@
 import { FileCheckFunction, FileFixFunction } from 'declapract';
 
 import { getServiceVariables } from '../../../../../../getVariables';
-import { defineFunctionNameFromTestFileName } from '../../../../defineFunctionNameFromTestFileName';
 
 export const check: FileCheckFunction = (contents) => {
   if (
