@@ -2,6 +2,7 @@
   "extends": "@tsconfig/node-lts-strictest/tsconfig.json",
   "compilerOptions": {
     "importsNotUsedAsValues": "remove",
+    "noPropertyAccessFromIndexSignature": false,
     "sourceMap": true,
     "outDir": "dist",
   },
