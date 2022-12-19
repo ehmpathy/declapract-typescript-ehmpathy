@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.17.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.16.0...v0.17.0) (2022-12-19)
+
+
+### Features
+
+* **artifacts:** use simple-artifact-builder to create deployment artifact ([#25](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/25)) ([b880f1d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b880f1dedef4c0a0cd152a46328d5534b5a0ba52))
+* **dynamodb:** support docker provisioned dynamodb local for test env ([#28](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/28)) ([01a96f5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/01a96f591022e5e365fac575a68887250b4dfd3b))
+
+
+### Bug Fixes
+
+* **cicd:** fix deployment by upgrading publish-on-tag workflow ([51198d0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/51198d0dc8d35d31810e6c0f740d62057a5bf10e))
+
 ## [0.16.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.15.0...v0.16.0) (2022-12-19)
 
 
