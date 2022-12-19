@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "typescript": "@declapract{check.minVersion('4.3.5')}"
+    "typescript": "@declapract{check.minVersion('4.9.4')}"
   },
   "scripts": {
     "build:clean": "rm dist/ -rf",

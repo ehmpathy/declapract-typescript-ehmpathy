@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`*.ts.declapract should be able to fix a test file using old acceptance test pattern 1`] = `
-Object {
+{
   "contents": "import { SNSEventRecord, SNSMessage, SNSEvent } from 'aws-lambda';
 
 import { exampleEmailClickEvent } from '../../src/__test_assets__/exampleEmailClickEvent';

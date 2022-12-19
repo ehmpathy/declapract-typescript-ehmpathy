@@ -1,9 +1,9 @@
 {
   "devDependencies": {
-    "@types/jest": "@declapract{check.minVersion('27.0.0')}",
-    "jest": "@declapract{check.minVersion('27.0.0')}",
-    "ts-jest": "@declapract{check.minVersion('27.0.0')}",
-    "core-js": "@declapract{check.minVersion('3.6.4')}",
+    "@types/jest": "@declapract{check.minVersion('29.2.4')}",
+    "jest": "@declapract{check.minVersion('29.3.1')}",
+    "ts-jest": "@declapract{check.minVersion('29.0.3')}",
+    "core-js": "@declapract{check.minVersion('3.26.1')}",
     "simple-lambda-testing-methods": "@declapract{check.minVersion('0.2.1')}"
   },
   "scripts": {

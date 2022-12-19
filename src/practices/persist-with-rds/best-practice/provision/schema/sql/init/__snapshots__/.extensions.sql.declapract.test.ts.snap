@@ -13,8 +13,8 @@ exports[`.extensions.sql fix should be able to create a new file to fix case whe
  */
 
 -- extensions required for all sql-schema-generator resources:
-CREATE EXTENSION IF NOT EXISTS \\"uuid-ossp\\";
-CREATE EXTENSION IF NOT EXISTS \\"pgcrypto\\";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- extensions required for custom use cases in this service:
 -- CREATE EXTENSION IF NOT EXISTS ..."
@@ -33,10 +33,10 @@ exports[`.extensions.sql fix should be able to fix a file with custom extensions
  */
 
 -- extensions required for all sql-schema-generator resources:
-CREATE EXTENSION IF NOT EXISTS \\"uuid-ossp\\";
-CREATE EXTENSION IF NOT EXISTS \\"pgcrypto\\";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- extensions required for custom use cases in this service:
-CREATE EXTENSION IF NOT EXISTS \\"cube\\";
-CREATE EXTENSION IF NOT EXISTS \\"earthdistance\\";"
+CREATE EXTENSION IF NOT EXISTS "cube";
+CREATE EXTENSION IF NOT EXISTS "earthdistance";"
 `;
