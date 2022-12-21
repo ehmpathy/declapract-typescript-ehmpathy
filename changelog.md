@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.0...v0.17.1) (2022-12-21)
+
+
+### Bug Fixes
+
+* **jest:** upgrade jest config fix its relationship to tsconfig ([d7f73fe](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d7f73fe67ce5b8d41cd1496386f9a8b3ba42ed13))
+
 ## [0.17.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.16.0...v0.17.0) (2022-12-19)
 
 
