@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { stage, Stage } = require('./src/utils/environment');
+import { stage, Stage } from './src/utils/environment';
 
 // set a longer timeout
 // eslint-disable-next-line no-undef

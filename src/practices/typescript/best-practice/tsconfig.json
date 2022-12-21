@@ -3,12 +3,14 @@
   "compilerOptions": {
     "importsNotUsedAsValues": "remove",
     "noPropertyAccessFromIndexSignature": false,
+    "noImplicitOverride": false,
     "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "dist",
+    "target": "es6",
   },
   "include": [
-    "src/**/*.ts"
+    "**/*.ts"
   ],
   "exclude": [
     "dist",

@@ -1,10 +1,6 @@
-/* eslint-disable global-require */
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { stage, Stage } = require('./src/utils/environment');
+import { stage, Stage } from './src/utils/environment';
 
-// eslint-disable-next-line no-undef
 jest.mock('./src/utils/config/getConfig', () => ({
-  // eslint-disable-next-line no-undef
   getConfig: jest.fn().mockImplementation(() => require('./config/test.json')), // mock that getConfig just returns plaintext test env config in unit tests
 }));
 
@@ -14,9 +10,3 @@ jest.mock('./src/utils/config/getConfig', () => ({
  */
 if (stage !== Stage.TEST && process.env.I_KNOW_WHAT_IM_DOING !== 'true')
   throw new Error(`unit-test is not targeting stage 'test'`);
-
-/**
- * specify that dynamodb should use the local dynamodb database, if running in test env
- */
-if (stage === Stage.TEST)
-  process.env.USE_CUSTOM_DYNAMODB_ENDPOINT = 'http://localhost:7337';
