@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.17.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.1...v0.17.2) (2022-12-23)
+
+
+### Bug Fixes
+
+* **artifact:** bump simple-artifact-builder version to avoid node fs.rmdir dep warning ([c45cac9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c45cac94496403334131b0f6c0f6eb87ebc79d03))
+* **packages:** add node registry url to packages to ensure they are publishable ([7bbcb87](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7bbcb8776ea00e334d083a5f00ad152336a2fa50))
+
 ## [0.17.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.0...v0.17.1) (2022-12-21)
 
 
