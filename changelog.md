@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.2...v0.17.3) (2022-12-27)
+
+
+### Bug Fixes
+
+* **usecases:** ensure testing and artifact usecases are exposed for lambda-service-with-rds ([39fa430](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/39fa43028a96f8b6373da5cedd8dd006b49db63c))
+
 ## [0.17.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.1...v0.17.2) (2022-12-23)
 
 
