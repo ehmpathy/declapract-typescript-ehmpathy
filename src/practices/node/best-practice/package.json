@@ -3,6 +3,9 @@
   "author": "@declapract{variable.organizationName}",
   "version": "@declapract{check.minVersion('0.0.0')}",
   "private": true,
+  "repository": "@declapract{variable.organizationName}/@declapract{variable.projectName}",
+  "homepage": "https://github.com/@declapract{variable.organizationName}/@declapract{variable.projectName}",
+  "bugs": "https://github.com/@declapract{variable.organizationName}/@declapract{variable.projectName}/issues",
   "scripts": {
     "prepush": "npm run test && npm run build",
     "preversion": "npm run prepush",

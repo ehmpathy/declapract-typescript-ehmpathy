@@ -8,7 +8,7 @@
     "outDir": "dist",
   },
   "include": [
-    "src/**/*.declapract.ts"
+    "src/**/*.declapract.ts",
   ],
   "exclude": [
     "dist",

@@ -26,6 +26,7 @@ use-cases:
     extends:
       - typescript-project
     practices:
+      - artifact
       - cicd-deploy-service
       - config
       - dates-and-times
@@ -38,11 +39,13 @@ use-cases:
       - terraform
   lambda-service-with-rds:
     extends:
+      - typescript-project # https://github.com/ehmpathy/declapract/issues/17
       - lambda-service
     practices:
       - persist-with-rds
   lambda-service-with-dynamodb: # note that projects can still use both by specifying the `declapract.use-case: [lambda-service-with-dynamodb, lambda-service-with-rds]` since we allow use-cases to add together. `use-cases` just enable us to enforce a "minimum" set of practices
     extends:
+      - typescript-project # https://github.com/ehmpathy/declapract/issues/17
       - lambda-service
     practices:
       - persist-with-dynamodb
