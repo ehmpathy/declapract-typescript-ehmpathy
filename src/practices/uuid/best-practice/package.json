@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "uuid": "@declapract{check.minVersion('8.3.4')}"
+    "uuid": "@declapract{check.minVersion('9.0.0')}"
   },
   "devDependencies": {
-    "@types/uuid": "@declapract{check.minVersion('8.3.4')}"
+    "@types/uuid": "@declapract{check.minVersion('9.0.0')}"
   }
 }
