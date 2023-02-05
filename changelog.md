@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.17.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.3...v0.17.4) (2023-02-05)
+
+
+### Bug Fixes
+
+* **deps:** bump simple-artifact-builder version ([ad4800d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/ad4800d4ab6277507f91c3621be5a8a1726ab024))
+* **deps:** ensure uuid is v9 and old module name is a bad practice ([15ed76e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/15ed76ea9edcf290f831f2a141b314d767ece532))
+
 ## [0.17.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.2...v0.17.3) (2022-12-27)
 
 
