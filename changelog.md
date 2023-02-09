@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.17.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.6...v0.17.7) (2023-02-09)
+
+
+### Bug Fixes
+
+* **linting:** ensure that lines-between-class-members is off ([0c1a875](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/0c1a8751a2e504d4d366501628ea491a2e09fa5e))
+* **testing:** dont attempt to transform js files with ts-jest ([b980fd6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b980fd6905c2284b139337f18536201e6acc1e9d))
+
 ## [0.17.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.5...v0.17.6) (2023-02-09)
 
 
