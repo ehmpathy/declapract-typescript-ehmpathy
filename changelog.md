@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.5...v0.17.6) (2023-02-09)
+
+
+### Bug Fixes
+
+* **testing:** ensure that ts-node is installed for jest.config.ts support ([2df98ee](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2df98ee7fd6c23a640a3a598033e986118e4fbf9))
+
 ## [0.17.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.4...v0.17.5) (2023-02-09)
 
 
