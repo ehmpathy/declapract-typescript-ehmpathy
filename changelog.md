@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.4...v0.17.5) (2023-02-09)
+
+
+### Bug Fixes
+
+* **rds:** ensure packagejson scripts reference new docker integration-test-db location ([7f01772](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7f0177275a9c3ad0b88430d48fd1fbe17b3c95d7))
+
 ## [0.17.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.3...v0.17.4) (2023-02-05)
 
 
