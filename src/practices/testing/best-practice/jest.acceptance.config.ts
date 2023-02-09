@@ -6,7 +6,7 @@ const config: Config = {
   testEnvironment: 'node',
   moduleFileExtensions: ['js', 'ts'],
   transform: {
-    '^.+\\.[tj]sx?$': 'ts-jest', // https://kulshekhar.github.io/ts-jest/docs/getting-started/presets
+    '^.+\\.tsx?$': 'ts-jest', // https://kulshekhar.github.io/ts-jest/docs/getting-started/presets
   },
   testMatch: ['**/*.acceptance.test.ts'],
   setupFiles: ['core-js'],
