@@ -39,6 +39,7 @@ module.exports = {
     'prefer-destructuring': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     'lines-between-class-members': 'off',
+    '@typescript-eslint/lines-between-class-members': 'off',
     'no-return-await': 'off', // this does not help anything and actually leads to bugs if we subsequently wrap the return in a try catch without remembering to _then_ add await
   },
 };
