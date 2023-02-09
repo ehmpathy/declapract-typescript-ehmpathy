@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.7...v0.17.8) (2023-02-09)
+
+
+### Bug Fixes
+
+* **terraform:** ensure theres not a permadiff on product/variables.tf ([6e630f4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6e630f400cdd5a68d4b9895f0c0c6f8b70f52370))
+
 ## [0.17.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.6...v0.17.7) (2023-02-09)
 
 
