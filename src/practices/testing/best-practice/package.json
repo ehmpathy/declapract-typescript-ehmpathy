@@ -10,8 +10,8 @@
   "scripts": {
     "test:unit": "jest -c ./jest.unit.config.ts --forceExit --coverage --verbose --passWithNoTests",
     "test:integration": "jest -c ./jest.integration.config.ts --forceExit --coverage --verbose --passWithNoTests",
-    "test:acceptance:locally": "npm run build && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand",
+    "test:acceptance:locally": "npm run build && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests",
     "test": "npm run test:commits && npm run test:types && npm run test:format && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally",
-    "test:acceptance": "npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand"
+    "test:acceptance": "npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests"
   }
 }
