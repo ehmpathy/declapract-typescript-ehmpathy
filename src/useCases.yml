@@ -6,6 +6,7 @@ use-cases:
       - conventional-commits
       - directory-structure-src
       - domain
+      - environments
       - errors
       - format
       - git
@@ -30,7 +31,7 @@ use-cases:
       - cicd-deploy-service
       - config
       - dates-and-times
-      - environments
+      - environments-aws
       - lambda-clients
       - lambda-handlers
       - logging

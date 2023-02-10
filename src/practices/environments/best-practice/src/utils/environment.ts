@@ -22,8 +22,8 @@ const inferStageFromNodeEnv = () => {
  * a method that exposes relevant environmental variables in a standard way
  */
 const getEnvironment = () => {
-  const stage = process.env.DEPLOYMENT_STAGE ?? inferStageFromNodeEnv(); // figure it out from NODE_ENV if not explicitly defined
-  if (!stage) throw new Error('process.env.DEPLOYMENT_STAGE must be defined');
+  const stage = process.env.STAGE ?? inferStageFromNodeEnv(); // figure it out from NODE_ENV if not explicitly defined
+  if (!stage) throw new Error('process.env.STAGE must be defined');
   return { stage };
 };
 
