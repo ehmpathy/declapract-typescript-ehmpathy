@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.19.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.19.0...v0.19.1) (2023-02-10)
+
+
+### Bug Fixes
+
+* **envs:** change DEPLOYMENT_STAGE envvar to just STAGE ([ed707be](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/ed707be6c5ac49f7451ab14110b4bef9a7ec3b47))
+* **npm-packages:** split out environment vs environment-aws ([07b9ab1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/07b9ab15275cfc8223b12bf888564990d1dc46ff))
+* **testing:** enable passing with no acceptance tests ([0c6d146](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/0c6d1462a093ea768f3af9e4cfa0ed5a9041bf00))
+
 ## [0.19.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.18.0...v0.19.0) (2023-02-10)
 
 

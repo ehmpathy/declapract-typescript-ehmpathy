@@ -1,6 +1,6 @@
 {
   "name": "declapract-typescript-ehmpathy",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "description": "declapract best practices declarations for typescript",
   "main": "src/index.js",
   "repository": "ehmpathy/declapract-typescript-ehmpathy",
