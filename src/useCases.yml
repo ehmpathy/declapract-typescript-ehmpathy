@@ -35,6 +35,7 @@ use-cases:
       - lambda-clients
       - lambda-handlers
       - logging
+      - node-service
       - runtime-type-checking
       - serverless
       - terraform
