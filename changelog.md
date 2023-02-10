@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.19.3...v0.20.0) (2023-02-10)
+
+
+### Features
+
+* **linting:** add depcheck to linting process ([5e34e0b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5e34e0b3a6ad7f6085ce91316c4a317ddbdb8f8c))
+
 ## [0.19.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.19.2...v0.19.3) (2023-02-10)
 
 
