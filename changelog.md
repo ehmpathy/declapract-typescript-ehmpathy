@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.20.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.0...v0.20.1) (2023-02-10)
+
+
+### Bug Fixes
+
+* **deps:** bump declapract version to remove vulnerabilities ([875da72](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/875da72c2d86fd71c2e4bf53379f189677973a37))
+* **npm-package:** ensure that npm packages are not marked as private ([b9806f8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b9806f84dd65731863fcb3e745a7fdea400b8a2a))
+* **ts:** ensure packages emit type declarations in dist ([f71e2ad](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/f71e2adfb401a4a5a15bfa9e82e50043eadab4c5))
+
 ## [0.20.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.19.3...v0.20.0) (2023-02-10)
 
 
