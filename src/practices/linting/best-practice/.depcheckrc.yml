@@ -1,0 +1,8 @@
+ignores:
+  - '@commitlint/config-conventional'
+  - '@trivago/prettier-plugin-sort-imports'
+  - '@tsconfig/node-lts-strictest'
+  - core-js
+  - declapract-typescript-ehmpathy
+  - ts-jest
+  - husky

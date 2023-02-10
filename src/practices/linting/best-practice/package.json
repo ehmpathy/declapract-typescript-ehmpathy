@@ -7,10 +7,13 @@
     "eslint-config-airbnb-typescript": "17.0.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-import": "2.26.0",
-    "eslint-plugin-prettier": "4.2.1"
+    "eslint-plugin-prettier": "4.2.1",
+    "depcheck": "1.4.3"
   },
   "scripts": {
     "fix:lint": "eslint -c ./.eslintrc.js src/**/*.ts --fix",
-    "test:lint": "eslint -c ./.eslintrc.js src/**/*.ts"
+    "test:lint:eslint": "eslint -c ./.eslintrc.js src/**/*.ts",
+    "test:lint:deps": "npx depcheck -c ./depcheckrc.yml",
+    "test:lint": "test:lint:eslint && test:lint:deps"
   }
 }
