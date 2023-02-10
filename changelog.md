@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.19.2...v0.19.3) (2023-02-10)
+
+
+### Bug Fixes
+
+* **cicd:** ensure tests are run with FORCE_COLOR for snapshot consistency ([c964068](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c964068c68299b7cbc5db1c0a264f91cf9787014))
+* **linting:** ensure to remove tslint package deps in badpractice too ([2a9eeb9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2a9eeb964854670e8fea5706560625ef60167f04))
+
 ## [0.19.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.19.1...v0.19.2) (2023-02-10)
 
 
