@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.19.1...v0.19.2) (2023-02-10)
+
+
+### Bug Fixes
+
+* **deps:** remove unneeded package dependencies ([89f3373](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/89f3373a936cef0a92449e1e72e3fdd09686a539))
+* **linting:** add tslint bad practice ([5bf00a1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5bf00a1c821b1309a99f844aab07f197abb502b5))
+
 ## [0.19.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.19.0...v0.19.1) (2023-02-10)
 
 
