@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.8...v0.18.0) (2023-02-10)
+
+
+### Features
+
+* **uuid:** make it easier to import uuid util w/ deps.ts ([095cac6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/095cac61320ee0455cf57589e9d9ba4ad74801a9))
+
 ## [0.17.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.7...v0.17.8) (2023-02-09)
 
 
