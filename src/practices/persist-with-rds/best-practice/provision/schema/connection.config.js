@@ -2,7 +2,7 @@ const Config = require('config-with-paramstore').default;
 
 const configInstance = new Config();
 const getConfig = async () =>
-  configInstance.get(process.env.DEPLOYMENT_STAGE || undefined);
+  configInstance.get(process.env.STAGE || undefined);
 
 const promiseSchemaControlConfig = async () => {
   const config = await getConfig();

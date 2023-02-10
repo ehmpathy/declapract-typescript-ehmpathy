@@ -71,4 +71,4 @@ jobs:
         run: DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy:prod
 
       - name: test:acceptance
-        run: DEPLOYMENT_STAGE=prod npm run test:acceptance
+        run: STAGE=prod npm run test:acceptance

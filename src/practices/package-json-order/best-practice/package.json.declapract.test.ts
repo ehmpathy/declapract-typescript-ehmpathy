@@ -59,7 +59,7 @@ const exampleFoundContents = `
     "test:types": "tsc -p ./tsconfig.build.json --noEmit",
     "test:format": "prettier --parser typescript --check 'src/**/*.ts' --config ./prettier.config.js",
     "test:unit": "jest -c ./jest.unit.config.js --forceExit --coverage --verbose --passWithNoTests",
-    "deploy:release": "npm run build && sls deploy -v -s $DEPLOYMENT_STAGE",
+    "deploy:release": "npm run build && sls deploy -v -s $STAGE",
     "test:integration": "jest -c ./jest.integration.config.js --forceExit --coverage --verbose --passWithNoTests",
     "test": "npm run test:types && npm run test:format && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally",
     "test:acceptance": "npm run build && jest -c ./jest.acceptance.config.js --forceExit --verbose --runInBand",
@@ -67,8 +67,8 @@ const exampleFoundContents = `
     "test:acceptance:locally": "npm run build && LOCALLY=true jest -c ./jest.acceptance.config.js",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify",
-    "deploy:dev": "DEPLOYMENT_STAGE=dev npm run deploy:release",
-    "deploy:prod": "DEPLOYMENT_STAGE=prod npm run deploy:release && npm run deploy:send-notification",
+    "deploy:dev": "STAGE=dev npm run deploy:release",
+    "deploy:prod": "STAGE=prod npm run deploy:release && npm run deploy:send-notification",
     "fix:lint": "eslint -c ./.eslintrc.js src/**/*.ts --fix"
   },
   "dependencies": {

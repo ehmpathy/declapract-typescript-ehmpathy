@@ -5,7 +5,7 @@ export enum Stage {
 }
 
 /**
- * this allows us to infer what the stage should be in environments that do not have DEPLOYMENT_STAGE specified
+ * this allows us to infer what the stage should be in environments that do not have STAGE specified
  * - e.g., when running locally
  * - e.g., when running tests
  */
