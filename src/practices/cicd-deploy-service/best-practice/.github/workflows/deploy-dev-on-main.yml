@@ -51,6 +51,8 @@ jobs:
 
       - name: test
         run: npm run test
+        env:
+          FORCE_COLOR: true # ensure colors are saved in jest snapshots, to be consistent with local development
 
       - name: deploy
         run: DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy:dev

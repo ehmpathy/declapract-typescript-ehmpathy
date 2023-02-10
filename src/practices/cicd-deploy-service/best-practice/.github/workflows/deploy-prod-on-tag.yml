@@ -51,6 +51,8 @@ jobs:
 
       - name: test
         run: npm run test
+        env:
+          FORCE_COLOR: true # ensure colors are saved in jest snapshots, to be consistent with local development
 
       # deploy in prod env
       - name: configure aws credentials

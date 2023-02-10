@@ -169,6 +169,8 @@ jobs:
 
       - name: test:unit
         run: npm run test:unit
+        env:
+          FORCE_COLOR: true # ensure colors are saved in jest snapshots, to be consistent with local development
 
   test-integration:
     runs-on: ubuntu-20.04
@@ -206,6 +208,8 @@ jobs:
 
       - name: test:integration
         run: npm run test:integration
+        env:
+          FORCE_COLOR: true # ensure colors are saved in jest snapshots, to be consistent with local development
 
   test-acceptance-locally:
     runs-on: ubuntu-20.04
@@ -243,6 +247,8 @@ jobs:
 
       - name: test:acceptance:locally
         run: npm run test:acceptance:locally
+        env:
+          FORCE_COLOR: true # ensure colors are saved in jest snapshots, to be consistent with local development
 
   check-provisions-github:
     runs-on: ubuntu-20.04

@@ -30,6 +30,8 @@ jobs:
 
       - name: tests
         run: npm run test
+        env:
+          FORCE_COLOR: true # ensure colors are saved in jest snapshots, to be consistent with local development
 
       - name: publish
         run: npm publish
