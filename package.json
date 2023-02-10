@@ -31,7 +31,7 @@
   "author": "uladkasach",
   "license": "ISC",
   "dependencies": {
-    "declapract": "0.10.5",
+    "declapract": "0.10.6",
     "domain-objects": "0.7.5",
     "expect": "29.4.2",
     "lodash.uniq": "4.5.0",
@@ -45,6 +45,7 @@
     "@tsconfig/node-lts-strictest": "18.12.1",
     "@types/aws-lambda": "8.10.40",
     "@types/flat": "5.0.2",
+    "@types/jest": "29.4.0",
     "@types/uuid": "3.4.7",
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
