@@ -31,7 +31,7 @@
   "author": "uladkasach",
   "license": "ISC",
   "dependencies": {
-    "declapract": "0.10.6",
+    "declapract": "0.10.7",
     "domain-objects": "0.7.5",
     "expect": "29.4.2",
     "lodash.uniq": "4.5.0",
