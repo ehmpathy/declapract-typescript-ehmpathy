@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.19.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.18.0...v0.19.0) (2023-02-10)
+
+
+### Features
+
+* **deps:** upgrade to using type-fns instead of simple-type-guards ([f0a1a80](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/f0a1a8037c0367a1777e4ab7c7a789701751ba2b))
+
+
+### Bug Fixes
+
+* **deps:** update packagelock post manual package.json update ([aef9510](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/aef95101417601c1f811740efe630a7ae41357f5))
+
 ## [0.18.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.17.8...v0.18.0) (2023-02-10)
 
 
