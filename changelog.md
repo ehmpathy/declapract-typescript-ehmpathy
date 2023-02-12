@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.1...v0.20.2) (2023-02-10)
+
+
+### Bug Fixes
+
+* **cicd:** bump declapract version in order to compile ([4173b66](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/4173b6626ef6f41b6ba31d5bb2c1325df4e549bc))
+
 ## [0.20.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.0...v0.20.1) (2023-02-10)
 
 
