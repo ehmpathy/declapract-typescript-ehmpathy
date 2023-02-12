@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.6...v0.20.7) (2023-02-12)
+
+
+### Bug Fixes
+
+* **rds:** bump versions of sql-*-generators and sql-schema-control ([6c1d2e6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6c1d2e6024f39d989b122dc8685213870a41dcb1))
+
 ## [0.20.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.5...v0.20.6) (2023-02-12)
 
 
