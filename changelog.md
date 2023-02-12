@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.4...v0.20.5) (2023-02-12)
+
+
+### Bug Fixes
+
+* **linting:** ensure depchecks have all standard deps excluded and lint script syntax runs ([fa3752c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/fa3752c1ca65f9dba4a07e9eb7b89452bf9f3373))
+
 ## [0.20.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.3...v0.20.4) (2023-02-12)
 
 
