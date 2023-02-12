@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.2...v0.20.3) (2023-02-12)
+
+
+### Bug Fixes
+
+* **deps:** add back lodash types in dev deps ([c44a735](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c44a73590c8f4209b6e5939ccf1109a52259cd3d))
+
 ## [0.20.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.1...v0.20.2) (2023-02-10)
 
 
