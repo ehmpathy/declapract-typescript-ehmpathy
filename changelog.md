@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.3...v0.20.4) (2023-02-12)
+
+
+### Bug Fixes
+
+* **deps:** make declapract a peer dependency ([de507d3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/de507d30f732e0b0e7ab27f5a05b1535a078c7f2))
+
 ## [0.20.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.2...v0.20.3) (2023-02-12)
 
 
