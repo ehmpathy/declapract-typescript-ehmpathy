@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.5...v0.20.6) (2023-02-12)
+
+
+### Bug Fixes
+
+* **testing:** remove --coverage flag from unit and integration tests ([f849b2a](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/f849b2a141d80157dcf8e69c90817aacf59ee0e0))
+
 ## [0.20.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.4...v0.20.5) (2023-02-12)
 
 
