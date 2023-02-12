@@ -46,6 +46,7 @@
     "@types/aws-lambda": "8.10.40",
     "@types/flat": "5.0.2",
     "@types/jest": "29.4.0",
+    "@types/lodash.uniq": "4.5.7",
     "@types/uuid": "3.4.7",
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
