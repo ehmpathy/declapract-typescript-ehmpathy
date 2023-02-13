@@ -39,6 +39,20 @@ if [ -z $POSTGRES_ADMIN_PASSWORD ]; then
   exit 1;
 fi;
 
+# check that the cicd password was provisioned, if in prod, since this is used to create the cicd user
+if [ "$ENVIRONMENT" = "prod" ]; then
+  CICD_USER_PASSWORD=$(aws ssm get-parameter --name "@declapract{variable.organizationName}.@declapract{variable.projectName}.$ENVIRONMENT.database.admin.password" --with-decryption --output text --query Parameter.Value)
+  if [ -z "$CICD_USER_PASSWORD" ]; then
+    echo "\nerror: CICD_USER_PASSWORD must be provisioned with terraform before running this"
+    exit 1;
+  fi;
+  if [ "$CICD_USER_PASSWORD" = "__IGNORED__" ]; then
+    echo "\nerror: CICD_USER_PASSWORD must be set to a value other than the default of '__IGNORED__'"
+    exit 1;
+  fi;
+fi;
+
+
 # define the postgres connecition string
 CLUSTER_HOST=$([ "$ENVIRONMENT" = 'prod' ] && echo "@declapract{variable.databaseClusterHost.prod}" || echo "@declapract{variable.databaseClusterHost.dev}");
 CLUSTER_CONNECTION_STRING=postgresql://postgres:$POSTGRES_ADMIN_PASSWORD@$CLUSTER_HOST:5432
@@ -60,12 +74,18 @@ psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.extensions.sql
 echo "\n 🔨 creating the schema..."
 psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.schema.sql
 
-echo "\n 🔨 creating the cicd user..."
-psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.user.cicd.sql
-
 if [ "$ENVIRONMENT" = "prod" ]; then
   echo "\n 🔨 granting reads to the datalakedb user..." # only in prod env; we dont want dev's testing data in our datalake
   psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.user.datalakedb.sql
 fi;
 
+echo "\n 🔨 creating the cicd user..."
+CICD_USER_CREATE_SQL_PATH=$INIT_SQLS_DIR/.user.cicd.sql
+if [ "$ENVIRONMENT" = "prod" ]; then
+  CICD_USER_CREATE_SQL_PATH_TEMP=$CICD_USER_CREATE_SQL_PATH.tmp # in prod, we must create a temp file which will have the actual password we'll use when creating the cicd user
+  cat $CICD_USER_CREATE_SQL_PATH | sed "s/__CHANG3_ME__/${CICD_USER_PASSWORD}/" > $CICD_USER_CREATE_SQL_PATH_TEMP # create the temp file w/ the actual password
+  psql $SVC_DB_CONNECTION_STRING -f $CICD_USER_CREATE_SQL_PATH_TEMP # run the temp create sql w/ the actual password
+  rm $CICD_USER_CREATE_SQL_PATH_TEMP # remove the temp file, so the password doesn't get checked in
+else
+  psql $SVC_DB_CONNECTION_STRING -f $CICD_USER_CREATE_SQL_PATH # otherwise, we can run the file directly. no password replacement required
 echo "\n 🎉 done"
