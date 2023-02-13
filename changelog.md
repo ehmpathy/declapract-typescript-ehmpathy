@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.7...v0.20.8) (2023-02-13)
+
+
+### Bug Fixes
+
+* **rds:** ensure datalake user can be created; also, make sure cicd user pwd is automatically pulled in ([beef648](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/beef6488b53ff91e404bdec9dca40394776ab361))
+
 ## [0.20.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.6...v0.20.7) (2023-02-12)
 
 
