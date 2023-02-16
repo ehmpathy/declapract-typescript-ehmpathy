@@ -30,6 +30,7 @@ export const desiredRelativeKeyOrder = {
     'generate:schema',
     'generate:types-from-sql',
     'generate:dao',
+    'build:artifact',
     'build:clean',
     'build:compile',
     'build',

@@ -3,6 +3,8 @@
   "compilerOptions": {
     "importsNotUsedAsValues": "remove",
     "noPropertyAccessFromIndexSignature": false,
+    "noUnusedLocals": false, // this is something a linter should warn on, not something a compiler should fail on
+    "noUnusedParameters": false, // this is something a linter should warn on, not something a compiler should fail on
     "noImplicitOverride": false,
     "resolveJsonModule": true,
     "declaration": true,
