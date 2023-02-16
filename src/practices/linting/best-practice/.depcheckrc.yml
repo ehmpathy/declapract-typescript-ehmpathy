@@ -7,4 +7,6 @@ ignores:
   - '@tsconfig/node-lts-strictest'
   - core-js
   - ts-jest
+  - ts-node
+  - date-fns
   - husky
