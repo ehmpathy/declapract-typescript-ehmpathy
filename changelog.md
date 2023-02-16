@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.20.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.12...v0.20.13) (2023-02-16)
+
+
+### Bug Fixes
+
+* **deps:** bump min simple-artifact-builder version to rm sec vulns ([af0d809](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/af0d809358d65d3857bbb9c44701be69c17bccd7))
+* **deps:** upgrade type-fns version to resolve sec vulns ([6b27dae](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6b27daeac90c8541e579b5e88c2a8e10bf27fd51))
+* **sorts:** add two linting subscripts to package-json-order practice ([dfe4960](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/dfe49603a05bde04adb5c30cbea5e118c09421dc))
+
 ## [0.20.12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.11...v0.20.12) (2023-02-16)
 
 
