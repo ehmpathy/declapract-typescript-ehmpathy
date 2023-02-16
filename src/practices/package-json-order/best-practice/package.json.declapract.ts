@@ -25,6 +25,8 @@ export const desiredRelativeKeyOrder = {
     'fix:format:prettier',
     'fix:format:terraform',
     'fix:format',
+    'fix:deps',
+    'fix:eslint',
     'fix:lint',
     'fix',
     'generate:schema',
