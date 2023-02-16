@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.11...v0.20.12) (2023-02-16)
+
+
+### Bug Fixes
+
+* **linting:** ensure typescript compiler does not try to lint for us ([c3dc190](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c3dc1900ed0ac6265cc9a7d725fb092cdc8b4893))
+
 ## [0.20.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.10...v0.20.11) (2023-02-16)
 
 
