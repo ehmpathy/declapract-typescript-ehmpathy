@@ -88,4 +88,5 @@ if [ "$ENVIRONMENT" = "prod" ]; then
   rm $CICD_USER_CREATE_SQL_PATH_TEMP # remove the temp file, so the password doesn't get checked in
 else
   psql $SVC_DB_CONNECTION_STRING -f $CICD_USER_CREATE_SQL_PATH # otherwise, we can run the file directly. no password replacement required
+fi
 echo "\n 🎉 done"
