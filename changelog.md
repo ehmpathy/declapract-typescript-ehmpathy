@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.20.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.9...v0.20.10) (2023-02-16)
+
+
+### Bug Fixes
+
+* **deps:** bump declapract peer dep version minimum ([d8142a6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d8142a67e978383d2adf78b8fbda8c8ab5e2bff3))
+* **rds:** remove syntax error in deploy.database.sh script ([7290cd9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7290cd916123b4fbb6daebeec6328dedb7b62c94))
+
 ## [0.20.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.8...v0.20.9) (2023-02-16)
 
 
