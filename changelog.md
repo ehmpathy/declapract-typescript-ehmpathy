@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.10...v0.20.11) (2023-02-16)
+
+
+### Bug Fixes
+
+* **cicd:** ensure package-lock is in sync with package json ([ac1a6bf](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/ac1a6bfc25349cfda91e84fc078982c47563429a))
+
 ## [0.20.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.9...v0.20.10) (2023-02-16)
 
 
