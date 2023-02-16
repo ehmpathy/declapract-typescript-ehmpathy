@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.8...v0.20.9) (2023-02-16)
+
+
+### Bug Fixes
+
+* **deps:** remove unused dependencies from generated best practice checks ([37e1a09](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/37e1a09134ffac5d2038a47f1e7b19eca608a3b3))
+
 ## [0.20.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.7...v0.20.8) (2023-02-13)
 
 
