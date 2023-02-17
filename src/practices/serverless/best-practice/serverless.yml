@@ -48,7 +48,7 @@ provider:
         - s3:ListObject
         - s3:GetObject
         - s3:PutObject
-      Resource: arn:aws:s3:${aws:region}:${aws:accountId}:${self:service}-*
+      Resource: arn:aws:s3:::${self:service}-* # note, region and account can not be included in this resource arn, otherwise aws throws error
     # allow reading and writing to sqs queues namespaced to this service
     - Effect: Allow
       Action:
