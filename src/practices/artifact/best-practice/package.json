@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "simple-artifact-builder": "@declapract{check.minVersion('1.1.9')}"
+    "simple-artifact-builder": "@declapract{check.minVersion('1.1.11')}"
   },
   "scripts": {
     "build:artifact": "npx simple-artifact-builder zip"
