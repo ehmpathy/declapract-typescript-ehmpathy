@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.14](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.13...v0.20.14) (2023-02-17)
+
+
+### Bug Fixes
+
+* **deps:** bump min simple-artifact-builder version to avoid bug ([d443688](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d443688c73be932e1d8536b48f80ef4ebfe2975d))
+
 ## [0.20.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.12...v0.20.13) (2023-02-16)
 
 
