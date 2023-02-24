@@ -4,7 +4,7 @@ on:
   push:
     branches: # run for any branch
       - '**'
-    tags-ignore: # but not for releases, as deploy_on_tag will trigger for it
+    tags-ignore: # but not for releases, as publish-on-tag will trigger for it
       - '**'
 
 concurrency:

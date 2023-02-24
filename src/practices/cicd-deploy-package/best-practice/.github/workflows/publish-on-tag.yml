@@ -1,4 +1,4 @@
-name: deploy_on_tag
+name: publish-on-tag
 
 on:
   push:
