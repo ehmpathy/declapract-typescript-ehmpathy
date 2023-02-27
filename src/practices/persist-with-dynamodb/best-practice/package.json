@@ -2,7 +2,11 @@
   "dependencies": {
     "simple-dynamodb-client": "@declapract{check.minVersion('0.10.0')}"
   },
+  "devDependencies": {
+    "dynamodb-dao-generator": "@declapract{check.minVersion('1.0.0')}"
+  },
   "scripts": {
+    "generate:dao:dynamodb": "npx dynamodb-dao-generator generate && npm run fix:format",
     "provision:docker:up": "docker-compose -f ./provision/docker/integration_test_db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
     "provision:docker:down": "docker-compose -f ./provision/docker/integration_test_db/docker-compose.yml down",
     "provision:dynamodb:schema": "terraform -chdir=provision/aws/environments/test apply -auto-approve",
