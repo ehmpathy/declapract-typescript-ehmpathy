@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.21.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.14...v0.21.0) (2023-02-28)
+
+
+### Features
+
+* **dynamodb:** add dynamodb-dao-generator to dyanmodb peristance usecase ([79afdca](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/79afdcaca48aee2bf4de1fccf0b559f6baa39e78))
+
+
+### Bug Fixes
+
+* **cicd:** ensure the workspace name for packages is publish-on-tag ([983913d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/983913ded65b7e7bf7a564d2faae1be714557b8c))
+* **dynamodb:** ensure to provision integration-test-db correctly ([53f633d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/53f633dd12ee4526f1836d3d8e31fcbdc38cee0f))
+* **ts:** __test_utils__ directories should not be compiled in build ([787e39c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/787e39c3445356aecdd5b79534b81888b360fc2f))
+
 ## [0.20.14](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.13...v0.20.14) (2023-02-17)
 
 
