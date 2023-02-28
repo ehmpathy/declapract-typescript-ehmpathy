@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "simple-lambda-handlers": "@declapract{check.minVersion('0.6.0')}"
+    "simple-lambda-handlers": "@declapract{check.minVersion('0.8.4')}"
   },
   "devDependencies": {}
 }

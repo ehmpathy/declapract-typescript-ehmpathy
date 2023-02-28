@@ -5,7 +5,7 @@
     "ts-jest": "@declapract{check.minVersion('29.0.3')}",
     "ts-node": "@declapract{check.minVersion('10.9.1')}",
     "core-js": "@declapract{check.minVersion('3.26.1')}",
-    "simple-lambda-testing-methods": "@declapract{check.minVersion('0.2.1')}"
+    "simple-lambda-testing-methods": "@declapract{check.minVersion('0.4.1')}"
   },
   "scripts": {
     "test:unit": "jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests",
