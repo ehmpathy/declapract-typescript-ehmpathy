@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.21.0...v0.21.1) (2023-03-03)
+
+
+### Bug Fixes
+
+* **tf-gh:** add linear-history branch protection rule to main branch ([c210de8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c210de8c3085bad0a7830237ba6e11f65b7d0d42))
+
 ## [0.21.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.20.14...v0.21.0) (2023-02-28)
 
 
