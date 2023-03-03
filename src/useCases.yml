@@ -23,6 +23,7 @@ use-cases:
       - typescript-project
     practices:
       - cicd-deploy-package
+      - node-package
   lambda-service:
     extends:
       - typescript-project

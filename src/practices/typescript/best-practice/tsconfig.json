@@ -7,7 +7,6 @@
     "noUnusedParameters": false, // this is something a linter should warn on, not something a compiler should fail on
     "noImplicitOverride": false,
     "resolveJsonModule": true,
-    "declaration": true,
     "sourceMap": true,
     "outDir": "dist",
     "target": "es6",
