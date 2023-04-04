@@ -15,13 +15,13 @@
     "generate:dao": "npx sql-dao-generator generate && npm run fix:format",
     "generate:schema": "npx sql-schema-generator generate -c codegen.sql.schema.yml",
     "generate:types-from-sql": "npx sql-code-generator generate -c codegen.sql.types.yml",
-    "provision:docker:prepare": "cp provision/schema/sql/init/.extensions.sql provision/docker/integration-test-db/init/extensions.sql && cp provision/schema/sql/init/.schema.sql provision/docker/integration-test-db/init/schema.sql && cp provision/schema/sql/init/.user.cicd.sql provision/docker/integration-test-db/init/user.cicd.sql",
+    "provision:docker:clear": "docker rm -f $(docker ps -a -f 'publish=7821' -q) 2>/dev/null || true && echo 'ensured port is available 👍'",
     "provision:docker:up": "docker-compose -f ./provision/docker/integration-test-db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
     "provision:docker:await": "docker-compose -f ./provision/docker/integration-test-db/docker-compose.yml exec -T postgres /root/wait-for-postgres.sh",
     "provision:docker:down": "docker-compose -f ./provision/docker/integration-test-db/docker-compose.yml down",
     "provision:schema:plan": "npx sql-schema-control plan -c provision/schema/control.yml",
     "provision:schema:apply": "npx sql-schema-control apply -c provision/schema/control.yml",
     "provision:schema:sync": "npx sql-schema-control sync -c provision/schema/control.yml",
-    "provision:integration-test-db": "npm run provision:docker:prepare && npm run provision:docker:up && npm run provision:docker:await && npm run provision:schema:plan && npm run provision:schema:apply && npm run provision:schema:plan"
+    "provision:integration-test-db": "npm run provision:docker:clear && npm run provision:docker:prepare && npm run provision:docker:up && npm run provision:docker:await && npm run provision:schema:plan && npm run provision:schema:apply && npm run provision:schema:plan"
   }
 }
