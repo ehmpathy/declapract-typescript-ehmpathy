@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.21.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.21.1...v0.21.2) (2023-05-21)
+
+
+### Bug Fixes
+
+* **deps:** bump simple-lambda-testing-methods dep version ([1bf9eb7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/1bf9eb70db313c8a507807f2bc1282bd1ecd76a1))
+* **rds:** ensure docker integration test db is not blocked by other dbs ([73b612e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/73b612ef5ae9661f10e1f1c42ac3b8d290f265e6))
+* **utils:** enable withDatabaseConnection wrapper to optionally take in a dbConnection ([60de828](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/60de82895fbc827f9eeaa6a5db13ac4d5ab6e3ac))
+
 ## [0.21.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.21.0...v0.21.1) (2023-03-03)
 
 
