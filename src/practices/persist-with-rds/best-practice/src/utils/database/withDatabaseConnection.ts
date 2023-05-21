@@ -4,9 +4,11 @@ import {
 } from './getDatabaseConnection';
 
 /**
- * wraps the input function and gives it a managed database connection
+ * wraps the function to provide a managed database connection to it, if one was not already passed in
  *
- * managed meaning: it is opened when it is passed in and it is closed when the logic finishes running or throws an error.
+ * note
+ * - manages the database connection it gives to the function by opening it and closing it once the function finishes
+ * - if a database connection was passed in as part of the arguments, it will instead use that one and will not close it once it finishes (useful for transactions)
  *
  * example usage:
  * ```
@@ -14,7 +16,7 @@ import {
  *     // do logic with dbConnection
  *   });
  *   // ...
- *   await findById({ id: 821 }); // note how we dont have to pass in the dbConnection
+ *   await findById({ id: 821 }); // note how we don't have to pass in the dbConnection
  * ```
  */
 export const withDatabaseConnection = <
@@ -23,16 +25,18 @@ export const withDatabaseConnection = <
 >(
   logic: (args: P) => R | Promise<R>,
 ) => {
-  return async (args: Omit<P, 'dbConnection'>) => {
-    // open the db connection
-    const dbConnection = await getDatabaseConnection();
+  return async (
+    args: Omit<P, 'dbConnection'> & { dbConnection?: DatabaseConnection },
+  ) => {
+    // open the db connection, if one was not given
+    const dbConnection = args.dbConnection ?? (await getDatabaseConnection());
 
     // try and run the logic with db connection
     try {
       return await logic({ ...args, dbConnection } as P); // as P because: https://github.com/microsoft/TypeScript/issues/35858
     } finally {
       // make sure to close the db connection, both when `logic` throws an error or succeeds
-      await dbConnection.end();
+      if (!args.dbConnection) await dbConnection.end();
     }
   };
 };
