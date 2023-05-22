@@ -39,7 +39,7 @@
     "uuid": "3.4.0"
   },
   "peerDependencies": {
-    "declapract": "~0.10.9"
+    "declapract": "~0.10.10"
   },
   "devDependencies": {
     "@commitlint/cli": "13.1.0",
