@@ -13,8 +13,8 @@
   },
   "scripts": {
     "generate:dao": "npx sql-dao-generator generate && npm run fix:format",
-    "generate:schema": "npx sql-schema-generator generate -c codegen.sql.schema.yml",
-    "generate:types-from-sql": "npx sql-code-generator generate -c codegen.sql.types.yml",
+    "generate:schema": "npx sql-schema-generator generate -c codegen.sql.schema.yml && npm run fix:format",
+    "generate:types-from-sql": "npx sql-code-generator generate -c codegen.sql.types.yml && npm run fix:format",
     "provision:docker:clear": "docker rm -f $(docker ps -a -f 'publish=7821' -q) 2>/dev/null || true && echo 'ensured port is available 👍'",
     "provision:docker:up": "docker-compose -f ./provision/docker/integration-test-db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
     "provision:docker:await": "docker-compose -f ./provision/docker/integration-test-db/docker-compose.yml exec -T postgres /root/wait-for-postgres.sh",
