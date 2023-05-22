@@ -34,6 +34,7 @@
     "domain-objects": "0.7.5",
     "dynamodb-dao-generator": "1.0.0",
     "expect": "29.4.2",
+    "flat": "5.0.2",
     "lodash.uniq": "4.5.0",
     "type-fns": "0.7.0",
     "uuid": "3.4.0"
