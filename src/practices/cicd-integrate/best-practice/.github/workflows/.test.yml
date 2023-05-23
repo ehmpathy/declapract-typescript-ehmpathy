@@ -1,19 +1,27 @@
-name: test-on-commit
+name: .test
 
 on:
-  push:
-    branches: # run for any branch
-      - '**'
-    tags-ignore: # but not for releases, as publish-on-tag will trigger for it
-      - '**'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+  workflow_call:
+    inputs:
+      aws-region:
+        type: string
+        description: the aws region within which we should run the tests
+        required: true
+      aws-account-id:
+        type: string
+        description: the id of the account the credentials are expected to access
+        required: true
+    secrets:
+      aws-access-key-id:
+        required: true
+        description: required credentials to authenticate with aws the aws account against which to run the tests
+      aws-secret-access-key:
+        required: true
+        description: required credentials to authenticate with aws the aws account against which to run the tests
 
 jobs:
   install:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -22,14 +30,13 @@ jobs:
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
-      - name: setup node
+      - name: set node version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: 'npm'
 
       - name: install
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: cache node modules
         uses: actions/cache@v2
@@ -39,7 +46,7 @@ jobs:
 
   # run tests in parallel
   test-commits:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [install]
     steps:
       - name: checkout
@@ -51,11 +58,10 @@ jobs:
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
-      - name: setup node
+      - name: set node version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: 'npm'
 
       - name: grab node_modules from cache
         uses: actions/cache@v2
@@ -67,7 +73,7 @@ jobs:
         run: npm run test:commits
 
   test-types:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [install]
     steps:
       - name: checkout
@@ -77,11 +83,10 @@ jobs:
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
-      - name: setup node
+      - name: set node version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: 'npm'
 
       - name: grab node_modules from cache
         uses: actions/cache@v2
@@ -93,7 +98,7 @@ jobs:
         run: npm run test:types
 
   test-format:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [install]
     steps:
       - name: checkout
@@ -103,11 +108,10 @@ jobs:
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
-      - name: setup node
+      - name: set node version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: 'npm'
 
       - name: grab node_modules from cache
         uses: actions/cache@v2
@@ -119,7 +123,7 @@ jobs:
         run: npm run test:format
 
   test-lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [install]
     steps:
       - name: checkout
@@ -129,11 +133,10 @@ jobs:
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
-      - name: setup node
+      - name: set node version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: 'npm'
 
       - name: grab node_modules from cache
         uses: actions/cache@v2
@@ -145,7 +148,7 @@ jobs:
         run: npm run test:lint
 
   test-unit:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [install]
     steps:
       - name: checkout
@@ -155,11 +158,10 @@ jobs:
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
-      - name: setup node
+      - name: set node version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: 'npm'
 
       - name: grab node_modules from cache
         uses: actions/cache@v2
@@ -169,11 +171,9 @@ jobs:
 
       - name: test:unit
         run: npm run test:unit
-        env:
-          FORCE_COLOR: true # ensure colors are saved in jest snapshots, to be consistent with local development
 
   test-integration:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [install]
     steps:
       - name: checkout
@@ -183,11 +183,10 @@ jobs:
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
-      - name: setup node
+      - name: set node version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: 'npm'
 
       - name: grab node_modules from cache
         uses: actions/cache@v2
@@ -199,20 +198,24 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         id: credentials
         with:
-          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
           aws-region: us-east-1
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{steps.credentials.outputs.aws-account-id}} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
 
       - name: provision:integration-test-db
         run: npm run provision:integration-test-db
 
       - name: test:integration
         run: npm run test:integration
-        env:
-          FORCE_COLOR: true # ensure colors are saved in jest snapshots, to be consistent with local development
 
   test-acceptance-locally:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [install]
     steps:
       - name: checkout
@@ -222,11 +225,10 @@ jobs:
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
-      - name: setup node
+      - name: set node version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: 'npm'
 
       - name: grab node_modules from cache
         uses: actions/cache@v2
@@ -238,54 +240,18 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         id: credentials
         with:
-          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
           aws-region: us-east-1
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{steps.credentials.outputs.aws-account-id}} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
 
       - name: provision:integration-test-db
         run: npm run provision:integration-test-db
 
       - name: test:acceptance:locally
         run: npm run test:acceptance:locally
-        env:
-          FORCE_COLOR: true # ensure colors are saved in jest snapshots, to be consistent with local development
-
-  check-provisions-github:
-    runs-on: ubuntu-20.04
-    defaults:
-      run:
-        working-directory: ./provision/github/environment
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: setup terraform
-        uses: hashicorp/setup-terraform@v1
-
-      - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        id: credentials
-        with:
-          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: confirm aws credentials
-        run: |
-          [[ ${{steps.credentials.outputs.aws-account-id}} != '398838478359' ]] \
-            && echo 'wrong aws account' && exit 1 \
-            || echo 'correct aws account';
-
-      - name: terraform init
-        id: init
-        run: terraform init
-
-      - name: terraform validate
-        id: validate
-        run: terraform validate -no-color
-
-      - name: terraform plan
-        id: plan
-        run: terraform plan -no-color -detailed-exitcode
-        env:
-          GITHUB_TOKEN: ${{ secrets.PROVISION_GITHUB_GITHUB_TOKEN }}

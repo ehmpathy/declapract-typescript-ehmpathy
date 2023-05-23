@@ -1,0 +1,168 @@
+name: .sql-schema-control
+
+on:
+  workflow_call:
+    inputs:
+      stage:
+        type: string
+        description: 'the stage to execute against'
+        required: true
+      github-environment:
+        type: string
+        description: 'the github environment that the apply step will be executed in'
+      allow-apply:
+        type: boolean
+        description: 'whether the apply step is enabled. defaults to true on main'
+        default: ${{ github.ref == 'refs/heads/main' }}
+      aws-region:
+        type: string
+        description: the aws region within which we should access
+      aws-account-id:
+        type: string
+        description: the id of the account the credentials are expected to access
+    secrets:
+      aws-access-key-id:
+        required: true
+        description: required credentials to authenticate with aws provider for db credentials
+      aws-secret-access-key:
+        required: true
+        description: required credentials to authenticate with aws provider for db credentials
+      open-vpn-config:
+        required: true
+        description: complete openvpn config required to enter the vpn
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      has-changes-planned: ${{ steps.evaluate-plan.output.has-changes-planned }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
+
+      - name: install
+        run: npm ci --ignore-scripts
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        id: credentials
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{steps.credentials.outputs.aws-account-id}} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
+
+      - name: vpn:prepare
+        run: |
+          sudo apt update \
+          && sudo apt-get install openvpn openvpn-systemd-resolved \
+          && mkdir ~/.vpn \
+          && echo "${{ secrets.open-vpn-config }}" | base64 -d > ~/.vpn/vpn.connection.ovpn
+
+      - name: vpn:connect
+        run: |
+          # create the log file, so that we have permissions to read it
+          touch openvpn.log
+
+          # start openvpn in the background
+          sudo openvpn --config ~/.vpn/vpn.connection.ovpn --daemon --log openvpn.log
+
+          # wait until we've confirmed that it successfully connected; https://superuser.com/a/900134/425694
+          ( tail -f -n0 openvpn.log & ) | grep -q "Initialization Sequence Completed"
+
+      - name: plan
+        run: STAGE=${{ inputs.stage }} npm run provision:schema:plan | tee ./plan.log
+
+      - name: evaluate plan
+        id: evaluate-plan
+        run: |
+          # check that there was not a connection error
+          if grep "connect ETIMEDOUT" ./plan.log
+          then
+            echo "🛑 connection timed out, could not execute plan. is vpn working?"
+            exit 1
+          fi
+
+          # check whether it said there were required changes
+          if grep "Everything is up to date" ./plan.log
+          then
+            echo "has-changes-planned=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-changes-planned=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: vpn:disconnect
+        run: sudo killall openvpn
+
+  apply:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.github-environment }}
+    needs: plan
+    if: ${{ inputs.allow-apply == true && needs.plan.outputs.has-changes-planned == 'true' }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
+
+      - name: install
+        run: npm ci --ignore-scripts
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        id: credentials
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{steps.credentials.outputs.aws-account-id}} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
+
+      - name: vpn:prepare
+        run: |
+          sudo apt update \
+          && sudo apt-get install openvpn openvpn-systemd-resolved \
+          && mkdir ~/.vpn \
+          && echo "${{ secrets.open-vpn-config }}" | base64 -d > ~/.vpn/vpn.connection.ovpn
+
+      - name: vpn:connect
+        run: |
+          # create the log file, so that we have permissions to read it
+          touch openvpn.log
+
+          # start openvpn in the background
+          sudo openvpn --config ~/.vpn/vpn.connection.ovpn --daemon --log openvpn.log
+
+          # wait until we've confirmed that it successfully connected; https://superuser.com/a/900134/425694
+          ( tail -f -n0 openvpn.log & ) | grep -q "Initialization Sequence Completed"
+
+      - name: apply
+        run: STAGE=${{ inputs.stage }} npm run provision:schema:apply
+
+      - name: vpn:disconnect
+        run: sudo killall openvpn

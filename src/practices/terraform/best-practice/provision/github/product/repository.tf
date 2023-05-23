@@ -52,18 +52,18 @@ resource "github_branch_protection" "main_branch" {
   enforce_admins          = true  # yes, even admins need to follow this (note: they can still take the time to go and change the settings temporarily for the exceptions)
   allows_deletions        = false # dont allow the `main` branch to be deleted
   allows_force_pushes     = false # dont allow `main` branch to be force pushed to
-  required_linear_history = true # no ugly merge commits, woo! 🎉
+  required_linear_history = true  # no ugly merge commits, woo! 🎉
 
   required_status_checks {
     strict = true # branch must be up to date. otherwise, we dont know if it will really pass once it is merged
     contexts = [
-      "test-commits",
-      "test-types",
-      "test-format",
-      "test-lint",
-      "test-unit",
-      "test-integration",
-      "test-acceptance-locally"
+      "suite / test-commits",
+      "suite / test-types",
+      "suite / test-format",
+      "suite / test-lint",
+      "suite / test-unit",
+      "suite / test-integration",
+      "suite / test-acceptance-locally"
     ]
   }
 

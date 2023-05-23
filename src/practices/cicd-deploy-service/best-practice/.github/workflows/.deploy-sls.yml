@@ -1,0 +1,67 @@
+name: .deploy-sls
+
+on:
+  workflow_call:
+    inputs:
+      stage:
+        type: string
+        description: 'the stage to deploy to'
+        required: true
+      github-environment:
+        type: string
+        description: 'the github environment that the apply step will be executed in'
+        required: true
+      aws-region:
+        type: string
+        description: the aws region within which we should access
+        required: true
+      aws-account-id:
+        type: string
+        description: the id of the account the credentials are expected to access
+        required: true
+    secrets:
+      aws-access-key-id:
+        required: true
+        description: required credentials to authenticate with aws provider and state persistance
+      aws-secret-access-key:
+        required: true
+        description: required credentials to authenticate with aws provider and state persistance
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: read nvmrc
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: set node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        id: credentials
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{steps.credentials.outputs.aws-account-id}} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
+
+      - name: install
+        run: npm ci --ignore-scripts
+
+      - name: deploy
+        run: STAGE=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy
+
+      - name: test:acceptance
+        run: STAGE=${{ inputs.stage }} npm run test:acceptance

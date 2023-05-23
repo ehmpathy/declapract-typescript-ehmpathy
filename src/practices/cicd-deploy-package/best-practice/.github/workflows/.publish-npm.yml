@@ -1,18 +1,18 @@
-name: publish-on-tag
+name: .publish-npm
 
 on:
-  push:
-    tags:
-      - v*
+  workflow_call:
+    secrets:
+      npm-auth-token:
+        required: true
+        description: required credentials to authenticate with the aws account under which to publish
 
 jobs:
-  test_and_deploy:
+  publish:
     runs-on: ubuntu-20.04
     steps:
       - name: checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # we need all commits to test:commits
 
       - name: read nvmrc
         id: nvmrc
@@ -27,11 +27,6 @@ jobs:
 
       - name: install
         run: npm ci
-
-      - name: tests
-        run: npm run test
-        env:
-          FORCE_COLOR: true # ensure colors are saved in jest snapshots, to be consistent with local development
 
       - name: publish
         run: npm publish

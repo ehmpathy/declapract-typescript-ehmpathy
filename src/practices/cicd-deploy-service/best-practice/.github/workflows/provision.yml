@@ -1,0 +1,72 @@
+name: provision
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - 'main'
+      - 'master'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  aws-dev:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/dev
+      github-environment: dev
+      aws-region: us-east-1
+      aws-account-id: '@declapract{variable.awsAccountId.dev}'
+    secrets:
+      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+
+  aws-prod:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prod
+      github-environment: prod
+      aws-region: us-east-1
+      aws-account-id: '@declapract{variable.awsAccountId.prod}'
+      allow-apply: ${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+    secrets:
+      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+
+  github:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/github/environment
+      github-environment: prod
+      aws-region: us-east-1
+      aws-account-id: '@declapract{variable.awsAccountId.prod}'
+    secrets:
+      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+      github-token: ${{ secrets.PROVISION_GITHUB_GITHUB_TOKEN }}
+
+  sql-schema-dev:
+    uses: ./.github/workflows/.sql-schema-control.yml
+    with:
+      stage: dev
+      github-environment: dev
+      aws-region: us-east-1
+      aws-account-id: '@declapract{variable.awsAccountId.dev}'
+    secrets:
+      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      open-vpn-config: ${{ secrets.DEV_OPEN_VPN_CONFIG }}
+
+  sql-schema-prod:
+    uses: ./.github/workflows/.sql-schema-control.yml
+    with:
+      stage: prod
+      github-environment: prod
+      aws-region: us-east-1
+      aws-account-id: '@declapract{variable.awsAccountId.prod}'
+      allow-apply: ${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+    secrets:
+      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+      open-vpn-config: ${{ secrets.PROD_OPEN_VPN_CONFIG }}

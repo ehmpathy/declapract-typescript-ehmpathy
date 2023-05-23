@@ -1,0 +1,119 @@
+name: .terraform
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        type: string
+        description: 'the directory from within which to execute terraform commands'
+      github-environment:
+        type: string
+        description: 'the github environment that the apply step will be executed in'
+      allow-apply:
+        type: boolean
+        description: 'whether the apply step is enabled. defaults to true on main'
+        default: ${{ github.ref == 'refs/heads/main' }}
+      aws-region:
+        type: string
+        description: the aws region within which we should access
+      aws-account-id:
+        type: string
+        description: the id of the account the credentials are expected to access
+    secrets:
+      aws-access-key-id:
+        required: true
+        description: required credentials to authenticate with aws provider and state persistance
+      aws-secret-access-key:
+        required: true
+        description: required credentials to authenticate with aws provider and state persistance
+      github-token:
+        required: false
+        description: optional credentials to support authenticating with github provider
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    outputs:
+      has-changes-planned: ${{ steps.evaluate-plan.output.has-changes-planned }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        id: credentials
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{steps.credentials.outputs.aws-account-id}} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
+
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: terraform init
+        run: terraform init
+
+      - name: terraform validate
+        run: terraform validate
+
+      - name: terraform plan
+        id: plan
+        run: terraform plan | tee ./plan.log
+        env:
+          GITHUB_TOKEN: ${{ secrets.github-token }} # allow specifying a github token to pass to the terraform command
+
+      - name: evaluate plan
+        id: evaluate-plan
+        run: |
+          if grep "infrastructure matches the configuration" ./plan.log
+          then
+            echo "has-changes-planned=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-changes-planned=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  apply:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.github-environment }}
+    needs: plan
+    if: ${{ inputs.allow-apply == true && needs.plan.outputs.has-changes-planned == 'true' }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        id: credentials
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{ steps.credentials.outputs.aws-account-id }} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
+
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: terraform init
+        run: terraform init
+
+      - name: terraform apply
+        run: terraform apply
+        env:
+          GITHUB_TOKEN: ${{ secrets.github-token }} # allow specifying a github token to pass to the terraform command
