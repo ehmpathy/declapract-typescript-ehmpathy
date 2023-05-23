@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.22.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.21.2...v0.22.0) (2023-05-23)
+
+
+### Features
+
+* **cicd:** provision aws, github, sql-schema w/ gh-actions ([11cbc9d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/11cbc9d472f462695b5bbf944fea27edad218461))
+* **cicd:** speed up deployments by leveraging reusable parallelized test workflow ([11cbc9d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/11cbc9d472f462695b5bbf944fea27edad218461))
+
+
+### Bug Fixes
+
+* **cicd:** dont duplicate test runs on deployments ([11cbc9d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/11cbc9d472f462695b5bbf944fea27edad218461))
+* **deps:** add flat to the deps of the pkg ([fd988cc](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/fd988cc27680f5d00e6b1d4fd95d39515c0bc3d0))
+* **deps:** bump versions of deps to make more reliable ([334c4c1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/334c4c1ca358e5fe2c5d69ffd7458e737953a1dd))
+* **rds:** ensure schema and types-from-sql generate run fix:format ([b9fda34](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b9fda345303f2065b23a06bdcbac7311d57051d5))
+
 ## [0.21.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.21.1...v0.21.2) (2023-05-21)
 
 
