@@ -10,9 +10,3 @@ jest.setTimeout(90000); // since we're calling downstream apis
  */
 if (stage !== Stage.TEST && process.env.I_KNOW_WHAT_IM_DOING !== 'true')
   throw new Error(`integration-test is not targeting stage 'test'`);
-
-/**
- * specify that dynamodb should use the local dynamodb database, if running in test env
- */
-if (stage === Stage.TEST)
-  process.env.USE_CUSTOM_DYNAMODB_ENDPOINT = 'http://localhost:7337';
