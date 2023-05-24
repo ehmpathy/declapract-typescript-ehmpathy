@@ -5,6 +5,7 @@
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedLocals": false, // this is something a linter should warn on, not something a compiler should fail on
     "noUnusedParameters": false, // this is something a linter should warn on, not something a compiler should fail on
+    "exactOptionalPropertyTypes": false, // too clunky when `{ name?: string }` !== `{ name?: string | undefined }`. too rare of a cause of issue to be worth it
     "noImplicitOverride": false,
     "resolveJsonModule": true,
     "sourceMap": true,
