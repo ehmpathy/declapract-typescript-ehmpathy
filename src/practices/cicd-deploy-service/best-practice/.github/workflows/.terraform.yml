@@ -67,7 +67,7 @@ jobs:
 
       - name: terraform plan
         id: plan
-        run: terraform plan | tee ./plan.log
+        run: terraform plan -detailed-exitcode | tee ./plan.log
         env:
           GITHUB_TOKEN: ${{ secrets.github-token }} # allow specifying a github token to pass to the terraform command
 
