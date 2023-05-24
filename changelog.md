@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.22.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.0...v0.22.1) (2023-05-24)
+
+
+### Bug Fixes
+
+* **cicd:** ensure that plans output evaluated changes required correctly ([940b020](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/940b02081d9a1cd0130836c5de17489b7ba3d8f2))
+* **rds:** ensure integration test directory prepared correctly ([7635360](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/763536037378a8f886cff0b3381366137bb93bd7))
+* **rds:** remove old integration test directory bad practice ([7635360](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/763536037378a8f886cff0b3381366137bb93bd7))
+
 ## [0.22.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.21.2...v0.22.0) (2023-05-23)
 
 
