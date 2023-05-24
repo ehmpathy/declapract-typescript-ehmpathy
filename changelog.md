@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.22.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.1...v0.22.2) (2023-05-24)
+
+
+### Bug Fixes
+
+* **cicd:** ensure terraform plan uses detailed exitcode in ghactions ([7f86b8d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7f86b8d4e86cb8c44b9347bfa8fef5bafa479eb4))
+* **dynamodb:** remove dynamodb local endpoint from default test setup ([70d0127](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/70d0127811c408feda6175bf7df60f3158b156c4))
+* **ts:** remove exact optional property types requirement ([83d28fb](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/83d28fbeac8c337d369b1ebbabbcc31ad6c500c7))
+
 ## [0.22.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.0...v0.22.1) (2023-05-24)
 
 
