@@ -37,7 +37,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working-directory }}
     outputs:
-      has-changes-planned: ${{ steps.evaluate-plan.output.has-changes-planned }}
+      has-changes-planned: ${{ steps.evaluate-plan.outputs.has-changes-planned }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -81,6 +81,9 @@ jobs:
             echo "has-changes-planned=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: has changes planned?
+        run: echo "${{ steps.evaluate-plan.outputs.has-changes-planned }}"
+
   apply:
     runs-on: ubuntu-latest
     environment: ${{ inputs.github-environment }}
@@ -114,6 +117,6 @@ jobs:
         run: terraform init
 
       - name: terraform apply
-        run: terraform apply
+        run: terraform apply -auto-approve
         env:
           GITHUB_TOKEN: ${{ secrets.github-token }} # allow specifying a github token to pass to the terraform command

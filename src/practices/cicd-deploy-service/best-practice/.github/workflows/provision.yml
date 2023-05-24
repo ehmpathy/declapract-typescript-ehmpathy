@@ -11,6 +11,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  aws-test:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/test
+      github-environment: dev
+      aws-region: us-east-1
+      aws-account-id: '@declapract{variable.awsAccountId.dev}'
+    secrets:
+      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+
   aws-dev:
     uses: ./.github/workflows/.terraform.yml
     with:

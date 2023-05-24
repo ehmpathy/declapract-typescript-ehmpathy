@@ -35,7 +35,7 @@ jobs:
   plan:
     runs-on: ubuntu-latest
     outputs:
-      has-changes-planned: ${{ steps.evaluate-plan.output.has-changes-planned }}
+      has-changes-planned: ${{ steps.evaluate-plan.outputs.has-changes-planned }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -104,6 +104,9 @@ jobs:
           else
             echo "has-changes-planned=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: has changes planned?
+        run: echo "${{ steps.evaluate-plan.outputs.has-changes-planned }}"
 
       - name: vpn:disconnect
         run: sudo killall openvpn
