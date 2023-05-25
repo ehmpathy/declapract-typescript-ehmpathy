@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.6...v0.22.7) (2023-05-25)
+
+
+### Bug Fixes
+
+* **cicd:** remove deploy-dev-on-main workflow w/ bad practice def ([0ef7480](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/0ef74807967e6415dced592965b34c7f2383cc00))
+
 ## [0.22.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.5...v0.22.6) (2023-05-25)
 
 
