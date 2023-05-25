@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.3...v0.22.4) (2023-05-25)
+
+
+### Bug Fixes
+
+* **cicd:** drop old github actions workflows as bad practice ([b786956](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b78695633c38eb05e6d85cadaaca72484b3e11ef))
+
 ## [0.22.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.2...v0.22.3) (2023-05-25)
 
 
