@@ -1,6 +1,7 @@
 {
   "devDependencies": {
-    "serverless": "@declapract{check.minVersion('2.57.0')}"
+    "serverless": "@declapract{check.minVersion('2.57.0')}",
+    "if-env": "@declapract{check.minVersion('1.0.4')}"
   },
   "scripts": {
     "deploy:release": "npm run build && sls deploy --verbose --stage $STAGE",
