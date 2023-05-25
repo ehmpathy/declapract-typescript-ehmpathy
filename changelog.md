@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.2...v0.22.3) (2023-05-25)
+
+
+### Bug Fixes
+
+* **deploy:** ensure that package.json deploy script is not removed ([4ee1eb7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/4ee1eb7ded7db328ef9342a56d9c08794cc037fe))
+
 ## [0.22.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.1...v0.22.2) (2023-05-24)
 
 
