@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.4...v0.22.5) (2023-05-25)
+
+
+### Bug Fixes
+
+* **order:** pin test:lint:deps and :eslint order in package.json ([6175ea1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6175ea1aaf3c4fd2195699573bfdb8926310bddc))
+
 ## [0.22.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.3...v0.22.4) (2023-05-25)
 
 
