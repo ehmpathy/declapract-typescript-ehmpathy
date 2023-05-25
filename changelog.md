@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.22.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.5...v0.22.6) (2023-05-25)
+
+
+### Bug Fixes
+
+* **deploy:** ensure that sls deployments have if-env dependency ([7638b46](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7638b46296f35a5042e931b3a6b2e8328f8f54bb))
+* **deploy:** exit with appropriate error code on deploy commands ([8a6d382](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/8a6d382a0fca10f2e3a930191d57c9beb7abbb80))
+
 ## [0.22.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.4...v0.22.5) (2023-05-25)
 
 
