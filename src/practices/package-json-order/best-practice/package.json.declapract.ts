@@ -50,6 +50,8 @@ export const desiredRelativeKeyOrder = {
     'test:format:prettier',
     'test:format:terraform',
     'test:format',
+    'test:lint:deps',
+    'test:lint:eslint',
     'test:lint',
     'test:unit',
     'test:integration',
