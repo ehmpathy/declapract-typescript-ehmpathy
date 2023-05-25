@@ -28,7 +28,7 @@ on:
         description: required credentials to authenticate with aws provider and state persistance
 
 jobs:
-  plan:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: checkout

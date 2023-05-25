@@ -36,6 +36,7 @@ export const desiredRelativeKeyOrder = {
     'build:clean',
     'build:compile',
     'build',
+    'provision:docker:clear',
     'provision:docker:prepare',
     'provision:docker:up',
     'provision:docker:await',
