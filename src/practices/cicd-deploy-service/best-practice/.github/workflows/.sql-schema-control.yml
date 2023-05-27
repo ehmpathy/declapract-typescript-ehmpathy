@@ -40,14 +40,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: read nvmrc
-        id: nvmrc
-        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
-
       - name: set node version
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: install
         run: npm ci --ignore-scripts
@@ -120,14 +117,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: read nvmrc
-        id: nvmrc
-        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
-
       - name: set node version
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: install
         run: npm ci --ignore-scripts
