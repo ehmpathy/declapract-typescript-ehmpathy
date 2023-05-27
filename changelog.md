@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.22.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.7...v0.22.8) (2023-05-27)
+
+
+### Bug Fixes
+
+* **cicd:** upgrade node actions to use npm caching ([31c3c79](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/31c3c794ef0d211dafb08311f4cc3dd1f4b60f89))
+* **lint:** add if-env package to the ignored dependencies ([734efa2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/734efa2913b473ed3f400f54d7b1b3e28a1e9e98))
+
 ## [0.22.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.6...v0.22.7) (2023-05-25)
 
 
