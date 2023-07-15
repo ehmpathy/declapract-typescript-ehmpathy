@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "fix:format:terraform": "echo 'terraform not used'",
+    "test:format:terraform": "echo 'terraform not used'"
+  }
+}
