@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.23.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.8...v0.23.0) (2023-07-15)
+
+
+### Features
+
+* **tf:** expose aws account id and aws region as tf locals ([2d9efa3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2d9efa30873d29a7fbed4755b46c57821c01af84))
+
+
+### Bug Fixes
+
+* **cicd:** ensure npm-package doesnt reference aws creds ([2ccf0e3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2ccf0e38804e8dd2505a7066eb16424e03937fe5))
+
 ## [0.22.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.7...v0.22.8) (2023-05-27)
 
 
