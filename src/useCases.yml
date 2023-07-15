@@ -2,7 +2,7 @@
 use-cases:
   typescript-project:
     practices:
-      - cicd-integrate
+      - cicd-common
       - conventional-commits
       - directory-structure-src
       - domain
@@ -22,14 +22,14 @@ use-cases:
     extends:
       - typescript-project
     practices:
-      - cicd-deploy-package
+      - cicd-package
       - node-package
   lambda-service:
     extends:
       - typescript-project
     practices:
       - artifact
-      - cicd-deploy-service
+      - cicd-service
       - config
       - dates-and-times
       - environments-aws
