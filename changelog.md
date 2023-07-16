@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.2...v0.23.3) (2023-07-16)
+
+
+### Bug Fixes
+
+* **usecase:** ensure build:artifact only attempted if project uses artifact practice ([74882eb](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/74882eb098ae6497b41e34339f8d7e25f8238f5d))
+
 ## [0.23.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.1...v0.23.2) (2023-07-16)
 
 
