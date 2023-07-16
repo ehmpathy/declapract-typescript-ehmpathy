@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.1...v0.23.2) (2023-07-16)
+
+
+### Bug Fixes
+
+* **deps:** upgrade peer deps to declapract@0.11.2 ([772a048](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/772a0483a17df3ad78eb3b7872aff5851a84f810))
+
 ## [0.23.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.0...v0.23.1) (2023-07-16)
 
 
