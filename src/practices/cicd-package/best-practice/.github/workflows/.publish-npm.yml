@@ -17,6 +17,7 @@ jobs:
       - name: set node version
         uses: actions/setup-node@v3
         with:
+          registry-url: 'https://registry.npmjs.org/'
           node-version-file: '.nvmrc'
           cache: 'npm'
 
@@ -26,4 +27,4 @@ jobs:
       - name: publish
         run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.npm-auth-token }}
