@@ -4,6 +4,7 @@ import uniq from 'lodash.uniq';
 
 const expectedIgnores = [
   '*.log',
+  '*.tsbuildinfo',
   '.artifact', // deployment artifacts from `simple-artifact-builder` are produced here
   '.env',
   '.serverless',
