@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.5...v0.23.6) (2023-07-16)
+
+
+### Bug Fixes
+
+* **cicd:** reference the npm token from secrets correctly ([16e79c6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/16e79c664850d35f95bda11f5cefc0d46dcbf816))
+
 ## [0.23.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.4...v0.23.5) (2023-07-16)
 
 
