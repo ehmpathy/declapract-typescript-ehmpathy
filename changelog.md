@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.23.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.3...v0.23.4) (2023-07-16)
+
+
+### Bug Fixes
+
+* **cicd:** call integration-test-db --if-present ([5357d71](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5357d7185fdd2c47631830750b40c18e8dbb5d69))
+* **test:** remove dependency of env from testing ([6ceb9e1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6ceb9e18f1989d41c424cd7cff5a4facccdd20c0))
+
 ## [0.23.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.2...v0.23.3) (2023-07-16)
 
 
