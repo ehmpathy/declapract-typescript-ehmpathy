@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.23.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.7...v0.23.8) (2023-07-16)
+
+
+### Bug Fixes
+
+* **cicd:** mark publish-on-tag workflow as bad practice ([070daa3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/070daa3d2f44c0f90edda3bf87b692c549e1888d))
+* **envi:** check that stage isOfStage before return ([30dbc66](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/30dbc66cd195b64f3c20dff2fd9a6b883fb04aa4))
+* **ts:** gitignore tsbuildinfo ([a794ea9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/a794ea971516b0d1fabf7fc703b5d7bb01f03d05))
+
 ## [0.23.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.6...v0.23.7) (2023-07-16)
 
 
