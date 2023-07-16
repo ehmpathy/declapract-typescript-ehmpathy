@@ -190,7 +190,7 @@ jobs:
             || echo 'correct aws account';
 
       - name: provision:integration-test-db
-        run: npm run provision:integration-test-db
+        run: npm run provision:integration-test-db --if-present
 
       - name: test:integration
         run: npm run test:integration
@@ -231,7 +231,7 @@ jobs:
             || echo 'correct aws account';
 
       - name: provision:integration-test-db
-        run: npm run provision:integration-test-db
+        run: npm run provision:integration-test-db --if-present
 
       - name: test:acceptance:locally
         run: npm run test:acceptance:locally
