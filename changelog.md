@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.23.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.0...v0.23.1) (2023-07-16)
+
+
+### Bug Fixes
+
+* **usecase:** ensure dependent practices are context aware for npm-package ([e43d850](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e43d85003c8b762ca718410e71be5bf1d605515d))
+* **usecase:** ensure node package doesnt break on tf dependency of format ([e82ad1b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e82ad1b5081e5a42d086132e969cbec288ee3185))
+
 ## [0.23.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.22.8...v0.23.0) (2023-07-15)
 
 
