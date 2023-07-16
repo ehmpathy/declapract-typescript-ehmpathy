@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.4...v0.23.5) (2023-07-16)
+
+
+### Bug Fixes
+
+* **test:** finish removing env dependency from testing ([61a771d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/61a771d346140870ec2c81bfab0e7596c4406a17))
+
 ## [0.23.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.3...v0.23.4) (2023-07-16)
 
 
