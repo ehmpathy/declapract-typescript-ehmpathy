@@ -15,8 +15,7 @@ export const contents: FileContentsFunction = async (context) => {
   let contents = contentsSuperset;
   if (!context.projectPractices.includes('config'))
     contents = contents.replace(
-      `
-jest.mock('./src/utils/config/getConfig', () => ({
+      `jest.mock('./src/utils/config/getConfig', () => ({
   getConfig: jest.fn().mockImplementation(() => require('./config/test.json')), // mock that getConfig just returns plaintext test env config in unit tests
 }));
 `,

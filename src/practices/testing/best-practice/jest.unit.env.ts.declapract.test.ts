@@ -10,7 +10,7 @@ describe('jest.unit.env.ts', () => {
     );
     expect(declaredBestPracticeContents).toMatchSnapshot();
   });
-  it('should include not config mock when project does not use config practice', async () => {
+  it('should not include config mock when project does not use config practice', async () => {
     const declaredBestPracticeContents = await contents({
       projectPractices: [],
     } as any);
