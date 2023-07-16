@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`package.json it should include terraform formatting when terraform practice is in use 1`] = `
+"{
+  "scripts": {
+    "fix:format": "npm run fix:format:prettier && npm run fix:format:terraform",
+    "test:format": "npm run test:format:prettier && npm run test:format:terraform"
+  }
+}"
+`;
+
+exports[`package.json should include not config mock when project does not use config practice 1`] = `
+"{
+  "scripts": {
+    "fix:format": "npm run fix:format:prettier",
+    "test:format": "npm run test:format:prettier"
+  }
+}"
+`;

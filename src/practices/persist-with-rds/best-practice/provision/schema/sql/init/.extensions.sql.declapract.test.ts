@@ -1,10 +1,5 @@
-import fs from 'fs';
-import util from 'util';
-
+import { readFile } from '../../../../../../../utils/readFile';
 import { fix } from './.extensions.sql.declapract';
-
-export const readFile = async (filePath: string) =>
-  util.promisify(fs.readFile)(filePath, 'utf-8');
 
 describe('.extensions.sql fix', () => {
   it('should be able to fix a file with custom extensions correctly', async () => {

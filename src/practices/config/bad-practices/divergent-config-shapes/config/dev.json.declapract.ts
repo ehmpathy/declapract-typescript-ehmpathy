@@ -1,10 +1,7 @@
 import { FileCheckFunction } from 'declapract';
 import flatten from 'flat';
-import fs from 'fs';
-import util from 'util';
 
-export const readFile = async (filePath: string) =>
-  util.promisify(fs.readFile)(filePath, 'utf-8');
+import { readFile } from '../../../../../utils/readFile';
 
 export const check: FileCheckFunction = async (contents, context) => {
   if (!contents) throw new Error('its fine'); // ... yeah, i know, todo: eliminate this weird "throw an error if its fine" pattern
