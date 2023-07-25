@@ -54,8 +54,16 @@ jobs:
             && echo 'wrong aws account' && exit 1 \
             || echo 'correct aws account';
 
-      - name: install
-        run: npm ci --ignore-scripts
+      - name: node-modules cache get
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: node-modules cache miss install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts --prefer-offline --no-audit
 
       - name: deploy
         run: STAGE=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy
