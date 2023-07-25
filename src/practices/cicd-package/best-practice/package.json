@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "prepublish": "npm run build"
+  }
+}

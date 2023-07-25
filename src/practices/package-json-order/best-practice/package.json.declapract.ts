@@ -59,6 +59,7 @@ export const desiredRelativeKeyOrder = {
     'test',
     'test:acceptance',
     'prepush',
+    'prepublish',
     'preversion',
     'postversion',
     'deploy:release',
