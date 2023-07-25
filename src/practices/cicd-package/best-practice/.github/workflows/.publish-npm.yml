@@ -31,6 +31,9 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts --prefer-offline --no-audit
 
+      - name: build
+        run: npm run build
+
       - name: publish
         run: npm publish
         env:
