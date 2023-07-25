@@ -17,6 +17,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
+          registry-url: 'https://registry.npmjs.org/'
           node-version-file: '.nvmrc'
           cache: 'npm'
 
