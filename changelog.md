@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.8...v0.24.0) (2023-07-25)
+
+
+### Features
+
+* **cicd:** increase speed of cicd with better npm caching ([acae886](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/acae886c7a8db649e6bf91b5663e127fa6eda273))
+
 ## [0.23.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.7...v0.23.8) (2023-07-16)
 
 
