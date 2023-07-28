@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.25.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.24.0...v0.25.0) (2023-07-28)
+
+
+### Features
+
+* **sls:** add pruning to sls deployments ([21e4f78](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/21e4f78622741f562ffffb2e43353a9cc9c464a9))
+
+
+### Bug Fixes
+
+* **cicd:** ensure package publish also uses npm cache ([e689dff](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e689dff56ca8200ad5a30e105326b314b1fba5cd))
+* **cicd:** ensure sql-schema-control actions also use cached npm ([c486d00](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c486d00761467be7af2a8f4b7bfdbb9e1deaa298))
+* **errors:** drop extra closing bracket from error message ([521e012](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/521e012f9bb89f8a85729a4ce4ed459b09b21da6))
+* **pkg:** add back the registry-url parameter to package-publish ([a74b7b7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/a74b7b77c0939ea8c1d71abe64d7c48a2053e008))
+* **pkg:** ensure that cicd-package guarantees prepublish is defined ([0c28e38](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/0c28e38aa0a83cc6702789addb24849c35e6fa26))
+* **pkg:** ensure to build before publishing package ([e33a906](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e33a906165819eaa75c9fe9b1149126050f7f610))
+
 ## [0.24.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.23.8...v0.24.0) (2023-07-25)
 
 
