@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.2...v0.25.3) (2023-07-28)
+
+
+### Bug Fixes
+
+* **tests:** remove unnessesary snapshot ([e32802d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e32802d054287a5879e2cffeb5228edacc5bb7ff))
+
 ## [0.25.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.1...v0.25.2) (2023-07-28)
 
 
