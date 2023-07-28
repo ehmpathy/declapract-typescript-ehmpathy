@@ -3,6 +3,9 @@ service: @declapract{variable.projectName}
 package:
   artifact: .artifact/contents.zip
 
+plugins:
+  - serverless-prune-plugin
+
 provider:
   name: aws
   runtime: nodejs16.x

@@ -1,9 +1,11 @@
 {
   "devDependencies": {
     "serverless": "@declapract{check.minVersion('2.57.0')}",
+    "serverless-prune-plugin": "@declapract{check.minVersion('2.0.2')}",
     "if-env": "@declapract{check.minVersion('1.0.4')}"
   },
   "scripts": {
+    "deploy:prune": "npx sls prune -n 7 --stage $STAGE",
     "deploy:release": "npm run build && sls deploy --verbose --stage $STAGE",
     "deploy:send-notification": "curl -X POST -H 'Content-type: application/json' --data \"{\\\"text\\\":\\\"$([ -z $DEPLOYER_NAME ] && git config user.name || echo $DEPLOYER_NAME) has deployed $npm_package_name@v$npm_package_version:\nhttps://github.com/@declapract{variable.organizationName}/$npm_package_name/tree/v$npm_package_version\\\"}\" @declapract{variable.slackWebhookUrl}",
     "deploy:dev": "STAGE=dev npm run deploy:release",

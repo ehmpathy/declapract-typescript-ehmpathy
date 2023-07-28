@@ -19,6 +19,11 @@ on:
         type: string
         description: the id of the account the credentials are expected to access
         required: true
+      needs-vpn-for-acceptance:
+        type: boolean
+        description: whether or not this environment needs vpn access for acceptance tests
+        required: false
+        default: false
     secrets:
       aws-access-key-id:
         required: true
@@ -26,6 +31,9 @@ on:
       aws-secret-access-key:
         required: true
         description: required credentials to authenticate with aws provider and state persistance
+      open-vpn-config:
+        required: false
+        description: complete openvpn config required to enter the vpn, if needed
 
 jobs:
   deploy:
@@ -34,7 +42,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: set node version
+      - name: set node-version
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
@@ -68,5 +76,108 @@ jobs:
       - name: deploy
         run: STAGE=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy
 
+  assure:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: set node-version
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        id: credentials
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{steps.credentials.outputs.aws-account-id}} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
+
+      - name: node-modules cache get
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: node-modules cache miss install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts --prefer-offline --no-audit
+
+      - name: vpn:prepare
+        if: inputs.needs-vpn-for-acceptance
+        run: |
+          sudo apt update \
+          && sudo apt-get install openvpn openvpn-systemd-resolved \
+          && mkdir ~/.vpn \
+          && echo "${{ secrets.open-vpn-config }}" | base64 -d > ~/.vpn/vpn.connection.ovpn
+
+      - name: vpn:connect
+        if: inputs.needs-vpn-for-acceptance
+        run: |
+          # create the log file, so that we have permissions to read it
+          touch openvpn.log
+
+          # start openvpn in the background
+          sudo openvpn --config ~/.vpn/vpn.connection.ovpn --daemon --log openvpn.log
+
+          # wait until we've confirmed that it successfully connected; https://superuser.com/a/900134/425694
+          ( tail -f -n0 openvpn.log & ) | grep -q "Initialization Sequence Completed"
+
       - name: test:acceptance
         run: STAGE=${{ inputs.stage }} npm run test:acceptance
+
+      - name: vpn:disconnect
+        if: inputs.needs-vpn-for-acceptance
+        run: sudo killall openvpn
+
+  prune:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: set node-version
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        id: credentials
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{steps.credentials.outputs.aws-account-id}} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
+
+      - name: node-modules cache get
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: node-modules cache miss install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts --prefer-offline --no-audit
+
+      - name: prune
+        run: STAGE=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy:prune

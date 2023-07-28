@@ -62,6 +62,7 @@ export const desiredRelativeKeyOrder = {
     'prepublish',
     'preversion',
     'postversion',
+    'deploy:prune',
     'deploy:release',
     'deploy:send-notification',
     'deploy:dev',
