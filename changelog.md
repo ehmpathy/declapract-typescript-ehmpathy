@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.0...v0.25.1) (2023-07-28)
+
+
+### Bug Fixes
+
+* **deps:** drop dependency on dynamodb-dao-generator ([5586fbb](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5586fbbacc82396af6880e30d5b2757e9661e0d1))
+
 ## [0.25.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.24.0...v0.25.0) (2023-07-28)
 
 
