@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.25.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.1...v0.25.2) (2023-07-28)
+
+
+### Bug Fixes
+
+* **cicd-package:** ensure publish-on-tag workflows are removed via bad practice ([aa708d0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/aa708d05fb35ee077a91c2858780399d8a0b9190))
+* **testing:** ensure tests against nontest stage are guarded against better ([4053c58](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/4053c58ae0c555a0ab91ba7f8acbf0824a86dafa))
+
 ## [0.25.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.0...v0.25.1) (2023-07-28)
 
 
