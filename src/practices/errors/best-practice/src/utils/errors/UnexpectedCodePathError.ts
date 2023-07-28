@@ -8,7 +8,7 @@ export class UnexpectedCodePathError extends Error {
   constructor(message: string, metadata?: Record<string, any>) {
     const fullMessage = `UnexpectedCodePath: ${message}${
       metadata ? `\n\n${JSON.stringify(metadata)}` : ''
-    }}`;
+    }`;
     super(fullMessage);
   }
 }
