@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.25.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.2...v0.25.3) (2023-07-31)
+
+
+### Bug Fixes
+
+* **cicd:** add concurrency group cancelation to prevent redundant actions ([0272093](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/02720934ee96fc831fd1ca5c8a0215620adc3300))
+* **husky:** ensure husky hooks are installed correctly ([69298ca](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/69298caadfaade22fcce19895a42ab6bd1077175))
+* **lint:** add explicit module boundary checks ([8042852](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/8042852bd68ae490655465b6dc2834e61e9028b2))
+* **src:** add scripts directory as bad practice; prefer commands dir ([d61c4b0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d61c4b051210d71b2d89c8465c2ab15810a93508))
+* **tests:** remove unnessesary snapshot ([e32802d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e32802d054287a5879e2cffeb5228edacc5bb7ff))
+
 ## [0.25.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.1...v0.25.2) (2023-07-28)
 
 
