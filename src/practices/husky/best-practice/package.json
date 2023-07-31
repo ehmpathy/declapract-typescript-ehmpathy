@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "postinstall": "npx husky install"
+  },
+  "devDependencies": {
+    "husky": "@declapract{check.minVersion('8.0.3')}"
+  }
+}

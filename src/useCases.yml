@@ -4,6 +4,7 @@ use-cases:
     practices:
       - cicd-common
       - conventional-commits
+      - husky
       - directory-structure-src
       - domain
       - environments
