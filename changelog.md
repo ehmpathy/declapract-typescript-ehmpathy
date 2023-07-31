@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.25.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.3...v0.25.4) (2023-07-31)
+
+
+### Bug Fixes
+
+* **audit:** bump conv-commits cli to resolve audit ([2106afb](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2106afbf46dc6d28346e4edc969391c68b378e88))
+* **husky:** set husky commands as executable ([262393a](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/262393ad2f97ce5c8ae49a200f09248637c09a6f))
+* **practs:** bump best practs for faster cicd ([b97b47e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b97b47ee825dc0ae1f10b2041275d33fe5c45379))
+
 ## [0.25.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.2...v0.25.3) (2023-07-31)
 
 
