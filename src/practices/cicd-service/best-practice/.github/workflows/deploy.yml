@@ -8,6 +8,10 @@ on:
       - 'main'
       - 'master'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }} # per [workflow] x [branch, tag]
+  cancel-in-progress: true #  cancel workflows for non-latest commits
+
 jobs:
   test:
     uses: ./.github/workflows/.test.yml
