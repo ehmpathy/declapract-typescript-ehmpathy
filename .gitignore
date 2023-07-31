@@ -1,3 +1,10 @@
-node_modules
+*.log
+*.tsbuildinfo
+.artifact
+.env
+.serverless
+.terraform
+.terraform.lock
 coverage
 dist
+node_modules
