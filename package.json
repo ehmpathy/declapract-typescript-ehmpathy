@@ -35,7 +35,7 @@
     "prepush": "npm run test && npm run build",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify",
-    "postinstall": "npx husky install"
+    "postinstall": "[ -d .git ] && npx husky install"
   },
   "dependencies": {
     "expect": "29.4.2",
