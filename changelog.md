@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.5...v0.25.6) (2023-08-01)
+
+
+### Bug Fixes
+
+* **husky:** ensure to exit 0 after skipping husky install ([12d3324](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/12d3324df84f86e9795ebb8c668a3919d2d6e478))
+
 ## [0.25.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.4...v0.25.5) (2023-08-01)
 
 
