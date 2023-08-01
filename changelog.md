@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.4...v0.25.5) (2023-08-01)
+
+
+### Bug Fixes
+
+* **husky:** ensure husky postinstall only executed for direct installs ([af5b2df](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/af5b2dfc881fac365f443d6b6e4e82e1ac0b6de6))
+
 ## [0.25.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.3...v0.25.4) (2023-07-31)
 
 
