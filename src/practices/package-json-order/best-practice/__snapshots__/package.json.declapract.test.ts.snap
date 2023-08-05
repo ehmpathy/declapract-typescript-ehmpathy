@@ -6,8 +6,8 @@ exports[`package.json order should not reorder unspecified keys 1`] = `
   "name": "svc-jobs",
   "author": "you",
   "private": true,
-  "license": "MIT",
   "version": "0.8.2",
+  "license": "MIT",
   "main": "src/index.js",
   "scripts": {
     "new-thing": "do new thing",

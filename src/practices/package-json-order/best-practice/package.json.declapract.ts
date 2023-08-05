@@ -13,6 +13,7 @@ export const desiredRelativeKeyOrder = {
     'description',
     'private',
     'version',
+    'license',
     'main',
     'module',
     'scripts',
