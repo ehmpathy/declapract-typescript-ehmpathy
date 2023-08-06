@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.6...v0.25.7) (2023-08-06)
+
+
+### Bug Fixes
+
+* **pkg:** add mit license to node-package best practices ([f4f7629](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/f4f762970dc1743b30d16137d57238b1db5b2ed7))
+
 ## [0.25.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.5...v0.25.6) (2023-08-01)
 
 
