@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.7...v0.25.8) (2023-08-07)
+
+
+### Bug Fixes
+
+* **pkg:** publish node packages with provenance and public access ([cc3d5e1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/cc3d5e139b171f37b3a9c0d1554cd5ef2dca6f8c))
+
 ## [0.25.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.6...v0.25.7) (2023-08-06)
 
 
