@@ -68,6 +68,7 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
+        - dynamodb:DeleteItem
       Resource:
         - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-* # allow read and write to all tables w/ this services name prefix
         - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/infrastructure-${self:provider.stage}-table-domain-driven-cache # allow read and write to global domain driven cache
