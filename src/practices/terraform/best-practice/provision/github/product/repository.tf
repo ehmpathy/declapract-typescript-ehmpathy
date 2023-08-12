@@ -64,7 +64,8 @@ resource "github_branch_protection" "main_branch" {
       "suite / test-lint",
       "suite / test-unit",
       "suite / test-integration",
-      "suite / test-acceptance-locally"
+      "suite / test-acceptance-locally",
+      "review / pullreq-title",
     ]
   }
 
