@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.27.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.26.0...v0.27.0) (2023-09-01)
+
+
+### Features
+
+* **tests:** ensure that tests run in utc for reliability ([720d7d0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/720d7d014cb31034dcc3350af5ebb4a1dea361ce))
+
+
+### Bug Fixes
+
+* **cicd:** review pullrequest title against commitlint ([4ef35d7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/4ef35d73f9124f9d9a0f700bf50b529fbd2a0dd7))
+* **sls:** ensure services have privs to delete from their dynamodb tables ([856863f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/856863f506b6fb1dd2864a8f9b85e54dc8bcf9e0))
+
 ## [0.26.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.25.8...v0.26.0) (2023-08-07)
 
 
