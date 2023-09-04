@@ -65,7 +65,7 @@ resource "github_branch_protection" "main_branch" {
       "suite / test-unit",
       "suite / test-integration",
       "suite / test-acceptance-locally",
-      "review / pullreq-title",
+      "pullreq-title" # "review / pullreq-title",
     ]
   }
 
