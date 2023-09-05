@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.27.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.27.0...v0.27.1) (2023-09-05)
+
+
+### Bug Fixes
+
+* **cicd:** ensure pullreq-title requirement identified correctly ([6568d18](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6568d18efe689fc7f878d1f4f9582836411ceeef))
+* **depcheck:** remove serverless-prune-plugin from ignore as it doesnt flag when used ([6a0d585](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6a0d585767beb96971960fd266707c29d8f8f3a1))
+
 ## [0.27.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.26.0...v0.27.0) (2023-09-01)
 
 
