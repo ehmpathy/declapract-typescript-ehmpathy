@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.27.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.27.1...v0.27.2) (2023-09-15)
+
+
+### Bug Fixes
+
+* **jest:** ensure jest env identifies reports correct test type in env assert ([d03ffed](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d03ffedd3d3266ea0bfdae8c9cf2078455192b20))
+
 ## [0.27.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.27.0...v0.27.1) (2023-09-05)
 
 
