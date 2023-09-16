@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.28.0...v0.28.1) (2023-09-16)
+
+
+### Bug Fixes
+
+* **deps:** bump test-fns version ([6bdf19a](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6bdf19a0e0215d10164f586cff156e346ace0d47))
+
 ## [0.28.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.27.2...v0.28.0) (2023-09-16)
 
 
