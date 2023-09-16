@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.27.2...v0.28.0) (2023-09-16)
+
+
+### Features
+
+* **standards:** use error-fns, test-fns, and bump simple-lambda-handlers ([65bd0c1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/65bd0c17856b3522d938af26c8f4e8a985a8d276))
+
 ## [0.27.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.27.1...v0.27.2) (2023-09-15)
 
 
