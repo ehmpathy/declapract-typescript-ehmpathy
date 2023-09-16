@@ -8,6 +8,5 @@ ignores:
   - core-js
   - ts-jest
   - ts-node
-  - date-fns
   - husky
   - if-env
