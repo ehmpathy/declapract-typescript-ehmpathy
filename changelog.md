@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.28.1...v0.28.2) (2023-09-17)
+
+
+### Bug Fixes
+
+* **cicd:** unit and integration test only --changedSince=main by default ([af77cf0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/af77cf0f82d6992f0267cf3643ca30594aef1a73))
+
 ## [0.28.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.28.0...v0.28.1) (2023-09-16)
 
 
