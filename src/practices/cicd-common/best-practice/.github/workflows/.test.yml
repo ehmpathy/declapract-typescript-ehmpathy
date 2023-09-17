@@ -161,7 +161,7 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: test:unit
-        run: npm run test:unit
+        run: THOROUGH=true npm run test:unit
 
   test-integration:
     runs-on: ubuntu-latest
@@ -202,7 +202,7 @@ jobs:
         run: npm run provision:integration-test-db --if-present
 
       - name: test:integration
-        run: npm run test:integration
+        run: THOROUGH=true npm run test:integration
 
   test-acceptance-locally:
     runs-on: ubuntu-latest
