@@ -10,6 +10,8 @@ const expectedIgnores = [
   '.serverless',
   '.terraform',
   '.terraform.lock',
+  '.yalc',
+  'yalc.lock',
   'coverage',
   'dist',
   'node_modules',
