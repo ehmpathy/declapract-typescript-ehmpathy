@@ -7,6 +7,14 @@ on:
     branches:
       - 'main'
       - 'master'
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 'the stage to which to deploy (dev or prod)'
+        required: true
+      thoroughly:
+        description: 'whether to execute the test suite before deloyment (true or false)'
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }} # per [workflow] x [branch, tag]
@@ -15,6 +23,7 @@ concurrency:
 jobs:
   test:
     uses: ./.github/workflows/.test.yml
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.thoroughly == 'true'
     with:
       aws-region: us-east-1
       aws-account-id: '@declapract{variable.awsAccountId.dev}'
@@ -24,8 +33,10 @@ jobs:
 
   dev:
     uses: ./.github/workflows/.deploy-sls.yml
-    if: github.ref == 'refs/heads/main'
     needs: [test]
+    if: |
+      (github.ref == 'refs/heads/main' || github.event.inputs.stage == 'dev') &&
+      always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
     with:
       stage: dev
       github-environment: dev
@@ -37,7 +48,9 @@ jobs:
 
   prod:
     uses: ./.github/workflows/.deploy-sls.yml
-    if: startsWith(github.ref, 'refs/tags/')
+    if: |
+      startsWith(github.ref, 'refs/tags/') || (github.event.inputs.stage == 'prod' && github.ref == 'refs/heads/main') &&
+      always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
     needs: [test]
     with:
       stage: prod
