@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.29.1...v0.29.2) (2023-10-29)
+
+
+### Bug Fixes
+
+* **sls:** ensure plugins dont have unnessesary newline ([2ba1d74](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2ba1d74c2315001db12c31d07c2fe23a20da25dc))
+
 ## [0.29.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.29.0...v0.29.1) (2023-10-29)
 
 
