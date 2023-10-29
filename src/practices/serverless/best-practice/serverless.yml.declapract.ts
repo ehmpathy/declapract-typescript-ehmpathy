@@ -28,7 +28,7 @@ export const fix: FileFixFunction = (contents) => {
       )
       .replace(
         '  artifact: .artifact/contents.zip\n\nprovider:', // if no plugins at all
-        '  artifact: .artifact/contents.zip\n\nplugins:\n\n  - serverless-prune-plugin\n\nprovider:', // add the sls prune plugin
+        '  artifact: .artifact/contents.zip\n\nplugins:\n  - serverless-prune-plugin\n\nprovider:', // add the sls prune plugin
       ),
   };
 };
