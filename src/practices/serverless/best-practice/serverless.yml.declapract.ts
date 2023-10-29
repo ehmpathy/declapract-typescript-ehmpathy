@@ -9,7 +9,6 @@ export const fix: FileFixFunction = (contents) => {
     // TODO: when we have special support for yml, do this better (i.e., instead of string replace, just add to the yml object after parsing it)
     contents: contents
       .replace(/runtime\: nodejs\d\d.x/, 'runtime: nodejs16.x')
-      .replace('\nplugins:\n', '')
       .replace(/  - serverless-offline .*\n/, '') // a plugin we no longer use (never used it, no need to have it)
       .replace(/  - serverless-pseudo-parameters .*\n/, '') // a plugin we no longer use (serverless supports variables natively now)
       .replace(/\#\{AWS\:\:Region\}/g, '${aws:region}') // use the serverless native variables, instead of the pseudo-parameters format
@@ -26,6 +25,10 @@ export const fix: FileFixFunction = (contents) => {
       .replace(
         /service: ([a-zA-Z0-9\-]+)\n\n?provider:/,
         'service: $1\n\npackage:\n  artifact: .artifact/contents.zip\n\nprovider:',
+      )
+      .replace(
+        '  artifact: .artifact/contents.zip\n\nprovider:', // if no plugins at all
+        '  artifact: .artifact/contents.zip\n\nplugins:\n\n  - serverless-prune-plugin\n\nprovider:', // add the sls prune plugin
       ),
   };
 };
