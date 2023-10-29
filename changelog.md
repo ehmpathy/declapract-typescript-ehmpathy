@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.29.0...v0.29.1) (2023-10-29)
+
+
+### Bug Fixes
+
+* **sls:** automatically fix missing prune plugin ([6504e92](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6504e92d894eb2aac98a18fbd17a5fc3abf6de17))
+
 ## [0.29.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.28.2...v0.29.0) (2023-09-23)
 
 
