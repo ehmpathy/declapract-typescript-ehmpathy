@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.29.2...v0.30.0) (2023-10-30)
+
+
+### Features
+
+* **cicd:** add workflow-dispatch to deploy ([#98](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/98)) ([52b462f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/52b462feb92c86eb195111a6af8653a639f99656))
+
 ## [0.29.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.29.1...v0.29.2) (2023-10-29)
 
 
