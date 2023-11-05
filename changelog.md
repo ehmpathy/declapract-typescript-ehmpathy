@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.30.0...v0.30.1) (2023-11-05)
+
+
+### Bug Fixes
+
+* **tf:** ignore homepage_url changes on github_repository ([5cdf9d6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5cdf9d6b0edf377671333d66812b13197d2eff3e))
+
 ## [0.30.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.29.2...v0.30.0) (2023-10-30)
 
 
