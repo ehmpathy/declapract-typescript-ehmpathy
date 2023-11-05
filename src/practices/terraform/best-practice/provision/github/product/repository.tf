@@ -27,7 +27,8 @@ resource "github_repository" "this" {
 
   lifecycle {
     ignore_changes = [
-      description # dont worry about the description in these checks; the purpose of these checks is to check developer experience, not repo contents
+      description, # dont worry about the description in these checks; the purpose of these checks is to check developer experience, not repo contents
+      homepage_url # dont worry about the homepay-url in these checks either; same as above
     ]
   }
 }
