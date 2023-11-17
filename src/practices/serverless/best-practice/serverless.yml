@@ -9,8 +9,8 @@ plugins:
 provider:
   name: aws
   runtime: nodejs16.x
-  memorySize: 1024 # optional, in MB, default is 1024
-  timeout: 10
+  memorySize: 1024 # optional, in mb, default is 1024
+  timeout: 60 # default timeout to 1min, for resilience against increased cold start times; individual functions can override this
   stage: ${opt:stage}
   stackTags:
     app: @declapract{variable.organizationName}

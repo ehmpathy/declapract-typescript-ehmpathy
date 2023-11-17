@@ -29,6 +29,10 @@ export const fix: FileFixFunction = (contents) => {
       .replace(
         '  artifact: .artifact/contents.zip\n\nprovider:', // if no plugins at all
         '  artifact: .artifact/contents.zip\n\nplugins:\n  - serverless-prune-plugin\n\nprovider:', // add the sls prune plugin
+      )
+      .replace(
+        '  timeout: 10',
+        '  timeout: 60 # default timeout to 1min, for resilience against increased cold start times; individual functions can override this', // bump the timeout
       ),
   };
 };
