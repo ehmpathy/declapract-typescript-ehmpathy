@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.30.1...v0.30.2) (2023-11-17)
+
+
+### Bug Fixes
+
+* **sls:** bump default timeout to 60 sec for reslilience ([4aa9e0b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/4aa9e0b3e7eb641e84d1604dfb4ed6e5bad4d7f9))
+
 ## [0.30.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.30.0...v0.30.1) (2023-11-05)
 
 
