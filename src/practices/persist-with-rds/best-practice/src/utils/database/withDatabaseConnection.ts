@@ -1,3 +1,5 @@
+import { DropFirst } from 'type-fns';
+
 import {
   DatabaseConnection,
   getDatabaseConnection,
@@ -22,21 +24,23 @@ import {
 export const withDatabaseConnection = <
   P extends { dbConnection: DatabaseConnection },
   R,
+  PR, // the rest of the parameters
 >(
-  logic: (args: P) => R | Promise<R>,
+  logic: (args0: P, ...argsRest: PR[]) => R | Promise<R>,
 ) => {
   return async (
-    args: Omit<P, 'dbConnection'> & { dbConnection?: DatabaseConnection },
+    args0: Omit<P, 'dbConnection'> & { dbConnection?: DatabaseConnection },
+    ...argsRest: DropFirst<Parameters<typeof logic>>
   ) => {
     // open the db connection, if one was not given
-    const dbConnection = args.dbConnection ?? (await getDatabaseConnection());
+    const dbConnection = args0.dbConnection ?? (await getDatabaseConnection());
 
     // try and run the logic with db connection
     try {
-      return await logic({ ...args, dbConnection } as P); // as P because: https://github.com/microsoft/TypeScript/issues/35858
+      return await logic({ ...args0, dbConnection } as P, ...argsRest); // as P because: https://github.com/microsoft/TypeScript/issues/35858
     } finally {
       // make sure to close the db connection, both when `logic` throws an error or succeeds
-      if (!args.dbConnection) await dbConnection.end();
+      if (!args0.dbConnection) await dbConnection.end();
     }
   };
 };
