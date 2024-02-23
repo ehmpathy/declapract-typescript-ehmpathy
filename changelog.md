@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.30.2...v0.30.3) (2024-02-23)
+
+
+### Bug Fixes
+
+* **db:** support wrapping fns with multiple parameters withDatabaseConnection ([d7462d5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d7462d537c1ffc5b482ece222f62119f6af58c24))
+
 ## [0.30.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.30.1...v0.30.2) (2023-11-17)
 
 
