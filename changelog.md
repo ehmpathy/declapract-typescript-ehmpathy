@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.30.3...v0.31.0) (2024-04-20)
+
+
+### Features
+
+* **context:** add withDatabaseContext method to begin support of contexts ([2f92c64](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2f92c640a0f3f1d911057a2b622238331ba43b1d))
+
 ## [0.30.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.30.2...v0.30.3) (2024-04-20)
 
 
