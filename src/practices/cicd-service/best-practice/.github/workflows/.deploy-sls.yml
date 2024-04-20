@@ -46,7 +46,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -87,7 +86,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -152,7 +150,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1

@@ -19,7 +19,6 @@ jobs:
         with:
           registry-url: 'https://registry.npmjs.org/'
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: node-modules cache get
         uses: actions/cache/restore@v3

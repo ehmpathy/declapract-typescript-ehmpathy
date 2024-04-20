@@ -30,7 +30,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: node-modules cache get
         uses: actions/cache/restore@v3
@@ -64,7 +63,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v3
@@ -86,7 +84,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v3
@@ -108,7 +105,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v3
@@ -130,7 +126,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v3
@@ -152,7 +147,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v3
@@ -174,7 +168,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v3
@@ -215,7 +208,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v3
