@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.0...v0.31.1) (2024-04-23)
+
+
+### Bug Fixes
+
+* **cicd:** upgrade deploy dispatch gh action usability ([6ca3ed8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6ca3ed819b988136b3885451a922ecd151e62935))
+
 ## [0.31.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.30.3...v0.31.0) (2024-04-20)
 
 
