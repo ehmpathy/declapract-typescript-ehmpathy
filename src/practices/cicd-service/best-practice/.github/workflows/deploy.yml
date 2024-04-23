@@ -10,11 +10,21 @@ on:
   workflow_dispatch:
     inputs:
       stage:
-        description: 'the stage to which to deploy (dev or prod)'
+        description: 'which stage do you want to deploy to?'
+        type: choice
+        options:
+          - dev
+          - prod
         required: true
+        default: 'dev'
       thoroughly:
-        description: 'whether to execute the test suite before deloyment (true or false)'
+        description: 'should we run tests before this deployment?'
+        type: choice
         required: true
+        default: 'true'
+        options:
+          - 'true'
+          - 'false'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }} # per [workflow] x [branch, tag]
@@ -35,7 +45,7 @@ jobs:
     uses: ./.github/workflows/.deploy-sls.yml
     needs: [test]
     if: |
-      (github.ref == 'refs/heads/main' || github.event.inputs.stage == 'dev') &&
+      ((github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch') || github.event.inputs.stage == 'dev') &&
       always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
     with:
       stage: dev
