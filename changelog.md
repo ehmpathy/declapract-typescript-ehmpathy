@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.1...v0.31.2) (2024-04-24)
+
+
+### Bug Fixes
+
+* **nvmrc:** bump to lts v20 ([d9c4416](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d9c441667c07133a628f6bbe364a2178ed51edef))
+
 ## [0.31.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.0...v0.31.1) (2024-04-23)
 
 
