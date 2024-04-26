@@ -11,7 +11,6 @@ const expectedIgnores = [
   '.terraform',
   '.terraform.lock',
   '.yalc',
-  'yalc.lock',
   'coverage',
   'dist',
   'node_modules',
