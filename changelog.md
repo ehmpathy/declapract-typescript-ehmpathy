@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.31.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.2...v0.31.3) (2024-04-26)
+
+
+### Bug Fixes
+
+* **deps:** bump min dynamodb-dao-gen dependency ([051f5ce](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/051f5ce24e8af0a36ead84ab4ffef86bff05c7c2))
+* **gitignore:** check in yalc.lock to show when replacements are expected ([b4c2ae7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b4c2ae76ab30c975b0372a2610d6c93f1bb0303c))
+
 ## [0.31.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.1...v0.31.2) (2024-04-24)
 
 
