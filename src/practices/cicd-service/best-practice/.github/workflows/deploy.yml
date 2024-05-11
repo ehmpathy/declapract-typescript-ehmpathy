@@ -59,7 +59,7 @@ jobs:
   prod:
     uses: ./.github/workflows/.deploy-sls.yml
     if: |
-      startsWith(github.ref, 'refs/tags/') || (github.event.inputs.stage == 'prod' && github.ref == 'refs/heads/main') &&
+      (startsWith(github.ref, 'refs/tags/') && github.event_name != 'workflow_dispatch') || (github.event.inputs.stage == 'prod') &&
       always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
     needs: [test]
     with:
