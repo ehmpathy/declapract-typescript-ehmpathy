@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.4...v0.31.5) (2024-05-11)
+
+
+### Bug Fixes
+
+* **ts:** upgrade typescript version to v5.4.5 ([bc91bc7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/bc91bc7d6bd07bf9cc297924cb23f22d50313270))
+
 ## [0.31.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.3...v0.31.4) (2024-05-11)
 
 
