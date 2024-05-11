@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.31.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.3...v0.31.4) (2024-05-11)
+
+
+### Bug Fixes
+
+* **cicd:** enable prod deploy from branches on dispatch ([3d481b0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/3d481b0adf12773edb75f72ffa261e0efd99234f))
+* **sls:** ensure lambdas have access to list bucket objects in namespaced s3 bucket ([4e7f61d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/4e7f61d3f79f73c1abeeb0106a247d5bf641b513))
+
 ## [0.31.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.2...v0.31.3) (2024-04-26)
 
 
