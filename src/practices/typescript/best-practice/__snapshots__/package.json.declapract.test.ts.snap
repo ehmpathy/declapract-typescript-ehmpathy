@@ -3,7 +3,7 @@
 exports[`package.json should include build:artifact when project uses artifact practice 1`] = `
 "{
   "devDependencies": {
-    "typescript": "@declapract{check.minVersion('4.9.4')}",
+    "typescript": "@declapract{check.minVersion('5.4.5')}",
     "@tsconfig/node-lts-strictest": "@declapract{check.minVersion('18.12.1')}"
   },
   "scripts": {
@@ -19,7 +19,7 @@ exports[`package.json should include build:artifact when project uses artifact p
 exports[`package.json should include not include build:artifact when project does not use artifact practice 1`] = `
 "{
   "devDependencies": {
-    "typescript": "@declapract{check.minVersion('4.9.4')}",
+    "typescript": "@declapract{check.minVersion('5.4.5')}",
     "@tsconfig/node-lts-strictest": "@declapract{check.minVersion('18.12.1')}"
   },
   "scripts": {
