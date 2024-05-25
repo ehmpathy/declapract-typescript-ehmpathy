@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.5...v0.31.6) (2024-05-25)
+
+
+### Bug Fixes
+
+* **ts-jest:** prevent issue with typescript v5.3 via tsnode update ([e524add](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e524add6e8c92a6123c25a6726f851e8e021f31c))
+
 ## [0.31.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.4...v0.31.5) (2024-05-11)
 
 
