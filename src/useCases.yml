@@ -25,6 +25,8 @@ use-cases:
     practices:
       - cicd-package
       - node-package
+      - terraform
+      - terraform-github
   lambda-service:
     extends:
       - typescript-project
@@ -41,6 +43,8 @@ use-cases:
       - runtime-type-checking
       - serverless
       - terraform
+      - terraform-aws
+      - terraform-github
   lambda-service-with-rds:
     extends:
       - typescript-project # https://github.com/ehmpathy/declapract/issues/17
