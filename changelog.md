@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.6...v0.31.7) (2024-05-26)
+
+
+### Bug Fixes
+
+* **sls:** add athena query s3 bucket permissions ([382ca70](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/382ca70ffe526d58979fc484fe359f21b8fbe425))
+
 ## [0.31.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.5...v0.31.6) (2024-05-25)
 
 
