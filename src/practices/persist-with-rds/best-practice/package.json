@@ -5,14 +5,14 @@
   },
   "devDependencies": {
     "sql-code-generator": "@declapract{check.minVersion('0.9.3')}",
-    "sql-dao-generator": "@declapract{check.minVersion('0.3.1')}",
+    "sql-dao-generator": "@declapract{check.minVersion('0.4.0')}",
     "sql-schema-control": "@declapract{check.minVersion('1.5.0')}",
-    "sql-schema-generator": "@declapract{check.minVersion('0.21.4')}",
+    "sql-schema-generator": "@declapract{check.minVersion('0.23.0')}",
     "@types/yesql": "@declapract{check.minVersion('3.2.2')}",
     "@types/pg": "@declapract{check.minVersion('8.6.1')}"
   },
   "scripts": {
-    "generate:dao": "npx sql-dao-generator generate && npm run fix:format",
+    "generate:dao:postgres": "npx sql-dao-generator generate && npm run fix:format",
     "generate:schema": "npx sql-schema-generator generate -c codegen.sql.schema.yml && npm run fix:format",
     "generate:types-from-sql": "npx sql-code-generator generate -c codegen.sql.types.yml && npm run fix:format",
     "provision:docker:clear": "docker rm -f $(docker ps -a -f 'publish=7821' -q) 2>/dev/null || true && echo 'ensured port is available 👍'",

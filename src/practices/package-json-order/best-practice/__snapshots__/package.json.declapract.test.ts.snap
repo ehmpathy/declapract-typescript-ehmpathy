@@ -35,7 +35,7 @@ exports[`package.json order should sort a full example of a package json correct
     "fix:lint": "eslint -c ./.eslintrc.js src/**/*.ts --fix",
     "generate:schema": "npx sql-schema-generator generate -c codegen.sql.schema.yml",
     "generate:types-from-sql": "npx sql-code-generator generate -c codegen.sql.types.yml",
-    "generate:dao": "npx sql-dao-generator generate && npm run format",
+    "generate:dao:postgres": "npx sql-dao-generator generate && npm run format",
     "build:clean": "rm dist/ -rf",
     "build:compile": "tsc -p ./tsconfig.build.json",
     "build": "npm run build:clean && npm run build:compile",

@@ -42,7 +42,7 @@ const exampleFoundContents = `
   },
   "scripts": {
     "fix:format": "prettier --write '**/*.ts' --config ./prettier.config.js",
-    "generate:dao": "npx sql-dao-generator generate && npm run format",
+    "generate:dao:postgres": "npx sql-dao-generator generate && npm run format",
     "generate:schema": "npx sql-schema-generator generate -c codegen.sql.schema.yml",
     "generate:types-from-sql": "npx sql-code-generator generate -c codegen.sql.types.yml",
     "build:clean": "rm dist/ -rf",
