@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.7...v0.31.8) (2024-05-26)
+
+
+### Bug Fixes
+
+* **pkg:** specify generate.dao.postgres to differ from .dynamodb ([e73b1ce](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e73b1cefb352b8027292507826774c9a19f7cd3b))
+
 ## [0.31.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.6...v0.31.7) (2024-05-26)
 
 
