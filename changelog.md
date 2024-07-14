@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.8...v0.31.9) (2024-07-14)
+
+
+### Bug Fixes
+
+* **dbconn:** use context based dbconn transactions, per procedure-fns standard ([6d2d436](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6d2d43639931a0b9d6720aaaabcce130c38c0276))
+
 ## [0.31.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.7...v0.31.8) (2024-05-26)
 
 
