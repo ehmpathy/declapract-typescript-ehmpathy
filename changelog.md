@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.9...v0.31.10) (2024-07-14)
+
+
+### Bug Fixes
+
+* **git:** auto ignore package-lock.json from local git diff reports ([4c842ae](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/4c842aef3603780a6100259a950807733873793e))
+
 ## [0.31.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.8...v0.31.9) (2024-07-14)
 
 
