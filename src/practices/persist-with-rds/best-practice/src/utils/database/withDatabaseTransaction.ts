@@ -1,19 +1,20 @@
 import { DatabaseConnection } from './getDatabaseConnection';
 
 export const withDatabaseTransaction = <
-  P extends { dbConnection: DatabaseConnection },
+  P,
+  C extends { dbConnection: DatabaseConnection },
   R,
 >(
-  logic: (args: P) => R | Promise<R>,
+  logic: (input: P, context: C) => R | Promise<R>,
 ): typeof logic => {
-  return (async (args: P) => {
-    await args.dbConnection.query({ sql: 'START TRANSACTION' }); // begin transaction
+  return (async (input: P, context: C) => {
+    await context.dbConnection.query({ sql: 'START TRANSACTION' }); // begin transaction
     try {
-      const result = await logic({ ...args }); // run the request
-      await args.dbConnection.query({ sql: 'COMMIT' }); // commit if successful
+      const result = await logic(input, context); // run the request
+      await context.dbConnection.query({ sql: 'COMMIT' }); // commit if successful
       return result;
     } catch (error) {
-      await args.dbConnection.query({ sql: 'ROLLBACK' }); // rollback if not successful
+      await context.dbConnection.query({ sql: 'ROLLBACK' }); // rollback if not successful
       throw error;
     }
   }) as typeof logic;
