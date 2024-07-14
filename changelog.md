@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.31.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.10...v0.31.11) (2024-07-14)
+
+
+### Bug Fixes
+
+* **cicd:** stablize the node-modules dependencies hash ([b3f044b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b3f044b551ee314fb5901ba0c3efeb0f4cedff70))
+* **eslint:** ensure dobjs declaration not flagged ([76ca30f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/76ca30f19883e072503234d6ad5a602a2e45ac87))
+
 ## [0.31.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.9...v0.31.10) (2024-07-14)
 
 
