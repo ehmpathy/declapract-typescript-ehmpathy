@@ -36,8 +36,12 @@ on:
         description: complete openvpn config required to enter the vpn, if needed
 
 jobs:
+  install:
+    uses: ./.github/workflows/.install.yml
+
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    needs: [install]
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -66,7 +70,7 @@ jobs:
         id: cache
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ needs.install.outputs.node-modules-cache-key }}
 
       - name: node-modules cache miss install
         if: steps.cache.outputs.cache-hit != 'true'
@@ -76,8 +80,8 @@ jobs:
         run: STAGE=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy
 
   assure:
-    runs-on: ubuntu-latest
-    needs: [deploy]
+    runs-on: ubuntu-20.04
+    needs: [install, deploy]
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -106,7 +110,7 @@ jobs:
         id: cache
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ needs.install.outputs.node-modules-cache-key }}
 
       - name: node-modules cache miss install
         if: steps.cache.outputs.cache-hit != 'true'
@@ -140,8 +144,8 @@ jobs:
         run: sudo killall openvpn
 
   prune:
-    runs-on: ubuntu-latest
-    needs: [deploy]
+    runs-on: ubuntu-20.04
+    needs: [install, deploy]
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -170,7 +174,7 @@ jobs:
         id: cache
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ needs.install.outputs.node-modules-cache-key }}
 
       - name: node-modules cache miss install
         if: steps.cache.outputs.cache-hit != 'true'
