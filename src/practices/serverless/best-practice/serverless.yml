@@ -17,6 +17,7 @@ provider:
     environment: ${self:provider.stage}
     product: ${self:service}
   environment:
+    TZ: UTC # guarantee that utc timezone will be used explicitly, to facilitate a pit of success
     NODE_ENV: production # deploy with production optimizations of all resources, to make `dev` and `prod` stage deployments equivalent functionally (i.e., the same code paths in dev and prod)
     STAGE: ${self:provider.stage} # deploy specifying which stage we're targeting, to enable targeting the correct config + resources (e.g., hit dev db -vs- prod db)
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
