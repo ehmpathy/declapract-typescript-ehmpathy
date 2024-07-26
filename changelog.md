@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.1...v0.33.2) (2024-07-26)
+
+
+### Bug Fixes
+
+* **cicd:** ensure to wait for install to succeed ([e9b9368](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e9b93683482c178db8f0bd93c0401fd49d50d9e0))
+
 ## [0.33.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.0...v0.33.1) (2024-07-26)
 
 
