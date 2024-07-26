@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.32.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.11...v0.32.0) (2024-07-26)
+
+
+### Features
+
+* **tz:** ensure a pit of success with failfast on unexpected timezones ([506806c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/506806c89362ecd6b8395cbfa46935bdc54dfa46))
+
+
+### Bug Fixes
+
+* **deps:** bump deps versions ([c8f1165](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c8f116578949036e244e5a5eb9a20732b4bb3fca))
+
 ## [0.31.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.10...v0.31.11) (2024-07-14)
 
 
