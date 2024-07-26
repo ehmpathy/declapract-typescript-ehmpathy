@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.33.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.32.0...v0.33.0) (2024-07-26)
+
+
+### Features
+
+* **cmds:** add as-commands based best practice for commands ([fe4abe2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/fe4abe2a97c784e8eb6f0446f57ee950c476f023))
+
+
+### Bug Fixes
+
+* **cmds:** add to lambda-service usecase the commands practice ([26a4d6e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/26a4d6eed2afc0d8874ee7e8cc2566801c67299d))
+
 ## [0.32.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.31.11...v0.32.0) (2024-07-26)
 
 
