@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.0...v0.33.1) (2024-07-26)
+
+
+### Bug Fixes
+
+* **practs:** bump practs to latest best ([#121](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/121)) ([d8b72e7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d8b72e7fe71f3f071300b2711470e43011750bbf))
+
 ## [0.33.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.32.0...v0.33.0) (2024-07-26)
 
 
