@@ -12,3 +12,5 @@ ignores:
   - date-fns
   - husky
   - if-env
+  - '@ehmpathy/as-command'
+  - visualogic

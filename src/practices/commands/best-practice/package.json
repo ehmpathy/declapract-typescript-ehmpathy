@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "visualogic": "@declapract{check.minVersion('1.0.1')}",
+    "@ehmpathy/as-command": "@declapract{check.minVersion('1.2.1')}"
+  }
+}
