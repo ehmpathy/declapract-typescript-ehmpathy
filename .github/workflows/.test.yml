@@ -32,7 +32,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: node-modules cache get
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache
         with:
           path: ./node_modules
@@ -44,7 +44,7 @@ jobs:
 
       - name: node-modules cache set
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: ./node_modules
           key: ${{ steps.cache.outputs.cache-primary-key }}
@@ -65,7 +65,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: get node-modules from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -86,7 +86,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: get node-modules from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -107,7 +107,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: get node-modules from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -128,7 +128,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: get node-modules from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -149,7 +149,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: get node-modules from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -170,7 +170,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: get node-modules from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -210,7 +210,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: get node-modules from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
