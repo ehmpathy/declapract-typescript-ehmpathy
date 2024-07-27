@@ -10,6 +10,7 @@ ignores:
   - ts-jest
   - ts-node
   - date-fns
+  - test-fns
   - husky
   - if-env
   - '@ehmpathy/as-command'
