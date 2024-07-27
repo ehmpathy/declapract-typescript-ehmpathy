@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.33.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.3...v0.33.4) (2024-07-27)
+
+
+### Bug Fixes
+
+* **audit:** bump deps per audit ([159ca43](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/159ca439ce55a501c4426c7a862ced90d448199b))
+* **deps:** bump best practice dep versions ([2ca1ec4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2ca1ec461db45676f544debb676e830bcd2c4867))
+
 ## [0.33.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.2...v0.33.3) (2024-07-27)
 
 
