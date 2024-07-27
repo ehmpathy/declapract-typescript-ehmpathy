@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.5...v0.33.6) (2024-07-27)
+
+
+### Bug Fixes
+
+* **git:** restore safe gitignore update ([8a6bdcf](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/8a6bdcfc7387dc9d67d89ece360048143be7e2c0))
+
 ## [0.33.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.4...v0.33.5) (2024-07-27)
 
 
