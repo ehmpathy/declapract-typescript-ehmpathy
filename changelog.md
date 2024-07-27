@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.9...v0.33.10) (2024-07-27)
+
+
+### Bug Fixes
+
+* **tests:** ensure to FORCE_COLOR on test outputs for consistent snapshots ([7e43647](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7e43647e29be26b10e5800a7e4fa08eab52eaf76))
+
 ## [0.33.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.8...v0.33.9) (2024-07-27)
 
 
