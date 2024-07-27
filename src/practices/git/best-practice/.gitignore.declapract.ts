@@ -1,4 +1,5 @@
 import { FileCheckFunction, FileFixFunction } from 'declapract';
+import { dedupe } from 'domain-objects';
 import expect from 'expect';
 
 const expectedIgnores = [
@@ -17,9 +18,7 @@ const expectedIgnores = [
 
 const defineExpectedContents = (contents: string | null): string => {
   const ignoresAlreadyDefined = contents ? contents.split('\n') : [];
-  const finalLines = [
-    ...new Set([...ignoresAlreadyDefined, ...expectedIgnores]),
-  ] // union of the ones we want plus the ones they defined
+  const finalLines = dedupe([...ignoresAlreadyDefined, ...expectedIgnores])
     .sort() // sorted
     .filter((line) => !!line); // without empty lines
   return [...finalLines.sort(), ''].join('\n');
