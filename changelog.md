@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.4...v0.33.5) (2024-07-27)
+
+
+### Bug Fixes
+
+* **nvm:** use.nvm on git.pull ([1136af3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/1136af3e7a18d3e0c601ef3e0e263349a763a476))
+
 ## [0.33.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.3...v0.33.4) (2024-07-27)
 
 
