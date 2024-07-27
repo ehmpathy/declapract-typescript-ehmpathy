@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.33.12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.11...v0.33.12) (2024-07-27)
+
+
+### Bug Fixes
+
+* **deps:** bump to latest best ([67f7d48](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/67f7d48ea23396f39442c212fc4f0e4422ef44ed))
+* **husky:** auto add executable to husky on install ([9a220c4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/9a220c41ec49f18e0b9447b5b80622354367ab56))
+
 ## [0.33.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.10...v0.33.11) (2024-07-27)
 
 
