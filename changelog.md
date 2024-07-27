@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.33.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.10...v0.33.11) (2024-07-27)
+
+
+### Bug Fixes
+
+* **deps:** resolve copypasta deps combination ([95cf73b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/95cf73b58264b731b3322c7d9e32a5e689216796))
+* **nvm:** post-checkout instead of post-rewrite ([ae45ba8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/ae45ba8136838cb07c187544320eed6dbb21fc2c))
+
 ## [0.33.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.9...v0.33.10) (2024-07-27)
 
 
