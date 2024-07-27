@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.2...v0.33.3) (2024-07-27)
+
+
+### Bug Fixes
+
+* **pkg:** ensure best practice for license for packages is consistent ([35e98ed](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/35e98edf342905531d456ead32e2b541a3535870))
+
 ## [0.33.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.1...v0.33.2) (2024-07-26)
 
 
