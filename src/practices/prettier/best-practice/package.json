@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "prettier": "@declapract{check.minVersion('2.8.1')}",
-    "@trivago/prettier-plugin-sort-imports": "@declapract{check.minVersion('2.0.4')}"
+    "@trivago/prettier-plugin-sort-imports": "@declapract{check.minVersion('4.3.0')}"
   },
   "scripts": {
     "fix:format:prettier": "prettier --write '**/*.ts' --config ./prettier.config.js",
