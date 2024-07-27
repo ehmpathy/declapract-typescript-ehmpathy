@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.33.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.12...v0.33.13) (2024-07-27)
+
+
+### Bug Fixes
+
+* **husky:** pause nvm check hook ([5a60dd8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5a60dd8ce14b78b2fe8e87f3a7cbf0a88a82c3b2))
+* **rds:** database context comment ([5dbc141](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5dbc141d71341057337732791844a78c30694100))
+
 ## [0.33.12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.11...v0.33.12) (2024-07-27)
 
 
