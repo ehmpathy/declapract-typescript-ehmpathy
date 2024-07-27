@@ -12,7 +12,7 @@ import {
  *
  * example usage:
  * ```
- *   const findById = withDatabaseConnection(({ id }: { id: string }, context: { dbConnection: DatabaseConnection }) => {
+ *   const findById = withDatabaseContext(({ id }: { id: string }, context: { dbConnection: DatabaseConnection }) => {
  *     // do logic with dbConnection
  *   });
  *   // ...
