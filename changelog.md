@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.14](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.13...v0.33.14) (2024-07-28)
+
+
+### Bug Fixes
+
+* **rds:** expose withExpectOutput and findByRef on daos ([c08ea74](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c08ea748e80c159bb856b462e613f7bacfd52d60))
+
 ## [0.33.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.12...v0.33.13) (2024-07-27)
 
 
