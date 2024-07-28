@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.15](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.14...v0.33.15) (2024-07-28)
+
+
+### Bug Fixes
+
+* **sls:** ensure TZ:UTC envvar automatically fixed on sls ([8b2d336](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/8b2d336f145e8f81ee30b90f0e1947daba6c71ec))
+
 ## [0.33.14](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.13...v0.33.14) (2024-07-28)
 
 
