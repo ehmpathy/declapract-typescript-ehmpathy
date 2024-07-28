@@ -8,6 +8,7 @@ queries: # where to find your queries (each file must `export const query = `...
   - 'src/data/dao/**/*.ts'
   - '!src/data/dao/**/index.ts'
   - '!src/data/dao/**/castFromDatabaseObject.ts'
+  - '!src/data/dao/**/findByRef.ts'
   - '!src/**/*.test.ts'
   - '!src/**/*.test.integration.ts'
 generates: # where to output the generated code

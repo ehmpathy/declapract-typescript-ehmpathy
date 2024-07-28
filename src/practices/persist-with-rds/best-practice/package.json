@@ -1,11 +1,12 @@
 {
   "dependencies": {
     "pg": "@declapract{check.minVersion('8.3.0')}",
+    "procedure-fns": "@declapract{check.minVersion('1.0.0')}",
     "yesql": "@declapract{check.minVersion('3.2.2')}"
   },
   "devDependencies": {
     "sql-code-generator": "@declapract{check.minVersion('0.10.1')}",
-    "sql-dao-generator": "@declapract{check.minVersion('0.8.2')}",
+    "sql-dao-generator": "@declapract{check.minVersion('0.10.0')}",
     "sql-schema-control": "@declapract{check.minVersion('1.5.2')}",
     "sql-schema-generator": "@declapract{check.minVersion('0.25.2')}",
     "@types/yesql": "@declapract{check.minVersion('3.2.2')}",
