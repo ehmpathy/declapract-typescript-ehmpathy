@@ -34,6 +34,9 @@ on:
       open-vpn-config:
         required: false
         description: complete openvpn config required to enter the vpn, if needed
+      pagerduty-integration-key:
+        required: false
+        description: enables sending pagerduty alarms on failure
 
 jobs:
   install:
@@ -142,6 +145,15 @@ jobs:
       - name: vpn:disconnect
         if: inputs.needs-vpn-for-acceptance
         run: sudo killall openvpn
+
+      - name: alarm on failure
+        env:
+          PAGERDUTY_INTEGRATION_KEY: ${{ secrets.pagerduty-integration-key }}
+        if: failure() && env.PAGERDUTY_INTEGRATION_KEY
+        uses: Entle/action-pagerduty-alert@0.2.0 # https://github.com/marketplace/actions/pagerduty-alert
+        with:
+          pagerduty-integration-key: '${{ secrets.pagerduty-integration-key }}'
+          pagerduty-dedup-key: github_workflow_failed
 
   prune:
     runs-on: ubuntu-20.04

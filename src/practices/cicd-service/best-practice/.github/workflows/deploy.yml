@@ -70,3 +70,4 @@ jobs:
     secrets:
       aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
       aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+      pagerduty-integration-key: ${{ secrets.PAGERDUTY_INTEGRATION_KEY }}
