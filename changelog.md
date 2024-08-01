@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.34.0...v0.35.0) (2024-08-01)
+
+
+### Features
+
+* **config:** declare org, project, env, and aws on config ([db74e3c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/db74e3cc4fbd9e955a244d331193561326d40eb6))
+
 ## [0.34.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.15...v0.34.0) (2024-08-01)
 
 
