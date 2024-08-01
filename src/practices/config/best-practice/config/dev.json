@@ -1,3 +1,12 @@
 {
-  "parameterStoreNamespace": "@declapract{variable.organizationName}.@declapract{variable.projectName}.dev"
+  "parameterStoreNamespace": "@declapract{variable.organizationName}.@declapract{variable.projectName}.dev",
+  "organization": "@declapract{variable.organizationName}",
+  "project": "@declapract{variable.projectName}",
+  "environment": {
+    "access": "dev"
+  },
+  "aws": {
+    "account": "@declapract{variable.awsAccountId.dev}",
+    "namespace": "@declapract{variable.infrastructureNamespaceId}"
+  }
 }
