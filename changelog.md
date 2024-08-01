@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.34.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.15...v0.34.0) (2024-08-01)
+
+
+### Features
+
+* **cicd:** alert on deploy.prod.assure failure ([78720d0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/78720d0ef99ee038ff3cc508486ddf41b672529f))
+
+
+### Bug Fixes
+
+* **cmd:** drop unsued imports from sayHello example ([167b520](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/167b5205f769fa83cf0d03327865d134b83a09f7))
+* **deps:** bump schema control min version ([37353c4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/37353c41919cc3d0ee2a9d4f8e8c0e7f525811af))
+
 ## [0.33.15](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.33.14...v0.33.15) (2024-07-28)
 
 
