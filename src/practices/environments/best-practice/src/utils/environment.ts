@@ -50,9 +50,12 @@ const getEnvironment = () => {
   return { stage };
 };
 
-// export stage immediately, since it does not change
+// export stage immediately, since it does not change; // todo: replace this with env.access
 export const { stage } = getEnvironment();
 
 // export service client stage
 export const serviceClientStage =
   stage === Stage.PRODUCTION ? Stage.PRODUCTION : Stage.DEVELOPMENT; // i.e., if its prod, hit prod. otherwise, dev
+
+// export whether we were asked to run locally; // todo, replace this with env.server
+export const locally = process.env.LOCALLY === 'true'; // whether we want to acceptance test locally or deployed lambda

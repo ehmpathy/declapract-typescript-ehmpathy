@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "simple-lambda-testing-methods": "@declapract{check.minVersion('0.4.2')}"
+  }
+}

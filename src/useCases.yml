@@ -7,7 +7,6 @@ use-cases:
       - husky
       - directory-structure-src
       - domain
-      - environments
       - errors
       - format
       - git
@@ -16,9 +15,8 @@ use-cases:
       - nonpublished-modules
       - package-json-order
       - prettier
-      - testing
+      - tests
       - typescript
-      - uuid
   npm-package:
     extends:
       - typescript-project
@@ -34,6 +32,7 @@ use-cases:
       - config
       - commands
       - dates-and-times
+      - environments
       - environments-aws
       - lambda-clients
       - lambda-handlers
@@ -42,6 +41,8 @@ use-cases:
       - runtime-type-checking
       - serverless
       - terraform
+      - tests-service
+      - uuid
   lambda-service-with-rds:
     extends:
       - typescript-project # https://github.com/ehmpathy/declapract/issues/17
