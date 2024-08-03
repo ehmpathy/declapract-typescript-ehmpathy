@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.1...v0.35.2) (2024-08-03)
+
+
+### Bug Fixes
+
+* **cicd:** use docker compose v2 to unblock github actions builds ([9ab2665](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/9ab2665860eb289b0363383d65e9cc75d4e63d3c))
+
 ## [0.35.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.0...v0.35.1) (2024-08-03)
 
 
