@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.3...v0.35.4) (2024-08-03)
+
+
+### Bug Fixes
+
+* **packages:** remove some service usecase practices from package usecase ([0c3d42f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/0c3d42fee1788fa54843d3c2d964b0611e27874e))
+
 ## [0.35.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.2...v0.35.3) (2024-08-03)
 
 
