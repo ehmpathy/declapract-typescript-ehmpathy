@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.0...v0.35.1) (2024-08-03)
+
+
+### Bug Fixes
+
+* **env:** override tz instead of throw, for initial safety ([988b41a](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/988b41aefbf04096ec8a7c1980c8a5d5ba294f85))
+
 ## [0.35.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.34.0...v0.35.0) (2024-08-01)
 
 
