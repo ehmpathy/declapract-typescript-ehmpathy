@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.2...v0.35.3) (2024-08-03)
+
+
+### Bug Fixes
+
+* **deps:** bump min version of visualogic ([343fe39](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/343fe393609be5b35a56628c8a0c5310c12588d7))
+
 ## [0.35.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.1...v0.35.2) (2024-08-03)
 
 
