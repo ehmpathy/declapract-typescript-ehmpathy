@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.4...v0.35.5) (2024-08-19)
+
+
+### Bug Fixes
+
+* **deps:** bump min sql schema deps ([18c07f1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/18c07f1dc47d972048820bd29c2e2e07aaf46a8b))
+
 ## [0.35.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.3...v0.35.4) (2024-08-03)
 
 
