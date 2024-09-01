@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.5...v0.35.6) (2024-09-01)
+
+
+### Bug Fixes
+
+* **tests:** ensure ts-node min 10.9.2 to prevent jest issues ([13e0d8c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/13e0d8cdb0bd16bf486259d778a65512dfcf4f05))
+
 ## [0.35.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.4...v0.35.5) (2024-08-19)
 
 
