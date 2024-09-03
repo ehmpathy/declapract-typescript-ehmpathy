@@ -2,7 +2,7 @@
 
 declapract = declared best practices
 
-this repo contains the [ehmpathy org's](github.com/ehmpathy) declared best practices for typescript, for usage with [declapract](https://github.com/ehmpathy/declapract)
+this repo contains the [ehmpathy org's](https://github.com/ehmpathy) declared best practices for typescript, for usage with [declapract](https://github.com/ehmpathy/declapract)
 
 # usage
 
