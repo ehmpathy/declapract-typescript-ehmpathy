@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.7...v0.35.8) (2024-09-03)
+
+
+### Bug Fixes
+
+* **deps:** further soften peerdep ([44e7e98](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/44e7e98bb1c915f658df386761c102f149cea3f7))
+
 ## [0.35.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.6...v0.35.7) (2024-09-03)
 
 
