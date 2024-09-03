@@ -45,7 +45,7 @@
     "flat": "5.0.2"
   },
   "peerDependencies": {
-    "declapract": "0.11.5"
+    "declapract": "^0.11.5"
   },
   "devDependencies": {
     "@commitlint/cli": "19.3.0",
