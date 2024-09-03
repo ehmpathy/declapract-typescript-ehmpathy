@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.9...v0.35.10) (2024-09-03)
+
+
+### Bug Fixes
+
+* **tf:** split terraform common, aws, and github ([5c1de7a](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5c1de7ace8fbe6df27b5c1ae6e103ef36ae88ce3))
+
 ## [0.35.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.8...v0.35.9) (2024-09-03)
 
 
