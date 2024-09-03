@@ -40,7 +40,9 @@ use-cases:
       - node-service
       - runtime-type-checking
       - serverless
-      - terraform
+      - terraform-common
+      - terraform-github
+      - terraform-aws
       - tests-service
       - uuid
   lambda-service-with-rds:
