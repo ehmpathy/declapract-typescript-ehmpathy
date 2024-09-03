@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.35.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.8...v0.35.9) (2024-09-03)
+
+
+### Bug Fixes
+
+* **deps:** bump per npm audit ([8d00aed](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/8d00aed337d94c3cabcbb173cfcef6edcbc45a9d))
+* **docs:** correct url on readme ([7bc8de3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7bc8de35be95e19259e4b19e2fc9e185b90bf28f))
+
 ## [0.35.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.7...v0.35.8) (2024-09-03)
 
 
