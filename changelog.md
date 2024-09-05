@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.3...v0.36.4) (2024-09-05)
+
+
+### Bug Fixes
+
+* **expo:** remove copypasta from aws-account-id choice ([ed2aad9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/ed2aad9cd0fd1bc43c947bcd5119f99a5755c210))
+
 ## [0.36.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.2...v0.36.3) (2024-09-05)
 
 
