@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.0...v0.36.1) (2024-09-05)
+
+
+### Bug Fixes
+
+* **expo:** enable dev deployments on demand ([75f337b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/75f337beb04801ff6ed19f157bfa050ec0dc4cd3))
+
 ## [0.36.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.10...v0.36.0) (2024-09-05)
 
 
