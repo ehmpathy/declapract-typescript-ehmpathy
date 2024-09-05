@@ -100,7 +100,7 @@ jobs:
         run: eas update --auto --channel ${{ inputs.build }} --platform ${{ matrix.platform }} --non-interactive
 
       - name: deploy app binary
-        run: eas build --profile ${{ inputs.build }} --platform ${{ matrix.platform }} --non-interactive --no-wait ${{ inputs.build == 'production' && '--auto-submit' || '' }}
+        run: eas build --profile ${{ inputs.build }} --platform ${{ matrix.platform }} --non-interactive ${{ inputs.build == 'production' && '--no-wait' || '' }} ${{ inputs.build == 'production' && '--auto-submit' || '' }}
 
   deploy-web:
     name: web
