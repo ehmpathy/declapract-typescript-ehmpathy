@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.1...v0.36.2) (2024-09-05)
+
+
+### Bug Fixes
+
+* **expo:** use dev access secrets for test and dev ([2f2552a](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2f2552aefc21d29e6610203d46058bc9061beca8))
+
 ## [0.36.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.0...v0.36.1) (2024-09-05)
 
 
