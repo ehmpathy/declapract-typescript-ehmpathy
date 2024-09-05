@@ -1,0 +1,43 @@
+{
+  "jest": {
+    "preset": "jest-expo"
+  },
+  "dependencies": {
+    "expo": "@declapract{check.minVersion('51.0.22')}",
+    "expo-dev-client": "@declapract{check.minVersion('4.0.20')}",
+    "expo-updates": "@declapract{check.minVersion('0.25.21')}"
+  },
+  "devDependencies": {
+    "jest-expo": "@declapract{check.minVersion('51.0.3')}"
+  },
+  "scripts": {
+    "start:hot:proxy": "npx local-ssl-proxy --source 3447 --target 8081",
+    "start:hot:dev": "STAGE=dev npx expo start --clear --dev-client",
+    "start:hot:dev:link": "echo '🚀 https://localhost.@declapract{variable.app.web.domain.dev}:@declapract{variable.app.web.port.hot}'",
+    "start:hot:dev:proxy": "npm run start:hot:dev:link && npm run start:hot:proxy",
+    "start:hot:prod": "STAGE=prod npx expo start --clear --dev-client",
+    "start:hot:prod:link": "echo '🚀 https://localhost.@declapract{variable.app.web.domain.prod}:@declapract{variable.app.web.port.hot}'",
+    "start:hot:prod:proxy": "npm run start:hot:prod:link && npm run start:hot:proxy",
+    "start:cold:proxy": "npx local-ssl-proxy --source 3449 --target 3000",
+    "start:cold:dev": "npm run build:web && npx serve dist --single",
+    "start:cold:dev:link": "echo '🚀 https://localhost.@declapract{variable.app.web.domain.dev}:@declapract{variable.app.web.port.cold}'",
+    "start:cold:dev:proxy": "echo npm run start:cold:dev:link && npm run start:cold:proxy",
+    "start:cold:prod": "npm run build:web && npx serve dist --single",
+    "start:cold:prod:link": "echo '🚀 https://localhost.@declapract{variable.app.web.domain.prod}:@declapract{variable.app.web.port.cold}'",
+    "register:device:apple:info": "echo 'learn more here https://docs.expo.dev/build/internal-distribution/'",
+    "register:device:apple:inclusions:rebuild:prod": "npx eas build --platform ios --clear-cache",
+    "register:device:apple:inclusions:rebuild:dev": "npx eas build --profile development --platform ios --clear-cache",
+    "register:device:apple:add": "echo 'register an apple device to allow it to install internal builds' && eas device:create && npm run register:device:apple:inclusions:rebuild",
+    "register:device:apple:list": "eas device:list",
+    "register:device:apple:delete": "eas device:delete",
+    "register:device:apple:rename": "eas device:rename",
+    "register:profile:apple:list": "echo 'see list here https://developer.apple.com/account/resources/profiles/list'",
+    "build:dev:ios": "eas build --profile development --platform ios --non-interactive",
+    "build:dev:android": "eas build --profile development --platform android --non-interactive",
+    "build:web": "npx expo export --platform web",
+    "deploy:prod:ios:metadata": "eas metadata:push",
+    "deploy:prod": "echo 'use github actions'",
+    "open:store:android": "https://play.google.com/console/u/0/developers/",
+    "open:store:ios": "browser https://appstoreconnect.apple.com/apps/"
+  }
+}

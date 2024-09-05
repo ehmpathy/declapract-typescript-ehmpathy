@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "eslint-plugin-react-native": "4.0.0"
+  }
+}

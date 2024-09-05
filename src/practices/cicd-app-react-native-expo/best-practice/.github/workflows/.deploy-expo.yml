@@ -1,0 +1,152 @@
+name: .deploy-expo
+
+on:
+  workflow_call:
+    inputs:
+      stage:
+        type: string
+        description: 'the stage of infrastructure to deploy against (e.g., prod, dev)'
+        required: true
+      build:
+        type: string
+        description: 'the build to deploy (e.g., production, preview, development)'
+        required: true
+      github-environment:
+        type: string
+        description: 'the github environment that the apply step will be executed in'
+        required: true
+      aws-region:
+        type: string
+        description: the aws region within which we should access
+        required: true
+      aws-account-id:
+        type: string
+        description: the id of the account the credentials are expected to access
+        required: true
+      needs-vpn-for-acceptance:
+        type: boolean
+        description: whether or not this environment needs vpn access for acceptance tests
+        required: false
+        default: false
+      app-web-deployment-s3-bucket:
+        type: string
+        description: the s3 bucket within which the web app is deployed
+        required: false
+
+    secrets:
+      expo-token:
+        required: true
+        description: required credentials to authenticate with expo eas
+      aws-access-key-id:
+        required: true
+        description: required credentials to authenticate with aws provider and state persistance
+      aws-secret-access-key:
+        required: true
+        description: required credentials to authenticate with aws provider and state persistance
+      open-vpn-config:
+        required: false
+        description: complete openvpn config required to enter the vpn, if needed
+
+jobs:
+  deploy-os:
+    strategy:
+      matrix:
+        platform: [ios, android]
+    name: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
+    if: ${{ inputs.stage == 'prod' }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: set node-version
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        id: credentials
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{steps.credentials.outputs.aws-account-id}} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
+
+      - name: node-modules cache get
+        uses: actions/cache/restore@v4
+        id: cache
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: node-modules cache miss install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts --prefer-offline --no-audit
+
+      - name: setup expo
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.expo-token }}
+
+      - name: deploy ota update
+        run: eas update --auto --channel ${{ inputs.build }} --platform ${{ matrix.platform }} --non-interactive
+
+      - name: deploy app binary
+        run: eas build --profile ${{ inputs.build }} --platform ${{ matrix.platform }} --non-interactive --no-wait ${{ inputs.build == 'production' && '--auto-submit' || '' }}
+
+  deploy-web:
+    name: web
+    runs-on: ubuntu-latest
+    if: ${{ inputs.stage == 'prod' && inputs.app-web-deployment-s3-bucket }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: set node-version
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        id: credentials
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: confirm aws credentials
+        run: |
+          [[ ${{steps.credentials.outputs.aws-account-id}} != ${{ inputs.aws-account-id }} ]] \
+            && echo 'wrong aws account' && exit 1 \
+            || echo 'correct aws account';
+
+      - name: node-modules cache get
+        uses: actions/cache/restore@v4
+        id: cache
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: node-modules cache miss install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts --prefer-offline --no-audit
+
+      - name: setup expo
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.expo-token }}
+
+      - name: compile
+        run: npm run build:web
+
+      - name: deploy
+        run: aws s3 sync ./dist ${{ inputs.web-deployment-s3-bucket }} --delete --cache-control max-age=60,stale-while-revalidate=604800 # todo: fine tune the cache control; https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#stale-while-revalidate

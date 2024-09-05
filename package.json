@@ -34,6 +34,7 @@
     "test": "npm run test:commits && npm run test:types && npm run test:format && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally && npm run test:validate",
     "test:acceptance": "npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests",
     "prepush": "npm run test && npm run build",
+    "prepublish": "npm run build",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify",
     "postinstall": "[ -d .git ] && npm run prepare:husky || exit 0",

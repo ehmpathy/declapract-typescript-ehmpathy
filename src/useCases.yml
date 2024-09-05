@@ -10,7 +10,7 @@ use-cases:
       - errors
       - format
       - git
-      - linting
+      - lint
       - node
       - nonpublished-modules
       - package-json-order
@@ -57,3 +57,20 @@ use-cases:
       - lambda-service
     practices:
       - persist-with-dynamodb
+  app-react-native-expo:
+    practices:
+      - cicd-common
+      - cicd-app-react-native-expo
+      - conventional-commits
+      - husky
+      - format
+      - git
+      - node
+      - nonpublished-modules
+      - package-json-order
+      - prettier
+      - terraform-common
+      - terraform-github
+      - lint
+      - lint-react
+      - lint-react-native
