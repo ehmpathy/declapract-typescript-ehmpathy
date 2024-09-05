@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.10...v0.36.0) (2024-09-05)
+
+
+### Features
+
+* **expo:** declare react native expo usecase and practices ([b3f703b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b3f703b4c20f9cbd26dd577858f2e90e804df843))
+
 ## [0.35.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.35.9...v0.35.10) (2024-09-03)
 
 
