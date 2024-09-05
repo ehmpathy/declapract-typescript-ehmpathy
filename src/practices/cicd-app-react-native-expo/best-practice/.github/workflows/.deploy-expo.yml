@@ -51,10 +51,11 @@ jobs:
   deploy-os:
     strategy:
       matrix:
-        platform: [ios, android]
+        platform:
+          - ios
+          - android
     name: ${{ matrix.platform }}
     runs-on: ubuntu-latest
-    if: ${{ inputs.stage == 'prod' }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -149,4 +150,4 @@ jobs:
         run: npm run build:web
 
       - name: deploy
-        run: aws s3 sync ./dist ${{ inputs.web-deployment-s3-bucket }} --delete --cache-control max-age=60,stale-while-revalidate=604800 # todo: fine tune the cache control; https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#stale-while-revalidate
+        run: aws s3 sync ./dist ${{ inputs.app-web-deployment-s3-bucket }} --delete --cache-control max-age=60,stale-while-revalidate=604800 # todo: fine tune the cache control; https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#stale-while-revalidate

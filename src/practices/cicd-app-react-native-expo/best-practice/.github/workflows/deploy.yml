@@ -7,6 +7,24 @@ on:
     branches:
       - 'main'
       - 'master'
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 'which stage do you want to deploy to?'
+        type: choice
+        options:
+          - dev
+          - prod
+        required: true
+        default: 'dev'
+      thoroughly:
+        description: 'should we run tests before this deployment?'
+        type: choice
+        required: true
+        default: 'true'
+        options:
+          - 'true'
+          - 'false'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }} # per [workflow] x [branch, tag]
@@ -15,33 +33,38 @@ concurrency:
 jobs:
   test:
     uses: ./.github/workflows/.test.yml
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.thoroughly == 'true'
     with:
+      aws-region: us-east-1
+      aws-account-id: '419351972351'
+    secrets:
+      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+
+  dev:
+    uses: ./.github/workflows/.deploy-expo.yml
+    needs: [test]
+    # dont deploy on merge to main by default, since builds are expensive
+    if: |
+      ((github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch' && false) || github.event.inputs.stage == 'dev') &&
+      always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
+    with:
+      stage: dev
+      build: development
+      github-environment: dev
       aws-region: us-east-1
       aws-account-id: '@declapract{variable.awsAccountId.dev}'
     secrets:
-      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
-
-  # todo: start deploying dev builds for testing... want to be smart regarding how often we do this though -> e.g., no need to waste builds ($3 per build)
-  # dev:
-  #   uses: ./.github/workflows/.deploy-expo.yml
-  #   if: github.ref == 'refs/heads/main' &&  !contains(github.event.head_commit.message, 'chore(release)')
-  #   needs: [test]
-  #   with:
-  #     stage: dev
-  #     build: development
-  #     github-environment: dev
-  #     aws-region: us-east-1
-  #     aws-account-id: '@declapract{variable.awsAccountId.dev}'
-  #   secrets:
-  #     expo-token: ${{ secrets.EXPO_TOKEN }}
-  #     aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-  #     aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      expo-token: ${{ secrets.EXPO_TOKEN }}
+      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
 
   prod:
     uses: ./.github/workflows/.deploy-expo.yml
-    if: startsWith(github.ref, 'refs/tags/')
     needs: [test]
+    if: |
+      (startsWith(github.ref, 'refs/tags/') && github.event_name != 'workflow_dispatch') || (github.event.inputs.stage == 'prod') &&
+      always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
     with:
       stage: prod
       build: production
