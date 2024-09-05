@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.36.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.2...v0.36.3) (2024-09-05)
+
+
+### Bug Fixes
+
+* **expo:** drop extra apostrophe on web bucket config ([c2ebf48](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c2ebf488aa2a358f441e5b5dc59e96f19c1cbf00))
+* **expo:** wait on dev builds to get qr code ([3619c36](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/3619c3620f2f6ee77b7dd4939323be24ed25b921))
+
 ## [0.36.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.1...v0.36.2) (2024-09-05)
 
 
