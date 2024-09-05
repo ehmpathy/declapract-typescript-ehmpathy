@@ -71,7 +71,7 @@ jobs:
       github-environment: prod
       aws-region: us-east-1
       aws-account-id: '@declapract{variable.awsAccountId.prod}'
-      app-web-deployment-s3-bucket: s3://@declapract{variable.projectName}-@declapract{variable.infrastructureNamespaceId}-prod'
+      app-web-deployment-s3-bucket: s3://@declapract{variable.projectName}-@declapract{variable.infrastructureNamespaceId}-prod
     secrets:
       expo-token: ${{ secrets.EXPO_TOKEN }}
       aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
