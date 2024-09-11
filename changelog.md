@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.4...v0.36.5) (2024-09-11)
+
+
+### Bug Fixes
+
+* **expo:** improve react native expo deployments ([d72788c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d72788c0680c131845c3f18573312e5796ffe3c2))
+
 ## [0.36.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.3...v0.36.4) (2024-09-05)
 
 
