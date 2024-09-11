@@ -27,7 +27,7 @@ on:
           - 'false'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }} # per [workflow] x [branch, tag]
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }} # per [workflow] x [branch, tag] x [event]
   cancel-in-progress: true # only cancel work flows on non-latest commits
 
 jobs:
