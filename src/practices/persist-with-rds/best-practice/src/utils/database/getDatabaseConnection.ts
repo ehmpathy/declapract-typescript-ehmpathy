@@ -1,4 +1,4 @@
-import pg, { Client, QueryResult } from 'pg';
+import pg, { Client, QueryResult, QueryResultRow } from 'pg';
 
 import { getConfig } from '../config/getConfig';
 
@@ -7,7 +7,10 @@ pg.types.setTypeParser(20, (value) => parseInt(value, 10)); // cast bigints to n
 pg.types.setTypeParser(1700, (value) => parseFloat(value)); // cast numerics to numbers; by default, pg returns numerics as strings
 
 export interface DatabaseConnection {
-  query: (args: { sql: string; values?: any[] }) => Promise<QueryResult<any>>;
+  query: <Row extends QueryResultRow>(args: {
+    sql: string;
+    values?: any[];
+  }) => Promise<QueryResult<Row>>;
   end: () => Promise<void>;
 }
 
@@ -56,7 +59,7 @@ export const getDatabaseConnection = async (): Promise<DatabaseConnection> => {
       dbConnection.query(args).catch((error) => {
         throw new DatabaseQueryError({
           sql: args.sql,
-          values: args.values ?? [],
+          values: args.values,
           caught: error,
         });
       }),
