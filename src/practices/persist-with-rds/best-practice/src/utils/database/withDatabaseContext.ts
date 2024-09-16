@@ -3,6 +3,10 @@ import {
   getDatabaseConnection,
 } from './getDatabaseConnection';
 
+export interface DatabaseContext {
+  dbConnection: DatabaseConnection;
+}
+
 /**
  * wraps the function to provide a managed database connection to it's context, if one was not already passed in
  *
@@ -19,11 +23,7 @@ import {
  *   await findById({ id: 821 }); // note how we don't have to pass in the dbConnection
  * ```
  */
-export const withDatabaseContext = <
-  P1,
-  P2 extends { dbConnection: DatabaseConnection },
-  R,
->(
+export const withDatabaseContext = <P1, P2 extends DatabaseContext, R>(
   logic: (input: P1, context: P2) => R | Promise<R>,
 ) => {
   return async (
