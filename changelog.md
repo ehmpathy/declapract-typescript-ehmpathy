@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.37.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.0...v0.37.1) (2024-09-16)
+
+
+### Bug Fixes
+
+* **db:** expose database context from with database connection ([8a95457](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/8a9545783ac708da05959f6fc19975516d88b025))
+* **db:** expose types of rows on dbConnection.query ([c6cef7e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c6cef7e30dd8e0982f25cb6a81d64f12a561564f))
+
 ## [0.37.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.5...v0.37.0) (2024-09-16)
 
 
