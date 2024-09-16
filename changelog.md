@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.2...v0.37.3) (2024-09-16)
+
+
+### Bug Fixes
+
+* **deps:** bump error-fns dep for observability++ ([cdffb8e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/cdffb8e5e76da8658739c0bf0dfe64c54fc77582))
+
 ## [0.37.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.1...v0.37.2) (2024-09-16)
 
 
