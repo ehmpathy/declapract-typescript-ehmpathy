@@ -57,5 +57,13 @@ export const { stage } = getEnvironment();
 export const serviceClientStage =
   stage === Stage.PRODUCTION ? Stage.PRODUCTION : Stage.DEVELOPMENT; // i.e., if its prod, hit prod. otherwise, dev
 
-// export whether we were asked to run locally; // todo, replace this with env.server
-export const locally = process.env.LOCALLY === 'true'; // whether we want to acceptance test locally or deployed lambda
+// export the v3 environmental variables
+export const environment = {
+  access: stage,
+  server: (() => {
+    if (process.env.CI) return 'CICD' as const;
+    if (process.env.LAMBDA_TASK_ROOT) return 'AWS:LAMBDA' as const;
+    return 'LOCAL' as const; // default to local
+  })(),
+  // region: // todo
+};
