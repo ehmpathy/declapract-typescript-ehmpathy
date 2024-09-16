@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.1...v0.37.2) (2024-09-16)
+
+
+### Bug Fixes
+
+* **ts:** target es2020 ([216a014](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/216a014ae8bd9bde64aa2428334e23b18bdc8503))
+
 ## [0.37.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.0...v0.37.1) (2024-09-16)
 
 
