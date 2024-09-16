@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.5...v0.37.0) (2024-09-16)
+
+
+### Features
+
+* **env:** expose env .access, .server, .region ([d653a07](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d653a07b035fd414557f8ae2d037e25d36a11869))
+
 ## [0.36.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.36.4...v0.36.5) (2024-09-11)
 
 
