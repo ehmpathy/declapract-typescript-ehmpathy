@@ -83,3 +83,8 @@ provider:
       Action:
         - SNS:Publish
       Resource: arn:aws:sns:${aws:region}:${aws:accountId}:${self:service}-*
+    # allow publishing to kinesis firehose streams namespaced by this service
+    - Effect: Allow
+      Action:
+        - firehose:PutRecord
+      Resource: arn:aws:firehose:${aws:region}:${aws:accountId}:deliverystream/${self:service}-* # allow publishing to any streams w/ this services name prefix
