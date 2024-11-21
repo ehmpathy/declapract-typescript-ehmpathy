@@ -49,6 +49,7 @@ module.exports = {
     'no-return-await': 'off', // this does not help anything and actually leads to bugs if we subsequently wrap the return in a try catch without remembering to _then_ add await
     '@typescript-eslint/return-await': 'off',
     '@typescript-eslint/no-unsafe-declaration-merging': 'off',
+    '@typescript-eslint/default-param-last': 'off', // interferes with input vs context
   },
   settings: {
     'import/ignore': ['react-native'], // https://github.com/facebook/react-native/issues/28549
