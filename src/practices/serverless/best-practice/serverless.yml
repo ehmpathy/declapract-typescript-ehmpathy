@@ -88,3 +88,25 @@ provider:
       Action:
         - firehose:PutRecord
       Resource: arn:aws:firehose:${aws:region}:${aws:accountId}:deliverystream/${self:service}-* # allow publishing to any streams w/ this services name prefix
+    # allow reading and writing to glue tables namespaced to this service
+    - Effect: Allow
+      Action:
+        - glue:GetDatabase
+        - glue:GetTable
+        - glue:GetTableVersion
+        - glue:GetTableVersions
+        - glue:GetPartition
+        - glue:GetPartitions
+        - glue:CreatePartition
+        - glue:BatchCreatePartition
+      Resource:
+        - arn:aws:glue:${aws:region}:${aws:accountId}:catalog
+        - arn:aws:glue:${aws:region}:${aws:accountId}:database/@declapract{variable.databaseName}_${self:provider.stage}
+        - arn:aws:glue:${aws:region}:${aws:accountId}:table/@declapract{variable.databaseName}_${self:provider.stage}/*
+    # allow athena queries
+    - Effect: Allow
+      Action:
+        - athena:StartQueryExecution
+        - athena:GetQueryExecution
+        - athena:GetQueryResults
+      Resource: '*'
