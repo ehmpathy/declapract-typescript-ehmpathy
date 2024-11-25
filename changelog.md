@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.37.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.2...v0.37.3) (2024-11-25)
+
+
+### Bug Fixes
+
+* **deps:** bump error-fns dep for observability++ ([cdffb8e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/cdffb8e5e76da8658739c0bf0dfe64c54fc77582))
+* **lint:** unblock default inputs for input via context args ([4f1c9e3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/4f1c9e39b27aceb5cc066212f129e9105bffc610))
+* **sls:** add permissions for athena queries against glue tables ([37336a4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/37336a467f44b235cb36fe3ed5f077aae12f9c88))
+* **sls:** enable publication to kinesis firehose namespaced by the service ([555f923](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/555f923a58617d02794dbbe9f52d03e6b96e13be))
+
 ## [0.37.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.1...v0.37.2) (2024-09-16)
 
 
