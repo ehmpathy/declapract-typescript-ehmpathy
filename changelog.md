@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.3...v0.37.4) (2024-12-12)
+
+
+### Bug Fixes
+
+* **cicd:** ensure terraform is provisioned for test-lint ([ca837cc](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/ca837cc317a8d2974d17dd97ae3f6a1d01c598d1))
+
 ## [0.37.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.2...v0.37.3) (2024-11-25)
 
 
