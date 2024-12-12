@@ -76,10 +76,13 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: set node-version
+      - name: set node version
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
+
+      - name: set terraform version
+        uses: hashicorp/setup-terraform@v3
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v4
