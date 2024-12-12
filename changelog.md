@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.4...v0.37.5) (2024-12-12)
+
+
+### Bug Fixes
+
+* **deps:** bump visualogic dep; contexts++ ([544d725](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/544d725f3be7183e57e84277b99e844f211ea4a3))
+
 ## [0.37.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.3...v0.37.4) (2024-12-12)
 
 
