@@ -14,4 +14,5 @@ ignores:
   - husky
   - if-env
   - '@ehmpathy/as-command'
+  - helpful-errors
   - visualogic
