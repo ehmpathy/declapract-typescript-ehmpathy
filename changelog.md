@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.38.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.7...v0.38.0) (2024-12-26)
+
+
+### Features
+
+* **config:** expose util for standard queue url per async task ([2b54138](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2b54138c5f306f76b71b09607330bdaa890fc915))
+
 ## [0.37.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.6...v0.37.7) (2024-12-26)
 
 
