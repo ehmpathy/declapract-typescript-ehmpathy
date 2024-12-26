@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.5...v0.37.6) (2024-12-26)
+
+
+### Bug Fixes
+
+* **deps:** bump from error-fns to helpful-errors ([93ad4e1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/93ad4e198dd8d13c083a4d8438079ff49e9433dd))
+
 ## [0.37.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.4...v0.37.5) (2024-12-12)
 
 
