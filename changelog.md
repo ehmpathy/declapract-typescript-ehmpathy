@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.38.0...v0.39.0) (2024-12-26)
+
+
+### Features
+
+* **config:** expose util for standard cache directory per config ([cab8bae](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/cab8bae68b7e3420f3ad984829ba9c4c5485dd2f))
+
 ## [0.38.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.7...v0.38.0) (2024-12-26)
 
 
