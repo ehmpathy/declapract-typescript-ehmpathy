@@ -9,6 +9,6 @@ ignores:
   - ts-jest
   - ts-node
   - test-fns
-  - '@ehmpathy/error-fns'
+  - helpful-errors
   - husky
   - if-env

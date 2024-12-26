@@ -1,5 +1,5 @@
-import { UnexpectedCodePathError } from '@ehmpathy/error-fns';
 import { FileCheckType, FileFixFunction } from 'declapract';
+import { UnexpectedCodePathError } from 'helpful-errors';
 
 export const check = FileCheckType.CONTAINS;
 
