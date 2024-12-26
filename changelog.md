@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.37.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.6...v0.37.7) (2024-12-26)
+
+
+### Bug Fixes
+
+* **pkg:** update depcheckr per missed dep ([e7bec48](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e7bec485ed8a50a7881fd2b90a09eaa50427b194))
+* **tests:** fail fast on missed creds for integration tests ([b0ea4ae](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b0ea4aef3f1289cc45c17166ccc21e9fdfc3a587))
+
 ## [0.37.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.37.5...v0.37.6) (2024-12-26)
 
 
