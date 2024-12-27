@@ -6,7 +6,7 @@
   },
   "devDependencies": {
     "sql-code-generator": "@declapract{check.minVersion('0.10.1')}",
-    "sql-dao-generator": "@declapract{check.minVersion('0.10.1')}",
+    "sql-dao-generator": "@declapract{check.minVersion('0.12.0')}",
     "sql-schema-control": "@declapract{check.minVersion('1.5.4')}",
     "sql-schema-generator": "@declapract{check.minVersion('0.25.2')}",
     "@types/yesql": "@declapract{check.minVersion('3.2.2')}",
