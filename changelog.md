@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.2...v0.39.3) (2024-12-27)
+
+
+### Bug Fixes
+
+* **tests:** fail fast on missed creds for acceptance tests ([c4869d4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c4869d4cb0e410598fdafec73325b232eca2dc73))
+
 ## [0.39.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.1...v0.39.2) (2024-12-27)
 
 
