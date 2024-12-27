@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.1...v0.39.2) (2024-12-27)
+
+
+### Bug Fixes
+
+* **deps:** bump dao generator version ([6461959](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/646195933b7c2b09c85cb3b47469dc812f3338df))
+
 ## [0.39.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.0...v0.39.1) (2024-12-27)
 
 
