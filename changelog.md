@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.0...v0.39.1) (2024-12-27)
+
+
+### Bug Fixes
+
+* **config:** drop get queue url in favor of simple-async-tasks version ([68cd124](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/68cd124942842af93df4641d3839942e71ff5eac))
+
 ## [0.39.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.38.0...v0.39.0) (2024-12-26)
 
 
