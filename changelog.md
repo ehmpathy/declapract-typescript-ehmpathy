@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.3...v0.39.4) (2025-02-24)
+
+
+### Bug Fixes
+
+* **jest:** ensure isauthed declaration doesnt cause init errors ([b888de2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b888de253f63c000698a5a37c6ac28c4727c5893))
+
 ## [0.39.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.2...v0.39.3) (2024-12-27)
 
 
