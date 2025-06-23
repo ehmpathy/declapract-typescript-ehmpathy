@@ -36,7 +36,7 @@ jobs:
     uses: ./.github/workflows/.install.yml
 
   plan:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [install]
     outputs:
       has-changes-planned: ${{ steps.evaluate-plan.outputs.has-changes-planned }}
@@ -120,7 +120,7 @@ jobs:
         run: sudo killall openvpn
 
   apply:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     environment: ${{ inputs.github-environment }}
     needs: [install, plan]
     if: ${{ inputs.allow-apply == true && needs.plan.outputs.has-changes-planned == 'true' }}

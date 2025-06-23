@@ -43,7 +43,7 @@ jobs:
     uses: ./.github/workflows/.install.yml
 
   deploy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [install]
     steps:
       - name: checkout
@@ -83,7 +83,7 @@ jobs:
         run: STAGE=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy
 
   assure:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [install, deploy]
     steps:
       - name: checkout
@@ -156,7 +156,7 @@ jobs:
           pagerduty-dedup-key: github_workflow_failed
 
   prune:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [install, deploy]
     steps:
       - name: checkout
