@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.4...v0.39.5) (2025-06-23)
+
+
+### Bug Fixes
+
+* **cicd:** bump github runners to ubuntu 24.04 ([7c131d2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7c131d288b5b5cf978cb24dd64cf21d96747479b))
+
 ## [0.39.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.3...v0.39.4) (2025-02-24)
 
 
