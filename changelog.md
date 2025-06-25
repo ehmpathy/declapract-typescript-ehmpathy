@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.6...v0.39.7) (2025-06-25)
+
+
+### Bug Fixes
+
+* **license:** add license to packages ([fef5d36](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/fef5d360097ff3e8f215bf0d554d1db6e229ab1a))
+
 ## [0.39.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.5...v0.39.6) (2025-06-25)
 
 
