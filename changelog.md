@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.39.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.5...v0.39.6) (2025-06-25)
+
+
+### Bug Fixes
+
+* **deps:** bump to simpler log package name ([2ed3423](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2ed34232560311b88a93b51028770aee59dfc17d))
+* **pkg:** add license ([784492c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/784492cebeb07504281d57690235f43d22472a27))
+
 ## [0.39.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.4...v0.39.5) (2025-06-23)
 
 
