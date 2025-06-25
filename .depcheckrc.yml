@@ -16,3 +16,4 @@ ignores:
   - '@ehmpathy/as-command'
   - helpful-errors
   - visualogic
+  - simple-log-methods

@@ -89,7 +89,7 @@ const exampleFoundContents = `
     "pg": "8.2.1",
     "simple-dynamodb-client": "0.7.1",
     "simple-lambda-handlers": "0.5.0",
-    "simple-leveled-log-methods": "0.1.1",
+    "simple-log-methods": "0.5.0",
     "us-state-codes": "1.1.2",
     "yesql": "4.1.3"
   }

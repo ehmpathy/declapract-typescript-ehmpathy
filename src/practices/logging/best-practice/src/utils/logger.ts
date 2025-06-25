@@ -1,3 +1,3 @@
-import { generateLogMethods } from 'simple-leveled-log-methods';
+import { generateLogMethods } from 'simple-log-methods';
 
 export const log = generateLogMethods();
