@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.7...v0.39.8) (2025-07-05)
+
+
+### Bug Fixes
+
+* **audit:** bump deps to eliminate audit concerns ([94b934e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/94b934e4f16c15e176258f7d873d7dcfbb75a385))
+
 ## [0.39.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.6...v0.39.7) (2025-06-25)
 
 
