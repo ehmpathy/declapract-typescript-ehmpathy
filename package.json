@@ -48,7 +48,7 @@
     "simple-log-methods": "0.5.0"
   },
   "peerDependencies": {
-    "declapract": ">=0.11.5"
+    "declapract": "0.12.1"
   },
   "devDependencies": {
     "@commitlint/cli": "19.3.0",
