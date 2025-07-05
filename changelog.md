@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.8...v0.39.9) (2025-07-05)
+
+
+### Bug Fixes
+
+* **pkg:** broaden peer dep ([c384d69](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c384d693967e48bd58d795bd930289401a5d3bbd))
+
 ## [0.39.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.7...v0.39.8) (2025-07-05)
 
 
