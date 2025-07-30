@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.9...v0.39.10) (2025-07-30)
+
+
+### Bug Fixes
+
+* **tsc:** exclude .scratch and .test directories from dist builds ([06f018c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/06f018ca7ab36e83761d672743b231d0cb83258c))
+
 ## [0.39.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.8...v0.39.9) (2025-07-05)
 
 
