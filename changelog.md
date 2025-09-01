@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.10...v0.39.11) (2025-09-01)
+
+
+### Bug Fixes
+
+* **deps:** prefer uuid-fns ([88bf7e9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/88bf7e9f076a734544a53eab33bdae86a310cb10))
+
 ## [0.39.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.9...v0.39.10) (2025-07-30)
 
 
