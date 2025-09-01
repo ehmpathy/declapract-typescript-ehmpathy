@@ -1,8 +1,5 @@
 {
-  "dependencies": {
-    "uuid": "@declapract{check.minVersion('9.0.0')}"
-  },
   "devDependencies": {
-    "@types/uuid": "@declapract{check.minVersion('9.0.0')}"
+    "uuid-fns": "@declapract{check.minVersion('1.0.2')}"
   }
 }
