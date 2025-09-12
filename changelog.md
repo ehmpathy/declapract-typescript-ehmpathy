@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.11...v0.39.12) (2025-09-12)
+
+
+### Bug Fixes
+
+* **cicd:** ensure .github/.test.yml supports aws account id as secret for packages ([731040b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/731040bdc5dbd030dd92537dbfefaac8e704a5de))
+
 ## [0.39.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.10...v0.39.11) (2025-09-01)
 
 
