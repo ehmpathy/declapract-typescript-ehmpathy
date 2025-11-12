@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.12...v0.39.13) (2025-11-12)
+
+
+### Bug Fixes
+
+* **cicd:** move aws-accout-id to secrets for service deployments ([#178](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/178)) ([b155a55](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b155a559f9b7c5d0a0604927278037b365a0c9ff))
+
 ## [0.39.12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.11...v0.39.12) (2025-09-12)
 
 
