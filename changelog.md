@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.14](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.13...v0.39.14) (2025-11-14)
+
+
+### Bug Fixes
+
+* **deps:** ensure the uuid practice preserves dev deps ([115fea3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/115fea3ab39725dd99d0914bf8b23f900e68f831))
+
 ## [0.39.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.12...v0.39.13) (2025-11-12)
 
 
