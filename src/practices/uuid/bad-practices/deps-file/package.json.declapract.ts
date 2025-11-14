@@ -15,7 +15,7 @@ export const fix: FileFixFunction = (contents) => {
     ...packageJSONObject,
     dependencies: { ...packageJSONObject.dependencies, uuid: undefined },
     devDependencies: {
-      ...packageJSONObject.dependencies,
+      ...packageJSONObject.devDependencies,
       '@types/uuid': undefined,
     },
   };
