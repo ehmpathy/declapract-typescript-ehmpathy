@@ -3,19 +3,14 @@
   "compilerOptions": {
     "rootDir": "src"
   },
+  "include": [
+    "src/**/*.ts"
+  ],
   "exclude": [
-    "dist",
-    "coverage",
-    "node_modules",
-    "acceptance",
-    "provision",
-    "jest.*",
-    "prettier.*",
-    "commitlint.*",
-    "codegen.*",
+    "**/*.test.(ts|js)", // all explicitly .test files are dev only assets too
+    "**/.test/**/*.(ts|js)",
     "src/**/.scratch/**/*.(ts|js)",
-    "src/**/*.test.(ts|js)",
-    "src/**/.test/**/*.(ts|js)",
-    "src/**/__test_utils__/**/*.(ts|js)"
+    "src/**/__test_utils__/**/*.(ts|js)",
+    "src/**/__test_assets__/**/*.(ts|js)"
   ]
 }
