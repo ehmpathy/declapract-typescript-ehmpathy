@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.15](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.14...v0.39.15) (2025-11-22)
+
+
+### Bug Fixes
+
+* **lint:** allowlist the dev deps check instead ([0f5b111](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/0f5b111bb11672db8eea7a3e8ff52610a26ada00))
+
 ## [0.39.14](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.13...v0.39.14) (2025-11-14)
 
 
