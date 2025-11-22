@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.16](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.15...v0.39.16) (2025-11-22)
+
+
+### Bug Fixes
+
+* **tsc:** allowlist built tsc artifacts instead ([99af9dc](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/99af9dcdb40aafddd972ed80386f49ed0230167e))
+
 ## [0.39.15](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.14...v0.39.15) (2025-11-22)
 
 
