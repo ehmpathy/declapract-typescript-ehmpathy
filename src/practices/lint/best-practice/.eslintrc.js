@@ -22,12 +22,11 @@ module.exports = {
       'error',
       {
         devDependencies: [
-          '**/*.test.ts',
+          '!(src)/**/*.ts', // everything outside src/* is a dev only asset
+          '**/*.test.ts', // all explicitly .test files are dev only assets too
           '**/*.test.integration.ts',
           '**/*.test.acceptance.ts',
-          'acceptance/**/*.ts',
-          '**/__test_utils__/**/*.ts',
-          'provision/**/*.ts',
+          '**/.test/**/*.ts',
         ],
       },
     ],
