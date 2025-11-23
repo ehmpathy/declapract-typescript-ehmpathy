@@ -22,6 +22,9 @@ const config: Config = {
   testMatch: ['**/*.acceptance.test.ts'],
   setupFiles: ['core-js'],
   setupFilesAfterEnv: ['./jest.acceptance.env.ts'],
+
+  // use 50% of threads on local to leave headroom for other processes
+  maxWorkers: process.env.CI ? undefined : '50%', // https://stackoverflow.com/questions/71287710/why-does-jest-run-faster-with-maxworkers-50
 };
 
 // eslint-disable-next-line import/no-default-export
