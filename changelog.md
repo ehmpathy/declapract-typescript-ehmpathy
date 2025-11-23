@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.20](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.19...v0.39.20) (2025-11-23)
+
+
+### Bug Fixes
+
+* **docs:** improve readme ([273b908](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/273b9087392d5e270aa1a257e13585f4b999273a))
+
 ## [0.39.19](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.18...v0.39.19) (2025-11-23)
 
 
