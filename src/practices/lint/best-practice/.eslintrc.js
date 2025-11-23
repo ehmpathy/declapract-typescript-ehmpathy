@@ -32,6 +32,14 @@ module.exports = {
       },
     ],
     '@typescript-eslint/no-explicit-any': 'error', // forbid any type for better type safety; you can use `never` or `unknown` instead when its truly unknown or never needed to be known
+    '@typescript-eslint/consistent-type-imports': [
+      'error',
+      {
+        prefer: 'type-imports', // enforce using `import type` for type-only imports
+        fixStyle: 'inline-type-imports', // use inline `import { type Foo }` style
+        disallowTypeAnnotations: true, // disallow using `import type` in type annotations
+      },
+    ],
     'no-unused-vars': 'off', // turn off base rule as it can report incorrect errors
     '@typescript-eslint/no-unused-vars': 'off', // turn off in favor of unused-imports/no-unused-vars
     'unused-imports/no-unused-imports': 'error', // auto-fixable rule to remove unused imports
