@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "domain-objects": "@declapract{check.minVersion('0.25.5')}",
+    "domain-objects": "@declapract{check.minVersion('0.25.7')}",
     "joi": "@declapract{check.minVersion('17.4.0')}",
     "type-fns": "@declapract{check.minVersion('1.17.0')}"
   }
