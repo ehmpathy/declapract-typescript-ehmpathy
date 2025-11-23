@@ -1,6 +1,16 @@
+import { existsSync } from 'fs';
+import { join } from 'path';
+
 jest.mock('./src/utils/config/getConfig', () => ({
   getConfig: jest.fn().mockImplementation(() => require('./config/test.json')), // mock that getConfig just returns plaintext test env config in unit tests
 }));
+
+/**
+ * .what = verify that we're running from a valid project directory; otherwise, fail fast
+ * .why = prevent confusion and hard-to-debug errors from running tests in the wrong directory
+ */
+if (!existsSync(join(process.cwd(), 'package.json')))
+  throw new Error('no package.json found in cwd. are you @gitroot?');
 
 /**
  * sanity check that unit tests are only run the 'test' environment
