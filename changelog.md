@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.19](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.18...v0.39.19) (2025-11-23)
+
+
+### Bug Fixes
+
+* **lint:** autofix unused imports ([9a4f606](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/9a4f606ea528817e381bd23f9a3c6e826f4571d5))
+
 ## [0.39.18](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.17...v0.39.18) (2025-11-23)
 
 
