@@ -17,7 +17,7 @@ module.exports = {
     'sort-imports': 'off',
     'import/prefer-default-export': 'off', // default export = bad
     'import/no-default-export': 'error', // require named exports - they make it easier to refactor, enforce consistency, and increase constraints
-    '@typescript-eslint/no-non-null-assertion': 'off', // we use these to help typescript out when we know something it doesnt, and cant easily express that
+    '@typescript-eslint/no-non-null-assertion': 'error', // forbid non-null assertion operators for safer code; you can always `?? UnexpectedCodePathError.throw(...)` to fail fast instead
     'import/no-extraneous-dependencies': [
       'error',
       {
@@ -30,14 +30,13 @@ module.exports = {
         ],
       },
     ],
-    '@typescript-eslint/no-explicit-any': 'off', // sometimes this is a valid definition
+    '@typescript-eslint/no-explicit-any': 'error', // forbid any type for better type safety; you can use `never` or `unknown` instead when its truly unknown or never needed to be known
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'import/no-cycle': 'off',
     'max-classes-per-file': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/no-floating-promises': 'error',
     'prefer-destructuring': 'off',
-    '@typescript-eslint/no-non-null-assertion': 'off',
     'lines-between-class-members': 'off',
     '@typescript-eslint/lines-between-class-members': 'off',
     'no-return-await': 'off', // this does not help anything and actually leads to bugs if we subsequently wrap the return in a try catch without remembering to _then_ add await
