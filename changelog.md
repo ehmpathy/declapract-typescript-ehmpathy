@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.18](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.17...v0.39.18) (2025-11-23)
+
+
+### Bug Fixes
+
+* **deps:** bump domain-objects dep ([0054a43](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/0054a438e1253ad266cdbbb44a8ceb4eaae722fe))
+
 ## [0.39.17](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.16...v0.39.17) (2025-11-23)
 
 
