@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.39.17](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.16...v0.39.17) (2025-11-23)
+
+
+### Bug Fixes
+
+* **jest:** use babel config to overcome jests esm defects ([76c5705](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/76c570562d9725e3c77b26b02ba1534d76a6d022))
+* **lint:** forbid any and non-null assertion ([26ce562](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/26ce56258f1f1b89fd41f1a0680ee2e669fb2abe))
+
 ## [0.39.16](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.15...v0.39.16) (2025-11-22)
 
 
