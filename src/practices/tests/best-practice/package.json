@@ -5,7 +5,10 @@
     "test-fns": "@declapract{check.minVersion('1.4.2')}",
     "ts-jest": "@declapract{check.minVersion('29.1.3')}",
     "ts-node": "@declapract{check.minVersion('10.9.2')}",
-    "core-js": "@declapract{check.minVersion('3.26.1')}"
+    "core-js": "@declapract{check.minVersion('3.26.1')}",
+    "@babel/core": "@declapract{check.minVersion('7.28.5')}",
+    "@babel/preset-env": "@declapract{check.minVersion('7.28.5')}",
+    "babel-jest": "@declapract{check.minVersion('30.2.0')}"
   },
   "scripts": {
     "test:unit": "jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -z $THOROUGH ] && echo '--changedSince=main')",
