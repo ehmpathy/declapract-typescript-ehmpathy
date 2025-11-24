@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.39.21](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.20...v0.39.21) (2025-11-24)
+
+
+### Bug Fixes
+
+* **cicd:** ensure depcheckr knows unused-imports eslint plugin is used ([d69bc6d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d69bc6d1002892534a79ac053261924941194bba))
+* **deps:** bump domain-objects again ([f607842](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/f607842a6f9e19f2e55ad98bd34197273dcb2942))
+* **deps:** bump helpful-errors and domain-objects ([9b87414](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/9b87414fadd868d2da6b4f88fb75c15f3a933255))
+* **lint:** enforce explicit import type on type only imports ([73927fc](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/73927fc59f004d0b70ed1da3fb5dd0e196d53e7d))
+* **obs:** increase default console.log observability depth in tests ([1d5a173](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/1d5a173703eae633a03983458701b57719b631e7))
+* **test:** only failfast on no aws_profile if awsAccountId was specified ([5fdffeb](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5fdffeba4c8d8c54e0f3421bdd26b61cb2e5ff52))
+* **tests:** cap workers at 50% on non cicd machines ([7354a6a](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7354a6acc477c78c046a5e29024f69fff2ed9025))
+
 ## [0.39.20](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.19...v0.39.20) (2025-11-23)
 
 
