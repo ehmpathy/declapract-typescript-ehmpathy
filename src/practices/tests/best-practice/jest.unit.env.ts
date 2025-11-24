@@ -1,9 +1,14 @@
 import { existsSync } from 'fs';
 import { join } from 'path';
+import util from 'util';
 
+// mock that getConfig just returns plaintext test env config in unit tests
 jest.mock('./src/utils/config/getConfig', () => ({
-  getConfig: jest.fn().mockImplementation(() => require('./config/test.json')), // mock that getConfig just returns plaintext test env config in unit tests
+  getConfig: jest.fn().mockImplementation(() => require('./config/test.json')),
 }));
+
+// set console.log to not truncate nested objects
+util.inspect.defaultOptions.depth = 5;
 
 /**
  * .what = verify that we're running from a valid project directory; otherwise, fail fast

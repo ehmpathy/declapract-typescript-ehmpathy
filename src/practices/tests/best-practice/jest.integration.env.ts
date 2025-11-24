@@ -1,8 +1,12 @@
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
+import util from 'util';
 
 // eslint-disable-next-line no-undef
 jest.setTimeout(90000); // since we're calling downstream apis
+
+// set console.log to not truncate nested objects
+util.inspect.defaultOptions.depth = 5;
 
 /**
  * .what = verify that we're running from a valid project directory; otherwise, fail fast
