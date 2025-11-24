@@ -28,8 +28,8 @@ const config: Config = {
   setupFiles: ['core-js'],
   setupFilesAfterEnv: ['./jest.unit.env.ts'],
 
-  // use 50% of threads on local to leave headroom for other processes
-  maxWorkers: process.env.CI ? undefined : '50%', // https://stackoverflow.com/questions/71287710/why-does-jest-run-faster-with-maxworkers-50
+  // use 50% of threads to leave headroom for other processes
+  maxWorkers: '50%', // https://stackoverflow.com/questions/71287710/why-does-jest-run-faster-with-maxworkers-50
 };
 
 // eslint-disable-next-line import/no-default-export
