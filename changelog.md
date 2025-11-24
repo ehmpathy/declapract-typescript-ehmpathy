@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.40.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.21...v0.40.0) (2025-11-24)
+
+
+### Features
+
+* **cicd:** provision github via declastruct ([d51bc17](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d51bc17d722d54636c969213a32034aa1520d725))
+
+
+### Bug Fixes
+
+* **cicd:** ensure declastruct is applied successfully ([20adae6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/20adae619df5c52d08d4c920895db0d87761eb87))
+* **cicd:** repair broken lint and unit ([924839b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/924839b2e99f54c5d8698416c3903c4000245ed8))
+
 ## [0.39.21](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.20...v0.39.21) (2025-11-24)
 
 
