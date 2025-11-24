@@ -23,6 +23,7 @@ use-cases:
     practices:
       - cicd-package
       - node-package
+      - provision-github
   lambda-service:
     extends:
       - typescript-project
@@ -40,8 +41,8 @@ use-cases:
       - node-service
       - runtime-type-checking
       - serverless
+      - provision-github
       - terraform-common
-      - terraform-github
       - terraform-aws
       - tests-service
       - uuid
@@ -70,7 +71,7 @@ use-cases:
       - package-json-order
       - prettier
       - terraform-common
-      - terraform-github
+      - provision-github
       - lint
       - lint-react
       - lint-react-native
