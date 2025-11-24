@@ -53,7 +53,7 @@ jobs:
         id: evaluate-plan
         run: |
           # check whether it said there were required changes
-          if grep -i "everything is in sync" ./plan.log
+          if grep "Everything is in sync" ./plan.log
           then
             echo "has-changes-planned=false" >> "$GITHUB_OUTPUT"
           else
@@ -62,6 +62,16 @@ jobs:
 
       - name: has changes planned?
         run: echo "${{ steps.evaluate-plan.outputs.has-changes-planned }}"
+
+      - name: upload plan artifact
+        if: ${{ inputs.allow-apply == true && steps.evaluate-plan.outputs.has-changes-planned == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: declastruct-plan
+          path: |
+            ${{ inputs.wish-path }}.plan.json
+          retention-days: 1
+          include-hidden-files: false
 
   apply:
     runs-on: ubuntu-latest
@@ -82,6 +92,16 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
+
+      - name: extract directory from wish-path
+        id: extract-dir
+        run: echo "wish-dir=$(dirname "${{ inputs.wish-path }}")" >> "$GITHUB_OUTPUT"
+
+      - name: download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: declastruct-plan
+          path: ${{ steps.extract-dir.outputs.wish-dir }}
 
       - name: declastruct apply
         run: npx declastruct apply --plan ${{ inputs.wish-path }}.plan.json | tee ./apply.log
