@@ -54,7 +54,7 @@ fi;
 
 
 # define the postgres connecition string
-CLUSTER_HOST=$([ "$ENVIRONMENT" = 'prod' ] && echo "@declapract{variable.databaseClusterHost.prod}" || echo "@declapract{variable.databaseClusterHost.dev}");
+CLUSTER_HOST=$([ "$ENVIRONMENT" = 'prod' ] && echo "@declapract{variable.databaseTunnelHost.prod}" || echo "@declapract{variable.databaseTunnelHost.dev}");
 CLUSTER_CONNECTION_STRING=postgresql://postgres:$POSTGRES_ADMIN_PASSWORD@$CLUSTER_HOST:5432
 ROOT_DB_CONNECTION_STRING=$CLUSTER_CONNECTION_STRING/postgres
 SVC_DB_CONNECTION_STRING=$CLUSTER_CONNECTION_STRING/@declapract{variable.databaseName}

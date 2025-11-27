@@ -5,11 +5,11 @@ on:
     inputs:
       stage:
         type: string
-        description: 'the stage to deploy to'
+        description: "the stage to deploy to"
         required: true
       github-environment:
         type: string
-        description: 'the github environment that the apply step will be executed in'
+        description: "the github environment that the apply step will be executed in"
         required: true
       aws-region:
         type: string
@@ -19,11 +19,6 @@ on:
         type: string
         description: the id of the account the credentials are expected to access
         required: true
-      needs-vpn-for-acceptance:
-        type: boolean
-        description: whether or not this environment needs vpn access for acceptance tests
-        required: false
-        default: false
     secrets:
       aws-access-key-id:
         required: true
@@ -31,9 +26,6 @@ on:
       aws-secret-access-key:
         required: true
         description: required credentials to authenticate with aws provider and state persistance
-      open-vpn-config:
-        required: false
-        description: complete openvpn config required to enter the vpn, if needed
       pagerduty-integration-key:
         required: false
         description: enables sending pagerduty alarms on failure
@@ -52,7 +44,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -92,7 +84,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -119,32 +111,17 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts --prefer-offline --no-audit
 
-      - name: vpn:prepare
-        if: inputs.needs-vpn-for-acceptance
+      - name: vpc:tunnel:open
         run: |
-          sudo apt update \
-          && sudo apt-get install openvpn openvpn-systemd-resolved \
-          && mkdir ~/.vpn \
-          && echo "${{ secrets.open-vpn-config }}" | base64 -d > ~/.vpn/vpn.connection.ovpn
-
-      - name: vpn:connect
-        if: inputs.needs-vpn-for-acceptance
-        run: |
-          # create the log file, so that we have permissions to read it
-          touch openvpn.log
-
-          # start openvpn in the background
-          sudo openvpn --config ~/.vpn/vpn.connection.ovpn --daemon --log openvpn.log
-
-          # wait until we've confirmed that it successfully connected; https://superuser.com/a/900134/425694
-          ( tail -f -n0 openvpn.log & ) | grep -q "Initialization Sequence Completed"
+          # open a tunnel into the vpc to be able to connect to the database
+          bash .github/artifacts/use.vpc.tunnel.sh --daemon --on-fail-logdump
 
       - name: test:acceptance
         run: STAGE=${{ inputs.stage }} npm run test:acceptance
 
-      - name: vpn:disconnect
-        if: inputs.needs-vpn-for-acceptance
-        run: sudo killall openvpn
+      - name: vpc:tunnel:close
+        if: always()
+        run: bash .github/artifacts/use.vpc.tunnel.sh --cleanup
 
       - name: alarm on failure
         env:
@@ -152,7 +129,7 @@ jobs:
         if: failure() && env.PAGERDUTY_INTEGRATION_KEY
         uses: Entle/action-pagerduty-alert@0.2.0 # https://github.com/marketplace/actions/pagerduty-alert
         with:
-          pagerduty-integration-key: '${{ secrets.pagerduty-integration-key }}'
+          pagerduty-integration-key: "${{ secrets.pagerduty-integration-key }}"
           pagerduty-dedup-key: github_workflow_failed
 
   prune:
@@ -165,7 +142,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1

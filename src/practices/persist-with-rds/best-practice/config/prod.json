@@ -1,20 +1,28 @@
 {
   "database": {
-    "admin": {
-      "host": "@declapract{variable.databaseClusterHost.prod}",
-      "port": 5432,
+    "target": {
       "database": "@declapract{variable.databaseName}",
-      "schema": "@declapract{variable.databaseName}",
-      "username": "@declapract{variable.databaseUserName.cicdUser}",
-      "password": "__PARAM__"
+      "schema": "@declapract{variable.databaseName}"
     },
-    "service": {
-      "host": "@declapract{variable.databaseClusterHost.prod}",
-      "port": 5432,
-      "database": "@declapract{variable.databaseName}",
-      "schema": "@declapract{variable.databaseName}",
-      "username": "@declapract{variable.databaseUserName.serviceUser}",
-      "password": "__PARAM__"
+    "role": {
+      "cicd": {
+        "username": "@declapract{variable.databaseUserName.cicdUser}",
+        "password": "__PARAM__"
+      },
+      "crud": {
+        "username": "@declapract{variable.databaseUserName.serviceUser}",
+        "password": "__PARAM__"
+      }
+    },
+    "tunnel": {
+      "local": {
+        "host": "@declapract{variable.databaseTunnelHost.prod}",
+        "port": 15433
+      },
+      "lambda": {
+        "host": "@declapract{variable.databaseClusterHost.prod}",
+        "port": 5432
+      }
     }
   }
 }

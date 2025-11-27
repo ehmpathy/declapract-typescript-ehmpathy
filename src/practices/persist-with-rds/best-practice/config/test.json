@@ -1,20 +1,25 @@
 {
   "database": {
-    "admin": {
-      "host": "localhost",
-      "port": 7821,
+    "target": {
       "database": "@declapract{variable.databaseName}",
-      "schema": "@declapract{variable.databaseName}",
-      "username": "@declapract{variable.databaseUserName.cicdUser}",
-      "password": "__CHANG3_ME__"
+      "schema": "@declapract{variable.databaseName}"
     },
-    "service": {
-      "host": "localhost",
-      "port": 7821,
-      "database": "@declapract{variable.databaseName}",
-      "schema": "@declapract{variable.databaseName}",
-      "username": "@declapract{variable.databaseUserName.serviceUser}",
-      "password": "__CHANG3_ME__"
+    "role": {
+      "cicd": {
+        "username": "@declapract{variable.databaseUserName.cicdUser}",
+        "password": "__CHANG3_ME__"
+      },
+      "crud": {
+        "username": "@declapract{variable.databaseUserName.serviceUser}",
+        "password": "__CHANG3_ME__"
+      }
+    },
+    "tunnel": {
+      "local": {
+        "host": "localhost",
+        "port": 7821
+      },
+      "lambda": null
     }
   }
 }

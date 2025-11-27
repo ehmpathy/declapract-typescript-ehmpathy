@@ -5,13 +5,13 @@ on:
     inputs:
       working-directory:
         type: string
-        description: 'the directory from within which to execute terraform commands'
+        description: "the directory from within which to execute terraform commands"
       github-environment:
         type: string
-        description: 'the github environment that the apply step will be executed in'
+        description: "the github environment that the apply step will be executed in"
       allow-apply:
         type: boolean
-        description: 'whether the apply step is enabled. defaults to true on main'
+        description: "whether the apply step is enabled. defaults to true on main"
         default: ${{ github.ref == 'refs/heads/main' }}
       aws-region:
         type: string
@@ -32,7 +32,7 @@ on:
 
 jobs:
   plan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}
@@ -85,7 +85,7 @@ jobs:
         run: echo "${{ steps.evaluate-plan.outputs.has-changes-planned }}"
 
   apply:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: ${{ inputs.github-environment }}
     needs: plan
     if: ${{ inputs.allow-apply == true && needs.plan.outputs.has-changes-planned == 'true' }}

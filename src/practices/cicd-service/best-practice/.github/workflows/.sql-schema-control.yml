@@ -5,14 +5,14 @@ on:
     inputs:
       stage:
         type: string
-        description: 'the stage to execute against'
+        description: "the stage to execute against"
         required: true
       github-environment:
         type: string
-        description: 'the github environment that the apply step will be executed in'
+        description: "the github environment that the apply step will be executed in"
       allow-apply:
         type: boolean
-        description: 'whether the apply step is enabled. defaults to true on main'
+        description: "whether the apply step is enabled. defaults to true on main"
         default: ${{ github.ref == 'refs/heads/main' }}
       aws-region:
         type: string
@@ -27,17 +27,24 @@ on:
       aws-secret-access-key:
         required: true
         description: required credentials to authenticate with aws provider for db credentials
-      open-vpn-config:
-        required: true
-        description: complete openvpn config required to enter the vpn
 
 jobs:
   install:
     uses: ./.github/workflows/.install.yml
 
+  # awaken the database in this environment; if it's dev, then the database is probably asleep, so wait for it to wakeup first
+  awaken:
+    uses: ./.github/workflows/.awaken-rds.yml
+    with:
+      aws-region: ${{ inputs.aws-region }}
+    secrets:
+      aws-account-id: ${{ inputs.aws-account-id }}
+      aws-access-key-id: ${{ secrets.aws-access-key-id }}
+      aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+
   plan:
     runs-on: ubuntu-24.04
-    needs: [install]
+    needs: [install, awaken]
     outputs:
       has-changes-planned: ${{ steps.evaluate-plan.outputs.has-changes-planned }}
     steps:
@@ -47,7 +54,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: node-modules cache get
         uses: actions/cache/restore@v4
@@ -74,26 +81,17 @@ jobs:
             && echo 'wrong aws account' && exit 1 \
             || echo 'correct aws account';
 
-      - name: vpn:prepare
+      - name: vpc:tunnel:open
         run: |
-          sudo apt update \
-          && sudo apt-get install openvpn openvpn-systemd-resolved \
-          && mkdir ~/.vpn \
-          && echo "${{ secrets.open-vpn-config }}" | base64 -d > ~/.vpn/vpn.connection.ovpn
-
-      - name: vpn:connect
-        run: |
-          # create the log file, so that we have permissions to read it
-          touch openvpn.log
-
-          # start openvpn in the background
-          sudo openvpn --config ~/.vpn/vpn.connection.ovpn --daemon --log openvpn.log
-
-          # wait until we've confirmed that it successfully connected; https://superuser.com/a/900134/425694
-          ( tail -f -n0 openvpn.log & ) | grep -q "Initialization Sequence Completed"
+          # open a tunnel into the vpc to be able to connect to the database
+          bash .github/artifacts/use.vpc.tunnel.sh --daemon --on-fail-logdump
 
       - name: plan
         run: STAGE=${{ inputs.stage }} npm run provision:schema:plan | tee ./plan.log
+
+      - name: vpc:tunnel:close
+        if: always()
+        run: bash .github/artifacts/use.vpc.tunnel.sh --cleanup
 
       - name: evaluate plan
         id: evaluate-plan
@@ -101,7 +99,7 @@ jobs:
           # check that there was not a connection error
           if grep "connect ETIMEDOUT" ./plan.log
           then
-            echo "🛑 connection timed out, could not execute plan. is vpn working?"
+            echo "🛑 connection timed out, could not execute plan. is vpc tunnel working?"
             exit 1
           fi
 
@@ -116,9 +114,6 @@ jobs:
       - name: has changes planned?
         run: echo "${{ steps.evaluate-plan.outputs.has-changes-planned }}"
 
-      - name: vpn:disconnect
-        run: sudo killall openvpn
-
   apply:
     runs-on: ubuntu-24.04
     environment: ${{ inputs.github-environment }}
@@ -131,7 +126,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: node-modules cache get
         uses: actions/cache/restore@v4
@@ -158,26 +153,14 @@ jobs:
             && echo 'wrong aws account' && exit 1 \
             || echo 'correct aws account';
 
-      - name: vpn:prepare
+      - name: vpc:tunnel:open
         run: |
-          sudo apt update \
-          && sudo apt-get install openvpn openvpn-systemd-resolved \
-          && mkdir ~/.vpn \
-          && echo "${{ secrets.open-vpn-config }}" | base64 -d > ~/.vpn/vpn.connection.ovpn
-
-      - name: vpn:connect
-        run: |
-          # create the log file, so that we have permissions to read it
-          touch openvpn.log
-
-          # start openvpn in the background
-          sudo openvpn --config ~/.vpn/vpn.connection.ovpn --daemon --log openvpn.log
-
-          # wait until we've confirmed that it successfully connected; https://superuser.com/a/900134/425694
-          ( tail -f -n0 openvpn.log & ) | grep -q "Initialization Sequence Completed"
+          # open a tunnel into the vpc to be able to connect to the database
+          bash .github/artifacts/use.vpc.tunnel.sh --daemon --on-fail-logdump
 
       - name: apply
         run: STAGE=${{ inputs.stage }} npm run provision:schema:apply
 
-      - name: vpn:disconnect
-        run: sudo killall openvpn
+      - name: vpc:tunnel:close
+        if: always()
+        run: bash .github/artifacts/use.vpc.tunnel.sh --cleanup
