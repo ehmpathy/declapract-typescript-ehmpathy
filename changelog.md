@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.41.0...v0.42.0) (2025-11-28)
+
+
+### Features
+
+* **pnpm:** cutover to pnpm for perf++ ([83937cb](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/83937cb082955ca8e5f9f1515281c0df7fb2c217))
+
 ## [0.41.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.40.0...v0.41.0) (2025-11-28)
 
 
