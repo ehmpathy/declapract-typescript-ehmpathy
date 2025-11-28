@@ -17,6 +17,7 @@ use-cases:
       - prettier
       - tests
       - typescript
+      - pnpm
   npm-package:
     extends:
       - typescript-project

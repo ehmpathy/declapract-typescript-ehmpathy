@@ -67,14 +67,10 @@ jobs:
 
       - name: node-modules cache get
         uses: actions/cache/restore@v4
-        id: cache
         with:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
-
-      - name: node-modules cache miss install
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts --prefer-offline --no-audit
+          fail-on-cache-miss: true
 
       - name: deploy
         run: STAGE=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy
@@ -107,14 +103,10 @@ jobs:
 
       - name: node-modules cache get
         uses: actions/cache/restore@v4
-        id: cache
         with:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
-
-      - name: node-modules cache miss install
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts --prefer-offline --no-audit
+          fail-on-cache-miss: true
 
       - name: vpc:tunnel:open
         if: inputs.needs-vpn-for-acceptance
@@ -160,14 +152,10 @@ jobs:
 
       - name: node-modules cache get
         uses: actions/cache/restore@v4
-        id: cache
         with:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
-
-      - name: node-modules cache miss install
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts --prefer-offline --no-audit
+          fail-on-cache-miss: true
 
       - name: prune
         run: STAGE=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy:prune
