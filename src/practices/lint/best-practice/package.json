@@ -13,7 +13,7 @@
   "scripts": {
     "fix:lint": "eslint -c ./.eslintrc.js src/**/*.ts --fix",
     "test:lint:eslint": "eslint -c ./.eslintrc.js src/**/*.ts",
-    "test:lint:deps": "npx depcheck -c ./depcheckrc.yml",
+    "test:lint:deps": "npx depcheck -c ./.depcheckrc.yml",
     "test:lint": "npm run test:lint:eslint && npm run test:lint:deps"
   }
 }

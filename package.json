@@ -24,7 +24,7 @@
     "test:types": "tsc -p ./tsconfig.build.json --noEmit",
     "test:format:prettier": "prettier --parser typescript --check 'src/**/*.ts' --config ./prettier.config.js",
     "test:format": "npm run test:format:prettier",
-    "test:lint:deps": "npx depcheck -c ./depcheckrc.yml",
+    "test:lint:deps": "npx depcheck -c ./.depcheckrc.yml",
     "test:lint:eslint": "eslint -c ./.eslintrc.js src/**/*.ts",
     "test:lint": "npm run test:lint:eslint && npm run test:lint:deps",
     "test:unit": "jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -z $THOROUGH ] && echo '--changedSince=main')",
@@ -37,7 +37,7 @@
     "prepublish": "npm run build",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify",
-    "postinstall": "[ -d .git ] && npm run prepare:husky || exit 0",
+    "prepare": "[ -d .git ] && npm run prepare:husky || exit 0",
     "prepare:husky": "npx husky install && chmod ug+x .husky/*"
   },
   "dependencies": {

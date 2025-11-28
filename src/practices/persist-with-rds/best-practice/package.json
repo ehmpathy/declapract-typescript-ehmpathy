@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "pg": "@declapract{check.minVersion('8.3.0')}",
-    "procedure-fns": "@declapract{check.minVersion('1.0.0')}",
     "yesql": "@declapract{check.minVersion('3.2.2')}"
   },
   "devDependencies": {
