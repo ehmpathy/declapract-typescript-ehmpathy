@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.41.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.40.0...v0.41.0) (2025-11-28)
+
+
+### Features
+
+* **tunnel:** cutover to use vpc tunnels rather than vpn ([eab15c0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/eab15c0e2ec1af641686b83174fd1796f8ac53e6))
+* **vpc:** use declastruct controlled tunnels in cicd ([ea5fc12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/ea5fc1236b5d17d9405e8b83e7c52226dc73a066))
+
+
+### Bug Fixes
+
+* **tsc:** ensure .build correctly excludes .test artifacts ([b4c3f65](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b4c3f6516e455aa8336ab37701438021e1332702))
+
 ## [0.40.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.39.21...v0.40.0) (2025-11-24)
 
 
