@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.42.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.0...v0.42.1) (2025-11-28)
+
+
+### Bug Fixes
+
+* **github:** ensure provision-github bad practice removes tf files ([6d32661](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6d32661b0f3216ce33c409a0b1c9221a25d0dea8))
+* **pkg:** prepare instead of postinstall; also, depcheckr config path ([3669d2f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/3669d2f8d60001d3d699eb78c5cb1ab1db1dbe58))
+
 ## [0.42.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.41.0...v0.42.0) (2025-11-28)
 
 
