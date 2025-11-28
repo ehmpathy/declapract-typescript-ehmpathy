@@ -4,20 +4,19 @@ const configInstance = new Config();
 const getConfig = async () =>
   configInstance.get(process.env.STAGE || undefined);
 
-const promiseSchemaControlConfig = async () => {
+const promiseSchemaControlCredentials = async () => {
   const config = await getConfig();
-  const dbConfig = config.database.admin; // NOTE: schema control must have DDL privileges
-  const schemaControlConfig = {
-    host: dbConfig.host,
-    port: dbConfig.port,
-    database: dbConfig.schema, // i.e., db = schema
-    schema: dbConfig.schema,
-    username: dbConfig.username,
-    password: dbConfig.password,
+  const credentials = {
+    host: config.database.tunnel.local.host,
+    port: config.database.tunnel.local.port,
+    database: config.database.target.database, // i.e., db = schema
+    schema: config.database.target.schema,
+    username: config.database.role.cicd.username,
+    password: config.database.role.cicd.password,
   };
-  return schemaControlConfig;
+  return credentials;
 };
 
 module.exports = {
-  promiseConfig: promiseSchemaControlConfig,
+  promiseConfig: promiseSchemaControlCredentials,
 };

@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "provision:docker:clear": "docker rm -f $(docker ps -a -f 'publish=7821' -q) 2>/dev/null || true && echo 'ensured port is available 👍'",
+    "provision:docker:prepare": "cp provision/schema/sql/init/.extensions.sql provision/docker/integration-test-db/init/extensions.sql && cp provision/schema/sql/init/.schema.sql provision/docker/integration-test-db/init/schema.sql && cp provision/schema/sql/init/.user.cicd.sql provision/docker/integration-test-db/init/user.cicd.sql",
+    "provision:docker:up": "docker compose -f ./provision/docker/integration-test-db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
+    "provision:docker:await": "docker compose -f ./provision/docker/integration-test-db/docker-compose.yml exec -T postgres /root/wait-for-postgres.sh",
+    "provision:docker:down": "docker compose -f ./provision/docker/integration-test-db/docker-compose.yml down"
+  }
+}

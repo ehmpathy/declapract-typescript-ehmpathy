@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "declastruct": "@declapract{check.minVersion('1.3.0')}",
+    "declastruct-aws": "@declapract{check.minVersion('1.0.3')}",
+    "declastruct-unix-network": "@declapract{check.minVersion('1.0.0')}"
+  }
+}

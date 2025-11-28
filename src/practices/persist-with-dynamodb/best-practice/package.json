@@ -7,9 +7,10 @@
   },
   "scripts": {
     "generate:dao:dynamodb": "npx dynamodb-dao-generator generate && npm run fix:format",
-    "provision:docker:up": "docker compose -f ./provision/docker/integration-test-db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
-    "provision:docker:down": "docker compose -f ./provision/docker/integration-test-db/docker-compose.yml down",
-    "provision:dynamodb:schema": "terraform -chdir=provision/aws/environments/test apply -auto-approve",
-    "provision:integration-test-db": "npm run provision:docker:up && npm run provision:dynamodb:schema"
+    "provision:testdb:docker:up": "docker compose -f ./provision/docker/integration-test-db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
+    "provision:testdb:docker:down": "docker compose -f ./provision/docker/integration-test-db/docker-compose.yml down",
+    "provision:testdb:dynamodb:schema": "terraform -chdir=provision/aws/environments/test apply -auto-approve",
+    "provision:testdb": "npm run provision:testdb:docker:up && npm run provision:testdb:dynamodb:schema",
+    "start:testdb": "npm run provision:testdb"
   }
 }

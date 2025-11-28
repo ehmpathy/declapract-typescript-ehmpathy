@@ -4,7 +4,8 @@
     "rootDir": "src"
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "nontyped_modules/**/*.d.ts"
   ],
   "exclude": [
     "**/*.test.ts", // all explicitly .test files are dev only assets too

@@ -32,19 +32,9 @@ jobs:
   install:
     uses: ./.github/workflows/.install.yml
 
-  # awaken the database in this environment; if it's dev, then the database is probably asleep, so wait for it to wakeup first
-  awaken:
-    uses: ./.github/workflows/.awaken-rds.yml
-    with:
-      aws-region: ${{ inputs.aws-region }}
-    secrets:
-      aws-account-id: ${{ inputs.aws-account-id }}
-      aws-access-key-id: ${{ secrets.aws-access-key-id }}
-      aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
-
   plan:
     runs-on: ubuntu-24.04
-    needs: [install, awaken]
+    needs: [install]
     outputs:
       has-changes-planned: ${{ steps.evaluate-plan.outputs.has-changes-planned }}
     steps:
@@ -82,16 +72,10 @@ jobs:
             || echo 'correct aws account';
 
       - name: vpc:tunnel:open
-        run: |
-          # open a tunnel into the vpc to be able to connect to the database
-          bash .github/artifacts/use.vpc.tunnel.sh --daemon --on-fail-logdump
+        run: STAGE=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
 
       - name: plan
         run: STAGE=${{ inputs.stage }} npm run provision:schema:plan | tee ./plan.log
-
-      - name: vpc:tunnel:close
-        if: always()
-        run: bash .github/artifacts/use.vpc.tunnel.sh --cleanup
 
       - name: evaluate plan
         id: evaluate-plan
@@ -154,13 +138,7 @@ jobs:
             || echo 'correct aws account';
 
       - name: vpc:tunnel:open
-        run: |
-          # open a tunnel into the vpc to be able to connect to the database
-          bash .github/artifacts/use.vpc.tunnel.sh --daemon --on-fail-logdump
+        run: STAGE=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
 
       - name: apply
         run: STAGE=${{ inputs.stage }} npm run provision:schema:apply
-
-      - name: vpc:tunnel:close
-        if: always()
-        run: bash .github/artifacts/use.vpc.tunnel.sh --cleanup

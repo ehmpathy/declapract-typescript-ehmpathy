@@ -19,6 +19,11 @@ on:
         type: string
         description: the id of the account the credentials are expected to access
         required: true
+      needs-vpn-for-acceptance:
+        type: boolean
+        description: whether or not this environment needs vpn access for acceptance tests
+        required: false
+        default: false
     secrets:
       aws-access-key-id:
         required: true
@@ -112,16 +117,11 @@ jobs:
         run: npm ci --ignore-scripts --prefer-offline --no-audit
 
       - name: vpc:tunnel:open
-        run: |
-          # open a tunnel into the vpc to be able to connect to the database
-          bash .github/artifacts/use.vpc.tunnel.sh --daemon --on-fail-logdump
+        if: inputs.needs-vpn-for-acceptance
+        run: STAGE=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
 
       - name: test:acceptance
         run: STAGE=${{ inputs.stage }} npm run test:acceptance
-
-      - name: vpc:tunnel:close
-        if: always()
-        run: bash .github/artifacts/use.vpc.tunnel.sh --cleanup
 
       - name: alarm on failure
         env:

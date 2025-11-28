@@ -37,7 +37,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v4
@@ -58,7 +58,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v4
@@ -79,7 +79,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v4
@@ -100,7 +100,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v4
@@ -121,7 +121,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v4
@@ -142,7 +142,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v4
@@ -166,8 +166,8 @@ jobs:
             && echo 'wrong aws account' && exit 1 \
             || echo 'correct aws account';
 
-      - name: provision:integration-test-db
-        run: npm run provision:integration-test-db --if-present
+      - name: provision:testdb
+        run: npm run provision:testdb --if-present
 
       - name: test:integration
         run: THOROUGH=true npm run test:integration
@@ -182,7 +182,7 @@ jobs:
       - name: set node-version
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: get node-modules from cache
         uses: actions/cache/restore@v4
@@ -206,8 +206,8 @@ jobs:
             && echo 'wrong aws account' && exit 1 \
             || echo 'correct aws account';
 
-      - name: provision:integration-test-db
-        run: npm run provision:integration-test-db --if-present
+      - name: provision:testdb
+        run: npm run provision:testdb --if-present
 
       - name: test:acceptance:locally
         run: npm run test:acceptance:locally
