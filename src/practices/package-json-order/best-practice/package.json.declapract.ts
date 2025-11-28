@@ -68,6 +68,7 @@ export const desiredRelativeKeyOrder = {
     'postversion',
     'postinstall',
     'prepare:husky',
+    'prepare',
     'deploy:prune',
     'deploy:release',
     'deploy:send-notification',
