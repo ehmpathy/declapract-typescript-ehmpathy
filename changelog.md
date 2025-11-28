@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.1...v0.42.2) (2025-11-28)
+
+
+### Bug Fixes
+
+* **pkg:** remove postinstall via badpractice fix ([cad88d7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/cad88d7208e8b652975a3a247d9c54c16a4174e8))
+
 ## [0.42.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.0...v0.42.1) (2025-11-28)
 
 
