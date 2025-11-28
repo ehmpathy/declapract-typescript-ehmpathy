@@ -6,6 +6,12 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "dist",
+    "declaration": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitOverride": false,
+    "target": "es2020"
   },
   "include": [
     "src/**/*.declapract.ts",

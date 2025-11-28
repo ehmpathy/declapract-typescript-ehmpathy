@@ -4,19 +4,14 @@
     "rootDir": "src"
   },
   "include": [
-    "src/**/*.declapract.ts"
+    "src/**/*.declapract.ts",
+    "nontyped_modules/**/*.d.ts"
   ],
   "exclude": [
-    "dist",
-    "coverage",
-    "node_modules",
-    "acceptance",
-    "provision",
-    "jest.*",
-    "prettier.*",
-    "commitlint.*",
-    "codegen.*",
-    "src/**/*.test.(ts|js)",
-    "src/**/__test_utils__/**/*.(ts|js)"
+    "**/*.test.ts", // all explicitly .test files are dev only assets too
+    "**/*.test.js",
+    "**/.test/**/*",
+    "**/.scratch/**/*",
+    "**/__test*__/**/*" // todo: deprecate this pattern in favor of .test
   ]
 }
