@@ -16,26 +16,30 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: set node-version
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: ".nvmrc"
-
       - name: node-modules deps hash
         id: deps-hash
         run: |
           PACKAGE_DEPS_HASH=$(md5sum pnpm-lock.yaml | awk '{print $1}');
           echo "PACKAGE_DEPS_HASH=$PACKAGE_DEPS_HASH"
           echo "package-deps-hash=$PACKAGE_DEPS_HASH" >> "$GITHUB_OUTPUT"
-      - name: node-modules cache get
+
+      - name: node-modules cache check
         uses: actions/cache/restore@v4
         id: cache
         with:
           path: ./node_modules
           key: ${{ runner.os }}-pnpm-${{ steps.deps-hash.outputs.package-deps-hash }}
+          lookup-only: true
+
+      - name: node-modules cache miss setup node
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: node-modules cache miss setup pnpm
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: pnpm/action-setup@v4
 
       - name: node-modules cache miss install
         if: steps.cache.outputs.cache-hit != 'true'
