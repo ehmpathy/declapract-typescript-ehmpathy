@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.42.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.2...v0.42.3) (2025-11-29)
+
+
+### Bug Fixes
+
+* **cicd:** bump install cicd of workflow ([#198](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/198)) ([05903ea](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/05903ea01726200da1535932553ab65147f4dc7d))
+* **cicd:** improve performance of .install.yml ([#194](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/194)) ([9b9dcba](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/9b9dcba22f90d7cbf67b5f10d37cb23b8c8eaa5d))
+* **cicd:** repair tests after practs update ([#196](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/196)) ([9df1700](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/9df17006dce5399fb2df6ed19ce8060079a7af42))
+* **practs:** bump to latest best ([8599a2c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/8599a2c7a878e7c6bd1a433446089eb03d3f65c0))
+* **tests:** move __test*__ dirs to .test/assets ([#197](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/197)) ([2df4f5b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2df4f5b45b5d211d31301262aebe2af1565e0b67))
+
 ## [0.42.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.1...v0.42.2) (2025-11-28)
 
 
