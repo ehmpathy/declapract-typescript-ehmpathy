@@ -17,3 +17,5 @@ ignores:
   - helpful-errors
   - visualogic
   - simple-log-methods
+  - tsx
+  - chalk
