@@ -21,7 +21,7 @@ const config: Config = {
   ],
   testMatch: [
     // note: order matters
-    '**/*.test.ts',
+    '**/*.declapract.test.ts',
     '!**/*.acceptance.test.ts',
     '!**/*.integration.test.ts',
   ],
