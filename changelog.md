@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.3...v0.42.4) (2025-11-29)
+
+
+### Bug Fixes
+
+* **deps:** bump simple-artifact-builder to handle pnpm symlinks in artifacts ([#199](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/199)) ([003322f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/003322f006aa5a4b709b3a4cd06e09d1e724bc04))
+
 ## [0.42.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.2...v0.42.3) (2025-11-29)
 
 
