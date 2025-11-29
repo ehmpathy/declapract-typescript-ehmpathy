@@ -19,7 +19,7 @@ const config: Config = {
     // here's an example of how to ignore esm module transformation, when needed
     // 'node_modules/(?!(@octokit|universal-user-agent|before-after-hook)/)',
   ],
-  testMatch: ['**/*.integration.test.ts'],
+  testMatch: ['**/*.declapract.integration.test.ts'],
   setupFiles: ['core-js'],
   setupFilesAfterEnv: ['./jest.integration.env.ts'],
 
