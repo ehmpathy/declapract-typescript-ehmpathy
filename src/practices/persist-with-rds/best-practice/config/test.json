@@ -16,10 +16,16 @@
     },
     "tunnel": {
       "local": {
+        "via": "jdbc",
         "host": "localhost",
         "port": 7821
       },
-      "lambda": null
+      "lambda": {
+        "via": "rds-data-api",
+        "resourceArn": "arn:aws:rds:us-east-1:000000000000:cluster:@declapract{variable.databaseName}-local",
+        "secretArn": "arn:aws:secretsmanager:us-east-1:000000000000:secret:@declapract{variable.databaseName}-local/@declapract{variable.databaseUserName.serviceUser}",
+        "endpoint": "http://localhost:7823"
+      }
     }
   }
 }

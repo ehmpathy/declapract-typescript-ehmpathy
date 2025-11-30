@@ -34,4 +34,90 @@ provider:
       expect(fixed.contents).toContain('TZ: UTC');
     });
   });
+
+  given('a sls.yaml that needs RDS Data API permissions', () => {
+    const example = `
+service: svc-example
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  iamRoleStatements:
+    # parameter store access
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+      Resource: arn:aws:ssm:\${aws:region}:\${aws:accountId}:parameter/*
+    `.trim();
+
+    then(
+      'it should append RDS Data API policy if not already present',
+      async () => {
+        const fixed = await fix(example, {} as any);
+        expect(fixed.contents).toContain('rds-data:ExecuteStatement');
+        expect(fixed.contents).toContain('rds-data:BatchExecuteStatement');
+        expect(fixed.contents).toContain('rds-data:BeginTransaction');
+        expect(fixed.contents).toContain('rds-data:CommitTransaction');
+        expect(fixed.contents).toContain('rds-data:RollbackTransaction');
+        expect(fixed.contents).toContain('secretsmanager:GetSecretValue');
+        expect(fixed.contents).toContain('rds-db-credentials');
+      },
+    );
+
+    then('it should not duplicate RDS Data API policy if already present', async () => {
+      const exampleWithPolicy = `
+service: svc-example
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  iamRoleStatements:
+    # allow RDS Data API access
+    - Effect: Allow
+      Action:
+        - rds-data:ExecuteStatement
+        - rds-data:BatchExecuteStatement
+        - rds-data:BeginTransaction
+        - rds-data:CommitTransaction
+        - rds-data:RollbackTransaction
+      Resource: arn:aws:rds:\${aws:region}:\${aws:accountId}:cluster:ahbodedb*
+      `.trim();
+      const fixed = await fix(exampleWithPolicy, {} as any);
+      const matches = (
+        fixed.contents?.match(/rds-data:ExecuteStatement/g) || []
+      ).length;
+      expect(matches).toBe(1);
+    });
+  });
+
+  given('a sls.yaml that has VPC config with SSM parameters', () => {
+    const example = `
+service: svc-example
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  vpc:
+    securityGroupIds:
+      - \${ssm:/tf/infrastructure/vpc/main/lambdaSecurityGroupId}
+    subnetIds:
+      - \${ssm:/tf/infrastructure/vpc/main/lambdaSubnet1Id}
+      - \${ssm:/tf/infrastructure/vpc/main/lambdaSubnet2Id}
+      - \${ssm:/tf/infrastructure/vpc/main/lambdaSubnet3Id}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+      Resource: '*'
+    `.trim();
+
+    then('it should remove the VPC config', async () => {
+      const fixed = await fix(example, {} as any);
+      expect(fixed.contents).not.toContain('vpc:');
+      expect(fixed.contents).not.toContain('securityGroupIds');
+      expect(fixed.contents).not.toContain('subnetIds');
+      expect(fixed.contents).not.toContain('lambdaSecurityGroupId');
+      expect(fixed.contents).not.toContain('lambdaSubnet1Id');
+    });
+  });
 });

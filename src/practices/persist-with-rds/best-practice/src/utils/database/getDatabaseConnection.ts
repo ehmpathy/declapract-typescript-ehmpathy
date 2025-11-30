@@ -1,17 +1,15 @@
 import { HelpfulError, UnexpectedCodePathError } from 'helpful-errors';
-import pg, { Client, QueryResult, QueryResultRow } from 'pg';
+import { type QueryResult, type QueryResultRow } from 'pg';
 
 import { getConfig } from '../config/getConfig';
 import { environment } from '../environment';
-
-// https://github.com/brianc/node-postgres/pull/353#issuecomment-283709264
-pg.types.setTypeParser(20, (value) => parseInt(value, 10)); // cast bigints to numbers; by default, pg returns bigints as strings, since max val of bigint is bigger than max safe value in js
-pg.types.setTypeParser(1700, (value) => parseFloat(value)); // cast numerics to numbers; by default, pg returns numerics as strings
+import { getDatabaseConnectionViaJdbc } from './getDatabaseConnectionViaJdbc';
+import { getDatabaseConnectionViaRdsDataApi } from './getDatabaseConnectionViaRdsDataApi';
 
 export interface DatabaseConnection {
   query: <Row extends QueryResultRow>(args: {
     sql: string;
-    values?: any[];
+    values?: unknown[];
   }) => Promise<QueryResult<Row>>;
   end: () => Promise<void>;
 }
@@ -23,7 +21,7 @@ export class DatabaseQueryError extends HelpfulError {
     caught,
   }: {
     sql: string;
-    values?: any[];
+    values?: unknown[];
     caught: Error;
   }) {
     const message = `
@@ -45,45 +43,46 @@ export const getDatabaseConnection = async (): Promise<DatabaseConnection> => {
   const role = config.database.role.crud;
 
   // determine which tunnel to use based on environment.server
-  const tunnel =
-    environment.server === 'AWS:LAMBDA'
-      ? config.database.tunnel.lambda
-      : config.database.tunnel.local;
+  const tunnel = (() => {
+    // if we're on a lambda, we must use the lambda tunnel
+    if (environment.server === 'AWS:LAMBDA')
+      return config.database.tunnel.lambda;
+
+    // if there's a lambda tunnel available and its via rds data api, lets use it - to try and replicate prod codepaths maximally
+    if (config.database.tunnel.lambda?.via === 'rds-data-api')
+      // why only if via rds-data-api? cause rds-data-api doesn't require vpc access! -> we _can_ use it
+      return config.database.tunnel.lambda;
+
+    // otherwise, there may not be usable lambda tunnel available for this access (e.g., jbdc lambdas depends on within-vpc access)
+    return config.database.tunnel.local;
+  })();
 
   // ensure tunnel is defined for the requested server
-  if (!tunnel) {
+  if (!tunnel)
     throw new UnexpectedCodePathError(
-      `Database tunnel not configured for environment.server + env.access`,
+      'database tunnel not configured for environment.server + env.access',
       { environment },
     );
-  }
 
-  // instantiate the client
-  const client = new Client({
-    host: tunnel.host,
-    port: tunnel.port,
-    user: role.username,
-    password: role.password,
-    database: target.database,
+  // route based on tunnel type
+  if (tunnel.via === 'rds-data-api')
+    return getDatabaseConnectionViaRdsDataApi({
+      resourceArn: tunnel.resourceArn,
+      secretArn: tunnel.secretArn,
+      database: target.database,
+      endpoint: tunnel.endpoint,
+    });
+
+  if (tunnel.via === 'jdbc')
+    return getDatabaseConnectionViaJdbc({
+      host: tunnel.host,
+      port: tunnel.port,
+      username: role.username,
+      password: role.password,
+      database: target.database,
+    });
+
+  throw new UnexpectedCodePathError('no supported tunnel.via mechanism', {
+    tunnel,
   });
-  await client.connect();
-  await client.query(`SET search_path TO ${target.schema}, public;`); // https://www.postgresql.org/docs/current/ddl-schemas.html#DDL-SCHEMAS-
-  const dbConnection = {
-    query: ({ sql, values }: { sql: string; values?: (string | number)[] }) =>
-      client.query(sql, values),
-    end: () => client.end(),
-  };
-
-  // declare our interface
-  return {
-    query: (args: { sql: string; values?: any[] }) =>
-      dbConnection.query(args).catch((error) => {
-        throw new DatabaseQueryError({
-          sql: args.sql,
-          values: args.values,
-          caught: error,
-        });
-      }),
-    end: () => dbConnection.end(),
-  };
 };

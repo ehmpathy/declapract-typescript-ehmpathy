@@ -22,3 +22,27 @@ resource "aws_ssm_parameter" "secret_database_service_password" {
     ]
   }
 }
+resource "aws_ssm_parameter" "secret_database_role_cicd_password" {
+  name  = "${local.parameter_store_namespace}.database.role.cicd.password"
+  type  = "SecureString"
+  value = aws_ssm_parameter.secret_database_admin_password[0].value
+  tags  = local.tags
+  count = var.environment == "prod" ? 1 : 0
+  lifecycle {
+    ignore_changes = [
+      value # we only need the real value on the first initialization, afterwards, users shouldn't have this
+    ]
+  }
+}
+resource "aws_ssm_parameter" "secret_database_role_crud_password" {
+  name  = "${local.parameter_store_namespace}.database.role.crud.password"
+  type  = "SecureString"
+  value = aws_ssm_parameter.secret_database_service_password[0].value
+  tags  = local.tags
+  count = var.environment == "prod" ? 1 : 0
+  lifecycle {
+    ignore_changes = [
+      value # we only need the real value on the first initialization, afterwards, users shouldn't have this
+    ]
+  }
+}

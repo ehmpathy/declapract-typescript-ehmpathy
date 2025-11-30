@@ -16,3 +16,20 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  rds-data-api:
+    image: koxudaxi/local-data-api:0.6.12
+    container_name: @declapract{variable.databaseName}-rds-data-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - 7823:80
+    environment:
+      ENGINE: PostgreSQLJDBC
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: @declapract{variable.databaseUserName.serviceUser}
+      POSTGRES_PASSWORD: __CHANG3_ME__
+      RESOURCE_ARN: 'arn:aws:rds:us-east-1:000000000000:cluster:@declapract{variable.databaseName}-local'
+      SECRET_ARN: 'arn:aws:secretsmanager:us-east-1:000000000000:secret:@declapract{variable.databaseName}-local/@declapract{variable.databaseUserName.serviceUser}'

@@ -22,13 +22,6 @@ provider:
     STAGE: ${self:provider.stage} # deploy specifying which stage we're targeting, to enable targeting the correct config + resources (e.g., hit dev db -vs- prod db)
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
   deploymentBucket: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-${self:provider.stage}
-  vpc:
-    securityGroupIds:
-      - ${ssm:/tf/infrastructure/vpc/main/lambdaSecurityGroupId}
-    subnetIds:
-      - ${ssm:/tf/infrastructure/vpc/main/lambdaSubnet1Id}
-      - ${ssm:/tf/infrastructure/vpc/main/lambdaSubnet2Id}
-      - ${ssm:/tf/infrastructure/vpc/main/lambdaSubnet3Id}
   iamRoleStatements:
     # parameter store access
     - Effect: 'Allow'
@@ -110,3 +103,17 @@ provider:
         - athena:GetQueryExecution
         - athena:GetQueryResults
       Resource: '*'
+    # allow rds data api access
+    - Effect: Allow
+      Action:
+        - rds-data:ExecuteStatement
+        - rds-data:BatchExecuteStatement
+        - rds-data:BeginTransaction
+        - rds-data:CommitTransaction
+        - rds-data:RollbackTransaction
+      Resource: arn:aws:rds:${aws:region}:${aws:accountId}:cluster:ahbodedb*
+    # allow secrets manager access for rds data api credentials
+    - Effect: Allow
+      Action:
+        - secretsmanager:GetSecretValue
+      Resource: arn:aws:secretsmanager:${aws:region}:${aws:accountId}:secret:rds-db-credentials/*
