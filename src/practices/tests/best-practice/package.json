@@ -1,7 +1,8 @@
 {
   "devDependencies": {
-    "@types/jest": "@declapract{check.minVersion('29.2.4')}",
-    "jest": "@declapract{check.minVersion('29.3.1')}",
+    "@types/jest": "@declapract{check.minVersion('30.2.0')}",
+    "jest": "@declapract{check.minVersion('30.2.0')}",
+    "esbuild-register": "@declapract{check.minVersion('3.6.0')}",
     "test-fns": "@declapract{check.minVersion('1.4.2')}",
     "tsx": "@declapract{check.minVersion('4.20.6')}",
     "@swc/core": "@declapract{check.minVersion('1.15.3')}",

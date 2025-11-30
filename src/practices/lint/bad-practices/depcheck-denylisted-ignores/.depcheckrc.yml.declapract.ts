@@ -9,6 +9,8 @@ const denylist = [
   'ts-jest',
   'core-js',
   'babel-jest',
+  '@trivago/prettier-plugin-sort-imports',
+  '@tsconfig/node-lts-strictest',
 ];
 
 export const check: FileCheckFunction = (contents) => {
