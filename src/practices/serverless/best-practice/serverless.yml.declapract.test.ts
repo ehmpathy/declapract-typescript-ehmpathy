@@ -34,4 +34,54 @@ provider:
       expect(fixed.contents).toContain('TZ: UTC');
     });
   });
+
+  given('a sls.yaml that needs ListAccountAliases policy', () => {
+    const example = `
+service: svc-example
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  iamRoleStatements:
+    # parameter store access
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+      Resource: arn:aws:ssm:\${aws:region}:\${aws:accountId}:parameter/*
+    `.trim();
+
+    then(
+      'it should append ListAccountAliases policy if not already present',
+      async () => {
+        const fixed = await fix(example, {} as any);
+        expect(fixed.contents).toContain('iam:ListAccountAliases');
+        expect(fixed.contents).toContain(
+          '# allow inferring access from account alias',
+        );
+      },
+    );
+
+    then(
+      'it should not duplicate ListAccountAliases policy if already present',
+      async () => {
+        const exampleWithPolicy = `
+service: svc-example
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  iamRoleStatements:
+    # allow inferring access from account alias
+    - Effect: Allow
+      Action:
+        - iam:ListAccountAliases
+      Resource: '*'
+      `.trim();
+        const fixed = await fix(exampleWithPolicy, {} as any);
+        const matches = (fixed.contents?.match(/iam:ListAccountAliases/g) || [])
+          .length;
+        expect(matches).toBe(1);
+      },
+    );
+  });
 });
