@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.0...v0.43.1) (2025-11-30)
+
+
+### Bug Fixes
+
+* **lint:** make lint upgrades more backwards compat ([#209](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/209)) ([d33044e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d33044e8e2b51c730b21e281d7dbdf42c7efbba4))
+
 ## [0.43.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.5...v0.43.0) (2025-11-30)
 
 
