@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.42.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.4...v0.42.5) (2025-11-30)
+
+
+### Bug Fixes
+
+* **perf:** use @swc/jest instead of ts-jest + babel + corejs ([#204](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/204)) ([c8eb35b](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c8eb35b86d77f41f5ca00b9a0ec07d0aead0edf7))
+* **rds:** integration-test-db -&gt; testdb ([#201](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/201)) ([26c1505](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/26c15051029a708f2c6efcca78c987eb83ffd275))
+
 ## [0.42.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.3...v0.42.4) (2025-11-29)
 
 
