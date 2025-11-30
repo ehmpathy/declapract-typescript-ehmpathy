@@ -7,7 +7,8 @@
 # What it does:
 #   1. Creates an alias 'npm.slow' pointing to the original npm binary
 #   2. Creates an alias 'npm' that redirects to pnpm
-#   3. Persists aliases to ~/.bash_aliases (sourced by ~/.bashrc)
+#   3. Sets up pnpm tab completion (works for both pnpm and npm alias)
+#   4. Everything goes in ~/.bash_aliases (works in both bash and zsh)
 #
 # When to use:
 #   - After setting up a new development environment
@@ -19,15 +20,15 @@
 set -euo pipefail
 
 BASH_ALIASES="${HOME}/.bash_aliases"
-
-# ensure ~/.bash_aliases exists
 touch "$BASH_ALIASES"
 
 # findsert npm.slow (only add if not already defined)
 if ! grep -q "^alias npm.slow=" "$BASH_ALIASES" 2>/dev/null; then
   NPM_PATH=$(which npm)
   echo "alias npm.slow=\"$NPM_PATH\"" >> "$BASH_ALIASES"
-  echo "Added: alias npm.slow=\"$NPM_PATH\""
+  echo "👍 findsert: alias npm.slow=\"$NPM_PATH\""
+else
+  echo "👍 findsert: npm.slow alias already exists"
 fi
 
 # upsert npm => pnpm
@@ -36,7 +37,7 @@ if grep -q "^alias npm=" "$BASH_ALIASES" 2>/dev/null; then
 else
   echo 'alias npm="pnpm"' >> "$BASH_ALIASES"
 fi
-echo "Added: alias npm=\"pnpm\""
+echo "👍 upsert: alias npm=\"pnpm\""
 
 # report
 echo ""

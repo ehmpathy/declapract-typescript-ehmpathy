@@ -29,6 +29,9 @@ importers:
       simple-log-methods:
         specifier: 0.5.0
         version: 0.5.0
+      yaml:
+        specifier: 1.10.2
+        version: 1.10.2
     devDependencies:
       '@babel/core':
         specifier: 7.28.5

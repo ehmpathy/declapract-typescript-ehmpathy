@@ -46,7 +46,8 @@
     "expect": "29.4.2",
     "flat": "5.0.2",
     "helpful-errors": "1.5.3",
-    "simple-log-methods": "0.5.0"
+    "simple-log-methods": "0.5.0",
+    "yaml": "1.10.2"
   },
   "peerDependencies": {
     "declapract": ">=0.12.1"

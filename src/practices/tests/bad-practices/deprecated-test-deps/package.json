@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "babel-jest": "@declapract{check.minVersion('0.0.0')}",
+    "@babel/core": "@declapract{check.minVersion('0.0.0')}",
+    "@babel/preset-env": "@declapract{check.minVersion('0.0.0')}",
+    "core-js": "@declapract{check.minVersion('0.0.0')}",
+    "ts-jest": "@declapract{check.minVersion('0.0.0')}"
+  }
+}

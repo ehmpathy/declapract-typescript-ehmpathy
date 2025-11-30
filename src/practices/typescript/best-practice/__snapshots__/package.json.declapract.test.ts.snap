@@ -10,7 +10,7 @@ exports[`package.json should include build:artifact when project uses artifact p
     "build:clean": "rm dist/ -rf",
     "build:compile": "tsc -p ./tsconfig.build.json",
     "build": "npm run build:clean && npm run build:compile && npm run build:artifact",
-    "test:types": "tsc -p ./tsconfig.build.json --noEmit"
+    "test:types": "tsc -p ./tsconfig.json --noEmit"
   }
 }
 "
@@ -26,7 +26,7 @@ exports[`package.json should include not include build:artifact when project doe
     "build:clean": "rm dist/ -rf",
     "build:compile": "tsc -p ./tsconfig.build.json",
     "build": "npm run build:clean && npm run build:compile",
-    "test:types": "tsc -p ./tsconfig.build.json --noEmit"
+    "test:types": "tsc -p ./tsconfig.json --noEmit"
   }
 }
 "

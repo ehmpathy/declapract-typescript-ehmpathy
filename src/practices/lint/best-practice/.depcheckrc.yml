@@ -1,15 +1,11 @@
 ignores:
-  - depcheck
+  - rhachet
   - declapract
   - declapract-typescript-ehmpathy
   - '@commitlint/config-conventional'
   - '@trivago/prettier-plugin-sort-imports'
   - '@tsconfig/node-lts-strictest'
-  - babel-jest
-  - core-js
-  - ts-jest
   - tsx
   - husky
-  - if-env
-  - test-fns
-  - helpful-errors
+  - '@swc/core'
+  - '@swc/jest'

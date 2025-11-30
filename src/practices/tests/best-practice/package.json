@@ -3,12 +3,9 @@
     "@types/jest": "@declapract{check.minVersion('29.2.4')}",
     "jest": "@declapract{check.minVersion('29.3.1')}",
     "test-fns": "@declapract{check.minVersion('1.4.2')}",
-    "ts-jest": "@declapract{check.minVersion('29.4.5')}",
     "tsx": "@declapract{check.minVersion('4.20.6')}",
-    "core-js": "@declapract{check.minVersion('3.26.1')}",
-    "@babel/core": "@declapract{check.minVersion('7.28.5')}",
-    "@babel/preset-env": "@declapract{check.minVersion('7.28.5')}",
-    "babel-jest": "@declapract{check.minVersion('30.2.0')}"
+    "@swc/core": "@declapract{check.minVersion('1.15.3')}",
+    "@swc/jest": "@declapract{check.minVersion('0.2.39')}"
   },
   "scripts": {
     "test:unit": "jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -z $THOROUGH ] && echo '--changedSince=main')",
