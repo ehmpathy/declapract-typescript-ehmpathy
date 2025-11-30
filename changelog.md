@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.1...v0.43.2) (2025-11-30)
+
+
+### Bug Fixes
+
+* **tsc:** include types/node for reliable artifacts ([#211](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/211)) ([d7fd6ce](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d7fd6ce80f99ac9219ab7931abe7454d189a7093))
+
 ## [0.43.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.0...v0.43.1) (2025-11-30)
 
 
