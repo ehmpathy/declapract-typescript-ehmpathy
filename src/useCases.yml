@@ -69,7 +69,6 @@ use-cases:
       - node
       - nonpublished-modules
       - package-json-order
-      - prettier
       - terraform-common
       - provision-github
       - lint
