@@ -14,3 +14,6 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA @declapract{variable.databaseName} GRANT SELE
 ALTER DEFAULT PRIVILEGES IN SCHEMA @declapract{variable.databaseName} GRANT EXECUTE ON FUNCTIONS TO @declapract{variable.databaseUserName.serviceUser};
 ALTER DEFAULT PRIVILEGES IN SCHEMA @declapract{variable.databaseName} GRANT USAGE, SELECT ON SEQUENCES TO @declapract{variable.databaseUserName.serviceUser};
 
+-- set default search_path; eliminates need to set per connection, which is not supported for rds data api connections
+ALTER ROLE @declapract{variable.databaseUserName.serviceUser} SET search_path TO @declapract{variable.databaseName}, public;
+

@@ -14,13 +14,12 @@
       };
     };
     tunnel: {
-      local: {
-        host: string;
-        port: number;
-      };
-      lambda: {
-        host: string;
-        port: number;
-      } | null;
+      local:
+        | { via: 'jdbc'; host: string; port: number }
+        | { via: 'rds-data-api'; resourceArn: string; secretArn: string; endpoint: string | null };
+      lambda:
+        | { via: 'jdbc'; host: string; port: number }
+        | { via: 'rds-data-api'; resourceArn: string; secretArn: string; endpoint: string | null }
+        | null;
     };
   };

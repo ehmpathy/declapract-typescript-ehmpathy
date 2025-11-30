@@ -16,12 +16,15 @@
     },
     "tunnel": {
       "local": {
+        "via": "jdbc",
         "host": "@declapract{variable.databaseTunnelHost.dev}",
         "port": 15432
       },
       "lambda": {
-        "host": "@declapract{variable.databaseClusterHost.dev}",
-        "port": 5432
+        "via": "rds-data-api",
+        "resourceArn": "arn:aws:rds:us-east-1:@declapract{variable.awsAccountId.dev}:cluster:@declapract{variable.organizationName}db",
+        "secretArn": "arn:aws:secretsmanager:us-east-1:@declapract{variable.awsAccountId.dev}:secret:rds-db-credentials/@declapract{variable.organizationName}db/user/@declapract{variable.databaseUserName.serviceUser}",
+        "endpoint": null
       }
     }
   }
