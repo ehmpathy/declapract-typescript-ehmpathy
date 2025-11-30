@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "provision:testdb:docker:prepare": "@declapract{check.contains('integration-test-db')}",
+    "provision:testdb:docker:up": "@declapract{check.contains('integration-test-db')}",
+    "provision:testdb:docker:await": "@declapract{check.contains('integration-test-db')}",
+    "provision:testdb:docker:down": "@declapract{check.contains('integration-test-db')}"
+  }
+}
