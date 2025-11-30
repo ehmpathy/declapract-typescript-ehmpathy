@@ -2,7 +2,8 @@
   "devDependencies": {
     "typescript": "@declapract{check.minVersion('5.4.5')}",
     "@tsconfig/node20": "@declapract{check.minVersion('20.1.5')}",
-    "@tsconfig/strictest": "@declapract{check.minVersion('2.0.5')}"
+    "@tsconfig/strictest": "@declapract{check.minVersion('2.0.5')}",
+    "@types/node": "@declapract{check.minVersion('22.15.21')}"
   },
   "scripts": {
     "build:clean": "rm dist/ -rf",

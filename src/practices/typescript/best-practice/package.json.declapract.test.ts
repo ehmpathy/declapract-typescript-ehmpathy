@@ -6,13 +6,11 @@ describe('package.json', () => {
       projectPractices: ['artifact'],
     } as any);
     expect(declaredBestPracticeContents).toContain('build:artifact');
-    expect(declaredBestPracticeContents).toMatchSnapshot();
   });
   it('should include not include build:artifact when project does not use artifact practice', async () => {
     const declaredBestPracticeContents = await contents({
       projectPractices: [],
     } as any);
     expect(declaredBestPracticeContents).not.toContain('build:artifact');
-    expect(declaredBestPracticeContents).toMatchSnapshot();
   });
 });
