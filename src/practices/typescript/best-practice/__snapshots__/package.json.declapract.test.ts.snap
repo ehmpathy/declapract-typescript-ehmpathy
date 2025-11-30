@@ -4,7 +4,8 @@ exports[`package.json should include build:artifact when project uses artifact p
 "{
   "devDependencies": {
     "typescript": "@declapract{check.minVersion('5.4.5')}",
-    "@tsconfig/node-lts-strictest": "@declapract{check.minVersion('18.12.1')}"
+    "@tsconfig/node20": "@declapract{check.minVersion('20.1.5')}",
+    "@tsconfig/strictest": "@declapract{check.minVersion('2.0.5')}"
   },
   "scripts": {
     "build:clean": "rm dist/ -rf",
@@ -20,7 +21,8 @@ exports[`package.json should include not include build:artifact when project doe
 "{
   "devDependencies": {
     "typescript": "@declapract{check.minVersion('5.4.5')}",
-    "@tsconfig/node-lts-strictest": "@declapract{check.minVersion('18.12.1')}"
+    "@tsconfig/node20": "@declapract{check.minVersion('20.1.5')}",
+    "@tsconfig/strictest": "@declapract{check.minVersion('2.0.5')}"
   },
   "scripts": {
     "build:clean": "rm dist/ -rf",

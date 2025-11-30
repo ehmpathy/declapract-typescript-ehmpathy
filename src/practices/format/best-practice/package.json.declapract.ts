@@ -6,7 +6,7 @@ import { isPresent } from 'type-fns';
  */
 export const contents: FileContentsFunction = (context) => {
   const formatters = [
-    'prettier',
+    'biome',
     context.projectPractices.includes('terraform') ? 'terraform' : null, // only include the terraform formatter if terraform practice is used
   ].filter(isPresent);
 

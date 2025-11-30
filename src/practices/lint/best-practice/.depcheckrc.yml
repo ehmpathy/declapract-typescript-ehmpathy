@@ -3,9 +3,11 @@ ignores:
   - declapract
   - declapract-typescript-ehmpathy
   - '@commitlint/config-conventional'
-  - '@trivago/prettier-plugin-sort-imports'
-  - '@tsconfig/node-lts-strictest'
-  - tsx
+  - '@tsconfig/node20'
+  - '@tsconfig/strictest'
+  - '@biomejs/biome'
+  - esbuild-register
+  - "@swc/core"
+  - "@swc/jest"
   - husky
-  - '@swc/core'
-  - '@swc/jest'
+  - tsx

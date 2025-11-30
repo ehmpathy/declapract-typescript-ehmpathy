@@ -23,6 +23,7 @@ export const desiredRelativeKeyOrder = {
   ],
   scripts: [
     'commit:with-cli',
+    'fix:format:biome',
     'fix:format:prettier',
     'fix:format:terraform',
     'fix:format',
@@ -55,6 +56,7 @@ export const desiredRelativeKeyOrder = {
     'test:format:terraform',
     'test:format',
     'test:lint:deps',
+    'test:lint:biome',
     'test:lint:eslint',
     'test:lint',
     'test:unit',
