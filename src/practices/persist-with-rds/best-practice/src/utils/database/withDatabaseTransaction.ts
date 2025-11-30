@@ -1,4 +1,4 @@
-import { DatabaseConnection } from './getDatabaseConnection';
+import type { DatabaseConnection } from './getDatabaseConnection';
 
 export const withDatabaseTransaction = <
   P,

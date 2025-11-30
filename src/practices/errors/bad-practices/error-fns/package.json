@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@ehmpathy/error-fns": "@declapract{check.minVersion('0.0.0')}"
+  }
+}

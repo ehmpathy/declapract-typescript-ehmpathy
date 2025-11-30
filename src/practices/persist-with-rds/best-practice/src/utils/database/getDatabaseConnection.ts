@@ -1,5 +1,5 @@
 import { HelpfulError, UnexpectedCodePathError } from 'helpful-errors';
-import pg, { Client, QueryResult, QueryResultRow } from 'pg';
+import pg, { Client, type QueryResult, type QueryResultRow } from 'pg';
 
 import { getConfig } from '../config/getConfig';
 import { getEnvironment } from '../environment';
@@ -11,7 +11,7 @@ pg.types.setTypeParser(1700, (value) => parseFloat(value)); // cast numerics to 
 export interface DatabaseConnection {
   query: <Row extends QueryResultRow>(args: {
     sql: string;
-    values?: any[];
+    values?: unknown[];
   }) => Promise<QueryResult<Row>>;
   end: () => Promise<void>;
 }
@@ -23,7 +23,7 @@ export class DatabaseQueryError extends HelpfulError {
     caught,
   }: {
     sql: string;
-    values?: any[];
+    values?: unknown[];
     caught: Error;
   }) {
     const message = `
@@ -70,14 +70,14 @@ export const getDatabaseConnection = async (): Promise<DatabaseConnection> => {
   await client.connect();
   await client.query(`SET search_path TO ${target.schema}, public;`); // https://www.postgresql.org/docs/current/ddl-schemas.html#DDL-SCHEMAS-
   const dbConnection = {
-    query: ({ sql, values }: { sql: string; values?: (string | number)[] }) =>
+    query: ({ sql, values }: { sql: string; values?: unknown[] }) =>
       client.query(sql, values),
     end: () => client.end(),
   };
 
   // declare our interface
   return {
-    query: (args: { sql: string; values?: any[] }) =>
+    query: (args: { sql: string; values?: unknown[] }) =>
       dbConnection.query(args).catch((error) => {
         throw new DatabaseQueryError({
           sql: args.sql,
