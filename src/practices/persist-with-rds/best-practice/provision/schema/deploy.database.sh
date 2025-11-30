@@ -13,7 +13,7 @@
 ##
 ## usage example:
 ## ```sh
-## ./provision/schema/deploy.database.sh dev $(op get item @declapract{variable.organizationName}db.dev.postgres | jq -r .details.password)
+## ./provision/schema/deploy.database.sh dev $(op item get ahbodedb.dev.postgres --fields label=password --format json | jq -r .value)
 ## ```
 #####################################################
 
