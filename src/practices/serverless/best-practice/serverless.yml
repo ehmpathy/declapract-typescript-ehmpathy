@@ -110,3 +110,8 @@ provider:
         - athena:GetQueryExecution
         - athena:GetQueryResults
       Resource: '*'
+    # allow inferring access from account alias
+    - Effect: Allow
+      Action:
+        - iam:ListAccountAliases
+      Resource: '*'

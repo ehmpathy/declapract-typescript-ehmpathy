@@ -1,3 +1,5 @@
 *.md
 src/practices/config/best-practice/src/utils/config/Config.ts
 src/practices/persist-with-rds/best-practice/src/utils/config/Config.ts
+dist/
+.yalc/
