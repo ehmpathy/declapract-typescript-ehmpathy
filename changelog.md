@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.43.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.5...v0.43.0) (2025-11-30)
+
+
+### Features
+
+* **lint:** upgrade to biome for faster and better lint and format ([#207](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/207)) ([f11c971](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/f11c9713ab37c3b1675befe1e3a8782ba4320ae7))
+
+
+### Bug Fixes
+
+* **pkg:** drop prettier from usecases ([#208](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/208)) ([6812037](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/681203750e1e4cc94821ad71005977f5c94f626c))
+* **sls:** ensure lambdas have list iam alias permissions ([#205](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/205)) ([6755d8f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6755d8f756c1512aed75dac978f115ac68117dd6))
+
 ## [0.42.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.42.4...v0.42.5) (2025-11-30)
 
 
