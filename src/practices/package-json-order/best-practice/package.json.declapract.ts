@@ -57,6 +57,7 @@ export const desiredRelativeKeyOrder = {
     'test:format',
     'test:lint:deps',
     'test:lint:biome',
+    'test:lint:errors',
     'test:lint:eslint',
     'test:lint',
     'test:unit',

@@ -70,6 +70,11 @@ export const getStage = (): Stage => {
   if (!isOfStage(stage)) throw new Error(`invalid stage defined '${stage}'`);
   return stage;
 };
+export const stage: Stage = getStage(); // todo: deprecate
+
+// export service client stage // todo: deprecate
+export const serviceClientStage =
+  stage === Stage.PRODUCTION ? Stage.PRODUCTION : Stage.DEVELOPMENT; // i.e., if its prod, hit prod. otherwise, dev
 
 /**
  * .what = infer access (prod/dev) from curernt credentials

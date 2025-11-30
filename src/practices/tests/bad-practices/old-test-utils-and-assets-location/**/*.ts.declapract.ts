@@ -10,16 +10,16 @@ export const check: FileCheckFunction = (contents) => {
 };
 
 /**
- * replace __test_utils__ and __test_assets__ with .test/assets in import paths
+ * replace __test_utils__ and __test_assets__ with .test.utils and .test.assets in import paths
  */
 export const fix: FileFixFunction = (contents) => {
   if (!contents) return {};
 
   // simple string replacement - the relative path stays the same, only the directory name changes
-  // e.g., from '../__test_utils__/foo' to '../.test/assets/foo'
+  // e.g., from '../__test_utils__/foo' to '../.test.utils/foo'
   const fixedContents = contents
-    .replace(/__test_utils__\//g, '.test/assets/')
-    .replace(/__test_assets__\//g, '.test/assets/');
+    .replace(/__test_utils__\//g, '.test.utils/')
+    .replace(/__test_assets__\//g, '.test.assets/');
 
   return {
     contents: fixedContents,
