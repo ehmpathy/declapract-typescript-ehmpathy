@@ -7,6 +7,6 @@
     "build:clean": "rm dist/ -rf",
     "build:compile": "tsc -p ./tsconfig.build.json",
     "build": "npm run build:clean && npm run build:compile && npm run build:artifact",
-    "test:types": "tsc -p ./tsconfig.build.json --noEmit"
+    "test:types": "tsc -p ./tsconfig.json --noEmit"
   }
 }

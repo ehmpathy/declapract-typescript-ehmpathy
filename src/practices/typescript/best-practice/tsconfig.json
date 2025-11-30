@@ -11,6 +11,7 @@
     "sourceMap": true,
     "outDir": "dist",
     "target": "es2020",
+    "incremental": true
   },
   "include": [
     "**/*.ts"

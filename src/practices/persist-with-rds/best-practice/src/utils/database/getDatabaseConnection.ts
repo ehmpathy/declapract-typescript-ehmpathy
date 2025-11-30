@@ -2,7 +2,7 @@ import { HelpfulError, UnexpectedCodePathError } from 'helpful-errors';
 import pg, { Client, QueryResult, QueryResultRow } from 'pg';
 
 import { getConfig } from '../config/getConfig';
-import { environment } from '../environment';
+import { getEnvironment } from '../environment';
 
 // https://github.com/brianc/node-postgres/pull/353#issuecomment-283709264
 pg.types.setTypeParser(20, (value) => parseInt(value, 10)); // cast bigints to numbers; by default, pg returns bigints as strings, since max val of bigint is bigger than max safe value in js
@@ -40,6 +40,7 @@ values:
 }
 
 export const getDatabaseConnection = async (): Promise<DatabaseConnection> => {
+  const environment = await getEnvironment();
   const config = await getConfig();
   const target = config.database.target;
   const role = config.database.role.crud;
