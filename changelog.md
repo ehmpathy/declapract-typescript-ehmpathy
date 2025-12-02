@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.3...v0.43.4) (2025-12-02)
+
+
+### Bug Fixes
+
+* **deps:** autofix error-fns =&gt; helpful-errors cutover ([#215](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/215)) ([e2bbf0d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e2bbf0dd0846ec69b2d72269ff42efbfef5165ed))
+
 ## [0.43.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.2...v0.43.3) (2025-11-30)
 
 
