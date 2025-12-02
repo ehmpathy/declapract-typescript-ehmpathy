@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.2...v0.43.3) (2025-11-30)
+
+
+### Bug Fixes
+
+* **errors:** deprecate error-fns ([#213](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/213)) ([68cf8ba](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/68cf8bacd43052f90c0bc5874b19f5eb350041e4))
+
 ## [0.43.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.1...v0.43.2) (2025-11-30)
 
 
