@@ -4,8 +4,8 @@
     "test:commits": "LAST_TAG=$(git describe --tags --abbrev=0 @^ 2> /dev/null || git rev-list --max-parents=0 HEAD) && npx commitlint --from $LAST_TAG --to HEAD --verbose"
   },
   "devDependencies": {
-    "@commitlint/cli": "@declapract{check.minVersion('19.3.0')}",
-    "@commitlint/config-conventional": "@declapract{check.minVersion('13.1.0')}",
+    "@commitlint/cli": "@declapract{check.minVersion('19.5.0')}",
+    "@commitlint/config-conventional": "@declapract{check.minVersion('19.5.0')}",
     "cz-conventional-changelog": "@declapract{check.minVersion('3.3.0')}",
     "husky": "@declapract{check.minVersion('7.0.2')}"
   },

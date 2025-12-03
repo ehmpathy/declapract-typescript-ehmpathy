@@ -7,8 +7,8 @@
     "fix:format:biome": "biome check --write src",
     "fix:lint": "biome check --write src",
     "test:format:biome": "biome format src",
-    "test:lint:biome": "biome check src",
-    "test:lint:errors": "biome check src --diagnostic-level=error",
+    "test:lint:biome": "biome check src --diagnostic-level=error",
+    "test:lint:biome:all": "biome check src",
     "test:lint:deps": "npx depcheck -c ./.depcheckrc.yml",
     "test:lint": "npm run test:lint:biome && npm run test:lint:deps"
   }
