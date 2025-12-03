@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.5...v0.43.6) (2025-12-03)
+
+
+### Bug Fixes
+
+* **cicd:** bump from v3 to v4 actions/checkout and actions/setup-node ([#221](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/221)) ([9cc06ab](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/9cc06ab9f8d6ba0a9c74d7189b6756266b5e3332))
+
 ## [0.43.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.4...v0.43.5) (2025-12-03)
 
 
