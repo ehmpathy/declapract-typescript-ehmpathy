@@ -5,15 +5,15 @@ on:
     inputs:
       stage:
         type: string
-        description: 'the stage of infrastructure to deploy against (e.g., prod, dev)'
+        description: "the stage of infrastructure to deploy against (e.g., prod, dev)"
         required: true
       build:
         type: string
-        description: 'the build to deploy (e.g., production, preview, development)'
+        description: "the build to deploy (e.g., production, preview, development)"
         required: true
       github-environment:
         type: string
-        description: 'the github environment that the apply step will be executed in'
+        description: "the github environment that the apply step will be executed in"
         required: true
       aws-region:
         type: string
@@ -59,12 +59,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: set node-version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -109,12 +109,12 @@ jobs:
     if: ${{ inputs.stage == 'prod' && inputs.app-web-deployment-s3-bucket }}
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: set node-version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
