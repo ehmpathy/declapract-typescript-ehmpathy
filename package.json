@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "chalk": "4.1.2",
-    "domain-objects": "0.31.0",
+    "domain-objects": "0.31.3",
     "expect": "29.4.2",
     "flat": "5.0.2",
     "helpful-errors": "1.5.3",
@@ -61,8 +61,8 @@
     "@trivago/prettier-plugin-sort-imports": "4.3.0",
     "@tsconfig/node-lts-strictest": "18.12.1",
     "@types/flat": "5.0.2",
-    "@types/node": "22.15.21",
     "@types/jest": "29.4.0",
+    "@types/node": "22.15.21",
     "@typescript-eslint/eslint-plugin": "7.8.0",
     "@typescript-eslint/parser": "7.8.0",
     "babel-jest": "30.2.0",
