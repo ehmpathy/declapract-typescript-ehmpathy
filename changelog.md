@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.6...v0.43.7) (2025-12-03)
+
+
+### Bug Fixes
+
+* **pnpm:** drop the use.npm.aliases skill ([#223](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/223)) ([c669e17](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c669e1786e13d91fe3e7d403803e13550c9ec3da))
+
 ## [0.43.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.5...v0.43.6) (2025-12-03)
 
 
