@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.43.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.4...v0.43.5) (2025-12-03)
+
+
+### Bug Fixes
+
+* **husky:** check commit more reliably ([#220](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/220)) ([0b8a100](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/0b8a100bf7978c832dcdd6a506c4bd2ade6845c8))
+* **lint:** bump commitlint version ([#217](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/217)) ([2b421d2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2b421d2c0f40501a716492f6ce37879dfe8fccfc))
+* **test:** autodetect skipped start:testdb for better agent support ([#219](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/219)) ([8f5e1f5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/8f5e1f50eb34103c0ea867cb430968f46bfdf6a6))
+
 ## [0.43.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.3...v0.43.4) (2025-12-02)
 
 
