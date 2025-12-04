@@ -6,6 +6,7 @@
   "homepage": "https://github.com/@declapract{variable.organizationName}/@declapract{variable.projectName}",
   "bugs": "https://github.com/@declapract{variable.organizationName}/@declapract{variable.projectName}/issues",
   "scripts": {
+    "fix": "npm run fix:format && npm run fix:lint",
     "prepush": "npm run test && npm run build",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify"
