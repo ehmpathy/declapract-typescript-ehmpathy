@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.43.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.7...v0.43.8) (2025-12-04)
+
+
+### Bug Fixes
+
+* **deps:** drop cross-sha256 sub-dep ([#225](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/225)) ([acf5138](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/acf51388f3f459662708b6aee62eaaed59433aaf))
+* **tsc:** use compiler option without strict boundary on esm vs cjs for now ([#227](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/227)) ([1105d8c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/1105d8cc6b9cf2e21d382651836cf21ab76ddc72))
+
 ## [0.43.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.6...v0.43.7) (2025-12-03)
 
 
