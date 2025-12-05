@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.43.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.9...v0.43.10) (2025-12-05)
+
+
+### Bug Fixes
+
+* **deps:** bump declastruct ver per plandiff bug ([#233](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/233)) ([2ffcd45](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2ffcd452a13ec294e2300eba77a7eb48997e3534))
+* **deps:** bump dobjs to elim cross-sha256 ([#231](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/231)) ([e67b2ed](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e67b2edbcab5879385d4be54a350fa2ea1cad2b7))
+
 ## [0.43.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.8...v0.43.9) (2025-12-05)
 
 
