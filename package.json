@@ -68,7 +68,7 @@
     "babel-jest": "30.2.0",
     "core-js": "3.26.1",
     "cz-conventional-changelog": "3.3.0",
-    "declastruct": "1.4.3",
+    "declastruct": "1.4.5",
     "declastruct-github": "1.0.5",
     "depcheck": "1.4.3",
     "eslint": "8.56.0",
