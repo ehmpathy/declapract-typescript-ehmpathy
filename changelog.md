@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.43.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.8...v0.43.9) (2025-12-05)
+
+
+### Bug Fixes
+
+* **deps:** bump declastruct and declapract deps ([#228](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/228)) ([004c7dc](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/004c7dc4b63d0aa8611f1b5686d04da70983d131))
+* **git:** gitattributes should ignore pnpm-lock diffs by default ([#229](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/229)) ([8a57e6f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/8a57e6ffa7812d4092cc508397275b4de44817ca))
+
 ## [0.43.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.7...v0.43.8) (2025-12-04)
 
 
