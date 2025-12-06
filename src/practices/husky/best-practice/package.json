@@ -1,7 +1,7 @@
 {
   "scripts": {
     "prepare:husky": "npx husky install && chmod ug+x .husky/*",
-    "prepare": "[ -d .git ] && npm run prepare:husky || exit 0"
+    "prepare": "[ -e .git ] && npm run prepare:husky || exit 0"
   },
   "devDependencies": {
     "husky": "@declapract{check.minVersion('8.0.3')}"
