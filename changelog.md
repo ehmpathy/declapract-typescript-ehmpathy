@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.10...v0.43.11) (2025-12-06)
+
+
+### Bug Fixes
+
+* **pkg:** support worktrees for husky prepare step ([#234](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/234)) ([7045906](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7045906688ac86a935e343df74f55fa3a690c47e))
+
 ## [0.43.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.9...v0.43.10) (2025-12-05)
 
 
