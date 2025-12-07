@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "declastruct": "@declapract{check.minVersion('1.4.5')}",
-    "declastruct-github": "@declapract{check.minVersion('1.0.5')}"
+    "declastruct": "@declapract{check.minVersion('1.5.1')}",
+    "declastruct-github": "@declapract{check.minVersion('1.0.7')}"
   }
 }
