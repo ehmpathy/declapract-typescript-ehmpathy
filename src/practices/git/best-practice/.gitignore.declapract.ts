@@ -13,6 +13,7 @@ const expectedIgnores = [
   '.yalc',
   '.temp',
   '.vscode',
+  '*.local.json', // e.g., .claude/permission.attempts.local.json
   'coverage',
   'dist',
   'node_modules',
