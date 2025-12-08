@@ -8,12 +8,13 @@
   "files": {
     "includes": [
       "**/src/**/*.ts",
+      "**/provision/**/*.ts",
       "!**/dist",
       "!**/coverage",
       "!**/node_modules",
       "!**/.artifact",
-      "!**/.generated/**",
-      "!**/.test*/**"
+      "!**/.generated",
+      "!**/.test*"
     ]
   },
   "formatter": {
