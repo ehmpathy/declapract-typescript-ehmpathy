@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.11...v0.43.12) (2025-12-08)
+
+
+### Bug Fixes
+
+* **deps:** bump declastruct deps to latest ([#237](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/237)) ([3fa1a8c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/3fa1a8c9572f09deff30f57b47d2c7e4c73df2ad))
+
 ## [0.43.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.10...v0.43.11) (2025-12-07)
 
 
