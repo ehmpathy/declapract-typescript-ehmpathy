@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.14](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.13...v0.43.14) (2025-12-11)
+
+
+### Bug Fixes
+
+* **cicd:** check for all 2xx status codes in verify oidc ([#243](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/243)) ([375f060](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/375f060d147d965b343ef26271de47228179d3a3))
+
 ## [0.43.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.12...v0.43.13) (2025-12-11)
 
 
