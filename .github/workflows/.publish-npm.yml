@@ -30,7 +30,7 @@ jobs:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
 
-      - name: verify oidc
+      - name: verify oidc auth
         run: |
           OIDC_TOKEN=$(curl -sS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" | jq -r '.value')
           PACKAGE_NAME_PLAIN=$(jq -r '.name' package.json)
@@ -41,6 +41,17 @@ jobs:
           else
             echo "::error::oidc: not configured for $PACKAGE_NAME_PLAIN (http $HTTP_CODE). add oidc by-hand at https://www.npmjs.com/package/$PACKAGE_NAME_ENCODED/access"
             exit 1
+          fi
+
+      - name: verify oidc compat
+        run: |
+          NPM_VERSION=$(npm --version)
+          MIN_VERSION="11.5.1"
+          if [ "$(printf '%s\n' "$MIN_VERSION" "$NPM_VERSION" | sort -V | head -n1)" != "$MIN_VERSION" ]; then
+            echo "npm $NPM_VERSION < $MIN_VERSION, will upgrade npm now to support oidc..."
+            npm install -g npm@latest
+          else
+            echo "npm $NPM_VERSION >= $MIN_VERSION, ready to use!"
           fi
 
       - name: build
