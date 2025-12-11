@@ -9,6 +9,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }} # per [workflow] x [branch, tag]
   cancel-in-progress: true #  cancel workflows for non-latest commits
 
+permissions:
+  id-token: write # required for oidc
+
 jobs:
   test:
     uses: ./.github/workflows/.test.yml
@@ -16,5 +19,3 @@ jobs:
   publish:
     uses: ./.github/workflows/.publish-npm.yml
     needs: [test]
-    secrets:
-      npm-auth-token: ${{ secrets.NPM_TOKEN }}
