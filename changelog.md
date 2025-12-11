@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.16](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.15...v0.43.16) (2025-12-11)
+
+
+### Bug Fixes
+
+* **cicd:** bump nvmrc to support oidc compat npm ([#247](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/247)) ([6d9c06d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/6d9c06d6996961af2849f3dac1c13335d57ee3de))
+
 ## [0.43.15](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.14...v0.43.15) (2025-12-11)
 
 
