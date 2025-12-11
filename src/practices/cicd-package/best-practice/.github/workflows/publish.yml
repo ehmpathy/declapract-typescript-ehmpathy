@@ -9,9 +9,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }} # per [workflow] x [branch, tag]
   cancel-in-progress: true #  cancel workflows for non-latest commits
 
-permissions:
-  id-token: write # required for oidc
-
 jobs:
   test:
     uses: ./.github/workflows/.test.yml
