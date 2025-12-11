@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.43.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.12...v0.43.13) (2025-12-11)
+
+
+### Bug Fixes
+
+* **cicd:** use npm oidc in npm publish ([#242](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/242)) ([92448e6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/92448e616855872f933c91bc8051754e15890c8d))
+* **deps:** bump dobjs dep to latest ([#240](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/240)) ([1713405](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/17134055d14b0165799c00f1892ca31b72b6402b))
+* **lint:** tune lint targets ([#239](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/239)) ([e0a4d0e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e0a4d0e2e6cdc76f9b919962a4523bb9360c6e9b))
+
 ## [0.43.12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.11...v0.43.12) (2025-12-08)
 
 
