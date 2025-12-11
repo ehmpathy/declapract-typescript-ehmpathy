@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.15](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.14...v0.43.15) (2025-12-11)
+
+
+### Bug Fixes
+
+* **cicd:** verify npm version for oidc auth ([#245](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/245)) ([502bcae](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/502bcaed8e8563e6c7046718bee6fd2a70137af9))
+
 ## [0.43.14](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.13...v0.43.14) (2025-12-11)
 
 
