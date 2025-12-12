@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "joi": "@declapract{check.minVersion('17.4.0')}"
+    "zod": "@declapract{check.minVersion('3.24.0')}"
   }
 }
