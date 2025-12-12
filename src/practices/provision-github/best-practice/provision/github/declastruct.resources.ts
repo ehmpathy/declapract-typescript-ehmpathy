@@ -1,12 +1,12 @@
-import { DeclastructProvider } from 'declastruct';
+import type { DeclastructProvider } from 'declastruct';
 import {
-  DeclaredGithubBranch,
+  type DeclaredGithubBranch,
   DeclaredGithubBranchProtection,
   DeclaredGithubRepo,
   DeclaredGithubRepoConfig,
   getDeclastructGithubProvider,
 } from 'declastruct-github';
-import { DomainEntity, RefByUnique } from 'domain-objects';
+import { type DomainEntity, RefByUnique } from 'domain-objects';
 import { UnexpectedCodePathError } from 'helpful-errors';
 
 import pkg from '../../package.json';
@@ -34,8 +34,8 @@ export const getProviders = async (): Promise<DeclastructProvider[]> => [
 export const getResources = async (): Promise<DomainEntity<any>[]> => {
   // declare the repo
   const repo = DeclaredGithubRepo.as({
-    owner: '@declapract{variable.organizationName}',
-    name: '@declapract{variable.projectName}',
+    owner: 'ehmpathy',
+    name: 'rhachet-roles-ehmpathy',
     description: (pkg as any).description ?? null,
     visibility: (pkg as any).private === true ? 'private' : 'public',
     private: (pkg as any).private ?? false, // todo: why do we have to specify this twice?
