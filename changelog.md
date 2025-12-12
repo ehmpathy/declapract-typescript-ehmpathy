@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.18](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.17...v0.43.18) (2025-12-12)
+
+
+### Bug Fixes
+
+* **lint:** apply biome to declastruct-github provisions ([#252](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/252)) ([469b00a](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/469b00a820b492a07cab20db5352ee2eeed80f2a))
+
 ## [0.43.17](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.16...v0.43.17) (2025-12-12)
 
 
