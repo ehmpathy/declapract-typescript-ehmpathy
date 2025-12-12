@@ -46,7 +46,7 @@ const exampleFoundContents = `
     "generate:schema": "npx sql-schema-generator generate -c codegen.sql.schema.yml",
     "generate:types-from-sql": "npx sql-code-generator generate -c codegen.sql.types.yml",
     "build:clean": "rm dist/ -rf",
-    "build": "npm run build:clean && npm run build:compile",
+    "build": "npm run build:clean && npm run build:compile && npm run build:complete --if-present",
     "provision:docker:prepare": "cp provision/schema/sql/init/.extensions.sql provision/docker/integration_test_db/init/ && cp provision/schema/sql/init/.schema.sql provision/docker/integration_test_db/init/ && cp provision/schema/sql/init/.user.cicd.sql provision/docker/integration_test_db/init/",
     "provision:docker:up": "docker compose -f ./provision/docker/integration_test_db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
     "build:compile": "tsc -p ./tsconfig.build.json",
