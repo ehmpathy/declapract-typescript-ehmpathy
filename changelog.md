@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.19](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.18...v0.43.19) (2025-12-12)
+
+
+### Bug Fixes
+
+* **pkg:** packages should build:complete if present ([#254](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/254)) ([b3e7db6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b3e7db6fd17957ac74f816bf11a63eb12ca82fbb))
+
 ## [0.43.18](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.17...v0.43.18) (2025-12-12)
 
 
