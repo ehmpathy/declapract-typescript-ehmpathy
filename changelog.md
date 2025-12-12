@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.43.17](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.16...v0.43.17) (2025-12-12)
+
+
+### Bug Fixes
+
+* **schemas:** no more joi, only zod ([#249](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/249)) ([aa5652d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/aa5652daed0082eea59ac467b8e34d5c49603340))
+* **sls:** bump lambda node version ([#251](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/251)) ([5861e58](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5861e58a18281d502d67c4f8ac16cdb208d612c6))
+
 ## [0.43.16](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.15...v0.43.16) (2025-12-11)
 
 
