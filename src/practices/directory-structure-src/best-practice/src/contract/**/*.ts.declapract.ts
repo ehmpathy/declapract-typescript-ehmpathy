@@ -1,4 +1,4 @@
 import { FileCheckType } from 'declapract';
 
-// files matching this format should exist - there should be some contract in this service
+// contract layer is required - there should be some contract in this service (api, sdk, cli, cmd)
 export const check = FileCheckType.EXISTS;
