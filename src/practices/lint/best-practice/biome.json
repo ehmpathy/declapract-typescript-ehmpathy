@@ -32,7 +32,25 @@
   "assist": {
     "actions": {
       "source": {
-        "organizeImports": "on"
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              {
+                "match": ":SIDE_EFFECT:"
+              },
+              {
+                "match": ":EXTERNAL:"
+              },
+              {
+                "match": "@src/**"
+              },
+              {
+                "match": ":RELATIVE:"
+              }
+            ]
+          }
+        }
       }
     }
   },

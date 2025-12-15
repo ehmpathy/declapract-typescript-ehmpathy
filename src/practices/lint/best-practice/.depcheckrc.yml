@@ -1,11 +1,13 @@
 ignores:
+  - "@src/*"
+  - "@src/.*"
   - rhachet
   - declapract
   - declapract-typescript-ehmpathy
-  - '@commitlint/config-conventional'
-  - '@tsconfig/node20'
-  - '@tsconfig/strictest'
-  - '@biomejs/biome'
+  - "@commitlint/config-conventional"
+  - "@tsconfig/node20"
+  - "@tsconfig/strictest"
+  - "@biomejs/biome"
   - esbuild-register
   - "@swc/core"
   - "@swc/jest"
