@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.44.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.44.0...v0.44.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* **cicd:** sync the release workflow to latest best ([#259](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/259)) ([ff18f50](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/ff18f50792454625abad304c181883ccbdf4fab0))
+
 ## [0.44.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.19...v0.44.0) (2025-12-15)
 
 
