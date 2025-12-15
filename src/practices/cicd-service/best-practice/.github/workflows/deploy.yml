@@ -5,26 +5,26 @@ on:
     tags:
       - v*
     branches:
-      - 'main'
-      - 'master'
+      - "main"
+      - "master"
   workflow_dispatch:
     inputs:
       stage:
-        description: 'which stage do you want to deploy to?'
+        description: "which stage do you want to deploy to?"
         type: choice
         options:
           - dev
           - prod
         required: true
-        default: 'dev'
+        default: "dev"
       thoroughly:
-        description: 'should we run tests before this deployment?'
+        description: "should we run tests before this deployment?"
         type: choice
         required: true
-        default: 'true'
+        default: "true"
         options:
-          - 'true'
-          - 'false'
+          - "true"
+          - "false"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }} # per [workflow] x [branch, tag]
@@ -35,11 +35,8 @@ jobs:
     uses: ./.github/workflows/.test.yml
     if: github.event_name != 'workflow_dispatch' || github.event.inputs.thoroughly == 'true'
     with:
-      aws-region: us-east-1
-    secrets:
-      aws-account-id: '@declapract{variable.awsAccountId.dev}'
-      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }} # use aws auth via oidc, if this repo supplies it
 
   dev:
     uses: ./.github/workflows/.deploy-sls.yml
@@ -50,11 +47,8 @@ jobs:
     with:
       stage: dev
       github-environment: dev
-      aws-region: us-east-1
-      aws-account-id: '@declapract{variable.awsAccountId.dev}'
-    secrets:
-      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }}
 
   prod:
     uses: ./.github/workflows/.deploy-sls.yml
@@ -65,9 +59,5 @@ jobs:
     with:
       stage: prod
       github-environment: prod
-      aws-region: us-east-1
-      aws-account-id: '@declapract{variable.awsAccountId.prod}'
-    secrets:
-      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-      pagerduty-integration-key: ${{ secrets.PAGERDUTY_INTEGRATION_KEY }}
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PROD_OIDC_ROLE_ARN }}
