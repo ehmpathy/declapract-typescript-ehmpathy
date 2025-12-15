@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.1...v0.45.2) (2025-12-15)
+
+
+### Bug Fixes
+
+* **lint:** sort [@src](https://github.com/src) as relative via biome better ([#266](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/266)) ([ca13aca](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/ca13aca032f6e9d107eec6e3875a8b69ab449b77))
+
 ## [0.45.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.0...v0.45.1) (2025-12-15)
 
 
