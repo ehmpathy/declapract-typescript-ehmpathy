@@ -40,7 +40,7 @@ exports[`package.json order should sort a full example of a package json correct
     "provision:docker:prepare": "cp provision/schema/sql/init/.extensions.sql provision/docker/integration_test_db/init/ && cp provision/schema/sql/init/.schema.sql provision/docker/integration_test_db/init/ && cp provision/schema/sql/init/.user.cicd.sql provision/docker/integration_test_db/init/",
     "provision:docker:up": "docker compose -f ./provision/docker/integration_test_db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
     "build:compile": "tsc -p ./tsconfig.build.json",
-    "build": "npm run build:clean && npm run build:compile",
+    "build": "npm run build:clean && npm run build:compile && npm run build:complete --if-present",
     "provision:docker:await": "docker compose -f ./provision/docker/integration_test_db/docker-compose.yml exec -T postgres /root/wait-for-postgres.sh",
     "provision:docker:down": "docker compose -f ./provision/docker/integration_test_db/docker-compose.yml down",
     "provision:schema:plan": "npx sql-schema-control plan -c provision/schema/control.yml",
