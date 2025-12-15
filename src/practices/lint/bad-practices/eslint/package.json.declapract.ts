@@ -1,4 +1,4 @@
-import { FileCheckFunction, FileFixFunction } from 'declapract';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
 const depsBlocklist = [
   '@typescript-eslint/eslint-plugin',

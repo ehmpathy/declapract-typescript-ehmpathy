@@ -1,4 +1,4 @@
-import { FileCheckType, FileFixFunction } from 'declapract';
+import { FileCheckType, type FileFixFunction } from 'declapract';
 
 const grabCreateExtensionLinesFromContents = (contents: string) =>
   contents

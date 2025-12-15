@@ -1,5 +1,4 @@
-import chalk from 'chalk';
-import { FileCheckFunction } from 'declapract';
+import type { FileCheckFunction } from 'declapract';
 import expect from 'expect';
 
 import { defineFunctionNameFromTestFileName } from '../../../defineFunctionNameFromTestFileName';
@@ -20,7 +19,7 @@ export const check: FileCheckFunction = (contents, context) => {
   if (missedImports.length)
     throw new Error(
       `
-${chalk.green(`- Expected imports ${['', ...expectedImports].join('\n  - ')}`)}
+${`- Expected imports ${['', ...expectedImports].join('\n  - ')}`}
       `.trim(),
     );
 

@@ -1,4 +1,4 @@
-import { FileCheckFunction } from 'declapract';
+import type { FileCheckFunction } from 'declapract';
 import flatten from 'flat';
 
 import { readFile } from '../../../../../utils/readFile';

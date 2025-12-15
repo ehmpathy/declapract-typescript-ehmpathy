@@ -1,4 +1,4 @@
-import { FileCheckType, FileContentsFunction } from 'declapract';
+import { FileCheckType, type FileContentsFunction } from 'declapract';
 
 import { readFile } from '../../../utils/readFile';
 

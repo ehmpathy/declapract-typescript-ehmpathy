@@ -1,4 +1,4 @@
-import { FileCheckFunction, FileFixFunction } from 'declapract';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
 import { getProjectVariables } from '../../../../../../getVariables';
 
@@ -31,7 +31,7 @@ export const fix: FileFixFunction = async (contents, context) => {
       )
       .replace(
         // replace the inputs
-        /name\: '(\w+)',/g,
+        /name: '(\w+)',/g,
         [
           `service: '${projectName}',`,
           `function: '$1',`,
@@ -39,6 +39,6 @@ export const fix: FileFixFunction = async (contents, context) => {
           `locally,`,
         ].join('\n'),
       )
-      .replace(/data\: /g, 'event: '),
+      .replace(/data: /g, 'event: '),
   };
 };

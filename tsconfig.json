@@ -1,5 +1,8 @@
 {
-  "extends": "@tsconfig/node-lts-strictest/tsconfig.json",
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
   "compilerOptions": {
     "importsNotUsedAsValues": "remove",
     "noPropertyAccessFromIndexSignature": false,
@@ -11,7 +14,16 @@
     "noUnusedParameters": false,
     "exactOptionalPropertyTypes": false,
     "noImplicitOverride": false,
-    "target": "es2020"
+    "target": "es2020",
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": [
+        "src/*"
+      ]
+    },
+    "incremental": true,
+    "module": "commonjs",
+    "moduleResolution": "node"
   },
   "include": [
     "src/**/*.declapract.ts",

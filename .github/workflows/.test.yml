@@ -151,16 +151,12 @@ jobs:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
 
-      - name: configure aws credentials (oidc)
+      - name: get aws auth, if creds supplied
         if: ${{ inputs.creds-aws-role-arn }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ inputs.creds-aws-role-arn }}
           aws-region: ${{ inputs.creds-aws-region }}
-
-      - name: verify aws credentials
-        if: ${{ inputs.creds-aws-role-arn }}
-        run: aws sts get-caller-identity
 
       - name: start:testdb
         run: npm run start:testdb --if-present
@@ -189,16 +185,12 @@ jobs:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
 
-      - name: configure aws credentials (oidc)
+      - name: get aws auth, if creds supplied
         if: ${{ inputs.creds-aws-role-arn }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ inputs.creds-aws-role-arn }}
           aws-region: ${{ inputs.creds-aws-region }}
-
-      - name: verify aws credentials
-        if: ${{ inputs.creds-aws-role-arn }}
-        run: aws sts get-caller-identity
 
       - name: start:testdb
         run: npm run start:testdb --if-present

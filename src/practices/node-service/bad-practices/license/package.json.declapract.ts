@@ -1,4 +1,4 @@
-import { FileCheckFunction, FileFixFunction } from 'declapract';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 import expect from 'expect';
 
 export const check: FileCheckFunction = async (contents) => {

@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { FileCheckType, FileFixFunction } from 'declapract';
+import { FileCheckType, type FileFixFunction } from 'declapract';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import yaml from 'yaml';
 
