@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.45.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.0...v0.45.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* **jest:** support [@src](https://github.com/src) abs paths via jest ([#265](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/265)) ([3feb64e](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/3feb64e17d973637620fef846b9e9d78a293c796))
+* **lint:** sort [@src](https://github.com/src) as relative via biome ([#263](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/263)) ([2079c08](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2079c08684ec47611a980ad089b5b99990833106))
+
 ## [0.45.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.44.1...v0.45.0) (2025-12-15)
 
 
