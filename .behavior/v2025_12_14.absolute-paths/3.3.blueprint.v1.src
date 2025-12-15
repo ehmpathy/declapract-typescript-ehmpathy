@@ -1,0 +1,42 @@
+propose a blueprint for how we can implement the wish described
+- in .behavior/v2025_12_14.absolute-paths/0.wish.md
+
+with the domain distillation declared
+- in .behavior/v2025_12_14.absolute-paths/3.2.distill.domain._.v1.i1.md
+
+follow the patterns already present in this repo
+
+---
+
+reference the below for full context
+- .behavior/v2025_12_14.absolute-paths/0.wish.md
+- .behavior/v2025_12_14.absolute-paths/3.1.research.domain._.v1.i1.md
+
+---
+
+lets choose approach 1,
+
+  approach 1: tsconfig paths + tsc-alias (traditional)
+
+  - configure paths in tsconfig.json
+  - requires tsc-alias post-compilation to rewrite imports
+  - allows @src/* prefix (any prefix)
+
+given that `@src/` is more intuitive due to the meaning of `@` literally
+where as `#` was pidgeonholed into usage and requires relearning that `#` means
+
+plus, we always use tsc, so tsc-alias is no biggie
+
+---
+
+prepare the blueprint to both
+
+1. update this repo to use it
+2. update the typescript/best-practice
+3. set relative paths as a typescript/bad-practice && autofix them
+
+read .agent/repo=.this/briefs for deets on this proect
+
+---
+
+emit to .behavior/v2025_12_14.absolute-paths/3.3.blueprint.v1.i1.md

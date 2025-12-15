@@ -39,7 +39,7 @@
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify",
     "prepare:husky": "npx husky install && chmod ug+x .husky/*",
-    "prepare": "[ -d .git ] && npm run prepare:husky || exit 0"
+    "prepare": "[ -e .git ] && npm run prepare:husky || exit 0"
   },
   "dependencies": {
     "chalk": "4.1.2",
@@ -47,6 +47,8 @@
     "expect": "29.4.2",
     "flat": "5.0.2",
     "helpful-errors": "1.5.3",
+    "rhachet": "1.13.1",
+    "rhachet-roles-ehmpathy": "1.13.7",
     "simple-log-methods": "0.5.0",
     "yaml": "1.10.2"
   },

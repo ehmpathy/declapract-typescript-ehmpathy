@@ -26,6 +26,12 @@ importers:
       helpful-errors:
         specifier: 1.5.3
         version: 1.5.3
+      rhachet:
+        specifier: 1.13.1
+        version: 1.13.1
+      rhachet-roles-ehmpathy:
+        specifier: 1.13.7
+        version: 1.13.7(@types/node@22.15.21)
       simple-log-methods:
         specifier: 0.5.0
         version: 0.5.0
@@ -114,12 +120,6 @@ importers:
       prettier:
         specifier: 2.8.1
         version: 2.8.1
-      rhachet:
-        specifier: 1.13.1
-        version: 1.13.1
-      rhachet-roles-ehmpathy:
-        specifier: 1.13.8
-        version: 1.13.8(@types/node@22.15.21)
       test-fns:
         specifier: 1.4.2
         version: 1.4.2
@@ -4165,8 +4165,8 @@ packages:
     resolution: {integrity: sha512-BCD7rwyArOn9k3AwDocv0UrgkNDmJ/goPAROCLyMx06n72Xhq8nO9RAVVqhdggIjyX8lI0Qriul8tgUJ+3zoIA==}
     engines: {node: '>=8.0.0'}
 
-  rhachet-roles-ehmpathy@1.13.8:
-    resolution: {integrity: sha512-y+/7F+KVWjm38f1xWrRWZHMEIKetpUVCrbvAp240hPClcj2sYk1Wq04lX5Lae9VLAtiD7hMAYpZMIDD3leYQTA==}
+  rhachet-roles-ehmpathy@1.13.7:
+    resolution: {integrity: sha512-J4RUtnX6e9YG9c1LVEBexjSXVYKx2IgVBQDEMRTbZFZcXZImzg/ssKHuWvqnsCQMd4hUz7cGtVZDl7hjNg0g1w==}
     engines: {node: '>=8.0.0'}
 
   rhachet@1.13.1:
@@ -8260,7 +8260,7 @@ snapshots:
       helpful-errors: 1.5.3
       joi: 17.4.0
       rhachet: 1.13.1
-      rhachet-roles-ehmpathy: 1.13.8(@types/node@22.15.21)
+      rhachet-roles-ehmpathy: 1.13.7(@types/node@22.15.21)
       type-fns: 1.21.0
       uuid-fns: 1.1.3
     transitivePeerDependencies:
@@ -10103,7 +10103,7 @@ snapshots:
       domain-objects: 0.31.3
       helpful-errors: 1.5.3
 
-  rhachet-roles-ehmpathy@1.13.8(@types/node@22.15.21):
+  rhachet-roles-ehmpathy@1.13.7(@types/node@22.15.21):
     dependencies:
       '@ehmpathy/as-command': 1.0.3
       '@ehmpathy/uni-time': 1.8.1

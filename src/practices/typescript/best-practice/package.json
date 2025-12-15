@@ -1,13 +1,14 @@
 {
   "devDependencies": {
     "typescript": "@declapract{check.minVersion('5.4.5')}",
+    "tsc-alias": "@declapract{check.minVersion('1.8.10')}",
     "@tsconfig/node20": "@declapract{check.minVersion('20.1.5')}",
     "@tsconfig/strictest": "@declapract{check.minVersion('2.0.5')}",
     "@types/node": "@declapract{check.minVersion('22.15.21')}"
   },
   "scripts": {
     "build:clean": "rm dist/ -rf",
-    "build:compile": "tsc -p ./tsconfig.build.json",
+    "build:compile": "tsc -p ./tsconfig.build.json && tsc-alias -p ./tsconfig.build.json",
     "build": "npm run build:clean && npm run build:compile && npm run build:artifact",
     "test:types": "tsc -p ./tsconfig.json --noEmit"
   }
