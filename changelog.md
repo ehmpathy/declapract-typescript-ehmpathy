@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.2...v0.45.3) (2025-12-15)
+
+
+### Bug Fixes
+
+* **peer:** bump declapract peerdep ([#268](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/268)) ([60b857f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/60b857fbb2b37397f833c84a8c62f48c68e6da77))
+
 ## [0.45.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.1...v0.45.2) (2025-12-15)
 
 
