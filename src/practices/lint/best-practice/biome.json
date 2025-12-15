@@ -36,18 +36,20 @@
           "level": "on",
           "options": {
             "groups": [
-              {
-                "match": ":SIDE_EFFECT:"
-              },
-              {
-                "match": ":EXTERNAL:"
-              },
-              {
-                "match": "@src/**"
-              },
-              {
-                "match": ":RELATIVE:"
-              }
+              ":SIDE_EFFECT:",
+              ":BLANK_LINE:",
+              [
+                ":PACKAGE:",
+                "!@src",
+                "!@src/**"
+              ],
+              ":BLANK_LINE:",
+              [
+                "@src",
+                "@src/**"
+              ],
+              ":BLANK_LINE:",
+              ":RELATIVE:"
             ]
           }
         }
@@ -84,7 +86,8 @@
         "noEmptyBlockStatements": "off",
         "noUnsafeDeclarationMerging": "off",
         "useIterableCallbackReturn": "warn",
-        "noDuplicateTestHooks": "off"
+        "noDuplicateTestHooks": "off",
+        "noThenProperty": "warn"
       },
       "nursery": {
         "noFloatingPromises": "error",
