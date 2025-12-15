@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.44.1...v0.45.0) (2025-12-15)
+
+
+### Features
+
+* **tsc:** support [@src](https://github.com/src) absolute paths ([#261](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/261)) ([5ab67de](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5ab67de73f34bf30b2441a22c05099893c8803aa))
+
 ## [0.44.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.44.0...v0.44.1) (2025-12-15)
 
 
