@@ -20,62 +20,49 @@ jobs:
     with:
       working-directory: provision/aws/environments/test
       github-environment: dev
-      aws-region: us-east-1
-      aws-account-id: "@declapract{variable.awsAccountId.dev}"
-    secrets:
-      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }}
 
   aws-dev:
     uses: ./.github/workflows/.terraform.yml
     with:
       working-directory: provision/aws/environments/dev
       github-environment: dev
-      aws-region: us-east-1
-      aws-account-id: "@declapract{variable.awsAccountId.dev}"
-    secrets:
-      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }}
 
   aws-prod:
     uses: ./.github/workflows/.terraform.yml
     with:
       working-directory: provision/aws/environments/prod
       github-environment: prod
-      aws-region: us-east-1
-      aws-account-id: "@declapract{variable.awsAccountId.prod}"
       allow-apply: ${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
-    secrets:
-      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PROD_OIDC_ROLE_ARN }}
 
   github:
     uses: ./.github/workflows/.declastruct.yml
     with:
       wish-path: provision/github/declastruct.resources.ts
       github-environment: prod
+      creds-github-app-owner: ehmpathy
+      creds-github-app-id: ${{ vars.DECLASTRUCT_GITHUB_CONFORMER_APP_ID }}
     secrets:
-      github-token: ${{ secrets.PROVISION_GITHUB_GITHUB_TOKEN }}
+      creds-github-app-private-key: ${{ secrets.DECLASTRUCT_GITHUB_CONFORMER_APP_PRIVATE_KEY }}
 
   sql-schema-dev:
     uses: ./.github/workflows/.sql-schema-control.yml
     with:
       stage: dev
       github-environment: dev
-      aws-region: us-east-1
-      aws-account-id: "@declapract{variable.awsAccountId.dev}"
-    secrets:
-      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }}
 
   sql-schema-prod:
     uses: ./.github/workflows/.sql-schema-control.yml
     with:
       stage: prod
       github-environment: prod
-      aws-region: us-east-1
-      aws-account-id: "@declapract{variable.awsAccountId.prod}"
       allow-apply: ${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
-    secrets:
-      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PROD_OIDC_ROLE_ARN }}

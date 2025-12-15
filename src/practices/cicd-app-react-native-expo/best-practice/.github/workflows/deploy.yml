@@ -35,11 +35,8 @@ jobs:
     uses: ./.github/workflows/.test.yml
     if: github.event_name != 'workflow_dispatch' || github.event.inputs.thoroughly == 'true'
     with:
-      aws-region: us-east-1
-      aws-account-id: '@declapract{variable.awsAccountId.dev}'
-    secrets:
-      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.dev}:role/@declapract{variable.projectName}-github-actions-dev
 
   dev:
     uses: ./.github/workflows/.deploy-expo.yml
@@ -52,12 +49,10 @@ jobs:
       stage: dev
       build: development
       github-environment: dev
-      aws-region: us-east-1
-      aws-account-id: '@declapract{variable.awsAccountId.dev}'
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.dev}:role/@declapract{variable.projectName}-github-actions-dev
     secrets:
       expo-token: ${{ secrets.EXPO_TOKEN }}
-      aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
 
   prod:
     uses: ./.github/workflows/.deploy-expo.yml
@@ -69,10 +64,8 @@ jobs:
       stage: prod
       build: production
       github-environment: prod
-      aws-region: us-east-1
-      aws-account-id: '@declapract{variable.awsAccountId.prod}'
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.prod}:role/@declapract{variable.projectName}-github-actions-prod
       app-web-deployment-s3-bucket: s3://@declapract{variable.projectName}-@declapract{variable.infrastructureNamespaceId}-prod
     secrets:
       expo-token: ${{ secrets.EXPO_TOKEN }}
-      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
