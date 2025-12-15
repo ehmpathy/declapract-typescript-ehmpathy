@@ -4,6 +4,10 @@
     "@tsconfig/node20/tsconfig.json"
   ],
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"]
+    },
     "importsNotUsedAsValues": "remove",
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedLocals": false, // this is something a linter should warn on, not something a compiler should fail on
