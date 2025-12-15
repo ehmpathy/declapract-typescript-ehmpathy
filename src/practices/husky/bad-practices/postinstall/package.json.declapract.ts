@@ -1,4 +1,4 @@
-import { FileCheckFunction, FileFixFunction } from 'declapract';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
 export const check: FileCheckFunction = (contents) => {
   if (!contents) throw new Error('does not match bad practice');

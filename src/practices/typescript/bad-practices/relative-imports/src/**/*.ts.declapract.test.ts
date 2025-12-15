@@ -36,6 +36,25 @@ describe('relative-imports bad practice', () => {
       ).toThrow('does not match bad practice');
     });
 
+    it('should not match practice template files in src/practices/', () => {
+      const contents = `import { something } from '../utils/helper';`;
+      expect(() =>
+        check(contents, {
+          relativeFilePath: 'src/practices/lint/best-practice/src/utils/config.ts',
+        } as any),
+      ).toThrow('does not match bad practice');
+    });
+
+    it('should match .declapract.ts files in src/practices/', () => {
+      const contents = `import { something } from '../utils/helper';`;
+      expect(() =>
+        check(contents, {
+          relativeFilePath:
+            'src/practices/lint/bad-practices/example/src/file.ts.declapract.ts',
+        } as any),
+      ).not.toThrow();
+    });
+
     it('should not match files with @src/ imports', () => {
       const contents = `import { something } from '@src/utils/helper';`;
       expect(() =>
@@ -110,6 +129,25 @@ import { c } from './local/c';`;
       } as any);
 
       expect(result).toEqual({});
+    });
+
+    it('should return empty object for practice template files in src/practices/', async () => {
+      const contents = `import { helper } from '../utils/helper';`;
+      const result = await fix(contents, {
+        relativeFilePath: 'src/practices/lint/best-practice/src/utils/config.ts',
+      } as any);
+
+      expect(result).toEqual({});
+    });
+
+    it('should fix .declapract.ts files in src/practices/', async () => {
+      const contents = `import { helper } from '../utils/helper';`;
+      const result = await fix(contents, {
+        relativeFilePath:
+          'src/practices/lint/bad-practices/example/src/domain/index.ts.declapract.ts',
+      } as any);
+
+      expect(result.contents).toContain(`from '@src/`);
     });
 
     it('should return empty object for null contents', async () => {

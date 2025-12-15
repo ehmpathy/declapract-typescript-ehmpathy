@@ -1,4 +1,4 @@
-import { FileCheckType, FileFixFunction } from 'declapract';
+import { FileCheckType, type FileFixFunction } from 'declapract';
 import { UnexpectedCodePathError } from 'helpful-errors';
 
 export const check = FileCheckType.CONTAINS; // practice must contain this

@@ -1,4 +1,4 @@
-import { FileCheckFunction, FileFixFunction } from 'declapract';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
 export const check: FileCheckFunction = (contents) => {
   if (contents?.includes('.valid(Object.values(')) return; // matches bad practice if this is found

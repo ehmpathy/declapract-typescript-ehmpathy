@@ -1,4 +1,4 @@
-import { FileCheckType, FileFixFunction } from 'declapract';
+import { FileCheckType, type FileFixFunction } from 'declapract';
 
 import { getProjectVariables } from '../../../../../../getVariables';
 

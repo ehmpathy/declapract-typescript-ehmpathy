@@ -13,3 +13,4 @@ ignores:
   - "@swc/jest"
   - husky
   - tsx
+  - tsc-alias

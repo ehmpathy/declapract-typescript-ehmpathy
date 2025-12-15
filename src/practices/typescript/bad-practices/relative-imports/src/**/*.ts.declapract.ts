@@ -1,4 +1,4 @@
-import { type FileCheckFunction, type FileFixFunction } from 'declapract';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
 /**
  * .what = detects relative imports that should use @src alias
@@ -8,11 +8,31 @@ import { type FileCheckFunction, type FileFixFunction } from 'declapract';
 // matches relative imports that go up directories (../)
 const RELATIVE_IMPORT_PATTERN = /from\s+['"](\.\.\/)+(.*?)['"]/g;
 
+const isInPracticesDir = (relativeFilePath: string | undefined): boolean =>
+  relativeFilePath?.includes('src/practices/') ?? false;
+
+const isDeclapractFile = (relativeFilePath: string | undefined): boolean =>
+  relativeFilePath?.endsWith('.declapract.ts') ?? false;
+
+/**
+ * skip files in src/practices/ because they are templates defining what target
+ * codebases should look like - not actual config files to be fixed. however,
+ * .declapract.ts files contain check/fix logic (not template content) so they
+ * should still be processed normally by other practices.
+ */
+const shouldSkip = (relativeFilePath: string | undefined): boolean =>
+  isInPracticesDir(relativeFilePath) && !isDeclapractFile(relativeFilePath);
+
 export const check: FileCheckFunction = (contents, { relativeFilePath }) => {
   if (!contents) throw new Error('does not match bad practice');
 
   // skip if file is not in src/
   if (!relativeFilePath?.startsWith('src/')) {
+    throw new Error('does not match bad practice');
+  }
+
+  // skip practice template files
+  if (shouldSkip(relativeFilePath)) {
     throw new Error('does not match bad practice');
   }
 
@@ -28,6 +48,7 @@ export const check: FileCheckFunction = (contents, { relativeFilePath }) => {
 export const fix: FileFixFunction = (contents, { relativeFilePath }) => {
   if (!contents) return {};
   if (!relativeFilePath?.startsWith('src/')) return {};
+  if (shouldSkip(relativeFilePath)) return {};
 
   // calculate the path parts of the current file
   const pathParts = relativeFilePath.split('/');

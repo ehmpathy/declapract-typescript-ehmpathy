@@ -1,5 +1,4 @@
-import { FileCheckFunction, FileFixFunction } from 'declapract';
-import expect from 'expect';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 import yaml from 'yaml';
 
 const denylist = [

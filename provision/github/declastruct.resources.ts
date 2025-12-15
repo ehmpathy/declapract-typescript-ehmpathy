@@ -1,12 +1,12 @@
-import { DeclastructProvider } from 'declastruct';
+import type { DeclastructProvider } from 'declastruct';
 import {
-  DeclaredGithubBranch,
+  type DeclaredGithubBranch,
   DeclaredGithubBranchProtection,
   DeclaredGithubRepo,
   DeclaredGithubRepoConfig,
   getDeclastructGithubProvider,
 } from 'declastruct-github';
-import { DomainEntity, RefByUnique } from 'domain-objects';
+import { type DomainEntity, RefByUnique } from 'domain-objects';
 import { UnexpectedCodePathError } from 'helpful-errors';
 
 import pkg from '../../package.json';

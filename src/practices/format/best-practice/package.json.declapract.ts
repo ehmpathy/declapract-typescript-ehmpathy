@@ -1,4 +1,7 @@
-import { FileCheckType, FileContentsFunction } from 'declapract/dist/domain';
+import {
+  FileCheckType,
+  type FileContentsFunction,
+} from 'declapract/dist/domain';
 import { isPresent } from 'type-fns';
 
 /**

@@ -1,4 +1,4 @@
-import { FileCheckFunction, FileFixFunction } from 'declapract';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
 export const check: FileCheckFunction = (contents) => {
   if (contents?.includes(`../utils/config'`)) return; // if it includes this string, then its a bad practice

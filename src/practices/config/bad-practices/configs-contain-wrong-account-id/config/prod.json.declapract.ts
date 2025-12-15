@@ -1,4 +1,4 @@
-import { FileCheckFunction } from 'declapract';
+import type { FileCheckFunction } from 'declapract';
 
 import { getServiceVariables } from '../../../../../getVariables';
 

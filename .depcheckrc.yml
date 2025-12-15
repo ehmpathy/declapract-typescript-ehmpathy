@@ -1,21 +1,19 @@
 ignores:
-  - depcheck
+  - "@src/*"
+  - "@src/.*"
+  - rhachet
   - declapract
   - declapract-typescript-ehmpathy
-  - '@commitlint/config-conventional'
-  - '@trivago/prettier-plugin-sort-imports'
-  - '@tsconfig/node-lts-strictest'
-  - serverless-prune-plugin
-  - core-js
-  - ts-jest
-  - babel-jest
-  - date-fns
-  - test-fns
+  - "@commitlint/config-conventional"
+  - "@tsconfig/node20"
+  - "@tsconfig/strictest"
+  - "@biomejs/biome"
+  - esbuild-register
+  - "@swc/core"
+  - "@swc/jest"
   - husky
-  - if-env
-  - '@ehmpathy/as-command'
-  - helpful-errors
-  - visualogic
-  - simple-log-methods
   - tsx
-  - chalk
+  - tsc-alias
+  - yaml
+ignorePatterns:
+  - src/practices/lint/bad-practices/*

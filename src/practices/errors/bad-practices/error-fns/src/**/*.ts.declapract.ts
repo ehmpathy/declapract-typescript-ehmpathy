@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { type FileCheckFunction, type FileFixFunction } from 'declapract';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
 export const check: FileCheckFunction = (contents) => {
   if (contents?.includes("from '@ehmpathy/error-fns'")) return; // matches if it includes this
