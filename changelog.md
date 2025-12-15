@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.44.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.19...v0.44.0) (2025-12-15)
+
+
+### Features
+
+* **cicd:** deworm cicd via aws oidc, npm oidc, and github apps ([#257](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/257)) ([7d33834](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/7d33834cf0f5e0f8306cbb327d0d0529ff7f5cb3))
+
 ## [0.43.19](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.43.18...v0.43.19) (2025-12-12)
 
 
