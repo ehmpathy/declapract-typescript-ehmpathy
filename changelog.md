@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.4...v0.45.5) (2025-12-16)
+
+
+### Bug Fixes
+
+* **cicd:** provision/github.repo/resources to decolide control of other github resources ([#272](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/272)) ([8cdd52a](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/8cdd52a2637f70f57485781279b54acd91cc8d72))
+
 ## [0.45.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.3...v0.45.4) (2025-12-16)
 
 
