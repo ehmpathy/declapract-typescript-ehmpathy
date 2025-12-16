@@ -9,7 +9,7 @@
   "scripts": {
     "build:clean": "rm dist/ -rf",
     "build:compile": "tsc -p ./tsconfig.build.json && tsc-alias -p ./tsconfig.build.json",
-    "build": "npm run build:clean && npm run build:compile && npm run build:artifact",
+    "build": "npm run build:clean && npm run build:compile && npm run build:complete --if-present && npm run build:artifact",
     "test:types": "tsc -p ./tsconfig.json --noEmit"
   }
 }
