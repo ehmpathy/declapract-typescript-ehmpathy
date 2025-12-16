@@ -2,7 +2,7 @@
   "name": "declapract-typescript-ehmpathy",
   "author": "ehmpathy",
   "description": "declapract best practices declarations for typescript",
-  "version": "0.45.3",
+  "version": "0.45.4",
   "license": "MIT",
   "main": "src/index.js",
   "repository": "ehmpathy/declapract-typescript-ehmpathy",

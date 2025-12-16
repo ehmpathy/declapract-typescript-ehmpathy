@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.45.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.3...v0.45.4) (2025-12-16)
+
+
+### Bug Fixes
+
+* **src:** bound the absolute-path fix operation more sanely ([#273](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/273)) ([2966074](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/296607457a979e5cb35ae3f24a194ddc9e910f43))
+* **tsc:** use build:complete if declalred ([#270](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/270)) ([f3d6c39](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/f3d6c396df90416e7151446ed8c8c54051c67f1e))
+
 ## [0.45.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.2...v0.45.3) (2025-12-15)
 
 

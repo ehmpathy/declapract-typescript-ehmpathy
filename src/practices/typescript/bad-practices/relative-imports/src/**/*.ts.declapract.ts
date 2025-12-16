@@ -54,18 +54,24 @@ export const fix: FileFixFunction = (contents, { relativeFilePath }) => {
   const pathParts = relativeFilePath.split('/');
   const srcIndex = pathParts.indexOf('src');
 
-  // replace relative imports with @src imports
+  // get the directories between src/ and the current file
+  const currentDirParts = pathParts.slice(srcIndex + 1, -1);
+
+  // replace relative imports with @src imports (only if they stay within src/)
   const fixed = contents.replace(
     /from\s+['"]((\.\.\/)+)(.*?)['"]/g,
     (match, dots, _, importPath) => {
       // count how many ../ we have
       const upCount = (dots.match(/\.\.\//g) || []).length;
 
-      // get the directories between src/ and the current file
-      const currentDirParts = pathParts.slice(srcIndex + 1, -1);
+      // if going up more levels than we have directories within src/, it goes OUTSIDE src
+      // leave these imports unchanged (e.g., ../../package.json from src/utils/index.ts)
+      if (upCount > currentDirParts.length) {
+        return match;
+      }
 
-      // if going up more levels than we have directories, just use @src/importPath
-      if (upCount >= currentDirParts.length) {
+      // if going up exactly as many levels as we have directories, target is at src root
+      if (upCount === currentDirParts.length) {
         return `from '@src/${importPath}'`;
       }
 

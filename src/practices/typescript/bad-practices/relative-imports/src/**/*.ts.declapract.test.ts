@@ -161,15 +161,47 @@ import { c } from './local/c';`;
       expect(result).toEqual({});
     });
 
-    it('should handle imports at root of src/', async () => {
+    it('should NOT convert imports at root of src/ that go outside (../ from src/index.ts)', async () => {
       const contents = `import { helper } from '../other/helper';`;
       const result = await fix(contents, {
         relativeFilePath: 'src/index.ts',
       } as any);
 
-      expect(result.contents).toBe(
-        `import { helper } from '@src/other/helper';`,
-      );
+      // ../other/helper from src/index.ts goes OUTSIDE src (to /other/helper), should NOT be converted
+      expect(result.contents).toBe(`import { helper } from '../other/helper';`);
+    });
+
+    it('should NOT convert imports that go outside src/ (e.g., package.json from src/index.ts)', async () => {
+      const contents = `import pkg from '../package.json';`;
+      const result = await fix(contents, {
+        relativeFilePath: 'src/index.ts',
+      } as any);
+
+      // ../package.json from src/index.ts goes OUTSIDE src, so should NOT become @src/package.json
+      expect(result.contents).toBe(`import pkg from '../package.json';`);
+    });
+
+    it('should NOT convert imports that go outside src/ from nested file', async () => {
+      const contents = `import pkg from '../../package.json';`;
+      const result = await fix(contents, {
+        relativeFilePath: 'src/utils/index.ts',
+      } as any);
+
+      // ../../package.json from src/utils/index.ts goes OUTSIDE src, so should NOT become @src/package.json
+      expect(result.contents).toBe(`import pkg from '../../package.json';`);
+    });
+
+    it('should convert imports staying within src/ but NOT those going outside', async () => {
+      const contents = `import { helper } from '../utils/helper';
+import pkg from '../../package.json';`;
+      const result = await fix(contents, {
+        relativeFilePath: 'src/domain/index.ts',
+      } as any);
+
+      // ../utils/helper stays within src, should become @src/utils/helper
+      expect(result.contents).toContain(`from '@src/utils/helper'`);
+      // ../../package.json goes outside src, should remain unchanged
+      expect(result.contents).toContain(`from '../../package.json'`);
     });
   });
 });
