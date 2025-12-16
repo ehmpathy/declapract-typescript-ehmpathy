@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.5...v0.45.6) (2025-12-16)
+
+
+### Bug Fixes
+
+* **src:** upgrade dir structure best practice to mechanic briefs ([#256](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/256)) ([758316d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/758316db126b4566fd5d6d2660b4f8fe6f7984fd))
+
 ## [0.45.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.4...v0.45.5) (2025-12-16)
 
 
