@@ -62,7 +62,6 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     hasIssues: true,
     hasProjects: false,
     hasWiki: false,
-    hasDownloads: false,
     isTemplate: false,
 
     // only squash merges are allowed
