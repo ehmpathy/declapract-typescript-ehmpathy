@@ -7,10 +7,10 @@ export const fix: FileFixFunction = (contents, context) => {
     contents:
       contents?.replace(
         "export * from './domainObjects';", // if it has this, we want to replace it
-        "export * from './objects';",
+        "export * from './';",
       ) ?? null,
     relativeFilePath: context.relativeFilePath
-      .replace('src/model/', 'src/domain/')
-      .replace('domainObjects/', 'objects/'),
+      .replace('src/model/domainObjects/', 'src/domain.objects/')
+      .replace('src/model/', 'src/domain.objects/'),
   };
 };

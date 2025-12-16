@@ -2,7 +2,7 @@ language: postgres
 dialect: 10.7
 generates:
   daos:
-    to: src/data/dao
+    to: src/access/daos
     using:
       log: src/utils/logger#log
       DatabaseConnection: src/utils/database/getDatabaseConnection#DatabaseConnection
@@ -15,4 +15,4 @@ generates:
 for:
   objects:
     search:
-      - 'src/domain/objects/*.ts'
+      - 'src/domain.objects/*.ts'
