@@ -43,7 +43,8 @@
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify",
     "prepare:husky": "npx husky install && chmod ug+x .husky/*",
-    "prepare": "[ -e .git ] && npm run prepare:husky || exit 0"
+    "prepare:rhachet": "npx rhachet init --force && npx rhachet roles link --role mechanic && .agent/repo=ehmpathy/role=mechanic/skills/.skills/init.claude.sh",
+    "prepare": "if [ -e .git ]; then npm run prepare:husky && npm run prepare:rhachet; fi"
   },
   "dependencies": {
     "domain-objects": "0.31.7",
@@ -51,8 +52,6 @@
     "expect": "29.4.2",
     "flat": "5.0.2",
     "helpful-errors": "1.5.3",
-    "rhachet": "1.13.1",
-    "rhachet-roles-ehmpathy": "1.13.7",
     "yaml": "2.8.2"
   },
   "peerDependencies": {
@@ -77,7 +76,7 @@
     "husky": "8.0.3",
     "jest": "30.2.0",
     "rhachet": "1.13.1",
-    "rhachet-roles-ehmpathy": "1.13.8",
+    "rhachet-roles-ehmpathy": "1.13.9",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
     "type-fns": "0.8.1",

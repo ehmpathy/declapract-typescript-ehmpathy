@@ -14,6 +14,7 @@ use-cases:
       - node
       - nonpublished-modules
       - package-json-order
+      - rhachet
       - tests
       - typescript
       - pnpm
