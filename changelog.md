@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.46.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.0...v0.46.1) (2025-12-17)
+
+
+### Bug Fixes
+
+* **cicd:** update turts release message ([#279](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/279)) ([2d6aa6c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/2d6aa6ce4427769072a3ace5aca42b082f203b2f))
+* **deps:** bump declastruct deps to latest ([#276](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/276)) ([778ff4c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/778ff4c29f25bd5f40b79b8c5810a6dd08fbe401))
+
 ## [0.46.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.6...v0.46.0) (2025-12-17)
 
 
