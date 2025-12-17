@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.0](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.6...v0.46.0) (2025-12-17)
+
+
+### Features
+
+* **rhachet:** release rhachet best practice ([#277](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/277)) ([b2ad69d](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/b2ad69d3b1d53067ac62435b8320e40ec9cfb005))
+
 ## [0.45.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.45.5...v0.45.6) (2025-12-16)
 
 
