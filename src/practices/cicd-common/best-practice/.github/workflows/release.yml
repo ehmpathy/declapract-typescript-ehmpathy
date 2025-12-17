@@ -50,7 +50,7 @@ jobs:
           body="$(gh pr view "$PR" --json body -q .body)"
 
           updated="$(printf "%s" "$body" \
-            | sed '1s/^:robot: I have created a release \*beep\* \*boop\*$/🐢 noice work! ready to let these changes ride?/' \
+            | sed '1s/^:robot: I have created a release \*beep\* \*boop\*$/🐢 noice! ready to let these changes ride?/' \
             | sed 's/^### Features$/### features/' \
             | sed 's/^### Bug Fixes$/### fixes/' \
           )"
