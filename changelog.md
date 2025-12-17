@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.2](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.1...v0.46.2) (2025-12-17)
+
+
+### Bug Fixes
+
+* **cicd:** skip prepare step on cicd ([#281](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/281)) ([2480155](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/248015559adcd8ba9d65deb673790a3fe763a4fd))
+
 ## [0.46.1](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.0...v0.46.1) (2025-12-17)
 
 
