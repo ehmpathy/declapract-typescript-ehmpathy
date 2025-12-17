@@ -7,7 +7,7 @@
   "bugs": "https://github.com/@declapract{variable.organizationName}/@declapract{variable.projectName}/issues",
   "scripts": {
     "fix": "npm run fix:format && npm run fix:lint",
-    "prepare": "if [ -e .git ]; then npm run prepare:husky && npm run prepare:rhachet; fi",
+    "prepare": "if [ -e .git ] && [ -z $CI ]; then npm run prepare:husky && npm run prepare:rhachet; fi",
     "prepush": "npm run test && npm run build",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify"
