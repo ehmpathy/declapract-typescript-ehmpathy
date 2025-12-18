@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.6...v0.46.7) (2025-12-18)
+
+
+### Bug Fixes
+
+* **git:** precommit check should use direct nodemods bin too ([#289](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/289)) ([de5150f](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/de5150fcbdccd6aad4fe0b3f545de630497dad8b))
+
 ## [0.46.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.5...v0.46.6) (2025-12-18)
 
 
