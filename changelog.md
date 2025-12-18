@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.5...v0.46.6) (2025-12-18)
+
+
+### Bug Fixes
+
+* **test:** support explicit RESNAP envvar for snapshot updates ([#290](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/290)) ([5e5327c](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/5e5327c6899eebf43f3b3fdb4f85bfb9fdfda62a))
+
 ## [0.46.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.4...v0.46.5) (2025-12-18)
 
 
