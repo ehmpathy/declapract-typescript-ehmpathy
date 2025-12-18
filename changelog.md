@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.5](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.4...v0.46.5) (2025-12-18)
+
+
+### Bug Fixes
+
+* **git:** use local executor for husky and also re-control commit-msg hook ([#287](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/287)) ([713d917](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/713d9177939c60b78132c0703249b5e2a9010b1b))
+
 ## [0.46.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.3...v0.46.4) (2025-12-18)
 
 
