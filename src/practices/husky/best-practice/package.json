@@ -3,6 +3,7 @@
     "prepare:husky": "husky install && chmod ug+x .husky/*"
   },
   "devDependencies": {
-    "husky": "@declapract{check.minVersion('8.0.3')}"
+    "husky": "@declapract{check.minVersion('8.0.3')}",
+    "yalc": "@declapract{check.minVersion('1.0.0')}"
   }
 }

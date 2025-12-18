@@ -55,7 +55,7 @@
     "yaml": "2.8.2"
   },
   "peerDependencies": {
-    "declapract": ">=0.13.1"
+    "declapract": ">=0.13.3"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",
@@ -80,7 +80,8 @@
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
     "type-fns": "0.8.1",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "yalc": "1.0.0-pre.53"
   },
   "config": {
     "commitizen": {
