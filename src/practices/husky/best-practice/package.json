@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "prepare:husky": "npx husky install && chmod ug+x .husky/*"
+    "prepare:husky": "husky install && chmod ug+x .husky/*"
   },
   "devDependencies": {
     "husky": "@declapract{check.minVersion('8.0.3')}"
