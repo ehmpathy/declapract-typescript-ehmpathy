@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       declapract:
-        specifier: '>=0.13.1'
-        version: 0.13.1
+        specifier: '>=0.13.3'
+        version: 0.13.4
       domain-objects:
         specifier: 0.31.7
         version: 0.31.7(@types/node@22.15.21)
@@ -96,6 +96,9 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
+      yalc:
+        specifier: 1.0.0-pre.53
+        version: 1.0.0-pre.53
 
 packages:
 
@@ -2106,8 +2109,8 @@ packages:
       supports-color:
         optional: true
 
-  declapract@0.13.1:
-    resolution: {integrity: sha512-iYCNwfhkxGJC1gv95Al2jYK/F8zsIdNP6D+OikY0lCorrs8OIz0+c9+kn+GVSOv8vsLCRkuA4RwIOowuYIvZRQ==}
+  declapract@0.13.4:
+    resolution: {integrity: sha512-UPmnhH85diRIKbBlleybjx7fynDwYaXQvBNvhTLpLrbXtwBq5XknaJUWPpJSCmL0w2gDSmkAJaUEhoIY3OKk1g==}
     engines: {node: '>=12.0.0'}
     hasBin: true
 
@@ -2364,6 +2367,10 @@ packages:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
     engines: {node: '>=14'}
 
+  fs-extra@8.1.0:
+    resolution: {integrity: sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g==}
+    engines: {node: '>=6 <7 || >=8'}
+
   fs-extra@9.1.0:
     resolution: {integrity: sha512-hcg3ZmepS30/7BSFqRvoo3DOMQu7IjqxO5nCDt+zM9XWjb33Wg7ziNT+Qvqbuc3+gWpzO02JubVyk2G4Zvo1OQ==}
     engines: {node: '>=10'}
@@ -2488,6 +2495,9 @@ packages:
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
 
+  ignore-walk@3.0.4:
+    resolution: {integrity: sha512-PY6Ii8o1jMRA1z4F2hRkH/xN59ox43DavKvD3oDpfurRlOJyAHpifIwpbdv1n4jt4ov0jSpw3kQ4GhJnpBL6WQ==}
+
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
@@ -2524,6 +2534,10 @@ packages:
 
   ini@1.3.8:
     resolution: {integrity: sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==}
+
+  ini@2.0.0:
+    resolution: {integrity: sha512-7PnF4oN3CvZF23ADhA5wRaYEQpJ8qygSkbtTXWBeXWXmEVRXK+1ITciHWwHhsjv1TmW0MgacIv6hEi5pX5NQdA==}
+    engines: {node: '>=10'}
 
   ini@4.1.1:
     resolution: {integrity: sha512-QQnnxNyfvmHFIsj7gkPcYymR8Jdw/o7mp5ZFihxn6h8Ci6fh3Dx4E1gPjpQEpIuPo9XVNY/ZUwh4BPMjGyL01g==}
@@ -2830,6 +2844,9 @@ packages:
   jsonc-parser@3.3.1:
     resolution: {integrity: sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ==}
 
+  jsonfile@4.0.0:
+    resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
+
   jsonfile@6.2.0:
     resolution: {integrity: sha512-FGuPw30AdOIUTRMC2OMRtQV+jkVj2cfPqSeWXv1NEAJ1qZ5zb1X6z1mFhbfOB/iy3ssJCD+3KuZ8r8C3uVFlAg==}
 
@@ -3008,6 +3025,17 @@ packages:
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
+
+  npm-bundled@1.1.2:
+    resolution: {integrity: sha512-x5DHup0SuyQcmL3s7Rx/YQ8sbw/Hzg0rj48eN0dV7hf5cmQq5PXIeioroH3raV1QC1yh3uTYuMThvEQF3iKgGQ==}
+
+  npm-normalize-package-bin@1.0.1:
+    resolution: {integrity: sha512-EPfafl6JL5/rU+ot6P3gRSCpPDW5VmIzX959Ob1+ySFUuuYHWHekXpwdUZcKP5C+DS4GEtdJluwBjnsNDl+fSA==}
+
+  npm-packlist@2.2.2:
+    resolution: {integrity: sha512-Jt01acDvJRhJGthnUJVF/w6gumWOZxO7IkpY/lsX9//zqQgnF7OJaxgQXcerd4uQOLu7W5bkb4mChL9mdfm+Zg==}
+    engines: {node: '>=10'}
+    hasBin: true
 
   npm-run-path@4.0.1:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
@@ -3561,6 +3589,10 @@ packages:
   universal-user-agent@7.0.3:
     resolution: {integrity: sha512-TmnEAEAsBJVZM/AADELsK76llnwcf9vMKuPz8JflO1frO8Lchitr0fNaN9d+Ap0BjKtqWqd/J17qeDnXh8CL2A==}
 
+  universalify@0.1.2:
+    resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}
+    engines: {node: '>= 4.0.0'}
+
   universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
@@ -3672,6 +3704,10 @@ packages:
   y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
+
+  yalc@1.0.0-pre.53:
+    resolution: {integrity: sha512-tpNqBCpTXplnduzw5XC+FF8zNJ9L/UXmvQyyQj7NKrDNavbJtHvzmZplL5ES/RCnjX7JR7W9wz5GVDXVP3dHUQ==}
+    hasBin: true
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
@@ -6284,7 +6320,7 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  declapract@0.13.1:
+  declapract@0.13.4:
     dependencies:
       chalk: 2.4.2
       commander: 12.1.0
@@ -6648,6 +6684,12 @@ snapshots:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
+  fs-extra@8.1.0:
+    dependencies:
+      graceful-fs: 4.2.11
+      jsonfile: 4.0.0
+      universalify: 0.1.2
+
   fs-extra@9.1.0:
     dependencies:
       at-least-node: 1.0.0
@@ -6777,6 +6819,10 @@ snapshots:
 
   ieee754@1.2.1: {}
 
+  ignore-walk@3.0.4:
+    dependencies:
+      minimatch: 3.1.2
+
   ignore@5.3.2: {}
 
   immutable@5.1.4: {}
@@ -6805,6 +6851,8 @@ snapshots:
   inherits@2.0.4: {}
 
   ini@1.3.8: {}
+
+  ini@2.0.0: {}
 
   ini@4.1.1: {}
 
@@ -7325,6 +7373,10 @@ snapshots:
 
   jsonc-parser@3.3.1: {}
 
+  jsonfile@4.0.0:
+    optionalDependencies:
+      graceful-fs: 4.2.11
+
   jsonfile@6.2.0:
     dependencies:
       universalify: 2.0.1
@@ -7470,6 +7522,19 @@ snapshots:
   node-releases@2.0.27: {}
 
   normalize-path@3.0.0: {}
+
+  npm-bundled@1.1.2:
+    dependencies:
+      npm-normalize-package-bin: 1.0.1
+
+  npm-normalize-package-bin@1.0.1: {}
+
+  npm-packlist@2.2.2:
+    dependencies:
+      glob: 7.2.3
+      ignore-walk: 3.0.4
+      npm-bundled: 1.1.2
+      npm-normalize-package-bin: 1.0.1
 
   npm-run-path@4.0.1:
     dependencies:
@@ -8054,6 +8119,8 @@ snapshots:
 
   universal-user-agent@7.0.3: {}
 
+  universalify@0.1.2: {}
+
   universalify@2.0.1: {}
 
   unrs-resolver@1.11.1:
@@ -8209,6 +8276,17 @@ snapshots:
       signal-exit: 4.1.0
 
   y18n@5.0.8: {}
+
+  yalc@1.0.0-pre.53:
+    dependencies:
+      chalk: 4.1.2
+      detect-indent: 6.1.0
+      fs-extra: 8.1.0
+      glob: 7.2.3
+      ignore: 5.3.2
+      ini: 2.0.0
+      npm-packlist: 2.2.2
+      yargs: 16.2.0
 
   yallist@3.1.1: {}
 
