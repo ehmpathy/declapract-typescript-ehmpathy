@@ -76,7 +76,7 @@
     "husky": "8.0.3",
     "jest": "30.2.0",
     "rhachet": "1.13.1",
-    "rhachet-roles-ehmpathy": "1.13.12",
+    "rhachet-roles-ehmpathy": "1.15.1",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
     "type-fns": "0.8.1",
