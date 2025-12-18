@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.4](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.3...v0.46.4) (2025-12-18)
+
+
+### Bug Fixes
+
+* **prepare:** drop npx suffix to insure local executor is used (e.g., pnpm in pnpm projects) ([#285](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/285)) ([e56adc6](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e56adc66effe601ef1eb2ecf7098e2d0bac3f3ea))
+
 ## [0.46.3](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.2...v0.46.3) (2025-12-18)
 
 
