@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.7...v0.46.8) (2025-12-19)
+
+
+### Bug Fixes
+
+* **deps:** pin to usable min yalc version ([#294](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/294)) ([d547fb8](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/d547fb82d0f58fe21e5a33181ed5cbbccf4610c7))
+
 ## [0.46.7](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.6...v0.46.7) (2025-12-18)
 
 
