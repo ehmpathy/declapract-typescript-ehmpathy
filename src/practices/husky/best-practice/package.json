@@ -4,6 +4,6 @@
   },
   "devDependencies": {
     "husky": "@declapract{check.minVersion('8.0.3')}",
-    "yalc": "@declapract{check.minVersion('1.0.0-pre.53')}"
+    "yalc": "1.0.0-pre.53"
   }
 }
