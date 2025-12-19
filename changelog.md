@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.10...v0.46.11) (2025-12-19)
+
+
+### Bug Fixes
+
+* **deps:** bump rhachet for resnap support ([#299](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/299)) ([1b151db](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/1b151db2ee2ec404161401a3c9eb8666c989d57e))
+
 ## [0.46.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.9...v0.46.10) (2025-12-19)
 
 
