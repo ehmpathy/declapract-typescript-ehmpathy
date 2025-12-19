@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.10](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.9...v0.46.10) (2025-12-19)
+
+
+### Bug Fixes
+
+* **deps:** bump rhachet deps to latest ([#293](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/293)) ([cbb5280](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/cbb5280f54876d281dd30ffc63dff8b21b87d494))
+
 ## [0.46.9](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.8...v0.46.9) (2025-12-19)
 
 
