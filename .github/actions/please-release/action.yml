@@ -281,9 +281,15 @@ runs:
         else
           BRANCH="release/${NEXT_VERSION}"
 
-          # get main head and create branch
+          # get main head
           MAIN_SHA=$(gh api "repos/${REPO}/git/ref/heads/main" --jq '.object.sha')
-          gh api "repos/${REPO}/git/refs" -X POST -f ref="refs/heads/${BRANCH}" -f sha="$MAIN_SHA"
+
+          # create or reset branch to main head
+          if gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq '.object.sha' 2>/dev/null; then
+            gh api "repos/${REPO}/git/refs/heads/${BRANCH}" -X PATCH -f sha="$MAIN_SHA" -F force=true
+          else
+            gh api "repos/${REPO}/git/refs" -X POST -f ref="refs/heads/${BRANCH}" -f sha="$MAIN_SHA"
+          fi
 
           # create verified commit
           create_verified_commit "$BRANCH" "$MAIN_SHA" "chore(release): ${NEXT_VERSION}"
