@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.14](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.13...v0.46.14) (2025-12-20)
+
+
+### Bug Fixes
+
+* **git:** ensure uninstalled husky is not a blocker ([#307](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/307)) ([1865564](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/1865564c83dc8267e6fd9d56e5dbcb8210e1a09f))
+
 ## [0.46.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.12...v0.46.13) (2025-12-20)
 
 
