@@ -42,7 +42,7 @@ jobs:
           pull-request-title-pattern: "chore(release): v${version} 🎉"
           changelog-path: changelog.md
 
-      - name: upvibe the pr, if pr
+      - name: upvibe the pr, on upsert
         if: ${{ steps.release.outputs.pr }}
         run: |
           PR="${{ fromJson(steps.release.outputs.pr).number }}"
@@ -56,5 +56,24 @@ jobs:
           )"
 
           gh pr edit "$PR" --body "$updated"
+        env:
+          GH_TOKEN: ${{ steps.github-token.outputs.token }}
+
+      - name: upvibe the pr, on release
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          PR="${{ fromJson(steps.release.outputs.pr).number }}"
+          TAG="${{ steps.release.outputs.tag_name }}"
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${TAG}"
+
+          # find the release-please comment with the robot emoji and edit it
+          COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${PR}/comments" \
+            --jq '.[] | select(.body | startswith(":robot: Release is at")) | .id' | head -1)
+
+          if [ -n "$COMMENT_ID" ]; then
+            gh api "repos/${{ github.repository }}/issues/comments/${COMMENT_ID}" \
+              -X PATCH \
+              -f body="🌊 released at ${RELEASE_URL}"
+          fi
         env:
           GH_TOKEN: ${{ steps.github-token.outputs.token }}
