@@ -63,13 +63,6 @@ runs:
           exit 1
         fi
 
-        # failfast if release pr was not labeled with expected version
-        PR_LABELS=$(gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name')
-        if ! echo "$PR_LABELS" | grep -q "^release=$VERSION$"; then
-          echo "::error::release pr #$PR_NUMBER was not labeled with release=$VERSION"
-          exit 1
-        fi
-
         # create and push tag
         git tag "$VERSION"
         git push origin "$VERSION"
@@ -200,7 +193,6 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-token }}
       run: |
         NEXT_VERSION="${{ steps.semver.outputs.next-version }}"
-        RELEASE_LABEL="purpose=release"
         CHANGELOG=$(cat "${{ steps.changelog.outputs.changelog-file }}")
 
         # failfast if package.json doesnt exist
@@ -211,8 +203,8 @@ runs:
 
         REPO="${{ inputs.repository }}"
 
-        # find existing release pr
-        EXISTING_PR=$(gh pr list --state open --label "$RELEASE_LABEL" --json number,headRefName --jq '.[0]')
+        # find existing release pr by title pattern
+        EXISTING_PR=$(gh pr list --state open --search "chore(release):" --json number,headRefName --jq '.[0]')
 
         # build pr body in temp file to avoid yaml parsing issues
         PR_BODY_FILE="/tmp/pr-body.md"
@@ -273,9 +265,6 @@ runs:
             --title "chore(release): ${NEXT_VERSION}" \
             --body "$PR_BODY"
 
-          # update labels
-          gh pr edit "$PR_NUMBER" --add-label "release=${NEXT_VERSION}"
-
           echo "action=updated" >> $GITHUB_OUTPUT
           echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
         else
@@ -299,9 +288,7 @@ runs:
             --title "chore(release): ${NEXT_VERSION}" \
             --body "$PR_BODY" \
             --base main \
-            --head "$BRANCH" \
-            --label "$RELEASE_LABEL" \
-            --label "release=${NEXT_VERSION}")
+            --head "$BRANCH")
 
           PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
 
