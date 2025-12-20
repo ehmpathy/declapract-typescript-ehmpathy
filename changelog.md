@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.46.14](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.13...v0.46.14) (2025-12-20)
+
+
+### Bug Fixes
+
+* **git:** ensure uninstalled husky is not a blocker ([#307](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/307)) ([1865564](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/1865564c83dc8267e6fd9d56e5dbcb8210e1a09f))
+
+## [0.46.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.12...v0.46.13) (2025-12-20)
+
+
+### Bug Fixes
+
+* **cicd:** idempotent publish behavior ([#304](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/304)) ([25a34ba](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/25a34baf96cddc6d690d19ad535121e4fca5d9a9))
+
+## [0.46.12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.11...v0.46.12) (2025-12-20)
+
+
+### Bug Fixes
+
+* **cicd:** upvibe ghaction release comment too ([#301](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/301)) ([c10eafb](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/c10eafbe5a60a029e6a21c1ea3b5ccce4d06da0b))
+* **rhachet:** drop --force flag support ([#303](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/303)) ([e3911dc](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/e3911dcb8c0565051dba47ae750c9c3cb8f4deb6))
+
 ## [0.46.11](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.10...v0.46.11) (2025-12-19)
 
 
