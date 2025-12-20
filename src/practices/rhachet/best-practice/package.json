@@ -4,6 +4,6 @@
     "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.15.7')}"
   },
   "scripts": {
-    "prepare:rhachet": "rhachet init --force && rhachet roles link --role mechanic && .agent/repo=ehmpathy/role=mechanic/skills/.skills/init.claude.sh"
+    "prepare:rhachet": "rhachet init && rhachet roles link --role mechanic && .agent/repo=ehmpathy/role=mechanic/skills/.skills/init.claude.sh"
   }
 }
