@@ -85,14 +85,14 @@ runs:
         echo "   └── ✨ release created: $RELEASE_URL"
 
         # comment on the release pr
-        gh pr comment "$PR_NUMBER" --body "released at ${RELEASE_URL}"
+        gh pr comment "$PR_NUMBER" --body "🐢 released at ${RELEASE_URL}"
 
         # extract pr links from the release pr body and comment on each
         PR_BODY=$(gh pr view "$PR_NUMBER" --json body --jq '.body')
-        REFERENCED_PRS=$(echo "$PR_BODY" | grep -oE '\[#[0-9]+\]\([^)]+/pull/([0-9]+)\)' | grep -oE '[0-9]+' || true)
+        REFERENCED_PRS=$(echo "$PR_BODY" | grep -oE '/pull/[0-9]+' | grep -oE '[0-9]+' | sort -u || true)
 
         for REF_PR in $REFERENCED_PRS; do
-          gh pr comment "$REF_PR" --body "released at ${RELEASE_URL}" 2>/dev/null || true
+          gh pr comment "$REF_PR" --body "🐢 released at ${RELEASE_URL}" 2>/dev/null || true
         done
 
         echo "🌊 cutta tag complete"
@@ -298,7 +298,7 @@ runs:
 
         # build pr body in temp file to avoid yaml parsing issues
         PR_BODY_FILE="/tmp/pr-body.md"
-        echo "noice! ready to let these changes ride?" > "$PR_BODY_FILE"
+        echo "🐢 noice! ready to let these changes ride?" > "$PR_BODY_FILE"
         echo "---" >> "$PR_BODY_FILE"
         echo "" >> "$PR_BODY_FILE"
         cat "${{ steps.changelog.outputs.changelog-file }}" >> "$PR_BODY_FILE"
