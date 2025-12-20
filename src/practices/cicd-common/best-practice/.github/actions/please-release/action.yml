@@ -111,6 +111,10 @@ runs:
           [ "$(printf '%s\n%s' "$1" "$2" | sort -V | tail -n1)" = "$1" ] && [ "$1" != "$2" ]
         }
 
+        # find last release SHA (shared with changelog step via output)
+        LAST_RELEASE_SHA=$(git log --pretty=format:"%H" --grep="^chore(release):" -n 1 || true)
+        echo "last-release-sha=$LAST_RELEASE_SHA" >> $GITHUB_OUTPUT
+
         # case 1: package.json > tag means user manually set the version
         # respect user intent and use package.json version directly (no auto-bump)
         if version_gt "$LATEST_PKG_VERSION" "$LATEST_TAG_VERSION"; then
@@ -134,8 +138,12 @@ runs:
           exit 0
         fi
 
-        # get commits since last release commit
-        COMMITS=$(git log --pretty=format:"%s" | sed '/^chore(release):/q' | head -n -1)
+        # get commits since last release (reuse LAST_RELEASE_SHA computed above)
+        if [ -n "$LAST_RELEASE_SHA" ]; then
+          COMMITS=$(git log ${LAST_RELEASE_SHA}..HEAD --pretty=format:"%s")
+        else
+          COMMITS=$(git log --pretty=format:"%s")
+        fi
 
         # determine bump type
         BUMP="patch"  # default
@@ -167,10 +175,15 @@ runs:
         REPO_URL="https://github.com/${{ inputs.repository }}"
         PREV_TAG="${{ steps.semver.outputs.current-tag }}"
         NEXT_TAG="${{ steps.semver.outputs.next-version }}"
+        LAST_RELEASE_SHA="${{ steps.semver.outputs.last-release-sha }}"
         TODAY=$(date +%Y-%m-%d)
 
-        # get commits since last release commit (more reliable than tags)
-        COMMITS_SINCE_LAST_RELEASE=$(git log --pretty=format:"%H %cs %s" | sed '/chore(release):/q' | head -n -1)
+        # get commits since last release (reuse SHA from semver step)
+        if [ -n "$LAST_RELEASE_SHA" ]; then
+          COMMITS_SINCE_LAST_RELEASE=$(git log ${LAST_RELEASE_SHA}..HEAD --pretty=format:"%H %cs %s")
+        else
+          COMMITS_SINCE_LAST_RELEASE=$(git log --pretty=format:"%H %cs %s")
+        fi
 
         # group commits by type (hash, date, subject)
         FEATS=$(echo "$COMMITS_SINCE_LAST_RELEASE" | grep -E "^[a-f0-9]+ [0-9-]+ feat(\(.+\))?:" || true)
