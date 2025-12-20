@@ -41,37 +41,48 @@ runs:
 
         # check if this is a release commit
         if [[ "$COMMIT_MSG" != chore\(release\):* ]]; then
+          echo "🔭 not a release commit, skipping cutta"
           echo "did-cutta=false" >> $GITHUB_OUTPUT
           exit 0
         fi
+
+        echo "🔭 release commit detected"
 
         # extract version from commit message
         VERSION=$(echo "$COMMIT_MSG" | sed -n 's/^chore(release): \(v[0-9.]*\).*/\1/p')
 
         # failfast if version not found
         if [ -z "$VERSION" ]; then
+          echo "⛈️ could not extract version from commit message: $COMMIT_MSG"
           echo "::error::could not extract version from commit message: $COMMIT_MSG"
           exit 1
         fi
+        echo "🔭 version: $VERSION"
 
         # find the release pr that was merged (by head branch, not search - avoids indexing delay)
         PR_NUMBER=$(gh pr list --state merged --head "release/${VERSION}" --json number --jq '.[0].number')
 
         # failfast if release pr not found
         if [ -z "$PR_NUMBER" ]; then
+          echo "⛈️ could not find merged release pr for version: $VERSION"
           echo "::error::could not find merged release pr for version: $VERSION"
           exit 1
         fi
+        echo "🔭 release pr: #$PR_NUMBER"
 
         # create and push tag
+        echo "   creating tag..."
         git tag "$VERSION"
         git push origin "$VERSION"
+        echo "✨ tag pushed: $VERSION"
 
         # create github release
+        echo "   creating github release..."
         RELEASE_URL=$(gh release create "$VERSION" \
           --title "$VERSION" \
           --generate-notes \
           --latest)
+        echo "✨ release created: $RELEASE_URL"
 
         # comment on the release pr
         gh pr comment "$PR_NUMBER" --body "released at ${RELEASE_URL}"
@@ -84,6 +95,7 @@ runs:
           gh pr comment "$REF_PR" --body "released at ${RELEASE_URL}" 2>/dev/null || true
         done
 
+        echo "🌊 cutta complete"
         echo "did-cutta=true" >> $GITHUB_OUTPUT
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "action=released" >> $GITHUB_OUTPUT
@@ -102,9 +114,13 @@ runs:
       if: ${{ steps.cutta.outputs.did-cutta == 'false' }}
       shell: bash
       run: |
+        echo "🔭 resolving versions..."
+
         # get versions from both sources
         LATEST_PKG_VERSION=$(jq -r '.version' package.json)
         LATEST_TAG_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+        echo "   ├── latest-pkg-version: $LATEST_PKG_VERSION"
+        echo "   └── latest-tag-version: $LATEST_TAG_VERSION"
 
         # helper: compare semver (returns 0 if $1 > $2, 1 otherwise)
         version_gt() {
@@ -114,10 +130,13 @@ runs:
         # find last release SHA (shared with changelog step via output)
         LAST_RELEASE_SHA=$(git log --pretty=format:"%H" --grep="^chore(release):" -n 1 || true)
         echo "last-release-sha=$LAST_RELEASE_SHA" >> $GITHUB_OUTPUT
+        echo "🔭 last-release-sha: ${LAST_RELEASE_SHA:-"(none)"}"
 
         # case 1: package.json > tag means user manually set the version
         # respect user intent and use package.json version directly (no auto-bump)
         if version_gt "$LATEST_PKG_VERSION" "$LATEST_TAG_VERSION"; then
+          echo "✨ pkg > tag: user manually bumped, using package.json version as-is"
+          echo "🌊 next-version: v${LATEST_PKG_VERSION}"
           echo "next-version=v${LATEST_PKG_VERSION}" >> $GITHUB_OUTPUT
           echo "current-tag=v${LATEST_TAG_VERSION}" >> $GITHUB_OUTPUT
           exit 0
@@ -127,12 +146,16 @@ runs:
         # (handles edge cases like tag existing but package.json being behind)
         if version_gt "$LATEST_TAG_VERSION" "$LATEST_PKG_VERSION"; then
           BASE_VERSION="$LATEST_TAG_VERSION"
+          echo "🔭 tag >= pkg: using tag as base"
         else
           BASE_VERSION="$LATEST_PKG_VERSION"
+          echo "🔭 pkg >= tag: using pkg as base"
         fi
 
         # handle first release
         if [ "$BASE_VERSION" = "0.0.0" ]; then
+          echo "✨ first release detected"
+          echo "🌊 next-version: v0.1.0"
           echo "next-version=v0.1.0" >> $GITHUB_OUTPUT
           echo "current-tag=v0.0.0" >> $GITHUB_OUTPUT
           exit 0
@@ -144,6 +167,8 @@ runs:
         else
           COMMITS=$(git log --pretty=format:"%s")
         fi
+        COMMIT_COUNT=$(echo "$COMMITS" | grep -c . || echo "0")
+        echo "🔭 commits since last release: $COMMIT_COUNT"
 
         # determine bump type
         BUMP="patch"  # default
@@ -153,6 +178,7 @@ runs:
         elif echo "$COMMITS" | grep -qE "^feat(\(.+\))?:"; then
           BUMP="minor"
         fi
+        echo "🔭 bump-type: $BUMP"
 
         # compute next version
         IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
@@ -163,6 +189,7 @@ runs:
           patch) NEXT_VERSION="v${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
         esac
 
+        echo "🌊 next-version: $NEXT_VERSION"
         echo "next-version=$NEXT_VERSION" >> $GITHUB_OUTPUT
         echo "current-tag=v${BASE_VERSION}" >> $GITHUB_OUTPUT
 
@@ -238,11 +265,13 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
       run: |
+        echo "🔭 upserting release pr..."
         NEXT_VERSION="${{ steps.semver.outputs.next-version }}"
         CHANGELOG=$(cat "${{ steps.changelog.outputs.changelog-file }}")
 
         # failfast if package.json doesnt exist
         if [ ! -f package.json ]; then
+          echo "⛈️ package.json not found"
           echo "::error::package.json not found"
           exit 1
         fi
@@ -251,6 +280,7 @@ runs:
 
         # find existing release pr by title pattern
         EXISTING_PR=$(gh pr list --state open --search "chore(release):" --json number,headRefName --jq '.[0]')
+        echo "🔭 existing-pr: ${EXISTING_PR:-"(none)"}"
 
         # build pr body in temp file to avoid yaml parsing issues
         PR_BODY_FILE="/tmp/pr-body.md"
@@ -298,31 +328,39 @@ runs:
         if [ -n "$EXISTING_PR" ] && [ "$EXISTING_PR" != "null" ]; then
           PR_NUMBER=$(echo "$EXISTING_PR" | jq -r '.number')
           BRANCH=$(echo "$EXISTING_PR" | jq -r '.headRefName')
+          echo "🔭 updating existing pr #$PR_NUMBER on branch $BRANCH"
 
           # get current head and its parent (amend = replace, not stack)
           CURRENT_SHA=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq '.object.sha')
           PARENT_SHA=$(gh api "repos/${REPO}/git/commits/${CURRENT_SHA}" --jq '.parents[0].sha')
 
           # reset branch to parent (for amend behavior)
+          echo "   resetting branch to parent..."
           gh api "repos/${REPO}/git/refs/heads/${BRANCH}" -X PATCH -f sha="$PARENT_SHA" -F force=true
 
           # create verified commit on top of parent
+          echo "   creating verified commit..."
           create_verified_commit "$BRANCH" "$PARENT_SHA" "chore(release): ${NEXT_VERSION}"
 
           # update pr metadata
+          echo "   updating pr metadata..."
           gh pr edit "$PR_NUMBER" \
             --title "chore(release): ${NEXT_VERSION}" \
             --body "$PR_BODY"
 
+          echo "✨ pr updated: #$PR_NUMBER"
+          echo "🌊 action: updated"
           echo "action=updated" >> $GITHUB_OUTPUT
           echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
         else
           BRANCH="release/${NEXT_VERSION}"
+          echo "🔭 creating new pr on branch $BRANCH"
 
           # get main head
           MAIN_SHA=$(gh api "repos/${REPO}/git/ref/heads/main" --jq '.object.sha')
 
           # create or reset branch to main head
+          echo "   creating branch..."
           if gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq '.object.sha' 2>/dev/null; then
             gh api "repos/${REPO}/git/refs/heads/${BRANCH}" -X PATCH -f sha="$MAIN_SHA" -F force=true
           else
@@ -330,9 +368,11 @@ runs:
           fi
 
           # create verified commit
+          echo "   creating verified commit..."
           create_verified_commit "$BRANCH" "$MAIN_SHA" "chore(release): ${NEXT_VERSION}"
 
           # create pr
+          echo "   creating pr..."
           PR_URL=$(gh pr create \
             --title "chore(release): ${NEXT_VERSION}" \
             --body "$PR_BODY" \
@@ -340,6 +380,8 @@ runs:
             --head "$BRANCH")
 
           PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+          echo "✨ pr created: #$PR_NUMBER"
+          echo "🌊 action: created"
 
           echo "action=created" >> $GITHUB_OUTPUT
           echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
