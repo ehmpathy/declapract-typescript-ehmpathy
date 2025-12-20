@@ -1,0 +1,286 @@
+name: please-release
+description: upsert release pr or cutta release tag
+
+inputs:
+  github-token:
+    description: token for gh cli calls
+    required: true
+  commit-message:
+    description: the head commit message
+    required: true
+  commit-sha:
+    description: the head commit sha
+    required: true
+  repository:
+    description: the repository (owner/repo)
+    required: true
+
+outputs:
+  action:
+    description: what action was taken (noop, created, updated, released)
+    value: ${{ steps.result.outputs.action }}
+  version:
+    description: the computed or released version
+    value: ${{ steps.result.outputs.version }}
+  pr-number:
+    description: the release pr number
+    value: ${{ steps.result.outputs.pr-number }}
+
+runs:
+  using: "composite"
+  steps:
+    # step 1: cutta tag, if release commit
+    - name: cutta tag, if release commit
+      id: cutta
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        COMMIT_MSG="${{ inputs.commit-message }}"
+        REPO_URL="https://github.com/${{ inputs.repository }}"
+
+        # check if this is a release commit
+        if [[ "$COMMIT_MSG" != chore\(release\):* ]]; then
+          echo "did-cutta=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # extract version from commit message
+        VERSION=$(echo "$COMMIT_MSG" | sed -n 's/^chore(release): \(v[0-9.]*\).*/\1/p')
+
+        # failfast if version not found
+        if [ -z "$VERSION" ]; then
+          echo "::error::could not extract version from commit message: $COMMIT_MSG"
+          exit 1
+        fi
+
+        # find the release pr that was merged
+        PR_NUMBER=$(gh pr list --state merged --search "chore(release): $VERSION" --json number --jq '.[0].number')
+
+        # failfast if release pr not found
+        if [ -z "$PR_NUMBER" ]; then
+          echo "::error::could not find merged release pr for version: $VERSION"
+          exit 1
+        fi
+
+        # failfast if release pr was not labeled with expected version
+        PR_LABELS=$(gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name')
+        if ! echo "$PR_LABELS" | grep -q "^release=$VERSION$"; then
+          echo "::error::release pr #$PR_NUMBER was not labeled with release=$VERSION"
+          exit 1
+        fi
+
+        # create and push tag
+        git tag "$VERSION"
+        git push origin "$VERSION"
+
+        # create github release
+        RELEASE_URL=$(gh release create "$VERSION" \
+          --title "$VERSION" \
+          --generate-notes \
+          --latest)
+
+        # comment on the release pr
+        gh pr comment "$PR_NUMBER" --body "released at ${RELEASE_URL}"
+
+        # extract pr links from the release pr body and comment on each
+        PR_BODY=$(gh pr view "$PR_NUMBER" --json body --jq '.body')
+        REFERENCED_PRS=$(echo "$PR_BODY" | grep -oE '\[#[0-9]+\]\([^)]+/pull/([0-9]+)\)' | grep -oE '[0-9]+' || true)
+
+        for REF_PR in $REFERENCED_PRS; do
+          gh pr comment "$REF_PR" --body "released at ${RELEASE_URL}" 2>/dev/null || true
+        done
+
+        echo "did-cutta=true" >> $GITHUB_OUTPUT
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "action=released" >> $GITHUB_OUTPUT
+
+    # step 2: crunch future semver, if other commit
+    - name: crunch future semver, if other commit
+      id: semver
+      if: ${{ steps.cutta.outputs.did-cutta == 'false' }}
+      shell: bash
+      run: |
+        # get latest tag (or default to v0.0.0 for first release)
+        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+
+        # handle first release
+        if [ "$LATEST_TAG" = "v0.0.0" ]; then
+          echo "next-version=v0.1.0" >> $GITHUB_OUTPUT
+          echo "latest-tag=v0.0.0" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # get commits since tag
+        COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"%s")
+
+        # determine bump type
+        BUMP="patch"  # default
+
+        if echo "$COMMITS" | grep -qE "^break(\(.+\))?:"; then
+          BUMP="major"
+        elif echo "$COMMITS" | grep -qE "^feat(\(.+\))?:"; then
+          BUMP="minor"
+        fi
+
+        # compute next version
+        CURRENT="${LATEST_TAG#v}"
+        IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+
+        case $BUMP in
+          major) NEXT_VERSION="v$((MAJOR + 1)).0.0" ;;
+          minor) NEXT_VERSION="v${MAJOR}.$((MINOR + 1)).0" ;;
+          patch) NEXT_VERSION="v${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
+        esac
+
+        echo "next-version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+        echo "latest-tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+    # step 3: crunch future changelog, if other commit
+    - name: crunch future changelog, if other commit
+      id: changelog
+      if: ${{ steps.cutta.outputs.did-cutta == 'false' }}
+      shell: bash
+      run: |
+        REPO_URL="https://github.com/${{ inputs.repository }}"
+        PREV_TAG="${{ steps.semver.outputs.latest-tag }}"
+        NEXT_TAG="${{ steps.semver.outputs.next-version }}"
+        TODAY=$(date +%Y-%m-%d)
+
+        # group commits by type (hash, date, subject)
+        FEATS=$(git log ${PREV_TAG}..HEAD --pretty=format:"%H %cs %s" | grep -E "^[a-f0-9]+ [0-9-]+ feat(\(.+\))?:" || true)
+        FIXES=$(git log ${PREV_TAG}..HEAD --pretty=format:"%H %cs %s" | grep -E "^[a-f0-9]+ [0-9-]+ fix(\(.+\))?:" || true)
+        BREAKS=$(git log ${PREV_TAG}..HEAD --pretty=format:"%H %cs %s" | grep -E "^[a-f0-9]+ [0-9-]+ break(\(.+\))?:" || true)
+
+        # format changelog - write to temp file to avoid yaml parsing issues with multiline strings
+        CHANGELOG_FILE="/tmp/changelog.md"
+        echo "## [${NEXT_TAG#v}](${REPO_URL}/compare/${PREV_TAG}...${NEXT_TAG}) (${TODAY})" > "$CHANGELOG_FILE"
+
+        format_commits() {
+          local commits="$1"
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            HASH="${line%% *}"
+            REST="${line#* }"
+            DATE="${REST%% *}"
+            COMMIT_MESSAGE="${REST#* }"
+            SHORT_HASH="${HASH:0:7}"
+            # extract pr number from message if present
+            PR_NUM=$(echo "$COMMIT_MESSAGE" | grep -oE '\(#[0-9]+\)' | head -1 | tr -d '(#)')
+            echo "○ ${COMMIT_MESSAGE}"
+            if [ -n "$PR_NUM" ]; then
+              echo "   ├── ${DATE}"
+              echo "   ├── [#${PR_NUM}](${REPO_URL}/pull/${PR_NUM})"
+              echo "   └── [${SHORT_HASH}](${REPO_URL}/commit/${HASH})"
+            else
+              echo "   ├── ${DATE}"
+              echo "   └── [${SHORT_HASH}](${REPO_URL}/commit/${HASH})"
+            fi
+          done <<< "$commits"
+        }
+
+        if [ -n "$BREAKS" ]; then
+          { echo ""; echo "### breaks"; echo ""; format_commits "$BREAKS"; } >> "$CHANGELOG_FILE"
+        fi
+        if [ -n "$FEATS" ]; then
+          { echo ""; echo "### feats"; echo ""; format_commits "$FEATS"; } >> "$CHANGELOG_FILE"
+        fi
+        if [ -n "$FIXES" ]; then
+          { echo ""; echo "### fixes"; echo ""; format_commits "$FIXES"; } >> "$CHANGELOG_FILE"
+        fi
+
+        echo "changelog-file=$CHANGELOG_FILE" >> $GITHUB_OUTPUT
+
+    # step 4: upsert release pr, if other commit
+    - name: upsert release pr, if other commit
+      id: upsert
+      if: ${{ steps.cutta.outputs.did-cutta == 'false' }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        NEXT_VERSION="${{ steps.semver.outputs.next-version }}"
+        RELEASE_LABEL="purpose=release"
+        CHANGELOG=$(cat "${{ steps.changelog.outputs.changelog-file }}")
+
+        # failfast if package.json doesnt exist
+        if [ ! -f package.json ]; then
+          echo "::error::package.json not found"
+          exit 1
+        fi
+
+        # find existing release pr
+        EXISTING_PR=$(gh pr list --state open --label "$RELEASE_LABEL" --json number,headRefName --jq '.[0]')
+
+        # build pr body in temp file to avoid yaml parsing issues
+        PR_BODY_FILE="/tmp/pr-body.md"
+        echo "noice! ready to let these changes ride?" > "$PR_BODY_FILE"
+        echo "---" >> "$PR_BODY_FILE"
+        echo "" >> "$PR_BODY_FILE"
+        cat "${{ steps.changelog.outputs.changelog-file }}" >> "$PR_BODY_FILE"
+        PR_BODY=$(cat "$PR_BODY_FILE")
+
+        if [ -n "$EXISTING_PR" ] && [ "$EXISTING_PR" != "null" ]; then
+          PR_NUMBER=$(echo "$EXISTING_PR" | jq -r '.number')
+          BRANCH=$(echo "$EXISTING_PR" | jq -r '.headRefName')
+
+          # update package.json on release branch
+          git fetch origin "$BRANCH"
+          git checkout "$BRANCH"
+          npm version "${NEXT_VERSION#v}" --no-git-tag-version
+          git add package.json package-lock.json 2>/dev/null || git add package.json
+          git commit -m "chore(release): ${NEXT_VERSION}"
+          git push origin "$BRANCH"
+
+          # update pr metadata
+          gh pr edit "$PR_NUMBER" \
+            --title "chore(release): ${NEXT_VERSION}" \
+            --body "$PR_BODY"
+
+          # update labels
+          gh pr edit "$PR_NUMBER" --add-label "release=${NEXT_VERSION}"
+
+          echo "action=updated" >> $GITHUB_OUTPUT
+          echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
+        else
+          # create release branch and pr
+          BRANCH="release/${NEXT_VERSION}"
+          git checkout -b "$BRANCH"
+
+          # update package.json version
+          npm version "${NEXT_VERSION#v}" --no-git-tag-version
+          git add package.json package-lock.json 2>/dev/null || git add package.json
+          git commit -m "chore(release): ${NEXT_VERSION}"
+
+          git push origin "$BRANCH"
+
+          PR_URL=$(gh pr create \
+            --title "chore(release): ${NEXT_VERSION}" \
+            --body "$PR_BODY" \
+            --base main \
+            --head "$BRANCH" \
+            --label "$RELEASE_LABEL" \
+            --label "release=${NEXT_VERSION}")
+
+          PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+
+          echo "action=created" >> $GITHUB_OUTPUT
+          echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
+        fi
+
+        echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+
+    # step 5: aggregate outputs
+    - name: aggregate outputs
+      id: result
+      if: always()
+      shell: bash
+      run: |
+        if [ "${{ steps.cutta.outputs.did-cutta }}" = "true" ]; then
+          echo "action=${{ steps.cutta.outputs.action }}" >> $GITHUB_OUTPUT
+          echo "version=${{ steps.cutta.outputs.version }}" >> $GITHUB_OUTPUT
+        else
+          echo "action=${{ steps.upsert.outputs.action }}" >> $GITHUB_OUTPUT
+          echo "version=${{ steps.upsert.outputs.version }}" >> $GITHUB_OUTPUT
+          echo "pr-number=${{ steps.upsert.outputs.pr-number }}" >> $GITHUB_OUTPUT
+        fi

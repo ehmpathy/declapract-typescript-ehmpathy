@@ -1,0 +1,21 @@
+declare the behavioral criteria required in order to fulfill
+- this wish  .behavior/v2025_12_20.please-release-action/0.wish.md
+- this vision  .behavior/v2025_12_20.please-release-action/1.vision.md (if declared)
+
+via bdd declarations, per your briefs
+
+via the template in  .behavior/v2025_12_20.please-release-action/2.criteria.md
+
+emit into  .behavior/v2025_12_20.please-release-action/2.criteria.md
+
+---
+
+focus on the behavioral requirements
+- critical paths
+- boundary paths
+
+ignore infra or technical details
+
+focus on behaviors
+
+ensure to cover all of the criteria required to fulfill the full set of behaviors declared in the wish and vision
