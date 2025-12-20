@@ -278,9 +278,9 @@ runs:
 
         REPO="${{ inputs.repository }}"
 
-        # find existing release pr by title pattern
-        EXISTING_PR=$(gh pr list --state open --search "chore(release):" --json number,headRefName --jq '.[0]')
-        echo "🔭 existing-pr: ${EXISTING_PR:-"(none)"}"
+        # find release pr by head branch pattern (more reliable than search)
+        FOUND_PR=$(gh pr list --state open --json number,headRefName --jq '[.[] | select(.headRefName | startswith("release/"))] | .[0]')
+        echo "🔭 found-pr: ${FOUND_PR:-"(none)"}"
 
         # build pr body in temp file to avoid yaml parsing issues
         PR_BODY_FILE="/tmp/pr-body.md"
@@ -325,10 +325,10 @@ runs:
           echo "$REQUEST" | gh api graphql --input - --jq '.data.createCommitOnBranch.commit.oid'
         }
 
-        if [ -n "$EXISTING_PR" ] && [ "$EXISTING_PR" != "null" ]; then
-          PR_NUMBER=$(echo "$EXISTING_PR" | jq -r '.number')
-          BRANCH=$(echo "$EXISTING_PR" | jq -r '.headRefName')
-          echo "🔭 updating existing pr #$PR_NUMBER on branch $BRANCH"
+        if [ -n "$FOUND_PR" ] && [ "$FOUND_PR" != "null" ]; then
+          PR_NUMBER=$(echo "$FOUND_PR" | jq -r '.number')
+          BRANCH=$(echo "$FOUND_PR" | jq -r '.headRefName')
+          echo "🔭 updating pr #$PR_NUMBER on branch $BRANCH"
 
           # get current head and its parent (amend = replace, not stack)
           CURRENT_SHA=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq '.object.sha')
