@@ -116,40 +116,44 @@ runs:
       run: |
         echo "🔭 crunch semver"
 
-        # get versions from both sources
-        LATEST_PKG_VERSION=$(jq -r '.version' package.json)
-        LATEST_TAG_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
-        echo "   ├── pkg-version: $LATEST_PKG_VERSION"
-        echo "   ├── tag-version: $LATEST_TAG_VERSION"
-
         # helper: compare semver (returns 0 if $1 > $2, 1 otherwise)
         version_gt() {
           [ "$(printf '%s\n%s' "$1" "$2" | sort -V | tail -n1)" = "$1" ] && [ "$1" != "$2" ]
         }
 
-        # find last release SHA (shared with changelog step via output)
-        LAST_RELEASE_SHA=$(git log --pretty=format:"%H" --grep="^chore(release):" -n 1 || true)
-        echo "last-release-sha=$LAST_RELEASE_SHA" >> $GITHUB_OUTPUT
-        echo "   ├── last-release-sha: ${LAST_RELEASE_SHA:0:7}${LAST_RELEASE_SHA:+...}"
+        # get versions from all sources
+        LATEST_PACKAGE_VERSION=$(jq -r '.version' package.json)
+        LATEST_GITTAG_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
 
-        # case 1: package.json > tag means user manually set the version
-        # respect user intent and use package.json version directly (no auto-bump)
-        if version_gt "$LATEST_PKG_VERSION" "$LATEST_TAG_VERSION"; then
-          echo "   ├── ✨ pkg > tag: user manually bumped"
-          echo "   └── 🌊 next-version: v${LATEST_PKG_VERSION}"
-          echo "next-version=v${LATEST_PKG_VERSION}" >> $GITHUB_OUTPUT
-          echo "current-tag=v${LATEST_TAG_VERSION}" >> $GITHUB_OUTPUT
+        # find last release commit (shared with changelog step via output)
+        LAST_RELEASE_SHA=$(git log --pretty=format:"%H" --grep="^chore(release):" -n 1 || true)
+        LAST_RELEASE_MSG=$(git log --pretty=format:"%s" --grep="^chore(release):" -n 1 2>/dev/null || true)
+        LATEST_RELEASE_VERSION=$(echo "$LAST_RELEASE_MSG" | sed -n 's/^chore(release): v\([0-9.]*\).*/\1/p')
+
+        echo "last-release-sha=$LAST_RELEASE_SHA" >> $GITHUB_OUTPUT
+        echo "   ├── package-version: $LATEST_PACKAGE_VERSION"
+        echo "   ├── gittag-version: $LATEST_GITTAG_VERSION"
+        echo "   ├── release-version: ${LATEST_RELEASE_VERSION:-"(none)"}"
+        echo "   ├── release-sha: ${LAST_RELEASE_SHA:0:7}${LAST_RELEASE_SHA:+...}"
+
+        # case 1: package.json > release-version means user manually bumped AFTER last release
+        # (if package == release-version, that was set by automation, not user)
+        if [ -n "$LATEST_RELEASE_VERSION" ] && version_gt "$LATEST_PACKAGE_VERSION" "$LATEST_RELEASE_VERSION"; then
+          echo "   ├── ✨ pkg > release: user manually bumped"
+          echo "   └── 🌊 next-version: v${LATEST_PACKAGE_VERSION}"
+          echo "next-version=v${LATEST_PACKAGE_VERSION}" >> $GITHUB_OUTPUT
+          echo "current-tag=v${LATEST_GITTAG_VERSION}" >> $GITHUB_OUTPUT
           exit 0
         fi
 
         # case 2: auto-compute next version from the greater of tag vs package.json
         # (handles edge cases like tag existing but package.json being behind)
-        if version_gt "$LATEST_TAG_VERSION" "$LATEST_PKG_VERSION"; then
-          BASE_VERSION="$LATEST_TAG_VERSION"
-          echo "   ├── base: tag ($LATEST_TAG_VERSION)"
+        if version_gt "$LATEST_GITTAG_VERSION" "$LATEST_PACKAGE_VERSION"; then
+          BASE_VERSION="$LATEST_GITTAG_VERSION"
+          echo "   ├── base: gittag ($LATEST_GITTAG_VERSION)"
         else
-          BASE_VERSION="$LATEST_PKG_VERSION"
-          echo "   ├── base: pkg ($LATEST_PKG_VERSION)"
+          BASE_VERSION="$LATEST_PACKAGE_VERSION"
+          echo "   ├── base: package ($LATEST_PACKAGE_VERSION)"
         fi
 
         # handle first release
