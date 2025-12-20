@@ -160,15 +160,16 @@ runs:
             SHORT_HASH="${HASH:0:7}"
             # extract pr number from message if present
             PR_NUM=$(echo "$COMMIT_MESSAGE" | grep -oE '\(#[0-9]+\)' | head -1 | tr -d '(#)')
-            echo "○ ${COMMIT_MESSAGE}"
+            echo "&nbsp;&nbsp;○ ${COMMIT_MESSAGE}"
             if [ -n "$PR_NUM" ]; then
-              echo "   ├── ${DATE}"
-              echo "   ├── [#${PR_NUM}](${REPO_URL}/pull/${PR_NUM})"
-              echo "   └── [${SHORT_HASH}](${REPO_URL}/commit/${HASH})"
+              echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── ${DATE}"
+              echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── [#${PR_NUM}](${REPO_URL}/pull/${PR_NUM})"
+              echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── [${SHORT_HASH}](${REPO_URL}/commit/${HASH})"
             else
-              echo "   ├── ${DATE}"
-              echo "   └── [${SHORT_HASH}](${REPO_URL}/commit/${HASH})"
+              echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── ${DATE}"
+              echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── [${SHORT_HASH}](${REPO_URL}/commit/${HASH})"
             fi
+            echo ""
           done <<< "$commits"
         }
 
