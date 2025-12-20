@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.13](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.12...v0.46.13) (2025-12-20)
+
+
+### Bug Fixes
+
+* **cicd:** idempotent publish behavior ([#304](https://github.com/ehmpathy/declapract-typescript-ehmpathy/issues/304)) ([25a34ba](https://github.com/ehmpathy/declapract-typescript-ehmpathy/commit/25a34baf96cddc6d690d19ad535121e4fca5d9a9))
+
 ## [0.46.12](https://github.com/ehmpathy/declapract-typescript-ehmpathy/compare/v0.46.11...v0.46.12) (2025-12-20)
 
 
