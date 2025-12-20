@@ -227,7 +227,7 @@ runs:
           # update package.json on release branch
           git fetch origin "$BRANCH"
           git checkout "$BRANCH"
-          npm version "${NEXT_VERSION#v}" --no-git-tag-version
+          npm version "${NEXT_VERSION#v}" --no-git-tag-version --ignore-scripts
           git add package.json package-lock.json 2>/dev/null || git add package.json
           git commit -m "chore(release): ${NEXT_VERSION}"
           git push origin "$BRANCH"
@@ -248,7 +248,7 @@ runs:
           git checkout -b "$BRANCH"
 
           # update package.json version
-          npm version "${NEXT_VERSION#v}" --no-git-tag-version
+          npm version "${NEXT_VERSION#v}" --no-git-tag-version --ignore-scripts
           git add package.json package-lock.json 2>/dev/null || git add package.json
           git commit -m "chore(release): ${NEXT_VERSION}"
 
