@@ -54,8 +54,8 @@ runs:
           exit 1
         fi
 
-        # find the release pr that was merged
-        PR_NUMBER=$(gh pr list --state merged --search "chore(release): $VERSION" --json number --jq '.[0].number')
+        # find the release pr that was merged (by head branch, not search - avoids indexing delay)
+        PR_NUMBER=$(gh pr list --state merged --head "release/${VERSION}" --json number --jq '.[0].number')
 
         # failfast if release pr not found
         if [ -z "$PR_NUMBER" ]; then
