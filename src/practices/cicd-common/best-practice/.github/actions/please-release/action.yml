@@ -231,24 +231,27 @@ runs:
           # update package.json version locally
           npm version "${NEXT_VERSION#v}" --no-git-tag-version --ignore-scripts
 
-          # build files json array
-          FILES='[{"path":"package.json","contents":"'"$(base64 -w0 package.json)"'"}'
-          if [ -f package-lock.json ]; then
-            FILES="${FILES},{\"path\":\"package-lock.json\",\"contents\":\"$(base64 -w0 package-lock.json)\"}"
-          fi
-          FILES="${FILES}]"
+          # build graphql request with jq
+          REQUEST=$(jq -n \
+            --arg repo "$REPO" \
+            --arg branch "$branch" \
+            --arg oid "$head_oid" \
+            --arg msg "$message" \
+            --arg pkg_content "$(base64 -w0 package.json)" \
+            '{
+              query: "mutation($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { commit { oid } } }",
+              variables: {
+                input: {
+                  branch: { repositoryNameWithOwner: $repo, branchName: $branch },
+                  message: { headline: $msg },
+                  fileChanges: { additions: [{ path: "package.json", contents: $pkg_content }] },
+                  expectedHeadOid: $oid
+                }
+              }
+            }')
 
           # create commit via graphql (auto-verified!)
-          gh api graphql -f query='
-            mutation($repo: String!, $branch: String!, $oid: GitObjectID!, $msg: String!, $files: [FileAddition!]!) {
-              createCommitOnBranch(input: {
-                branch: { repositoryNameWithOwner: $repo, branchName: $branch }
-                message: { headline: $msg }
-                fileChanges: { additions: $files }
-                expectedHeadOid: $oid
-              }) { commit { oid } }
-            }' -f repo="$REPO" -f branch="$branch" -f oid="$head_oid" -f msg="$message" --argjson files "$FILES" \
-            --jq '.data.createCommitOnBranch.commit.oid'
+          echo "$REQUEST" | gh api graphql --input - --jq '.data.createCommitOnBranch.commit.oid'
         }
 
         if [ -n "$EXISTING_PR" ] && [ "$EXISTING_PR" != "null" ]; then
