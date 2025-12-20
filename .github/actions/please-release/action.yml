@@ -209,6 +209,8 @@ runs:
           exit 1
         fi
 
+        REPO="${{ inputs.repository }}"
+
         # find existing release pr
         EXISTING_PR=$(gh pr list --state open --label "$RELEASE_LABEL" --json number,headRefName --jq '.[0]')
 
@@ -220,17 +222,63 @@ runs:
         cat "${{ steps.changelog.outputs.changelog-file }}" >> "$PR_BODY_FILE"
         PR_BODY=$(cat "$PR_BODY_FILE")
 
+        # helper: create verified commit via github api
+        create_verified_commit() {
+          local parent_sha="$1"
+          local base_tree="$2"
+          local message="$3"
+
+          # update package.json version locally
+          npm version "${NEXT_VERSION#v}" --no-git-tag-version --ignore-scripts
+
+          # create blob for package.json
+          PKG_BLOB=$(gh api "repos/${REPO}/git/blobs" -X POST \
+            -f content="$(base64 -w0 package.json)" \
+            -f encoding=base64 \
+            --jq '.sha')
+
+          # build tree array
+          if [ -f package-lock.json ]; then
+            LOCK_BLOB=$(gh api "repos/${REPO}/git/blobs" -X POST \
+              -f content="$(base64 -w0 package-lock.json)" \
+              -f encoding=base64 \
+              --jq '.sha')
+            TREE_ARR='[{"path":"package.json","mode":"100644","type":"blob","sha":"'"$PKG_BLOB"'"},{"path":"package-lock.json","mode":"100644","type":"blob","sha":"'"$LOCK_BLOB"'"}]'
+          else
+            TREE_ARR='[{"path":"package.json","mode":"100644","type":"blob","sha":"'"$PKG_BLOB"'"}]'
+          fi
+
+          # create tree
+          NEW_TREE=$(jq -n --arg base "$base_tree" --argjson tree "$TREE_ARR" \
+            '{base_tree: $base, tree: $tree}' | \
+            gh api "repos/${REPO}/git/trees" -X POST --input - --jq '.sha')
+
+          # create commit (verified!)
+          NEW_COMMIT=$(gh api "repos/${REPO}/git/commits" -X POST \
+            -f message="$message" \
+            -f tree="$NEW_TREE" \
+            -f "parents[]=$parent_sha" \
+            --jq '.sha')
+
+          echo "$NEW_COMMIT"
+        }
+
         if [ -n "$EXISTING_PR" ] && [ "$EXISTING_PR" != "null" ]; then
           PR_NUMBER=$(echo "$EXISTING_PR" | jq -r '.number')
           BRANCH=$(echo "$EXISTING_PR" | jq -r '.headRefName')
 
-          # update package.json on release branch
-          git fetch origin "$BRANCH"
-          git checkout "$BRANCH"
-          npm version "${NEXT_VERSION#v}" --no-git-tag-version --ignore-scripts
-          git add package.json package-lock.json 2>/dev/null || git add package.json
-          git commit -m "chore(release): ${NEXT_VERSION}"
-          git push origin "$BRANCH"
+          # get current head and its parent (amend = replace, not stack)
+          CURRENT_SHA=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq '.object.sha')
+          PARENT_SHA=$(gh api "repos/${REPO}/git/commits/${CURRENT_SHA}" --jq '.parents[0].sha')
+          PARENT_TREE=$(gh api "repos/${REPO}/git/commits/${PARENT_SHA}" --jq '.tree.sha')
+
+          # create verified commit
+          NEW_COMMIT=$(create_verified_commit "$PARENT_SHA" "$PARENT_TREE" "chore(release): ${NEXT_VERSION}")
+
+          # force update branch ref
+          gh api "repos/${REPO}/git/refs/heads/${BRANCH}" -X PATCH \
+            -f sha="$NEW_COMMIT" \
+            -F force=true
 
           # update pr metadata
           gh pr edit "$PR_NUMBER" \
@@ -243,17 +291,21 @@ runs:
           echo "action=updated" >> $GITHUB_OUTPUT
           echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
         else
-          # create release branch and pr
           BRANCH="release/${NEXT_VERSION}"
-          git checkout -b "$BRANCH"
 
-          # update package.json version
-          npm version "${NEXT_VERSION#v}" --no-git-tag-version --ignore-scripts
-          git add package.json package-lock.json 2>/dev/null || git add package.json
-          git commit -m "chore(release): ${NEXT_VERSION}"
+          # get main head
+          MAIN_SHA=$(gh api "repos/${REPO}/git/ref/heads/main" --jq '.object.sha')
+          MAIN_TREE=$(gh api "repos/${REPO}/git/commits/${MAIN_SHA}" --jq '.tree.sha')
 
-          git push origin "$BRANCH"
+          # create verified commit
+          NEW_COMMIT=$(create_verified_commit "$MAIN_SHA" "$MAIN_TREE" "chore(release): ${NEXT_VERSION}")
 
+          # create branch ref
+          gh api "repos/${REPO}/git/refs" -X POST \
+            -f ref="refs/heads/${BRANCH}" \
+            -f sha="$NEW_COMMIT"
+
+          # create pr
           PR_URL=$(gh pr create \
             --title "chore(release): ${NEXT_VERSION}" \
             --body "$PR_BODY" \
