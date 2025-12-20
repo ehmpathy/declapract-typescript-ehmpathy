@@ -1,7 +1,7 @@
 {
   "devDependencies": {
-    "rhachet": "@declapract{check.minVersion('1.13.7')}",
-    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.15.7')}"
+    "rhachet": "@declapract{check.minVersion('1.13.9')}",
+    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.15.9')}"
   },
   "scripts": {
     "prepare:rhachet": "rhachet init && rhachet roles link --role mechanic && .agent/repo=ehmpathy/role=mechanic/skills/.skills/init.claude.sh"
