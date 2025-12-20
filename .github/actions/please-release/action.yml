@@ -304,61 +304,73 @@ runs:
         cat "${{ steps.changelog.outputs.changelog-file }}" >> "$PR_BODY_FILE"
         PR_BODY=$(cat "$PR_BODY_FILE")
 
-        # helper: create verified commit via graphql api (auto-signed by github)
-        create_verified_commit() {
+        # operation: upsert rebased commit on a branch (atomic, no PR auto-close)
+        # - creates blob, tree, commit based on parent_sha
+        # - upserts branch ref (create if missing, update if exists)
+        upsert_rebased_commit() {
           local branch="$1"
-          local head_oid="$2"
+          local parent_sha="$2"
           local message="$3"
 
-          # update package.json version locally (skip if already at target)
+          # update package.json version locally
           CURRENT_VERSION=$(jq -r '.version' package.json)
           if [ "$CURRENT_VERSION" != "${NEXT_VERSION#v}" ]; then
             npm version "${NEXT_VERSION#v}" --no-git-tag-version --ignore-scripts
           fi
 
-          # build graphql request with jq
-          REQUEST=$(jq -n \
-            --arg repo "$REPO" \
-            --arg branch "$branch" \
-            --arg oid "$head_oid" \
-            --arg msg "$message" \
-            --arg pkg_content "$(base64 -w0 package.json)" \
-            '{
-              query: "mutation($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { commit { oid } } }",
-              variables: {
-                input: {
-                  branch: { repositoryNameWithOwner: $repo, branchName: $branch },
-                  message: { headline: $msg },
-                  fileChanges: { additions: [{ path: "package.json", contents: $pkg_content }] },
-                  expectedHeadOid: $oid
-                }
-              }
-            }')
+          # create blob with updated package.json
+          PKG_CONTENT=$(base64 -w0 package.json)
+          BLOB_SHA=$(gh api "repos/${REPO}/git/blobs" \
+            -f content="$PKG_CONTENT" \
+            -f encoding="base64" \
+            --jq '.sha')
 
-          # create commit via graphql (auto-verified!)
-          echo "$REQUEST" | gh api graphql --input - --jq '.data.createCommitOnBranch.commit.oid'
+          # get parent's tree
+          PARENT_TREE=$(gh api "repos/${REPO}/git/commits/${parent_sha}" --jq '.tree.sha')
+
+          # create new tree with updated package.json
+          NEW_TREE=$(gh api "repos/${REPO}/git/trees" \
+            -f base_tree="$PARENT_TREE" \
+            -f 'tree[][path]=package.json' \
+            -f 'tree[][mode]=100644' \
+            -f 'tree[][type]=blob' \
+            -f "tree[][sha]=$BLOB_SHA" \
+            --jq '.sha')
+
+          # create commit (auto-verified by github!)
+          COMMIT_SHA=$(gh api "repos/${REPO}/git/commits" \
+            -f message="$message" \
+            -f tree="$NEW_TREE" \
+            -f "parents[]=$parent_sha" \
+            --jq '.sha')
+
+          # upsert branch ref (create or update, never equals main)
+          if gh api "repos/${REPO}/git/ref/heads/${branch}" --jq '.object.sha' 2>/dev/null; then
+            gh api "repos/${REPO}/git/refs/heads/${branch}" -X PATCH -f sha="$COMMIT_SHA" -F force=true > /dev/null
+          else
+            gh api "repos/${REPO}/git/refs" -X POST -f ref="refs/heads/${branch}" -f sha="$COMMIT_SHA" > /dev/null
+          fi
+
+          echo "$COMMIT_SHA"
         }
+
+        # get main head (shared by both flows)
+        MAIN_SHA=$(gh api "repos/${REPO}/git/ref/heads/main" --jq '.object.sha')
 
         if [ -n "$FOUND_PR" ] && [ "$FOUND_PR" != "null" ]; then
           PR_NUMBER=$(echo "$FOUND_PR" | jq -r '.number')
           BRANCH=$(echo "$FOUND_PR" | jq -r '.headRefName')
           echo "   ├── found-pr: #$PR_NUMBER ($BRANCH)"
 
-          # get current main head (rebase onto latest main, not old parent)
-          MAIN_SHA=$(gh api "repos/${REPO}/git/ref/heads/main" --jq '.object.sha')
-
-          # reset branch to main head (keeps PR up-to-date with base)
-          echo "   ├── rebasing onto main..."
-          gh api "repos/${REPO}/git/refs/heads/${BRANCH}" -X PATCH -f sha="$MAIN_SHA" -F force=true
-
-          # create verified commit on top of main
-          echo "   ├── creating verified commit..."
-          create_verified_commit "$BRANCH" "$MAIN_SHA" "chore(release): ${NEXT_VERSION}"
+          # upsert rebased commit
+          echo "   ├── upserting rebased commit..."
+          COMMIT_SHA=$(upsert_rebased_commit "$BRANCH" "$MAIN_SHA" "chore(release): ${NEXT_VERSION} 🎉")
+          echo "   ├── commit: ${COMMIT_SHA:0:7}"
 
           # update pr metadata
           echo "   ├── updating pr metadata..."
           gh pr edit "$PR_NUMBER" \
-            --title "chore(release): ${NEXT_VERSION}" \
+            --title "chore(release): ${NEXT_VERSION} 🎉" \
             --body "$PR_BODY"
 
           echo "   ├── ✨ pr updated: #$PR_NUMBER"
@@ -370,25 +382,15 @@ runs:
           echo "   ├── found-pr: (none)"
           echo "   ├── branch: $BRANCH"
 
-          # get main head
-          MAIN_SHA=$(gh api "repos/${REPO}/git/ref/heads/main" --jq '.object.sha')
-
-          # create or reset branch to main head
-          echo "   ├── creating branch..."
-          if gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq '.object.sha' 2>/dev/null; then
-            gh api "repos/${REPO}/git/refs/heads/${BRANCH}" -X PATCH -f sha="$MAIN_SHA" -F force=true
-          else
-            gh api "repos/${REPO}/git/refs" -X POST -f ref="refs/heads/${BRANCH}" -f sha="$MAIN_SHA"
-          fi
-
-          # create verified commit
-          echo "   ├── creating verified commit..."
-          create_verified_commit "$BRANCH" "$MAIN_SHA" "chore(release): ${NEXT_VERSION}"
+          # upsert rebased commit (creates branch if missing)
+          echo "   ├── upserting rebased commit..."
+          COMMIT_SHA=$(upsert_rebased_commit "$BRANCH" "$MAIN_SHA" "chore(release): ${NEXT_VERSION} 🎉")
+          echo "   ├── commit: ${COMMIT_SHA:0:7}"
 
           # create pr
           echo "   ├── creating pr..."
           PR_URL=$(gh pr create \
-            --title "chore(release): ${NEXT_VERSION}" \
+            --title "chore(release): ${NEXT_VERSION} 🎉" \
             --body "$PR_BODY" \
             --base main \
             --head "$BRANCH")

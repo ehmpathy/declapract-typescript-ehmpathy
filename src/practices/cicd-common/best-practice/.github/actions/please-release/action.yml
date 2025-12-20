@@ -116,40 +116,44 @@ runs:
       run: |
         echo "🔭 crunch semver"
 
-        # get versions from both sources
-        LATEST_PKG_VERSION=$(jq -r '.version' package.json)
-        LATEST_TAG_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
-        echo "   ├── pkg-version: $LATEST_PKG_VERSION"
-        echo "   ├── tag-version: $LATEST_TAG_VERSION"
-
         # helper: compare semver (returns 0 if $1 > $2, 1 otherwise)
         version_gt() {
           [ "$(printf '%s\n%s' "$1" "$2" | sort -V | tail -n1)" = "$1" ] && [ "$1" != "$2" ]
         }
 
-        # find last release SHA (shared with changelog step via output)
-        LAST_RELEASE_SHA=$(git log --pretty=format:"%H" --grep="^chore(release):" -n 1 || true)
-        echo "last-release-sha=$LAST_RELEASE_SHA" >> $GITHUB_OUTPUT
-        echo "   ├── last-release-sha: ${LAST_RELEASE_SHA:0:7}${LAST_RELEASE_SHA:+...}"
+        # get versions from all sources
+        LATEST_PACKAGE_VERSION=$(jq -r '.version' package.json)
+        LATEST_GITTAG_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
 
-        # case 1: package.json > tag means user manually set the version
-        # respect user intent and use package.json version directly (no auto-bump)
-        if version_gt "$LATEST_PKG_VERSION" "$LATEST_TAG_VERSION"; then
-          echo "   ├── ✨ pkg > tag: user manually bumped"
-          echo "   └── 🌊 next-version: v${LATEST_PKG_VERSION}"
-          echo "next-version=v${LATEST_PKG_VERSION}" >> $GITHUB_OUTPUT
-          echo "current-tag=v${LATEST_TAG_VERSION}" >> $GITHUB_OUTPUT
+        # find last release commit (shared with changelog step via output)
+        LAST_RELEASE_SHA=$(git log --pretty=format:"%H" --grep="^chore(release):" -n 1 || true)
+        LAST_RELEASE_MSG=$(git log --pretty=format:"%s" --grep="^chore(release):" -n 1 2>/dev/null || true)
+        LATEST_RELEASE_VERSION=$(echo "$LAST_RELEASE_MSG" | sed -n 's/^chore(release): v\([0-9.]*\).*/\1/p')
+
+        echo "last-release-sha=$LAST_RELEASE_SHA" >> $GITHUB_OUTPUT
+        echo "   ├── package-version: $LATEST_PACKAGE_VERSION"
+        echo "   ├── gittag-version: $LATEST_GITTAG_VERSION"
+        echo "   ├── release-version: ${LATEST_RELEASE_VERSION:-"(none)"}"
+        echo "   ├── release-sha: ${LAST_RELEASE_SHA:0:7}${LAST_RELEASE_SHA:+...}"
+
+        # case 1: package.json > release-version means user manually bumped AFTER last release
+        # (if package == release-version, that was set by automation, not user)
+        if [ -n "$LATEST_RELEASE_VERSION" ] && version_gt "$LATEST_PACKAGE_VERSION" "$LATEST_RELEASE_VERSION"; then
+          echo "   ├── ✨ pkg > release: user manually bumped"
+          echo "   └── 🌊 next-version: v${LATEST_PACKAGE_VERSION}"
+          echo "next-version=v${LATEST_PACKAGE_VERSION}" >> $GITHUB_OUTPUT
+          echo "current-tag=v${LATEST_GITTAG_VERSION}" >> $GITHUB_OUTPUT
           exit 0
         fi
 
         # case 2: auto-compute next version from the greater of tag vs package.json
         # (handles edge cases like tag existing but package.json being behind)
-        if version_gt "$LATEST_TAG_VERSION" "$LATEST_PKG_VERSION"; then
-          BASE_VERSION="$LATEST_TAG_VERSION"
-          echo "   ├── base: tag ($LATEST_TAG_VERSION)"
+        if version_gt "$LATEST_GITTAG_VERSION" "$LATEST_PACKAGE_VERSION"; then
+          BASE_VERSION="$LATEST_GITTAG_VERSION"
+          echo "   ├── base: gittag ($LATEST_GITTAG_VERSION)"
         else
-          BASE_VERSION="$LATEST_PKG_VERSION"
-          echo "   ├── base: pkg ($LATEST_PKG_VERSION)"
+          BASE_VERSION="$LATEST_PACKAGE_VERSION"
+          echo "   ├── base: package ($LATEST_PACKAGE_VERSION)"
         fi
 
         # handle first release
@@ -246,9 +250,10 @@ runs:
           done <<< "$commits"
         }
 
-        BREAK_COUNT=$(echo "$BREAKS" | grep -c . || echo "0")
-        FEAT_COUNT=$(echo "$FEATS" | grep -c . || echo "0")
-        FIX_COUNT=$(echo "$FIXES" | grep -c . || echo "0")
+        # count non-empty lines (handles empty vars gracefully)
+        BREAK_COUNT=0; [ -n "$BREAKS" ] && BREAK_COUNT=$(echo "$BREAKS" | wc -l | tr -d ' ')
+        FEAT_COUNT=0; [ -n "$FEATS" ] && FEAT_COUNT=$(echo "$FEATS" | wc -l | tr -d ' ')
+        FIX_COUNT=0; [ -n "$FIXES" ] && FIX_COUNT=$(echo "$FIXES" | wc -l | tr -d ' ')
 
         if [ -n "$BREAKS" ]; then
           { echo ""; echo "### breaks"; echo ""; format_commits "$BREAKS"; } >> "$CHANGELOG_FILE"
@@ -299,62 +304,73 @@ runs:
         cat "${{ steps.changelog.outputs.changelog-file }}" >> "$PR_BODY_FILE"
         PR_BODY=$(cat "$PR_BODY_FILE")
 
-        # helper: create verified commit via graphql api (auto-signed by github)
-        create_verified_commit() {
+        # operation: upsert rebased commit on a branch (atomic, no PR auto-close)
+        # - creates blob, tree, commit based on parent_sha
+        # - upserts branch ref (create if missing, update if exists)
+        upsert_rebased_commit() {
           local branch="$1"
-          local head_oid="$2"
+          local parent_sha="$2"
           local message="$3"
 
-          # update package.json version locally (skip if already at target)
+          # update package.json version locally
           CURRENT_VERSION=$(jq -r '.version' package.json)
           if [ "$CURRENT_VERSION" != "${NEXT_VERSION#v}" ]; then
             npm version "${NEXT_VERSION#v}" --no-git-tag-version --ignore-scripts
           fi
 
-          # build graphql request with jq
-          REQUEST=$(jq -n \
-            --arg repo "$REPO" \
-            --arg branch "$branch" \
-            --arg oid "$head_oid" \
-            --arg msg "$message" \
-            --arg pkg_content "$(base64 -w0 package.json)" \
-            '{
-              query: "mutation($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { commit { oid } } }",
-              variables: {
-                input: {
-                  branch: { repositoryNameWithOwner: $repo, branchName: $branch },
-                  message: { headline: $msg },
-                  fileChanges: { additions: [{ path: "package.json", contents: $pkg_content }] },
-                  expectedHeadOid: $oid
-                }
-              }
-            }')
+          # create blob with updated package.json
+          PKG_CONTENT=$(base64 -w0 package.json)
+          BLOB_SHA=$(gh api "repos/${REPO}/git/blobs" \
+            -f content="$PKG_CONTENT" \
+            -f encoding="base64" \
+            --jq '.sha')
 
-          # create commit via graphql (auto-verified!)
-          echo "$REQUEST" | gh api graphql --input - --jq '.data.createCommitOnBranch.commit.oid'
+          # get parent's tree
+          PARENT_TREE=$(gh api "repos/${REPO}/git/commits/${parent_sha}" --jq '.tree.sha')
+
+          # create new tree with updated package.json
+          NEW_TREE=$(gh api "repos/${REPO}/git/trees" \
+            -f base_tree="$PARENT_TREE" \
+            -f 'tree[][path]=package.json' \
+            -f 'tree[][mode]=100644' \
+            -f 'tree[][type]=blob' \
+            -f "tree[][sha]=$BLOB_SHA" \
+            --jq '.sha')
+
+          # create commit (auto-verified by github!)
+          COMMIT_SHA=$(gh api "repos/${REPO}/git/commits" \
+            -f message="$message" \
+            -f tree="$NEW_TREE" \
+            -f "parents[]=$parent_sha" \
+            --jq '.sha')
+
+          # upsert branch ref (create or update, never equals main)
+          if gh api "repos/${REPO}/git/ref/heads/${branch}" --jq '.object.sha' 2>/dev/null; then
+            gh api "repos/${REPO}/git/refs/heads/${branch}" -X PATCH -f sha="$COMMIT_SHA" -F force=true > /dev/null
+          else
+            gh api "repos/${REPO}/git/refs" -X POST -f ref="refs/heads/${branch}" -f sha="$COMMIT_SHA" > /dev/null
+          fi
+
+          echo "$COMMIT_SHA"
         }
+
+        # get main head (shared by both flows)
+        MAIN_SHA=$(gh api "repos/${REPO}/git/ref/heads/main" --jq '.object.sha')
 
         if [ -n "$FOUND_PR" ] && [ "$FOUND_PR" != "null" ]; then
           PR_NUMBER=$(echo "$FOUND_PR" | jq -r '.number')
           BRANCH=$(echo "$FOUND_PR" | jq -r '.headRefName')
           echo "   ├── found-pr: #$PR_NUMBER ($BRANCH)"
 
-          # get current head and its parent (amend = replace, not stack)
-          CURRENT_SHA=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq '.object.sha')
-          PARENT_SHA=$(gh api "repos/${REPO}/git/commits/${CURRENT_SHA}" --jq '.parents[0].sha')
-
-          # reset branch to parent (for amend behavior)
-          echo "   ├── resetting branch to parent..."
-          gh api "repos/${REPO}/git/refs/heads/${BRANCH}" -X PATCH -f sha="$PARENT_SHA" -F force=true
-
-          # create verified commit on top of parent
-          echo "   ├── creating verified commit..."
-          create_verified_commit "$BRANCH" "$PARENT_SHA" "chore(release): ${NEXT_VERSION}"
+          # upsert rebased commit
+          echo "   ├── upserting rebased commit..."
+          COMMIT_SHA=$(upsert_rebased_commit "$BRANCH" "$MAIN_SHA" "chore(release): ${NEXT_VERSION} 🎉")
+          echo "   ├── commit: ${COMMIT_SHA:0:7}"
 
           # update pr metadata
           echo "   ├── updating pr metadata..."
           gh pr edit "$PR_NUMBER" \
-            --title "chore(release): ${NEXT_VERSION}" \
+            --title "chore(release): ${NEXT_VERSION} 🎉" \
             --body "$PR_BODY"
 
           echo "   ├── ✨ pr updated: #$PR_NUMBER"
@@ -366,25 +382,15 @@ runs:
           echo "   ├── found-pr: (none)"
           echo "   ├── branch: $BRANCH"
 
-          # get main head
-          MAIN_SHA=$(gh api "repos/${REPO}/git/ref/heads/main" --jq '.object.sha')
-
-          # create or reset branch to main head
-          echo "   ├── creating branch..."
-          if gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq '.object.sha' 2>/dev/null; then
-            gh api "repos/${REPO}/git/refs/heads/${BRANCH}" -X PATCH -f sha="$MAIN_SHA" -F force=true
-          else
-            gh api "repos/${REPO}/git/refs" -X POST -f ref="refs/heads/${BRANCH}" -f sha="$MAIN_SHA"
-          fi
-
-          # create verified commit
-          echo "   ├── creating verified commit..."
-          create_verified_commit "$BRANCH" "$MAIN_SHA" "chore(release): ${NEXT_VERSION}"
+          # upsert rebased commit (creates branch if missing)
+          echo "   ├── upserting rebased commit..."
+          COMMIT_SHA=$(upsert_rebased_commit "$BRANCH" "$MAIN_SHA" "chore(release): ${NEXT_VERSION} 🎉")
+          echo "   ├── commit: ${COMMIT_SHA:0:7}"
 
           # create pr
           echo "   ├── creating pr..."
           PR_URL=$(gh pr create \
-            --title "chore(release): ${NEXT_VERSION}" \
+            --title "chore(release): ${NEXT_VERSION} 🎉" \
             --body "$PR_BODY" \
             --base main \
             --head "$BRANCH")
