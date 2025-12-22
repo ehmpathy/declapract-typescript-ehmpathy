@@ -36,6 +36,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
       run: |
+        set -euo pipefail
         COMMIT_MSG="${{ inputs.commit-message }}"
         REPO_URL="https://github.com/${{ inputs.repository }}"
 
@@ -114,6 +115,7 @@ runs:
       if: ${{ steps.cutta.outputs.did-cutta == 'false' }}
       shell: bash
       run: |
+        set -euo pipefail
         echo "🔭 crunch semver"
 
         # helper: compare semver (returns 0 if $1 > $2, 1 otherwise)
@@ -203,6 +205,7 @@ runs:
       if: ${{ steps.cutta.outputs.did-cutta == 'false' }}
       shell: bash
       run: |
+        set -euo pipefail
         echo "🔭 crunch changelog"
         REPO_URL="https://github.com/${{ inputs.repository }}"
         PREV_TAG="${{ steps.semver.outputs.current-tag }}"
@@ -236,7 +239,7 @@ runs:
             COMMIT_MESSAGE="${REST#* }"
             SHORT_HASH="${HASH:0:7}"
             # extract pr number from message if present
-            PR_NUM=$(echo "$COMMIT_MESSAGE" | grep -oE '\(#[0-9]+\)' | head -1 | tr -d '(#)')
+            PR_NUM=$(echo "$COMMIT_MESSAGE" | grep -oE '\(#[0-9]+\)' | head -1 | tr -d '(#)' || true)
             echo "&nbsp;&nbsp;○ ${COMMIT_MESSAGE}"
             if [ -n "$PR_NUM" ]; then
               echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── ${DATE}"
@@ -279,6 +282,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
       run: |
+        set -euo pipefail
         echo "🔭 upsert release pr"
         NEXT_VERSION="${{ steps.semver.outputs.next-version }}"
         CHANGELOG=$(cat "${{ steps.changelog.outputs.changelog-file }}")
@@ -411,6 +415,7 @@ runs:
       if: always()
       shell: bash
       run: |
+        set -euo pipefail
         if [ "${{ steps.cutta.outputs.did-cutta }}" = "true" ]; then
           echo "action=${{ steps.cutta.outputs.action }}" >> $GITHUB_OUTPUT
           echo "version=${{ steps.cutta.outputs.version }}" >> $GITHUB_OUTPUT
