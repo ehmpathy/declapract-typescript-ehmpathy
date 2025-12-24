@@ -43,7 +43,7 @@
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify",
     "prepare:husky": "husky install && chmod ug+x .husky/*",
-    "prepare:rhachet": "rhachet init && rhachet roles link --role mechanic && .agent/repo=ehmpathy/role=mechanic/skills/.skills/init.claude.sh",
+    "prepare:rhachet": "rhachet init && rhachet roles link --repo ehmpathy --role mechanic && rhachet roles link --repo bhrain --role behaver && rhachet roles link --repo bhuild --role reviewer && rhachet roles init --role mechanic",
     "prepare": "if [ -e .git ] && [ -z $CI ]; then npm run prepare:husky && npm run prepare:rhachet; fi"
   },
   "dependencies": {
@@ -75,8 +75,8 @@
     "esbuild-register": "3.6.0",
     "husky": "8.0.3",
     "jest": "30.2.0",
-    "rhachet": "1.13.11",
-    "rhachet-roles-ehmpathy": "1.15.10",
+    "rhachet": "1.15.2",
+    "rhachet-roles-ehmpathy": "1.15.15",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
     "type-fns": "0.8.1",
