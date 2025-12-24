@@ -14,6 +14,7 @@ const expectedIgnores = [
   '.temp',
   '.vscode',
   '*.local.json', // e.g., .claude/permission.attempts.local.json
+  '*.bak.*', // backup files
   'coverage',
   'dist',
   'node_modules',

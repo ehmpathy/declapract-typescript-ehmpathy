@@ -1,0 +1,48 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet roles init --repo ehmpathy --role mechanic --command claude.hooks/sessionstart.notify-permissions",
+            "timeout": 5,
+            "author": "repo=ehmpathy/role=mechanic"
+          },
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet roles boot --repo .this --role any --if-present",
+            "timeout": 60,
+            "author": "repo=ehmpathy/role=mechanic"
+          },
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet roles boot --repo ehmpathy --role mechanic",
+            "timeout": 60,
+            "author": "repo=ehmpathy/role=mechanic"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet roles init --repo ehmpathy --role mechanic --command claude.hooks/pretooluse.forbid-stderr-redirect",
+            "timeout": 5,
+            "author": "repo=ehmpathy/role=mechanic"
+          },
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet roles init --repo ehmpathy --role mechanic --command claude.hooks/pretooluse.check-permissions",
+            "timeout": 5,
+            "author": "repo=ehmpathy/role=mechanic"
+          }
+        ]
+      }
+    ]
+  }
+}
