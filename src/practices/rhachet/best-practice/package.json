@@ -1,9 +1,11 @@
 {
   "devDependencies": {
-    "rhachet": "@declapract{check.minVersion('1.13.11')}",
-    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.15.10')}"
+    "rhachet": "@declapract{check.minVersion('1.19.1')}",
+    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.15.25')}",
+    "rhachet-roles-bhrain": "@declapract{check.minVersion('0.5.7')}",
+    "rhachet-roles-bhuild": "@declapract{check.minVersion('0.5.0')}"
   },
   "scripts": {
-    "prepare:rhachet": "rhachet init && rhachet roles link --role mechanic && .agent/repo=ehmpathy/role=mechanic/skills/.skills/init.claude.sh"
+    "prepare:rhachet": "rhachet init && rhachet roles link --repo ehmpathy --role mechanic && rhachet roles link --repo bhuild --role behaver && rhachet roles link --repo bhrain --role reviewer && rhachet roles init --role mechanic && rhachet roles init --role behaver"
   }
 }
