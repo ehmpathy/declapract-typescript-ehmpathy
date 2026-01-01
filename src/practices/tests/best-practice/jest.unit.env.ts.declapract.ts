@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+
+import type { FileContentsFunction } from 'declapract';
 import { FileCheckType } from 'declapract';
-import type { FileContentsFunction } from 'declapract/dist/domain';
 
 import { readFile } from '../../../utils/readFile';
 
