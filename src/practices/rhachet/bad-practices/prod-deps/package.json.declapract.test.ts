@@ -69,6 +69,19 @@ describe('rhachet prod-deps bad practice package.json', () => {
         'does not match bad practice',
       );
     });
+
+    it('should not match non-roles rhachet-* packages in prod dependencies', () => {
+      const contents = JSON.stringify({
+        dependencies: {
+          'rhachet-other': '1.0.0',
+          'rhachet-something': '2.0.0',
+        },
+      });
+
+      expect(() => check(contents, {} as any)).toThrow(
+        'does not match bad practice',
+      );
+    });
   });
 
   describe('fix', () => {
@@ -190,6 +203,29 @@ describe('rhachet prod-deps bad practice package.json', () => {
       const parsed = JSON.parse(fixed!);
       expect(parsed.dependencies.lodash).toBe('4.17.21');
       expect(parsed.devDependencies.rhachet).toBe('1.19.0');
+    });
+
+    it('should not move non-roles rhachet-* packages', async () => {
+      const contents = JSON.stringify(
+        {
+          dependencies: {
+            'rhachet-other': '1.0.0',
+            'rhachet-something': '2.0.0',
+            lodash: '4.17.21',
+          },
+        },
+        null,
+        2,
+      );
+
+      const { contents: fixed } = await fix(contents, {} as any);
+      const parsed = JSON.parse(fixed!);
+
+      // non-roles packages should remain in dependencies
+      expect(parsed.dependencies['rhachet-other']).toBe('1.0.0');
+      expect(parsed.dependencies['rhachet-something']).toBe('2.0.0');
+      expect(parsed.dependencies.lodash).toBe('4.17.21');
+      expect(parsed.devDependencies).toBeUndefined();
     });
   });
 });

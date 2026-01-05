@@ -1,11 +1,11 @@
 import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
 /**
- * .what = detects rhachet and rhachet-* packages in production dependencies
+ * .what = detects rhachet and rhachet-roles-* packages in production dependencies
  * .why = these packages should be devDependencies or peerDependencies, never direct prod deps
  */
 
-const rhachetPackagePattern = /^rhachet(-.*)?$/;
+const rhachetPackagePattern = /^rhachet(-roles-.*)?$/;
 
 export const check: FileCheckFunction = (contents) => {
   if (!contents) throw new Error('does not match bad practice');
