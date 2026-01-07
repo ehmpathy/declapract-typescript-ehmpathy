@@ -7,8 +7,11 @@
     "@types/node": "@declapract{check.minVersion('22.15.21')}"
   },
   "scripts": {
-    "build:clean": "chmod -R u+w dist 2>/dev/null; rm -rf dist/",
-    "build:compile": "tsc -p ./tsconfig.build.json && tsc-alias -p ./tsconfig.build.json",
+    "build:clean:tsc": "(chmod -R u+w dist 2>/dev/null || true) && rm -rf dist/",
+    "build:clean:bun": "rm -f ./bin/*.bc",
+    "build:clean": "npm run build:clean:tsc && npm run build:clean:bun",
+    "build:compile:tsc": "tsc -p ./tsconfig.build.json && tsc-alias -p ./tsconfig.build.json",
+    "build:compile": "npm run build:compile:tsc && npm run build:compile:bun --if-present",
     "build": "npm run build:clean && npm run build:compile && npm run build:complete --if-present && npm run build:artifact",
     "test:types": "tsc -p ./tsconfig.json --noEmit"
   }
