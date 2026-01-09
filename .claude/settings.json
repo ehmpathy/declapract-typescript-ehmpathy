@@ -6,12 +6,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./node_modules/.bin/rhachet roles init --repo ehmpathy --role mechanic --command claude.hooks/sessionstart.notify-permissions",
-            "timeout": 5,
-            "author": "repo=ehmpathy/role=mechanic"
-          },
-          {
-            "type": "command",
             "command": "./node_modules/.bin/rhachet roles boot --repo .this --role any --if-present",
             "timeout": 60,
             "author": "repo=ehmpathy/role=mechanic"
@@ -20,6 +14,12 @@
             "type": "command",
             "command": "./node_modules/.bin/rhachet roles boot --repo ehmpathy --role mechanic",
             "timeout": 60,
+            "author": "repo=ehmpathy/role=mechanic"
+          },
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/sessionstart.notify-permissions",
+            "timeout": 5,
             "author": "repo=ehmpathy/role=mechanic"
           }
         ]
@@ -31,13 +31,35 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./node_modules/.bin/rhachet roles init --repo ehmpathy --role mechanic --command claude.hooks/pretooluse.forbid-stderr-redirect",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-stderr-redirect",
             "timeout": 5,
             "author": "repo=ehmpathy/role=mechanic"
           },
           {
             "type": "command",
-            "command": "./node_modules/.bin/rhachet roles init --repo ehmpathy --role mechanic --command claude.hooks/pretooluse.check-permissions",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.check-permissions",
+            "timeout": 5,
+            "author": "repo=ehmpathy/role=mechanic"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-gerunds",
+            "timeout": 5,
+            "author": "repo=ehmpathy/role=mechanic"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-gerunds",
             "timeout": 5,
             "author": "repo=ehmpathy/role=mechanic"
           }
@@ -66,6 +88,9 @@
       "Bash(file:*)",
       "Bash(mkdir:*)",
       "Bash(pwd)",
+      "Bash(jq)",
+      "Bash(echo:*)",
+      "Bash(printf:*)",
       "Bash(git mv:*)",
       "Bash(git rm:*)",
       "Bash(git log:*)",
@@ -77,16 +102,21 @@
       "Bash(git ls-files:*)",
       "Bash(git ls-tree:*)",
       "Bash(git cat-file:*)",
-      "Bash(.agent/repo=ehmpathy/role=mechanic/skills/claude.tools/sedreplace.sh:*)",
-      "Bash(.agent/repo=ehmpathy/role=mechanic/skills/claude.tools/cpsafe.sh:*)",
-      "Bash(.agent/repo=ehmpathy/role=mechanic/skills/claude.tools/mvsafe.sh:*)",
-      "Bash(.agent/repo=ehmpathy/role=mechanic/skills/claude.tools/rmsafe.sh:*)",
+      "Bash(git release --watch)",
+      "Bash(npx rhachet run --skill sedreplace:*)",
+      "Bash(npx rhachet run --skill cpsafe:*)",
+      "Bash(npx rhachet run --skill mvsafe:*)",
+      "Bash(npx rhachet run --skill rmsafe:*)",
+      "Bash(npx rhachet run --skill show.gh.action.logs:*)",
+      "Bash(npx rhachet run --skill show.gh.test.errors:*)",
+      "Bash(npx rhachet run --skill show.gh.test.errors --scope test-integration)",
+      "Bash(npx rhachet run:*)",
+      "Bash(npx rhachet:*)",
       "Bash(npm view:*)",
       "Bash(npm list:*)",
       "Bash(npm remove:*)",
       "Bash(npm help:*)",
       "Bash(pnpm help:*)",
-      "Bash(npx rhachet roles boot --repo ehmpathy --role mechanic)",
       "Bash(npx tsx ./bin/run:*)",
       "Bash(npm run build:*)",
       "Bash(npm run build:compile)",
