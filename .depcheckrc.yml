@@ -19,5 +19,6 @@ ignores:
   - tsc-alias
   - yaml
   - yalc
+  - test-fns
 ignorePatterns:
   - src/practices/lint/bad-practices/*

@@ -82,8 +82,8 @@ importers:
         specifier: 1.20.5
         version: 1.20.5
       rhachet-roles-bhrain:
-        specifier: 0.5.8
-        version: 0.5.8(@types/node@22.15.21)(hono@4.11.3)
+        specifier: 0.5.9
+        version: 0.5.9(@types/node@22.15.21)(hono@4.11.3)
       rhachet-roles-bhuild:
         specifier: 0.5.6
         version: 0.5.6(@types/node@22.15.21)(hono@4.11.3)
@@ -3898,8 +3898,8 @@ packages:
     resolution: {integrity: sha512-pbKVk03XzVLEqTiP5MyUouUuK5xUxKm4GYrG+gSothdIhTrr9tUEGrL6gtWRAmDoiOE0uPniql2JHD3pQqMhdQ==}
     engines: {node: '>=8.0.0'}
 
-  rhachet-roles-bhrain@0.5.8:
-    resolution: {integrity: sha512-AuXLFP0jt+p1FDXDogdfQ6gHCZ8QgEbUfR0H1nFkT9H6MAzq6IqwCcD42Wxo+OO8hDelTuq3B0U3831hAsJXGQ==}
+  rhachet-roles-bhrain@0.5.9:
+    resolution: {integrity: sha512-tBx17IkE+gromCOOuKo01hSGSnDaHaMRTJPQa8ew1i9ulKGhD3HCHAndL/MKQ5L+4p+CgsJfsi5ydflbRXrMRQ==}
     engines: {node: '>=8.0.0'}
 
   rhachet-roles-bhuild@0.1.3:
@@ -9307,7 +9307,7 @@ snapshots:
       - supports-color
       - ws
 
-  rhachet-roles-bhrain@0.5.8(@types/node@22.15.21)(hono@4.11.3):
+  rhachet-roles-bhrain@0.5.9(@types/node@22.15.21)(hono@4.11.3):
     dependencies:
       '@anthropic-ai/sdk': 0.51.0
       '@ehmpathy/as-command': 1.0.3

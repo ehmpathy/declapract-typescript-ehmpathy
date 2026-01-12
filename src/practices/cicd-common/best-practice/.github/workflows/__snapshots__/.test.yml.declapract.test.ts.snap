@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`.test.yml.declapract buildExpectedContent given: a template with workflow_call inputs when: multiple apikeys are required then: it should match expected snapshot 1`] = `
+"name: .test
+
+on:
+  workflow_call:
+    inputs:
+      creds-aws-role-arn:
+        description: "creds for aws"
+        required: false
+        type: string
+      creds-aws-region:
+        description: "region"
+        required: false
+        type: string
+        default: "us-east-1"
+    secrets:
+      ANTHROPIC_API_KEY:
+        description: "api key for anthropic api key"
+        required: false
+      OPENAI_API_KEY:
+        description: "api key for openai api key"
+        required: false
+
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  install:
+    uses: ./.github/workflows/.install.yml
+
+  test-integration:
+    runs-on: ubuntu-24.04
+    needs: [install]
+    env:
+          ANTHROPIC_API_KEY: \${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: \${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+"
+`;
+
+exports[`.test.yml.declapract buildExpectedContent given: a template with workflow_call inputs when: one apikey is required then: it should match expected snapshot 1`] = `
+"name: .test
+
+on:
+  workflow_call:
+    inputs:
+      creds-aws-role-arn:
+        description: "creds for aws"
+        required: false
+        type: string
+      creds-aws-region:
+        description: "region"
+        required: false
+        type: string
+        default: "us-east-1"
+    secrets:
+      ANTHROPIC_API_KEY:
+        description: "api key for anthropic api key"
+        required: false
+
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  install:
+    uses: ./.github/workflows/.install.yml
+
+  test-integration:
+    runs-on: ubuntu-24.04
+    needs: [install]
+    env:
+          ANTHROPIC_API_KEY: \${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+"
+`;

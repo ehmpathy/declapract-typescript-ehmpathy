@@ -1,3 +1,1 @@
-## 📐 Behaver
-
-Used to declare clear and testable behaviors that can be reliably built and verified.
+../../../node_modules/.pnpm/rhachet-roles-bhuild@0.5.6_@types+node@22.15.21_hono@4.11.3/node_modules/rhachet-roles-bhuild/dist/domain.roles/behaver/readme.md
