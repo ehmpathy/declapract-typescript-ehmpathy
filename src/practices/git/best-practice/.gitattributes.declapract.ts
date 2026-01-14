@@ -6,44 +6,50 @@ import { FileCheckType, type FileFixFunction } from 'declapract';
 export const check: FileCheckType = FileCheckType.CONTAINS;
 
 /**
- * the header comment for the package lock exclusions section
+ * sections of gitattributes entries to ensure exist
  */
-const HEADER =
-  '# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233';
+const SECTIONS = [
+  {
+    header:
+      '# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233',
+    entries: ['pnpm-lock.yaml -diff', 'package-lock.json -diff'],
+  },
+  {
+    header:
+      '# auto-resolve lock file conflicts by taking theirs; run install after merge',
+    entries: ['pnpm-lock.yaml merge=theirs', 'package-lock.json merge=theirs'],
+  },
+];
 
 /**
- * the entries that should appear under the header
+ * ensures a section with header and entries exists in the content
  */
-const ENTRIES = ['pnpm-lock.json -diff', 'package-lock.json -diff'];
-
-/**
- * fix by ensuring all entries are present under the header
- */
-export const fix: FileFixFunction = (contents) => {
-  // if no contents, create the file with the header and entries
-  if (!contents) {
-    return { contents: [HEADER, ...ENTRIES].join('\n') + '\n' };
-  }
-
-  const lines = contents.split('\n');
+const ensureSection = (
+  content: string,
+  section: { header: string; entries: string[] },
+): string => {
+  const lines = content.split('\n');
 
   // find the header line index
-  const headerIndex = lines.findIndex((line) => line.trim() === HEADER);
+  const headerIndex = lines.findIndex((line) => line.trim() === section.header);
 
   // if header not found, append the whole section at the end
   if (headerIndex === -1) {
-    const newContent =
-      contents.trimEnd() + '\n\n' + [HEADER, ...ENTRIES].join('\n') + '\n';
-    return { contents: newContent };
+    return (
+      content.trimEnd() +
+      '\n\n' +
+      [section.header, ...section.entries].join('\n') +
+      '\n'
+    );
   }
 
-  // find which entries are missing after the header
-  const missingEntries = ENTRIES.filter((entry) => !contents.includes(entry));
+  // find which entries are missing
+  const missingEntries = section.entries.filter(
+    (entry) => !content.includes(entry),
+  );
 
   // if no missing entries, nothing to fix
-  if (missingEntries.length === 0) {
-    return { contents };
-  }
+  if (missingEntries.length === 0) return content;
 
   // insert missing entries right after the header
   const newLines = [
@@ -52,5 +58,26 @@ export const fix: FileFixFunction = (contents) => {
     ...lines.slice(headerIndex + 1),
   ];
 
-  return { contents: newLines.join('\n') };
+  return newLines.join('\n');
+};
+
+/**
+ * fix by ensuring all sections are present with their entries
+ */
+export const fix: FileFixFunction = (contents) => {
+  // if no contents, create the file with all sections
+  if (!contents) {
+    const allSections = SECTIONS.map((s) =>
+      [s.header, ...s.entries].join('\n'),
+    ).join('\n\n');
+    return { contents: allSections + '\n' };
+  }
+
+  // ensure each section exists
+  let result = contents;
+  for (const section of SECTIONS) {
+    result = ensureSection(result, section);
+  }
+
+  return { contents: result };
 };
