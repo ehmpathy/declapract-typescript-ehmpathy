@@ -48,7 +48,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-gerunds",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-terms.gerunds",
+            "timeout": 5,
+            "author": "repo=ehmpathy/role=mechanic"
+          },
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-terms.blocklist",
             "timeout": 5,
             "author": "repo=ehmpathy/role=mechanic"
           }
@@ -59,7 +65,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-gerunds",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-terms.gerunds",
+            "timeout": 5,
+            "author": "repo=ehmpathy/role=mechanic"
+          },
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-terms.blocklist",
             "timeout": 5,
             "author": "repo=ehmpathy/role=mechanic"
           }
@@ -97,6 +109,7 @@
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git show:*)",
+      "Bash(git check-ignore:*)",
       "Bash(git blame:*)",
       "Bash(git describe:*)",
       "Bash(git ls-files:*)",
@@ -180,6 +193,7 @@
       "Bash(source .agent/repo=.this/role=any/skills/use.apikeys.sh)"
     ],
     "deny": [
+      "Bash(bash:*)",
       "Bash(echo:*)",
       "Bash(find:*)",
       "Bash(gh api --method DELETE:*)",
