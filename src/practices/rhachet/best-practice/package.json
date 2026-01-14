@@ -1,11 +1,11 @@
 {
   "devDependencies": {
-    "rhachet": "@declapract{check.minVersion('1.20.5')}",
-    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.17.11')}",
-    "rhachet-roles-bhrain": "@declapract{check.minVersion('0.5.9')}",
-    "rhachet-roles-bhuild": "@declapract{check.minVersion('0.5.5')}"
+    "rhachet": "@declapract{check.minVersion('1.22.7')}",
+    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.17.20')}",
+    "rhachet-roles-bhrain": "@declapract{check.minVersion('0.5.11')}",
+    "rhachet-roles-bhuild": "@declapract{check.minVersion('0.6.6')}"
   },
   "scripts": {
-    "prepare:rhachet": "rhachet init --mode upsert && rhachet roles link --repo ehmpathy --role mechanic && rhachet roles link --repo bhuild --role behaver && rhachet roles link --repo bhrain --role reviewer && rhachet roles init --role mechanic && rhachet roles init --role behaver"
+    "prepare:rhachet": "rhachet init --roles behaver mechanic reviewer"
   }
 }
