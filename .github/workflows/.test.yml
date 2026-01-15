@@ -64,6 +64,9 @@ jobs:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
 
+      - name: build # incase acceptance test imports from dist for blackbox tests, must have the /dist dir compiled, since test:types checks acceptance test types too
+        run: npm run build
+
       - name: test:types
         run: npm run test:types
 
