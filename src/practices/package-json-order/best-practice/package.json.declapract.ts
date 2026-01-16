@@ -54,6 +54,7 @@ export const desiredRelativeKeyOrder = {
     'provision:testdb',
     'start:testdb',
     'start:livedb:dev',
+    'test:auth',
     'test:commits',
     'test:types',
     'test:format:prettier',
