@@ -63,12 +63,12 @@ export const check: FileCheckFunction = async (contents, context) => {
     apikeys: apikeysConfig?.apikeys?.required ?? [],
   });
 
-  // if contents match expected, file passes (throw)
-  if (contents === expected) {
-    throw new Error('file matches expected content');
+  // if contents don't match expected, best practice is violated
+  if (contents !== expected) {
+    throw new Error('file does not match expected content with apikey secrets');
   }
 
-  // return = file differs from expected (bad practice detected)
+  // return = file matches expected (best practice followed)
 };
 
 /**
