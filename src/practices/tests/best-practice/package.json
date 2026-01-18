@@ -9,7 +9,7 @@
     "@swc/jest": "@declapract{check.minVersion('0.2.39')}"
   },
   "scripts": {
-    "test:auth": "[ \"$ECHO\" = 'true' ] && echo 'source .agent/repo=.this/role=any/skills/use.apikeys.sh' || bash -c 'source .agent/repo=.this/role=any/skills/use.apikeys.sh'",
+    "test:auth": "[ \"$ECHO\" = 'true' ] && echo '. .agent/repo=.this/role=any/skills/use.apikeys.sh' || . .agent/repo=.this/role=any/skills/use.apikeys.sh",
     "test:unit": "jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -z $THOROUGH ] && echo '--changedSince=main') $([ -n $RESNAP ] && echo '--updateSnapshot')",
     "test:integration": "jest -c ./jest.integration.config.ts --forceExit --verbose --passWithNoTests $([ -z $THOROUGH ] && echo '--changedSince=main') $([ -n $RESNAP ] && echo '--updateSnapshot')",
     "test:acceptance:locally": "npm run build && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n $RESNAP ] && echo '--updateSnapshot')",
