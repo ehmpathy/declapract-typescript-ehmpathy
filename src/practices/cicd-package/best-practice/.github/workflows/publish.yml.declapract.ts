@@ -18,7 +18,12 @@ export const check: FileCheckFunction = async (contents, context) => {
     { template: context.declaredFileContents },
     context,
   );
-  if (contents === expected) throw new Error('file matches expected content');
+
+  // if contents don't match expected, best practice is violated
+  if (contents !== expected)
+    throw new Error('file does not match expected content with apikey secrets');
+
+  // return = file matches expected (best practice followed)
 };
 
 /**
