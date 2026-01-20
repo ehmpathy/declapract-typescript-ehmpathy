@@ -3,7 +3,7 @@
     "@types/jest": "@declapract{check.minVersion('30.0.0')}",
     "jest": "@declapract{check.minVersion('30.2.0')}",
     "esbuild-register": "@declapract{check.minVersion('3.6.0')}",
-    "test-fns": "@declapract{check.minVersion('1.4.2')}",
+    "test-fns": "@declapract{check.minVersion('1.7.2')}",
     "tsx": "@declapract{check.minVersion('4.20.6')}",
     "@swc/core": "@declapract{check.minVersion('1.15.3')}",
     "@swc/jest": "@declapract{check.minVersion('0.2.39')}"
