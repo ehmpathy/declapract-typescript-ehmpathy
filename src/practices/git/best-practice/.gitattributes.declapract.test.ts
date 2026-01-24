@@ -146,5 +146,151 @@ pnpm-lock.yaml merge=theirs
       expect(result.contents).toContain('pnpm-lock.yaml merge=theirs');
       expect(result.contents).toContain('package-lock.json merge=theirs');
     });
+
+    it('should remove legacy header and deduplicate entries from borked file', async () => {
+      // this is the exact borked input scenario that prompted the fix
+      const borkedContents = `# exclude package-lock from git diff; https://stackoverflow.com/a/72834452/3068233
+package-lock.json -diff
+
+# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+pnpm-lock.json -diff
+package-lock.json -diff
+
+# auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+`;
+
+      const result = await fix(borkedContents, {} as any);
+
+      // should have removed the legacy header
+      expect(result.contents).not.toContain(
+        '# exclude package-lock from git diff',
+      );
+
+      // should have the correct header
+      expect(result.contents).toContain(
+        '# exclude package locks from git diff',
+      );
+
+      // should not have duplicate package-lock.json -diff
+      const diffMatches = result.contents!.match(/package-lock\.json -diff/g);
+      expect(diffMatches).toHaveLength(1);
+
+      // should still have all required entries
+      expect(result.contents).toContain('pnpm-lock.yaml -diff');
+      expect(result.contents).toContain('package-lock.json -diff');
+      expect(result.contents).toContain('pnpm-lock.yaml merge=theirs');
+      expect(result.contents).toContain('package-lock.json merge=theirs');
+    });
+
+    it('should deduplicate entries that appear multiple times', async () => {
+      const contentsWithDuplicates = `# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+pnpm-lock.yaml merge=theirs
+`;
+
+      const result = await fix(contentsWithDuplicates, {} as any);
+
+      // each entry should appear exactly once
+      const pnpmDiffMatches = result.contents!.match(/pnpm-lock\.yaml -diff/g);
+      const pkgDiffMatches = result.contents!.match(/package-lock\.json -diff/g);
+      const pnpmMergeMatches = result.contents!.match(
+        /pnpm-lock\.yaml merge=theirs/g,
+      );
+      const pkgMergeMatches = result.contents!.match(
+        /package-lock\.json merge=theirs/g,
+      );
+
+      expect(pnpmDiffMatches).toHaveLength(1);
+      expect(pkgDiffMatches).toHaveLength(1);
+      expect(pnpmMergeMatches).toHaveLength(1);
+      expect(pkgMergeMatches).toHaveLength(1);
+    });
+
+    it('should replace legacy header with correct header when only legacy exists', async () => {
+      const contentsWithLegacyOnly = `# exclude package-lock from git diff; https://stackoverflow.com/a/72834452/3068233
+package-lock.json -diff
+`;
+
+      const result = await fix(contentsWithLegacyOnly, {} as any);
+
+      // should have removed the legacy header
+      expect(result.contents).not.toContain(
+        '# exclude package-lock from git diff',
+      );
+
+      // should have the correct header with all entries
+      expect(result.contents).toContain(
+        '# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233',
+      );
+      expect(result.contents).toContain('pnpm-lock.yaml -diff');
+      expect(result.contents).toContain('package-lock.json -diff');
+
+      // should have the merge section too
+      expect(result.contents).toContain(
+        '# auto-resolve lock file conflicts by taking theirs; run install after merge',
+      );
+      expect(result.contents).toContain('pnpm-lock.yaml merge=theirs');
+      expect(result.contents).toContain('package-lock.json merge=theirs');
+    });
+
+    it('should collapse multiple consecutive empty lines', async () => {
+      const contentsWithExtraLines = `# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+
+
+# auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+`;
+
+      const result = await fix(contentsWithExtraLines, {} as any);
+
+      // should not have more than one consecutive empty line
+      expect(result.contents).not.toContain('\n\n\n');
+    });
+
+    it('should fix exact borked input from user report', async () => {
+      // exact input from user report
+      const borkedInput = `# exclude package-lock from git diff; https://stackoverflow.com/a/72834452/3068233
+package-lock.json -diff
+
+# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.json -diff
+package-lock.json -diff
+`;
+
+      const result = await fix(borkedInput, {} as any);
+
+      // should have removed the prior header
+      expect(result.contents).not.toContain(
+        '# exclude package-lock from git diff',
+      );
+
+      // should have deduplicated package-lock.json -diff
+      const pkgDiffMatches = result.contents!.match(/package-lock\.json -diff/g);
+      expect(pkgDiffMatches).toHaveLength(1);
+
+      // should have removed pnpm-lock.json -diff (prior entry, typo)
+      expect(result.contents).not.toContain('pnpm-lock.json -diff');
+
+      // should have the latest pnpm-lock.yaml -diff
+      expect(result.contents).toContain('pnpm-lock.yaml -diff');
+
+      // should have added merge section
+      expect(result.contents).toContain('pnpm-lock.yaml merge=theirs');
+      expect(result.contents).toContain('package-lock.json merge=theirs');
+    });
   });
 });
