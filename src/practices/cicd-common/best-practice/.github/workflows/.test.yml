@@ -64,6 +64,9 @@ jobs:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
 
+      - name: build
+        run: npm run build # build before test:types, to ensure .dist/ artifacts are importable for blackbox tests
+
       - name: test:types
         run: npm run test:types
 
