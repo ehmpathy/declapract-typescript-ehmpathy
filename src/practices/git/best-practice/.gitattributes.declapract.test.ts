@@ -292,5 +292,36 @@ package-lock.json -diff
       expect(result.contents).toContain('pnpm-lock.yaml merge=theirs');
       expect(result.contents).toContain('package-lock.json merge=theirs');
     });
+
+    it('should not duplicate entry when legacy header removed but entry remains', async () => {
+      // scenario: legacy header removed, but its entry (package-lock.json -diff)
+      // stays because it's a valid latest entry. ensureSection must not duplicate it.
+      const legacyOnlyInput = `# exclude package-lock from git diff; https://stackoverflow.com/a/72834452/3068233
+package-lock.json -diff
+`;
+
+      const result = await fix(legacyOnlyInput, {} as any);
+
+      // should have exactly one package-lock.json -diff
+      const pkgDiffMatches = result.contents!.match(/package-lock\.json -diff/g);
+      expect(pkgDiffMatches).toHaveLength(1);
+
+      // should have the latest header
+      expect(result.contents).toContain(
+        '# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233',
+      );
+
+      // should not have the legacy header
+      expect(result.contents).not.toContain(
+        '# exclude package-lock from git diff',
+      );
+
+      // should have added the absent pnpm-lock.yaml -diff
+      expect(result.contents).toContain('pnpm-lock.yaml -diff');
+
+      // should have the merge section
+      expect(result.contents).toContain('pnpm-lock.yaml merge=theirs');
+      expect(result.contents).toContain('package-lock.json merge=theirs');
+    });
   });
 });
