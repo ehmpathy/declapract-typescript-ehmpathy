@@ -101,25 +101,25 @@ const ensureSection = (
 ): string => {
   const lines = content.split('\n');
 
+  // find which entries are absent from the content
+  const entriesAbsent = section.entries.latest.filter(
+    (entry) => !content.includes(entry),
+  );
+
   // find the header line index
   const headerIndex = lines.findIndex(
     (line) => line.trim() === section.header.latest,
   );
 
-  // if header not found, append the whole section at the end
+  // if header not found, append header and only absent entries
   if (headerIndex === -1) {
     return (
       content.trimEnd() +
       '\n\n' +
-      [section.header.latest, ...section.entries.latest].join('\n') +
+      [section.header.latest, ...entriesAbsent].join('\n') +
       '\n'
     );
   }
-
-  // find which entries are absent
-  const entriesAbsent = section.entries.latest.filter(
-    (entry) => !content.includes(entry),
-  );
 
   // if all entries present, no fix required
   if (entriesAbsent.length === 0) return content;
