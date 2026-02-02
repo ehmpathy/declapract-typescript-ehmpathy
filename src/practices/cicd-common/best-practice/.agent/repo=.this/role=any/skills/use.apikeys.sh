@@ -12,14 +12,12 @@
 #   - falls back to .env.local (gitignored) in repo root
 ######################################################################
 
-# fail if not sourced (check if $0 matches this file)
-case "$0" in
-  *use.apikeys.sh)
-    echo "error: this file must be sourced, not executed"
-    echo "usage: source $0"
-    exit 1
-    ;;
-esac
+# fail if not sourced (return only succeeds when sourced)
+(return 0 2>/dev/null) || {
+  echo "error: this file must be sourced, not executed"
+  echo "usage: . $0"
+  exit 1
+}
 
 # alias source to `.` for posix compat
 source() { . "$@"; }
