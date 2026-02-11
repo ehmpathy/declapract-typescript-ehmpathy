@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       declapract:
-        specifier: '>=0.13.3'
-        version: 0.13.4(@types/node@22.15.21)(zod@3.25.76)
+        specifier: '>=0.13.15'
+        version: 0.13.15
       domain-objects:
         specifier: 0.31.9
         version: 0.31.9
@@ -23,6 +23,9 @@ importers:
       helpful-errors:
         specifier: 1.5.3
         version: 1.5.3
+      test-fns:
+        specifier: 1.15.0
+        version: 1.15.0(@types/node@22.15.21)(zod@4.3.4)
       yaml:
         specifier: 2.8.2
         version: 2.8.2
@@ -637,10 +640,6 @@ packages:
     resolution: {integrity: sha512-aypjHU1zkwzwJyg/C3ktdUhhgciaBSu8nEXpkgh5p0lKaWTBvhWbEr6t62P5wBzOVwumlxelv1OwyFFtL1zupQ==}
     engines: {node: '>=8.0.0'}
 
-  '@ehmpathy/uni-time@1.9.0':
-    resolution: {integrity: sha512-4btv6Iib/TniQnr941N6oPXod7trrZVvAOH0oNEJa60/Ey+/ESXNeu/X7fdh6vQSJhlSvjzVoMi6IPfbbyrxPw==}
-    engines: {node: '>=8.0.0'}
-
   '@ehmpathy/uni-time@1.9.1':
     resolution: {integrity: sha512-XyUzK6RQ0e2Gr6Vz99AkUuq9QLVGp6kRK5vCVDDu0P/cMptb0rfpPNb/27oc1t2Ix0xj9kg5l3zhyXAPBRBiHg==}
     engines: {node: '>=8.0.0'}
@@ -1053,9 +1052,21 @@ packages:
       '@types/node':
         optional: true
 
+  '@isaacs/balanced-match@4.0.1':
+    resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
+    engines: {node: 20 || >=22}
+
+  '@isaacs/brace-expansion@5.0.1':
+    resolution: {integrity: sha512-WMz71T1JS624nWj2n2fnYAuPovhv7EUhk69R6i9dsVyzxt5eM3bjwvgk9L+APE1TRscGysAVMANkB0jh0LQZrQ==}
+    engines: {node: 20 || >=22}
+
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
+
+  '@isaacs/cliui@9.0.0':
+    resolution: {integrity: sha512-AokJm4tuBHillT+FpMtxQ60n8ObyXBatq7jD2/JA9dxbDDokKQm8KMht5ibGzLVU9IJDIKK4TPKgMHEYMn3lMg==}
+    engines: {node: '>=18'}
 
   '@istanbuljs/load-nyc-config@1.1.0':
     resolution: {integrity: sha512-VjeHSlIzpv/NyD3N0YuHfXOPDIixcA1q2ZV98wsMqcYlPmv2n3Yb2lYP9XMElnaFVXg5A7YLTeLu6V84uQDjmQ==}
@@ -1920,10 +1931,6 @@ packages:
     resolution: {integrity: sha512-dnWCi51YDVMEHeDrEsMhMMOOBEJLS59altq48N7WSoJKepiJfXRA7x6NETFCGP9jk2Ti6eeYO3+CA27j+XlPUQ==}
     engines: {node: '>=8.0.0'}
 
-  as-procedure@1.1.6:
-    resolution: {integrity: sha512-z1pWF1MGzP2t8tb+5A3FOBCWfPiQh+Ipas6knpfwQiLZJMSMJaDEEwxYrsVY0PBHTo4ZpF2Z/FstN5/76eZBpA==}
-    engines: {node: '>=8.0.0'}
-
   as-procedure@1.1.7:
     resolution: {integrity: sha512-NovxtaDLUcwI8rANiXnpfLE4oo9xKf65qka0jBkStckRMgJcGZL4+Vm9+peAJ6+VE6X3n8/fIXhionfCTGas7g==}
     engines: {node: '>=8.0.0'}
@@ -2228,9 +2235,9 @@ packages:
       supports-color:
         optional: true
 
-  declapract@0.13.4:
-    resolution: {integrity: sha512-UPmnhH85diRIKbBlleybjx7fynDwYaXQvBNvhTLpLrbXtwBq5XknaJUWPpJSCmL0w2gDSmkAJaUEhoIY3OKk1g==}
-    engines: {node: '>=12.0.0'}
+  declapract@0.13.15:
+    resolution: {integrity: sha512-ytRdxzTtMX22OhcVzkOhn7qZu0kXXPdv05wRBhMEYd7Iaf5yojciX2d8USAHkRTTRqrVc9elAyaPtTW6q0Sbjw==}
+    engines: {node: '>=22.0.0'}
     hasBin: true
 
   declastruct-github@1.0.7:
@@ -2429,10 +2436,6 @@ packages:
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
-  fast-glob@3.2.2:
-    resolution: {integrity: sha512-UDV82o4uQyljznxwMxyVRJgZZt3O5wENYojjzbaGEGZgeOxkLFf+V4cnUD+krzb2F72E18RhamkMZ7AdeggF7A==}
-    engines: {node: '>=8'}
-
   fast-glob@3.3.3:
     resolution: {integrity: sha512-7MptL8U0cqcFdzIzwOTHoilX9x5BrNqye7Z/LuC7kCMRio1EMSyqRK3BEAUD7sXRq4iT4AzTVuZdhgQ2TCvYLg==}
     engines: {node: '>=8.6.0'}
@@ -2551,6 +2554,13 @@ packages:
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+    hasBin: true
+
+  glob@11.0.1:
+    resolution: {integrity: sha512-zrQDm8XPnYEKawJScsnM0QzobJxlT/kHOOlRTio8IH/GrmxRE5fjllkzdaHclIuNjUQTJYH2xHNIGfdpJkDJUw==}
+    engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@7.2.3:
@@ -2773,6 +2783,10 @@ packages:
     resolution: {integrity: sha512-HQB4BQJyqOpP3c0lxdsXTu36/61c/eTr3pu7kBJfnUEQFLc8+lveNgsTEAA5Pk50WF0tVfEF5WF2xGRPX13mcQ==}
     engines: {node: '>=8.0.0'}
 
+  iso-time@1.11.3:
+    resolution: {integrity: sha512-JAoCDOFPmRBjO3BE36RtnVgoMBlcaA62wIQsR9ZEPvu2/7vDM/OMrpMlaTnALxXouAGXtz2O9/EPI6lldh80jg==}
+    engines: {node: '>=8.0.0'}
+
   istanbul-lib-coverage@3.2.2:
     resolution: {integrity: sha512-O8dpsF+r0WV/8MNRKfnmrtCWhuKjxrq2w+jpzBL5UZKTi2LeVWnWOmWRxFlesJONmc+wLAGvKQZEOanko0LFTg==}
     engines: {node: '>=8'}
@@ -2795,6 +2809,10 @@ packages:
 
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
+
+  jackspeak@4.2.3:
+    resolution: {integrity: sha512-ykkVRwrYvFm1nb2AJfKKYPr0emF6IiXDYUaFx4Zn9ZuIH7MrzEZ3sD5RlqGXNRpHtvUHJyOnCEFxOlNDtGo7wg==}
+    engines: {node: 20 || >=22}
 
   jest-changed-files@30.2.0:
     resolution: {integrity: sha512-L8lR1ChrRnSdfeOvTrwZMlnWV8G/LLjQ0nG9MBclwWZidA2N5FviRki0Bvh20WRMOX31/JYvzdqTJrk5oBdydQ==}
@@ -3083,6 +3101,10 @@ packages:
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
 
+  lru-cache@11.2.6:
+    resolution: {integrity: sha512-ESL2CrkS/2wTPfuend7Zhkzo2u0daGJ/A2VucJOgQ/C48S/zB8MMeMHSGKYpXhIjbPxfuezITkaBH1wqv00DDQ==}
+    engines: {node: 20 || >=22}
+
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
@@ -3117,6 +3139,10 @@ packages:
   mimic-fn@2.1.0:
     resolution: {integrity: sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==}
     engines: {node: '>=6'}
+
+  minimatch@10.1.2:
+    resolution: {integrity: sha512-fu656aJ0n2kcXwsnwnv9g24tkU5uSmOlTjd6WyyaKm2Z+h1qmY6bAjrcaIxF/BslFqbZ8UBtbJi7KgQOZD2PTw==}
+    engines: {node: 20 || >=22}
 
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
@@ -3371,6 +3397,10 @@ packages:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
     engines: {node: '>=16 || 14 >=14.18'}
 
+  path-scurry@2.0.1:
+    resolution: {integrity: sha512-oWyT4gICAu+kaA7QWk/jvCHWarMKNs6pXOGWKDTr7cw4IGcUbW+PeTfbaQiLGheFRpjo6O9J0PmyMfQPjH71oA==}
+    engines: {node: 20 || >=22}
+
   path-type@4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
@@ -3547,23 +3577,9 @@ packages:
     resolution: {integrity: sha512-OsiuFlTn1ZAqr/FqGcVvPemjk70jS6NHwxDUYbcip0ExkItf+WCjePtAjhQkR0P7h4AAIrxnPRKRW3s/1+CaAQ==}
     engines: {node: '>=18.0.0'}
 
-  rhachet-roles-ehmpathy@1.15.15:
-    resolution: {integrity: sha512-BeamSYK0MauEI0lW5/9eXLBNLhPabRXOy8iv8+lOcaRryLX0Q0MlAdEfS420H7aOgnkeLYKx2Cl/8Z52FJZrjA==}
-    engines: {node: '>=8.0.0'}
-
   rhachet-roles-ehmpathy@1.17.34:
     resolution: {integrity: sha512-ijyQwcEyOzfSmhteXYmAVANOaFuIPXXUoSJc7N/sjI+Gdd7mTt9lcm3ON8kMEYPddM+FDxWAA6CHKRcxP9i8kA==}
     engines: {node: '>=8.0.0'}
-
-  rhachet@1.14.1:
-    resolution: {integrity: sha512-1S2/zm5G/MCMYxIz4dm//rqlk7ZTo0KEfqR4N1SonPzvWSvStu6zPZUYnZlu046ATCHxTbL2KBawYhn7CsEmWQ==}
-    engines: {node: '>=22.0.0'}
-    hasBin: true
-
-  rhachet@1.15.2:
-    resolution: {integrity: sha512-XuW46wL8FDT70TPJOnKLWR+TVsAGP0pWPcCf7ee+K9nKUehoCNDObEH+jDruVvj9f1Id65VTEmhc4csmXQlygA==}
-    engines: {node: '>=22.0.0'}
-    hasBin: true
 
   rhachet@1.28.2:
     resolution: {integrity: sha512-xavKgJkePQFUVXcnTE9+lRqUXREPucd+9Q8+7UVzE1CY7DOFjoMTS+76VlSYaMt2fTz0xjyRbsCehf/sqcaegg==}
@@ -3654,10 +3670,6 @@ packages:
 
   simple-in-memory-cache@0.4.0:
     resolution: {integrity: sha512-FizjX3DqiWquodrMGgdpo7GBk9x745e/haifLJper3k1sC4Y9pibn8ysKgcfCtQNtga7V/HDsKNYnP6qyFW8rw==}
-    engines: {node: '>=8.0.0'}
-
-  simple-leveled-log-methods@0.1.4:
-    resolution: {integrity: sha512-syMjMLMvEyqpqciencsN54OFaFZr6g6vnaerIhGxIIDeaTdF9cL/XQZtQ+Dwg42ao35TCMUT5U9JLVYQhaqCEg==}
     engines: {node: '>=8.0.0'}
 
   simple-log-methods@0.6.1:
@@ -3766,6 +3778,10 @@ packages:
   test-exclude@6.0.0:
     resolution: {integrity: sha512-cAGWPIyOHU6zlmg88jwm7VRyXnMN7iV68OGAbYDk/Mh/xC/pzVPlQtY6ngoIH/5/tciuhGfvESU8GrHrcxD56w==}
     engines: {node: '>=8'}
+
+  test-fns@1.15.0:
+    resolution: {integrity: sha512-zC/qUA2lwfiXoQ00Ws8yD8LPA7p3n2a+Dl7wmI4iTXz4HbrU52riPY+AceGWgCAINs/cJ7cs9jnnASSPBwyGpg==}
+    engines: {node: '>=8.0.0'}
 
   test-fns@1.4.2:
     resolution: {integrity: sha512-Qz46tRQ7XjiCB5uZM+jLmluZBcp+dKTQ7wisoz8IJtLVUZN+Ta8DWksmTVS/pcdXieKR01gjuukDZHhIDcZvog==}
@@ -4041,9 +4057,6 @@ packages:
   yoctocolors-cjs@2.1.3:
     resolution: {integrity: sha512-U/PBtDf35ff0D8X8D0jfdzHYEPFxAI7jJlxZXwCSez5M3190m+QobIfh+sWDWSHMCWWJN2AWamkegn6vr6YBTw==}
     engines: {node: '>=18'}
-
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
   zod@4.3.4:
     resolution: {integrity: sha512-Zw/uYiiyF6pUT1qmKbZziChgNPRu+ZRneAsMUDU6IwmXdWt5JwcUfy2bvLOCUtz5UniaN/Zx5aFttZYbYc7O/A==}
@@ -4976,14 +4989,6 @@ snapshots:
       test-fns: 1.5.0
       type-fns: 1.19.0
 
-  '@ehmpathy/uni-time@1.9.0':
-    dependencies:
-      '@ehmpathy/error-fns': 1.0.2
-      date-fns: 3.6.0
-      domain-glossaries: 1.0.0
-      test-fns: 1.5.0
-      type-fns: 1.19.0
-
   '@ehmpathy/uni-time@1.9.1':
     dependencies:
       '@ehmpathy/error-fns': 1.0.2
@@ -5292,6 +5297,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.15.21
 
+  '@isaacs/balanced-match@4.0.1': {}
+
+  '@isaacs/brace-expansion@5.0.1':
+    dependencies:
+      '@isaacs/balanced-match': 4.0.1
+
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -5300,6 +5311,8 @@ snapshots:
       strip-ansi-cjs: strip-ansi@6.0.1
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
+
+  '@isaacs/cliui@9.0.0': {}
 
   '@istanbuljs/load-nyc-config@1.1.0':
     dependencies:
@@ -6344,15 +6357,6 @@ snapshots:
       simple-log-methods: 0.6.9
       type-fns: 1.21.0
 
-  as-procedure@1.1.6:
-    dependencies:
-      '@ehmpathy/error-fns': 1.3.2
-      domain-glossary-procedure: 1.0.0
-      serde-fns: 1.0.0
-      simple-log-methods: 0.6.1
-      test-fns: 1.4.2
-      type-fns: 1.17.0
-
   as-procedure@1.1.7:
     dependencies:
       '@ehmpathy/error-fns': 1.3.2
@@ -6705,16 +6709,16 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  declapract@0.13.4(@types/node@22.15.21)(zod@3.25.76):
+  declapract@0.13.15:
     dependencies:
       chalk: 2.4.2
       commander: 12.1.0
       cross-path-sort: 1.0.0
-      domain-objects: 0.31.7(@types/node@22.15.21)(zod@3.25.76)
+      domain-objects: 0.31.9
       expect: 29.4.3
-      fast-glob: 3.2.2
       find-nearest-package-json: 2.0.1
       flat: 5.0.2
+      glob: 11.0.1
       helpful-errors: 1.5.3
       indent-string: 4.0.0
       jest-diff: 29.4.3
@@ -6722,16 +6726,11 @@ snapshots:
       json5: 2.2.3
       lodash.uniqby: 4.7.0
       shelljs: 0.8.5
-      simple-leveled-log-methods: 0.1.4
+      simple-log-methods: 0.6.9
       tsx: 4.20.6
       type-fns: 1.21.0
       uuid: 9.0.0
       yaml: 1.6.0
-    transitivePeerDependencies:
-      - '@types/node'
-      - aws-crt
-      - ws
-      - zod
 
   declastruct-github@1.0.7:
     dependencies:
@@ -6847,14 +6846,14 @@ snapshots:
       type-fns: 1.21.0
       uuid-fns: 1.1.3
 
-  domain-objects@0.31.7(@types/node@22.15.21)(zod@3.25.76):
+  domain-objects@0.31.7(@types/node@22.15.21)(zod@4.3.4):
     dependencies:
       change-case: 4.1.2
       domain-objects: 0.31.3
       helpful-errors: 1.5.3
       joi: 17.4.0
-      rhachet: 1.15.2(@types/node@22.15.21)(zod@3.25.76)
-      rhachet-roles-ehmpathy: 1.15.15(@types/node@22.15.21)(zod@3.25.76)
+      rhachet: 1.28.2(zod@4.3.4)
+      rhachet-roles-ehmpathy: 1.17.34(@types/node@22.15.21)(zod@4.3.4)
       type-fns: 1.21.0
       uuid-fns: 1.1.3
     transitivePeerDependencies:
@@ -7013,15 +7012,6 @@ snapshots:
 
   fast-deep-equal@3.1.3: {}
 
-  fast-glob@3.2.2:
-    dependencies:
-      '@nodelib/fs.stat': 2.0.5
-      '@nodelib/fs.walk': 1.2.8
-      glob-parent: 5.1.2
-      merge2: 1.4.1
-      micromatch: 4.0.8
-      picomatch: 2.3.1
-
   fast-glob@3.3.3:
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -7147,6 +7137,15 @@ snapshots:
       minipass: 7.1.2
       package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
+
+  glob@11.0.1:
+    dependencies:
+      foreground-child: 3.3.1
+      jackspeak: 4.2.3
+      minimatch: 10.1.2
+      minipass: 7.1.2
+      package-json-from-dist: 1.0.1
+      path-scurry: 2.0.1
 
   glob@7.2.3:
     dependencies:
@@ -7366,6 +7365,14 @@ snapshots:
       simple-log-methods: 0.6.9
       type-fns: 1.21.0
 
+  iso-time@1.11.3:
+    dependencies:
+      date-fns: 3.6.0
+      domain-glossaries: 1.0.0
+      helpful-errors: 1.5.3
+      simple-log-methods: 0.6.9
+      type-fns: 1.21.0
+
   istanbul-lib-coverage@3.2.2: {}
 
   istanbul-lib-instrument@6.0.3:
@@ -7402,6 +7409,10 @@ snapshots:
       '@isaacs/cliui': 8.0.2
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
+
+  jackspeak@4.2.3:
+    dependencies:
+      '@isaacs/cliui': 9.0.0
 
   jest-changed-files@30.2.0:
     dependencies:
@@ -7885,6 +7896,8 @@ snapshots:
 
   lru-cache@10.4.3: {}
 
+  lru-cache@11.2.6: {}
+
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
@@ -7915,6 +7928,10 @@ snapshots:
       picomatch: 2.3.1
 
   mimic-fn@2.1.0: {}
+
+  minimatch@10.1.2:
+    dependencies:
+      '@isaacs/brace-expansion': 5.0.1
 
   minimatch@3.1.2:
     dependencies:
@@ -7992,10 +8009,6 @@ snapshots:
   onetime@5.1.2:
     dependencies:
       mimic-fn: 2.1.0
-
-  openai@5.8.2(zod@3.25.76):
-    optionalDependencies:
-      zod: 3.25.76
 
   openai@5.8.2(zod@4.3.4):
     optionalDependencies:
@@ -8084,6 +8097,11 @@ snapshots:
   path-scurry@1.11.1:
     dependencies:
       lru-cache: 10.4.3
+      minipass: 7.1.2
+
+  path-scurry@2.0.1:
+    dependencies:
+      lru-cache: 11.2.6
       minipass: 7.1.2
 
   path-type@4.0.0: {}
@@ -8338,30 +8356,6 @@ snapshots:
       test-fns: 1.7.2
       zod: 4.3.4
 
-  rhachet-roles-ehmpathy@1.15.15(@types/node@22.15.21)(zod@3.25.76):
-    dependencies:
-      '@ehmpathy/as-command': 1.0.3
-      '@ehmpathy/uni-time': 1.8.1
-      as-procedure: 1.1.7
-      domain-objects: 0.31.7(@types/node@22.15.21)(zod@3.25.76)
-      fast-glob: 3.3.3
-      helpful-errors: 1.5.3
-      inquirer: 12.7.0(@types/node@22.15.21)
-      openai: 5.8.2(zod@3.25.76)
-      rhachet: 1.14.1(zod@3.25.76)
-      rhachet-artifact: 1.0.0
-      rhachet-artifact-git: 1.1.0
-      serde-fns: 1.2.0
-      simple-in-memory-cache: 0.4.0
-      type-fns: 1.21.0
-      with-simple-caching: 0.14.2
-      wrapper-fns: 1.1.0
-    transitivePeerDependencies:
-      - '@types/node'
-      - aws-crt
-      - ws
-      - zod
-
   rhachet-roles-ehmpathy@1.17.34(@types/node@22.15.21)(zod@4.3.4):
     dependencies:
       '@ehmpathy/as-command': 1.0.3
@@ -8379,50 +8373,6 @@ snapshots:
       type-fns: 1.21.0
       with-simple-caching: 0.14.2
       wrapper-fns: 1.1.0
-    transitivePeerDependencies:
-      - '@types/node'
-      - aws-crt
-      - ws
-      - zod
-
-  rhachet@1.14.1(zod@3.25.76):
-    dependencies:
-      '@ehmpathy/uni-time': 1.9.0
-      as-procedure: 1.1.6
-      bottleneck: 2.19.5
-      chalk: 4.1.2
-      commander: 14.0.0
-      domain-objects: 0.31.7(@types/node@22.15.21)(zod@3.25.76)
-      fast-glob: 3.3.3
-      flattie: 1.1.1
-      helpful-errors: 1.5.3
-      openai: 5.8.2(zod@3.25.76)
-      rhachet-artifact: 1.0.1
-      rhachet-artifact-git: 1.1.3
-      serde-fns: 1.3.1
-      type-fns: 1.21.0
-      uuid-fns: 1.0.1
-    transitivePeerDependencies:
-      - ws
-      - zod
-
-  rhachet@1.15.2(@types/node@22.15.21)(zod@3.25.76):
-    dependencies:
-      '@ehmpathy/uni-time': 1.9.0
-      as-procedure: 1.1.6
-      bottleneck: 2.19.5
-      chalk: 4.1.2
-      commander: 14.0.0
-      domain-objects: 0.31.7(@types/node@22.15.21)(zod@3.25.76)
-      fast-glob: 3.3.3
-      flattie: 1.1.1
-      helpful-errors: 1.5.3
-      openai: 5.8.2(zod@3.25.76)
-      rhachet-artifact: 1.0.1
-      rhachet-artifact-git: 1.1.3
-      serde-fns: 1.3.1
-      type-fns: 1.21.0
-      uuid-fns: 1.0.1
     transitivePeerDependencies:
       - '@types/node'
       - aws-crt
@@ -8533,8 +8483,6 @@ snapshots:
     dependencies:
       '@ehmpathy/uni-time': 1.9.1
 
-  simple-leveled-log-methods@0.1.4: {}
-
   simple-log-methods@0.6.1:
     dependencies:
       '@ehmpathy/error-fns': 1.3.7
@@ -8555,7 +8503,7 @@ snapshots:
       domain-glossary-procedure: 1.0.0
       domain-objects: 0.31.9
       helpful-errors: 1.5.3
-      iso-time: 1.11.1
+      iso-time: 1.11.3
       type-fns: 1.21.0
 
   simple-on-disk-cache@1.7.2:
@@ -8655,6 +8603,18 @@ snapshots:
       '@istanbuljs/schema': 0.1.3
       glob: 7.2.3
       minimatch: 3.1.2
+
+  test-fns@1.15.0(@types/node@22.15.21)(zod@4.3.4):
+    dependencies:
+      domain-objects: 0.31.7(@types/node@22.15.21)(zod@4.3.4)
+      helpful-errors: 1.5.3
+      iso-time: 1.11.3
+      uuid: 10.0.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - aws-crt
+      - ws
+      - zod
 
   test-fns@1.4.2:
     dependencies:
@@ -8970,8 +8930,5 @@ snapshots:
   yocto-queue@1.2.2: {}
 
   yoctocolors-cjs@2.1.3: {}
-
-  zod@3.25.76:
-    optional: true
 
   zod@4.3.4: {}
