@@ -153,8 +153,6 @@
       "Bash(npx rhachet run --skill git.commit.set --mode apply -m $MESSAGE)",
       "Bash(npx rhachet run --skill git.commit.set --push -m $MESSAGE)",
       "Bash(npx rhachet run --skill git.commit.set --unstaged ignore -m $MESSAGE)",
-      "Bash(MESSAGE=\":*)",
-      "Bash(export MESSAGE=\":*)",
       "Bash(npx rhachet run --skill git.commit.push:*)",
       "Bash(npx rhachet run --skill show.gh.action.logs:*)",
       "Bash(npx rhachet run --skill show.gh.test.errors:*)",
