@@ -65,6 +65,28 @@
             "author": "repo=ehmpathy/role=mechanic"
           }
         ]
+      },
+      {
+        "matcher": "EnterPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-planmode",
+            "timeout": 5,
+            "author": "repo=ehmpathy/role=mechanic"
+          }
+        ]
+      },
+      {
+        "matcher": "WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/posttooluse.guardBorder.onWebfetch",
+            "timeout": 60,
+            "author": "repo=ehmpathy/role=mechanic"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -83,13 +105,11 @@
   },
   "permissions": {
     "allow": [
+      "Write(.agent/.notes/**)",
+      "Edit(.agent/.notes/**)",
       "mcp__ide__getDiagnostics",
       "WebSearch",
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:www.npmjs.com)",
-      "WebFetch(domain:hub.docker.com)",
-      "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:biomejs.dev)",
+      "WebFetch",
       "Bash(ls:*)",
       "Bash(tree:*)",
       "Bash(cat:*)",
@@ -123,9 +143,31 @@
       "Bash(npx rhachet run --skill mvsafe:*)",
       "Bash(npx rhachet run --skill rmsafe:*)",
       "Bash(npx rhachet run --skill symlink:*)",
+      "Bash(npx rhachet run --skill git.commit.uses:*)",
+      "Bash(npx rhachet run --skill git.commit.uses get)",
+      "Bash(npx rhachet run --skill git.commit.bind:*)",
+      "Bash(npx rhachet run --skill git.commit.bind get)",
+      "Bash(npx rhachet run --skill git.commit.set:*)",
+      "Bash(npx rhachet run --skill git.commit.set -m 'fix(api): validate input\n\n- added input schema\n- added error handler')",
+      "Bash(npx rhachet run --skill git.commit.set -m $MESSAGE)",
+      "Bash(npx rhachet run --skill git.commit.set --mode apply -m $MESSAGE)",
+      "Bash(npx rhachet run --skill git.commit.set --push -m $MESSAGE)",
+      "Bash(npx rhachet run --skill git.commit.set --unstaged ignore -m $MESSAGE)",
+      "Bash(MESSAGE=\":*)",
+      "Bash(export MESSAGE=\":*)",
+      "Bash(npx rhachet run --skill git.commit.push:*)",
       "Bash(npx rhachet run --skill show.gh.action.logs:*)",
       "Bash(npx rhachet run --skill show.gh.test.errors:*)",
       "Bash(npx rhachet run --skill show.gh.test.errors --scope test-integration)",
+      "Bash(npx rhachet run --skill get.package.docs:*)",
+      "Bash(npx rhachet run --skill get.package.docs readme --of iso-price)",
+      "Bash(npx rhachet run --skill get.package.docs filetree --of iso-price)",
+      "Bash(npx rhachet run --skill condense:*)",
+      "Bash(npx rhachet run --skill condense --from briefs/rule.md)",
+      "Bash(npx rhachet run --skill condense --from briefs/rule.md --mode plan)",
+      "Bash(npx rhachet run --skill condense --from briefs/rule.md --mode apply)",
+      "Bash(npx rhachet run --skill condense --from briefs/rule.md --onVerify restore)",
+      "Bash(npx rhachet run --skill condense --from 'briefs/**/*.md' --mode apply)",
       "Bash(npx rhachet run:*)",
       "Bash(npx rhachet:*)",
       "Bash(npm view:*)",
@@ -204,6 +246,7 @@
     ],
     "deny": [
       "Bash(bash:*)",
+      "Bash(cd:*)",
       "Bash(echo:*)",
       "Bash(find:*)",
       "Bash(gh api --method DELETE:*)",
@@ -266,8 +309,17 @@
       "Bash(mv:*)",
       "Bash(npx biome:*)",
       "Bash(npx jest:*)",
+      "Bash(npx rhachet run --skill git.commit.bind del:*)",
+      "Bash(npx rhachet run --skill git.commit.bind set:*)",
+      "Bash(npx rhachet run --skill git.commit.uses set:*)",
       "Bash(sed:*)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Edit(.branch/.bind/*)",
+      "Edit(.meter/*)",
+      "EnterPlanMode",
+      "Read(.quarantine/*)",
+      "Write(.branch/.bind/*)",
+      "Write(.meter/*)"
     ],
     "ask": [
       "Bash(bash:*)",

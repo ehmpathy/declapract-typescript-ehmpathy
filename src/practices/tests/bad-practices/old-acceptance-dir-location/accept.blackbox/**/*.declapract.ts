@@ -1,10 +1,10 @@
 import { FileCheckType, type FileFixFunction } from 'declapract';
 
-export const check = FileCheckType.EXISTS; // if files exist in accept.blackbox/, flag as bad practice
+export const check = FileCheckType.EXISTS; // if any files exist in accept.blackbox/, flag as bad practice
 
 /**
- * .what = moves acceptance test files from accept.blackbox/ to blackbox/
- * .why = blackbox/ naming is simpler and makes the testing philosophy explicit
+ * .what = moves any file from accept.blackbox/ to blackbox/
+ * .why = ensures all files are moved, not just .ts files — prevents silent data loss for hidden paths
  */
 export const fix: FileFixFunction = (contents, context) => {
   // move from accept.blackbox/ to blackbox/
