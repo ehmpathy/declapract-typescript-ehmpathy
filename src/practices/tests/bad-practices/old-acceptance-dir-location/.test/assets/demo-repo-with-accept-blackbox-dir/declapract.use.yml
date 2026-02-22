@@ -1,0 +1,5 @@
+declarations: './'
+useCase: typescript-project
+variables:
+  organizationName: 'test-org'
+  projectName: 'test-project'
