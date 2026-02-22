@@ -13,10 +13,7 @@ describe('old-acceptance-dir-location', () => {
     const tempDir = genTempDir({
       slug: 'declapract-old-acceptance-dir',
       clone: './src/practices/tests/bad-practices/old-acceptance-dir-location/.test/assets/demo-repo-with-accept-blackbox-dir',
-      symlink: [
-        { at: 'dist', to: 'dist' },
-        { at: 'src', to: 'src' },
-      ],
+      symlink: [{ at: 'src', to: 'src' }],
     });
 
     when('[t0] before fix', () => {

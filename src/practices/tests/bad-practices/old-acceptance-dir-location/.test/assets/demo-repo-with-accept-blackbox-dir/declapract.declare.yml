@@ -1,4 +1,4 @@
 declare:
-  examples: dist/examples
-  practices: dist/practices
-  use-cases: dist/useCases.yml
+  examples: src/examples
+  practices: src/practices
+  use-cases: src/useCases.yml
