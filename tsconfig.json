@@ -22,8 +22,8 @@
       ]
     },
     "incremental": true,
-    "module": "commonjs",
-    "moduleResolution": "node"
+    "module": "node16",
+    "moduleResolution": "node16"
   },
   "include": [
     "src/**/*.declapract.ts",

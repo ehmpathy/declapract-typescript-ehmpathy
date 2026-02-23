@@ -20,8 +20,8 @@
     "outDir": "dist",
     "target": "es2020",
     "incremental": true,
-    "module": "commonjs", // enable usage of esm modules without a strict boundary; todo, cutover to be esm native
-    "moduleResolution": "node"
+    "module": "node16",
+    "moduleResolution": "node16"
   },
   "include": [
     "**/*.ts"
