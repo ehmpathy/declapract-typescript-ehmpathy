@@ -1,11 +1,11 @@
 {
   "devDependencies": {
-    "rhachet": "@declapract{check.minVersion('1.35.1')}",
+    "rhachet": "@declapract{check.minVersion('1.37.1')}",
     "rhachet-brains-anthropic": "@declapract{check.minVersion('0.3.3')}",
     "rhachet-brains-xai": "@declapract{check.minVersion('0.2.1')}",
-    "rhachet-roles-bhrain": "@declapract{check.minVersion('0.12.1')}",
-    "rhachet-roles-bhuild": "@declapract{check.minVersion('0.9.0')}",
-    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.26.3')}"
+    "rhachet-roles-bhrain": "@declapract{check.minVersion('0.15.3')}",
+    "rhachet-roles-bhuild": "@declapract{check.minVersion('0.12.2')}",
+    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.26.8')}"
   },
   "scripts": {
     "prepare:rhachet": "rhachet init --hooks --roles behaver driver mechanic reviewer",
