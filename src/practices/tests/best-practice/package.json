@@ -9,11 +9,11 @@
     "@swc/jest": "@declapract{check.minVersion('0.2.39')}"
   },
   "scripts": {
-    "test:auth": "[ \"$ECHO\" = 'true' ] && echo '. .agent/repo=.this/role=any/skills/use.apikeys.sh' || . .agent/repo=.this/role=any/skills/use.apikeys.sh",
-    "test:unit": "jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -z $THOROUGH ] && echo '--changedSince=main') $([ -n $RESNAP ] && echo '--updateSnapshot')",
-    "test:integration": "jest -c ./jest.integration.config.ts --forceExit --verbose --passWithNoTests $([ -z $THOROUGH ] && echo '--changedSince=main') $([ -n $RESNAP ] && echo '--updateSnapshot')",
-    "test:acceptance:locally": "npm run build && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n $RESNAP ] && echo '--updateSnapshot')",
-    "test": "eval $(ECHO=true npm run --silent test:auth) && npm run test:commits && npm run test:types && npm run test:format && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally",
-    "test:acceptance": "npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n $RESNAP ] && echo '--updateSnapshot')"
+    "test:auth": "[ \"${ECHO:-}\" = 'true' ] && echo '. .agent/repo=.this/role=any/skills/use.apikeys.sh' || . .agent/repo=.this/role=any/skills/use.apikeys.sh",
+    "test:unit": "set -eu && jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -n \"${CI:-}\" ] && echo '--ci') $([ -z \"${THOROUGH:-}\" ] && echo '--changedSince=main') $([ -n \"${RESNAP:-}\" ] && echo '--updateSnapshot')",
+    "test:integration": "set -eu && jest -c ./jest.integration.config.ts --forceExit --verbose --passWithNoTests $([ -n \"${CI:-}\" ] && echo '--ci') $([ -z \"${THOROUGH:-}\" ] && echo '--changedSince=main') $([ -n \"${RESNAP:-}\" ] && echo '--updateSnapshot')",
+    "test:acceptance:locally": "set -eu && npm run build && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n \"${RESNAP:-}\" ] && echo '--updateSnapshot')",
+    "test": "set -eu && eval $(ECHO=true npm run --silent test:auth) && npm run test:commits && npm run test:types && npm run test:format && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally",
+    "test:acceptance": "set -eu && npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n \"${CI:-}\" ] && echo '--ci') $([ -n \"${RESNAP:-}\" ] && echo '--updateSnapshot')"
   }
 }
