@@ -220,12 +220,14 @@ jobs:
       - name: test:integration (explicit ${{ matrix.shard.index }})
         if: matrix.shard.type == 'explicit'
         run: |
+          set -eu
           patterns='${{ join(matrix.shard.patterns, '|') }}'
           THOROUGH=true npm run test:integration -- --testPathPatterns="$patterns" --json --outputFile=jest-results.json
 
       - name: test:integration (dynamic ${{ matrix.shard.shard }}/${{ matrix.shard.total }})
         if: matrix.shard.type == 'dynamic'
         run: |
+          set -eu
           exclude='${{ needs.enshard.outputs.integration-patterns }}'
           if [[ -n "$exclude" ]]; then
             THOROUGH=true npm run test:integration -- --testPathIgnorePatterns="$exclude" --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }} --json --outputFile=jest-results.json
@@ -236,6 +238,7 @@ jobs:
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''
         run: |
+          set -eu
           jq -r '.testResults[] | "\(.name):\(.perfStats.runtime)"' jest-results.json | while IFS=: read -r name runtime; do
             seconds=$((runtime / 1000))
             if [[ $seconds -ge 30 ]]; then
@@ -286,12 +289,14 @@ jobs:
       - name: test:acceptance (explicit ${{ matrix.shard.index }})
         if: matrix.shard.type == 'explicit'
         run: |
+          set -eu
           patterns='${{ join(matrix.shard.patterns, '|') }}'
           THOROUGH=true npm run test:acceptance -- --testPathPatterns="$patterns" --json --outputFile=jest-results.json
 
       - name: test:acceptance (dynamic ${{ matrix.shard.shard }}/${{ matrix.shard.total }})
         if: matrix.shard.type == 'dynamic'
         run: |
+          set -eu
           exclude='${{ needs.enshard.outputs.acceptance-patterns }}'
           if [[ -n "$exclude" ]]; then
             THOROUGH=true npm run test:acceptance -- --testPathIgnorePatterns="$exclude" --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }} --json --outputFile=jest-results.json
@@ -302,6 +307,7 @@ jobs:
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''
         run: |
+          set -eu
           jq -r '.testResults[] | "\(.name):\(.perfStats.runtime)"' jest-results.json | while IFS=: read -r name runtime; do
             seconds=$((runtime / 1000))
             if [[ $seconds -ge 30 ]]; then
@@ -319,6 +325,7 @@ jobs:
     steps:
       - name: report shard results
         run: |
+          set -eu
           if [[ "${{ needs.test-shards-integration.result }}" == "success" ]]; then
             echo "👌 all integration test shards passed"
           else
@@ -334,6 +341,7 @@ jobs:
     steps:
       - name: report shard results
         run: |
+          set -eu
           if [[ "${{ needs.test-shards-acceptance.result }}" == "success" ]]; then
             echo "👌 all acceptance test shards passed"
           else
