@@ -8,6 +8,9 @@ const OLD_PATH_PATTERNS = [
   /from\s+['"][^'"]*\/domain\/objects/,
   /from\s+['"][^'"]*\/domain\//,
   /from\s+['"][^'"]*\/logic\//,
+  /from\s+['"][^'"]*\/model\/domainObjects/,
+  /from\s+['"][^'"]*\/model\//,
+  /from\s+['"][^'"]*\/services\//,
 ];
 
 export const check: FileCheckFunction = (contents) => {
@@ -35,7 +38,12 @@ export const fix: FileFixFunction = (contents) => {
     .replace(/(['"])([^'"]*?)\/domain\/objects\b/g, '$1$2/domain.objects')
     .replace(/(['"])([^'"]*?)\/domain\//g, '$1$2/domain.objects/')
     // logic layer fixes
-    .replace(/(['"])([^'"]*?)\/logic\//g, '$1$2/domain.operations/');
+    .replace(/(['"])([^'"]*?)\/logic\//g, '$1$2/domain.operations/')
+    // model layer fixes (old structure before domain.objects)
+    .replace(/(['"])([^'"]*?)\/model\/domainObjects\b/g, '$1$2/domain.objects')
+    .replace(/(['"])([^'"]*?)\/model\//g, '$1$2/domain.objects/')
+    // services layer fixes (services = business logic, not service clients)
+    .replace(/(['"])([^'"]*?)\/services\//g, '$1$2/domain.operations/');
 
   return { contents: fixed };
 };
