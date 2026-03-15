@@ -27,6 +27,21 @@ describe('old-import-paths bad practice', () => {
       expect(() => check(contents, {} as any)).not.toThrow();
     });
 
+    it('should match files with model/ imports', () => {
+      const contents = `import { User } from '../model/User';`;
+      expect(() => check(contents, {} as any)).not.toThrow();
+    });
+
+    it('should match files with model/domainObjects imports', () => {
+      const contents = `import { User } from '../model/domainObjects/User';`;
+      expect(() => check(contents, {} as any)).not.toThrow();
+    });
+
+    it('should match files with services/ imports', () => {
+      const contents = `import { userService } from '../services/userService';`;
+      expect(() => check(contents, {} as any)).not.toThrow();
+    });
+
     it('should not match files with new import paths', () => {
       const contents = `import { userDao } from '../access/daos/userDao';`;
       expect(() => check(contents, {} as any)).toThrow(
@@ -53,6 +68,16 @@ describe('old-import-paths bad practice', () => {
 
     it('should match files with @src/logic/ imports', () => {
       const contents = `import { calculate } from '@src/logic/calculate';`;
+      expect(() => check(contents, {} as any)).not.toThrow();
+    });
+
+    it('should match files with @src/model/ imports', () => {
+      const contents = `import { User } from '@src/model/User';`;
+      expect(() => check(contents, {} as any)).not.toThrow();
+    });
+
+    it('should match files with @src/services/ imports', () => {
+      const contents = `import { userService } from '@src/services/userService';`;
       expect(() => check(contents, {} as any)).not.toThrow();
     });
 
@@ -103,6 +128,26 @@ describe('old-import-paths bad practice', () => {
       const { contents: fixed } = await fix(contents, {} as any);
       expect(fixed).toEqual(
         `import { calculate } from '../domain.operations/calculate';`,
+      );
+    });
+
+    it('should fix model/ imports to domain.objects/', async () => {
+      const contents = `import { User } from '../model/User';`;
+      const { contents: fixed } = await fix(contents, {} as any);
+      expect(fixed).toEqual(`import { User } from '../domain.objects/User';`);
+    });
+
+    it('should fix model/domainObjects imports to domain.objects', async () => {
+      const contents = `import { User } from '../model/domainObjects/User';`;
+      const { contents: fixed } = await fix(contents, {} as any);
+      expect(fixed).toEqual(`import { User } from '../domain.objects/User';`);
+    });
+
+    it('should fix services/ imports to domain.operations/', async () => {
+      const contents = `import { userService } from '../services/userService';`;
+      const { contents: fixed } = await fix(contents, {} as any);
+      expect(fixed).toEqual(
+        `import { userService } from '../domain.operations/userService';`,
       );
     });
 
@@ -161,6 +206,20 @@ import { calculate } from '../domain.operations/billing/calculate';
       const { contents: fixed } = await fix(contents, {} as any);
       expect(fixed).toEqual(
         `import { calculate } from '@src/domain.operations/calculate';`,
+      );
+    });
+
+    it('should fix @src/model/ imports to @src/domain.objects/', async () => {
+      const contents = `import { User } from '@src/model/User';`;
+      const { contents: fixed } = await fix(contents, {} as any);
+      expect(fixed).toEqual(`import { User } from '@src/domain.objects/User';`);
+    });
+
+    it('should fix @src/services/ imports to @src/domain.operations/', async () => {
+      const contents = `import { userService } from '@src/services/userService';`;
+      const { contents: fixed } = await fix(contents, {} as any);
+      expect(fixed).toEqual(
+        `import { userService } from '@src/domain.operations/userService';`,
       );
     });
 

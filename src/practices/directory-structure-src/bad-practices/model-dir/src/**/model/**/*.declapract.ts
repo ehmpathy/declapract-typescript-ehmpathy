@@ -10,7 +10,7 @@ export const fix: FileFixFunction = (contents, context) => {
         "export * from './';",
       ) ?? null,
     relativeFilePath: context.relativeFilePath
-      .replace('src/model/domainObjects/', 'src/domain.objects/')
-      .replace('src/model/', 'src/domain.objects/'),
+      .replace(/\/model\/domainObjects\//g, '/domain.objects/')
+      .replace(/\/model\//g, '/domain.objects/'),
   };
 };

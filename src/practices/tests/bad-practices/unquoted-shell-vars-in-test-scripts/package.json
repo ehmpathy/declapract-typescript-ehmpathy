@@ -1,5 +1,0 @@
-{
-  "scripts": {
-    "test:unit": "@declapract{check.exists}"
-  }
-}
