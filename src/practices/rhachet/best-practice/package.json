@@ -1,11 +1,11 @@
 {
   "devDependencies": {
-    "rhachet": "@declapract{check.minVersion('1.37.15')}",
+    "rhachet": "@declapract{check.minVersion('1.37.16')}",
     "rhachet-brains-anthropic": "@declapract{check.minVersion('0.3.3')}",
     "rhachet-brains-xai": "@declapract{check.minVersion('0.2.1')}",
-    "rhachet-roles-bhrain": "@declapract{check.minVersion('0.19.0')}",
-    "rhachet-roles-bhuild": "@declapract{check.minVersion('0.14.1')}",
-    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.27.13')}"
+    "rhachet-roles-bhrain": "@declapract{check.minVersion('0.20.0')}",
+    "rhachet-roles-bhuild": "@declapract{check.minVersion('0.14.2')}",
+    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.28.0')}"
   },
   "scripts": {
     "prepare:rhachet": "rhachet init --keys --hooks --roles mechanic behaver driver reviewer librarian ergonomist architect",
