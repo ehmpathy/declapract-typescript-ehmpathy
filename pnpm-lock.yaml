@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       declapract:
-        specifier: '>=0.13.15'
-        version: 0.13.15
+        specifier: '>=0.13.16'
+        version: 0.13.16
       domain-objects:
         specifier: 0.31.9
         version: 0.31.9
@@ -94,8 +94,8 @@ importers:
         specifier: 0.14.2
         version: 0.14.2(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet-roles-bhrain@0.20.0(@types/node@22.15.21))
       rhachet-roles-ehmpathy:
-        specifier: 1.27.16
-        version: 1.27.16(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.16(zod@4.3.4))
+        specifier: 1.29.0
+        version: 1.29.0(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.16(zod@4.3.4))
       tsc-alias:
         specifier: 1.8.10
         version: 1.8.10
@@ -2556,8 +2556,8 @@ packages:
       supports-color:
         optional: true
 
-  declapract@0.13.15:
-    resolution: {integrity: sha512-ytRdxzTtMX22OhcVzkOhn7qZu0kXXPdv05wRBhMEYd7Iaf5yojciX2d8USAHkRTTRqrVc9elAyaPtTW6q0Sbjw==}
+  declapract@0.13.16:
+    resolution: {integrity: sha512-mjECXcP0V+ZPuOvaVSnr0cAN2A3XYpGzPBT7ODAOliy266LNWLEoWpfLrrFjL3xb2R72BCptUsUU2Y7FN1bSzw==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
@@ -4061,8 +4061,8 @@ packages:
     peerDependencies:
       rhachet-roles-bhrain: '>=0.12.1'
 
-  rhachet-roles-ehmpathy@1.27.16:
-    resolution: {integrity: sha512-He76yCeaVcXtAOunKbr2eyYsqR+gYQpqymeqV9ujRZkRCMfIQj/+t771Hs/78XqjDYeIW9jMnndUIvGaB8Wb9g==}
+  rhachet-roles-ehmpathy@1.29.0:
+    resolution: {integrity: sha512-PUpfrcOvKJSErpHoCZMyEs2X1lIqAQVa4GMjW46qcUvpxusSJK3T7XplEzBeZ8H06sJuyOJOqlPqOY46QGTM9w==}
     engines: {node: '>=8.0.0'}
 
   rhachet@1.37.16:
@@ -4113,6 +4113,11 @@ packages:
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
+    hasBin: true
+
+  semver@7.7.1:
+    resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
+    engines: {node: '>=10'}
     hasBin: true
 
   semver@7.7.3:
@@ -7567,7 +7572,7 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  declapract@0.13.15:
+  declapract@0.13.16:
     dependencies:
       chalk: 2.4.2
       commander: 12.1.0
@@ -7583,6 +7588,7 @@ snapshots:
       joi: 17.4.0
       json5: 2.2.3
       lodash.uniqby: 4.7.0
+      semver: 7.7.1
       shelljs: 0.8.5
       simple-log-methods: 0.6.9
       tsx: 4.20.6
@@ -7729,7 +7735,7 @@ snapshots:
       helpful-errors: 1.5.3
       joi: 17.4.0
       rhachet: 1.37.16(zod@4.3.4)
-      rhachet-roles-ehmpathy: 1.27.16(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.16(zod@4.3.4))
+      rhachet-roles-ehmpathy: 1.29.0(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.16(zod@4.3.4))
       type-fns: 1.21.0
       uuid-fns: 1.1.3
     transitivePeerDependencies:
@@ -9408,7 +9414,7 @@ snapshots:
       - aws-crt
       - ws
 
-  rhachet-roles-ehmpathy@1.27.16(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.16(zod@4.3.4)):
+  rhachet-roles-ehmpathy@1.29.0(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.16(zod@4.3.4)):
     dependencies:
       '@atjsh/llmlingua-2': 2.0.3(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(js-tiktoken@1.0.21)
       '@ehmpathy/as-command': 1.0.3
@@ -9512,6 +9518,8 @@ snapshots:
   semver-compare@1.0.0: {}
 
   semver@6.3.1: {}
+
+  semver@7.7.1: {}
 
   semver@7.7.3: {}
 
