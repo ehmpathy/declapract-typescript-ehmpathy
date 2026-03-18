@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "depcheck": "1.4.3",
+    "dpdm": "4.0.1",
     "@biomejs/biome": "2.3.8"
   },
   "scripts": {
@@ -9,7 +10,8 @@
     "test:format:biome": "biome format",
     "test:lint:biome": "biome check --diagnostic-level=error",
     "test:lint:biome:all": "biome check",
+    "test:lint:cycles": "dpdm --no-warning --no-tree --exit-code circular:1 --exclude '^$' 'src/**/*.ts'",
     "test:lint:deps": "npx depcheck -c ./.depcheckrc.yml",
-    "test:lint": "npm run test:lint:biome && npm run test:lint:deps"
+    "test:lint": "npm run test:lint:biome && npm run test:lint:cycles && npm run test:lint:deps"
   }
 }
