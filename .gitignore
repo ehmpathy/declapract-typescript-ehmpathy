@@ -4,6 +4,7 @@
 .artifact
 .env
 .serverless
+.log/slowtest/
 .temp
 .terraform
 .terraform.lock

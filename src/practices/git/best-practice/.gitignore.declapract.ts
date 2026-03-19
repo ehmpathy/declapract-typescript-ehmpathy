@@ -11,6 +11,7 @@ const ignoresSortable = [
   '.artifact', // deployment artifacts from `simple-artifact-builder` are produced here
   '.env',
   '.serverless',
+  '.log/slowtest/',
   '.terraform',
   '.terraform.lock',
   '.yalc',
