@@ -12,6 +12,10 @@ process.env.FORCE_COLOR = 'true';
 // https://jestjs.io/docs/configuration
 const config: Config = {
   verbose: true,
+  reporters: [
+    ['default', { summaryThreshold: 0 }],
+    ['test-fns/slowtest.reporter.jest', { slow: '10s', output: '.log/slowtest/unit.report.json' }],
+  ],
   testEnvironment: 'node',
   moduleFileExtensions: ['js', 'ts'],
   moduleNameMapper: {

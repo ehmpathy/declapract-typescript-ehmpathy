@@ -9,6 +9,7 @@ describe('.gitignore best practice', () => {
 *.tsbuildinfo
 .artifact
 .env
+.log/slowtest/
 .serverless
 .temp
 .terraform
