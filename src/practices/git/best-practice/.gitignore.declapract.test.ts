@@ -8,6 +8,7 @@ describe('.gitignore best practice', () => {
 *.log
 *.tsbuildinfo
 .artifact
+.cache/
 .env
 .log/slowtest/
 .serverless
