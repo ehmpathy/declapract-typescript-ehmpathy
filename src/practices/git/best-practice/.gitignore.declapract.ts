@@ -9,6 +9,7 @@ const ignoresSortable = [
   '*.log',
   '*.tsbuildinfo',
   '.artifact', // deployment artifacts from `simple-artifact-builder` are produced here
+  '.cache/', // cache directories from various tools
   '.env',
   '.serverless',
   '.log/slowtest/',

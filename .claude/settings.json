@@ -39,6 +39,12 @@
             "command": "./node_modules/.bin/rhachet roles boot --repo ehmpathy --role architect",
             "timeout": 60,
             "author": "repo=ehmpathy/role=architect"
+          },
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet roles boot --repo ehmpathy --role ergonomist",
+            "timeout": 60,
+            "author": "repo=ehmpathy/role=ergonomist"
           }
         ]
       }
@@ -182,13 +188,19 @@
       "Bash(git ls-files:*)",
       "Bash(git ls-tree:*)",
       "Bash(git cat-file:*)",
-      "Bash(git release --watch)",
+      "Bash(npx rhachet run --skill git.release:*)",
+      "Bash(rhx git.release:*)",
       "Bash(npx rhachet run --skill sedreplace:*)",
       "Bash(npx rhachet run --skill sedreplace --old 'oldName' --new 'newName' --glob 'src/**/*.ts')",
       "Bash(npx rhachet run --skill sedreplace --old 'oldName' --new 'newName' --glob 'src/**/*.ts' --mode apply)",
       "Bash(npx rhachet run --skill cpsafe:*)",
       "Bash(npx rhachet run --skill mvsafe:*)",
       "Bash(npx rhachet run --skill rmsafe:*)",
+      "Bash(npx rhachet run --skill teesafe:*)",
+      "Bash(rhx teesafe:*)",
+      "Bash(cmd | npx rhachet run --skill teesafe file.txt)",
+      "Bash(cmd | rhx teesafe file.txt)",
+      "Bash(cmd | rhx teesafe --into file.txt --append)",
       "Bash(npx rhachet run --skill symlink:*)",
       "Bash(npx rhachet run --skill git.commit.uses:*)",
       "Bash(npx rhachet run --skill git.commit.uses get)",
@@ -388,6 +400,7 @@
       "Bash(git config:*)",
       "Bash(git reflog delete:*)",
       "Bash(git reflog expire:*)",
+      "Bash(git release:*)",
       "Bash(git remote add:*)",
       "Bash(git remote remove:*)",
       "Bash(git remote set-url:*)",
