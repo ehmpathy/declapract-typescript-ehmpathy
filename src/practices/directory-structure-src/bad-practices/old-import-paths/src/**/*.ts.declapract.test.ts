@@ -94,6 +94,23 @@ describe('old-import-paths bad practice', () => {
         'does not match bad practice',
       );
     });
+
+    it('should match files with __nonpublished_modules__ imports', () => {
+      const contents = `import { helper } from '../__nonpublished_modules__/helper';`;
+      expect(() => check(contents, {} as any)).not.toThrow();
+    });
+
+    it('should match files with @src/__nonpublished_modules__/ imports', () => {
+      const contents = `import { helper } from '@src/__nonpublished_modules__/helper';`;
+      expect(() => check(contents, {} as any)).not.toThrow();
+    });
+
+    it('should not match files with _topublish imports', () => {
+      const contents = `import { helper } from '../_topublish/helper';`;
+      expect(() => check(contents, {} as any)).toThrow(
+        'does not match bad practice',
+      );
+    });
   });
 
   describe('fix', () => {
@@ -235,6 +252,18 @@ import { User } from '@src/domain.objects/User';
 import { userDao } from '../access/daos/userDao';
 import { calculate } from '@src/domain.operations/billing/calculate';
 `);
+    });
+
+    it('should fix __nonpublished_modules__ imports to _topublish', async () => {
+      const contents = `import { helper } from '../__nonpublished_modules__/helper';`;
+      const { contents: fixed } = await fix(contents, {} as any);
+      expect(fixed).toEqual(`import { helper } from '../_topublish/helper';`);
+    });
+
+    it('should fix @src/__nonpublished_modules__/ imports to @src/_topublish/', async () => {
+      const contents = `import { helper } from '@src/__nonpublished_modules__/helper';`;
+      const { contents: fixed } = await fix(contents, {} as any);
+      expect(fixed).toEqual(`import { helper } from '@src/_topublish/helper';`);
     });
   });
 });
