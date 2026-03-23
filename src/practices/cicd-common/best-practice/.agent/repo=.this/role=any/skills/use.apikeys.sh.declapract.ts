@@ -1,6 +1,7 @@
 import { FileCheckType, type FileFixFunction } from 'declapract';
-import { readFileSync } from 'fs';
-import { dirname, join } from 'path';
+
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
 // check that the file contains the core structure
 export const check = FileCheckType.CONTAINS;

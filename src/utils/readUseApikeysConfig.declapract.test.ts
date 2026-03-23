@@ -1,7 +1,7 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import os from 'os';
-import path from 'path';
-import util from 'util';
+import path from 'node:path';
+import util from 'node:util';
 
 import { given, then, when } from 'test-fns';
 

@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import path from 'path';
+import path from 'node:path';
 
 import { executeApply } from 'declapract';
 import { genTempDir, given, then, useThen, when } from 'test-fns';

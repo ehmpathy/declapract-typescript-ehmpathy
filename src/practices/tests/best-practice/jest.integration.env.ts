@@ -1,9 +1,10 @@
-import { execSync } from 'child_process';
-import { existsSync, readFileSync } from 'fs';
-import { join } from 'path';
-import util from 'util';
+import { execSync } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import util from 'node:util';
 
-// eslint-disable-next-line no-undef
+import { jest } from '@jest/globals';
+
 jest.setTimeout(90000); // since we're calling downstream apis
 
 // set console.log to not truncate nested objects
