@@ -1,6 +1,8 @@
-import { existsSync } from 'fs';
-import { join } from 'path';
-import util from 'util';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import util from 'node:util';
+
+import { jest } from '@jest/globals';
 
 // mock that getConfig just returns plaintext test env config in unit tests
 jest.mock('./src/utils/config/getConfig', () => ({

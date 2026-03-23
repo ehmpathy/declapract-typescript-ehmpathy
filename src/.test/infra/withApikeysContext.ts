@@ -1,6 +1,6 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import os from 'os';
-import path from 'path';
+import path from 'node:path';
 
 /**
  * .what = creates a mock context with apikeys config in a temp directory
