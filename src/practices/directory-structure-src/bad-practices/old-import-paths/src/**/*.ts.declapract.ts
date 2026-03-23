@@ -11,6 +11,7 @@ const OLD_PATH_PATTERNS = [
   /from\s+['"][^'"]*\/model\/domainObjects/,
   /from\s+['"][^'"]*\/model\//,
   /from\s+['"][^'"]*\/services\//,
+  /from\s+['"][^'"]*\/__nonpublished_modules__\//,
 ];
 
 export const check: FileCheckFunction = (contents) => {
@@ -43,7 +44,12 @@ export const fix: FileFixFunction = (contents) => {
     .replace(/(['"])([^'"]*?)\/model\/domainObjects\b/g, '$1$2/domain.objects')
     .replace(/(['"])([^'"]*?)\/model\//g, '$1$2/domain.objects/')
     // services layer fixes (services = business logic, not service clients)
-    .replace(/(['"])([^'"]*?)\/services\//g, '$1$2/domain.operations/');
+    .replace(/(['"])([^'"]*?)\/services\//g, '$1$2/domain.operations/')
+    // nonpublished modules dir fix
+    .replace(
+      /(['"])([^'"]*?)\/__nonpublished_modules__\//g,
+      '$1$2/_topublish/',
+    );
 
   return { contents: fixed };
 };

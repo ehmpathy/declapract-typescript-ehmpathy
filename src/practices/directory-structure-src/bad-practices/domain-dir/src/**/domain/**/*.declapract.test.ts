@@ -76,4 +76,62 @@ describe('domain-dir bad practice', () => {
     expect(result.relativeFilePath).toEqual('src/domain.objects/readme.md');
     expect(result.contents).toBeNull();
   });
+
+  it('should fix ./objects/ exports in domain/index.ts', async () => {
+    const contents = `export * from './objects/User';
+export * from './objects/Invoice';
+export { Customer } from './objects/Customer';`;
+    const context = {
+      relativeFilePath: 'src/domain/index.ts',
+    } as any;
+
+    const result = await fix(contents, context);
+
+    expect(result.relativeFilePath).toEqual('src/domain.objects/index.ts');
+    expect(result.contents).toEqual(`export * from './User';
+export * from './Invoice';
+export { Customer } from './Customer';`);
+  });
+
+  it('should fix mixed exports in domain/index.ts', async () => {
+    const contents = `export * from './objects/User';
+export * from './constants';
+export { helpers } from './utils/helpers';`;
+    const context = {
+      relativeFilePath: 'src/domain/index.ts',
+    } as any;
+
+    const result = await fix(contents, context);
+
+    expect(result.relativeFilePath).toEqual('src/domain.objects/index.ts');
+    expect(result.contents).toEqual(`export * from './User';
+export * from './constants';
+export { helpers } from './utils/helpers';`);
+  });
+
+  it('should not modify non-index files in domain/', async () => {
+    const contents = `import { User } from './objects/User';`;
+    const context = {
+      relativeFilePath: 'src/domain/utils.ts',
+    } as any;
+
+    const result = await fix(contents, context);
+
+    expect(result.relativeFilePath).toEqual('src/domain.objects/utils.ts');
+    expect(result.contents).toEqual(contents); // unchanged
+  });
+
+  it('should remove barrel export from ./objects in domain/index.ts', async () => {
+    const contents = `export * from './objects';
+export * from './constants';`;
+    const context = {
+      relativeFilePath: 'src/domain/index.ts',
+    } as any;
+
+    const result = await fix(contents, context);
+
+    expect(result.relativeFilePath).toEqual('src/domain.objects/index.ts');
+    expect(result.contents).toEqual(`export * from './constants';`);
+    expect(result.contents).not.toContain('./objects');
+  });
 });
