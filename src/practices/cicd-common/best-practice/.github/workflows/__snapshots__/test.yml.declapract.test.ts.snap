@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`test.yml.declapract buildWorkflowSecretsBlock given: the actual test.yml template when: multiple apikeys are required then: it should match expected snapshot 1`] = `
+exports[`test.yml.declapract buildWorkflowSecretsBlock given: the actual test.yml template when: multiple keyrack keys are required then: it should match expected snapshot 1`] = `
 "name: test
 
 on:
@@ -31,7 +31,7 @@ jobs:
 "
 `;
 
-exports[`test.yml.declapract buildWorkflowSecretsBlock given: the actual test.yml template when: one apikey is required then: it should match expected snapshot 1`] = `
+exports[`test.yml.declapract buildWorkflowSecretsBlock given: the actual test.yml template when: one keyrack key is required then: it should match expected snapshot 1`] = `
 "name: test
 
 on:

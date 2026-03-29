@@ -1,24 +1,49 @@
-import type { FileCheckFunction, FileFixFunction } from 'declapract';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 
-import { readUseApikeysConfig } from '../../../../../utils/readUseApikeysConfig';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
+import { keyrack, type KeyrackGrantAttempt } from 'rhachet/keyrack';
 
 /**
- * .what = builds the expected .test.yml content with apikey secrets injected
+ * .what = gets keyrack key names for test env from target project
+ * .why = single source of truth for key discovery
+ */
+const getKeyrackKeys = async (projectRootDir: string): Promise<string[]> => {
+  const keyrackYmlPath = join(projectRootDir, '.agent/keyrack.yml');
+  if (!existsSync(keyrackYmlPath)) return [];
+
+  const keys = (await keyrack.get({
+    for: { repo: true },
+    env: 'test',
+  })) as KeyrackGrantAttempt[];
+  if (!keys.length) return [];
+
+  // extract key names from slugs (format: org.env.KEY_NAME)
+  // .note = KeyrackGrantAttempt is a union of 4 variants (granted/absent/locked/blocked)
+  //         per rhachet/dist/domain.objects/keyrack/KeyrackGrantAttempt.d.ts:8
+  //         granted has slug at grant.slug; others have slug at top level
+  return keys.map((k) =>
+    (k.status === 'granted' ? k.grant.slug : k.slug).split('.').pop()!,
+  );
+};
+
+/**
+ * .what = builds the expected .test.yml content with keyrack secrets injected
  * .why = single source of truth for both check and fix
  */
 export const buildExpectedContent = (input: {
   template: string;
-  apikeys: string[];
+  keys: string[];
 }): string => {
   let result = input.template;
 
-  // if no apikeys, return template as-is
-  if (!input.apikeys.length) {
+  // if no keys, return template as-is
+  if (!input.keys.length) {
     return result;
   }
 
   // build secrets declaration block for workflow_call
-  const secretsDeclaration = input.apikeys
+  const secretsDeclaration = input.keys
     .map(
       (key) =>
         `      ${key}:\n        description: "api key for ${key.toLowerCase().replace(/_/g, ' ')}"\n        required: false`,
@@ -26,7 +51,7 @@ export const buildExpectedContent = (input: {
     .join('\n');
 
   // build env block for test-integration job
-  const envBlock = input.apikeys
+  const envBlock = input.keys
     .map((key) => `          ${key}: \${{ secrets.${key} }}`)
     .join('\n');
 
@@ -48,43 +73,41 @@ export const buildExpectedContent = (input: {
 };
 
 /**
- * .what = ensures .test.yml matches expected content with apikey secrets
+ * .what = ensures .test.yml matches expected content with keyrack secrets
  * .why = enables integration tests to access required api keys via github secrets
  */
 export const check: FileCheckFunction = async (contents, context) => {
-  // read apikeys from project
-  const apikeysConfig = await readUseApikeysConfig({
-    projectRootDirectory: context.getProjectRootDirectory(),
-  });
+  // get keyrack keys from project
+  const keys = await getKeyrackKeys(context.getProjectRootDirectory());
 
-  // build expected content from template + apikeys
+  // build expected content from template + keys
   const expected = buildExpectedContent({
     template: context.declaredFileContents ?? '',
-    apikeys: apikeysConfig?.apikeys?.required ?? [],
+    keys,
   });
 
   // if contents don't match expected, best practice is violated
   if (contents !== expected) {
-    throw new Error('file does not match expected content with apikey secrets');
+    throw new Error(
+      'file does not match expected content with keyrack secrets',
+    );
   }
 
   // return = file matches expected (best practice followed)
 };
 
 /**
- * .what = fixes .test.yml to include apikey secrets declaration and env vars
+ * .what = fixes .test.yml to include keyrack secrets declaration and env vars
  * .why = ensures integration tests have access to required api keys
  */
 export const fix: FileFixFunction = async (_contents, context) => {
-  // read apikeys from project
-  const apikeysConfig = await readUseApikeysConfig({
-    projectRootDirectory: context.getProjectRootDirectory(),
-  });
+  // get keyrack keys from project
+  const keys = await getKeyrackKeys(context.getProjectRootDirectory());
 
-  // build expected content from template + apikeys
+  // build expected content from template + keys
   const expected = buildExpectedContent({
     template: context.declaredFileContents ?? '',
-    apikeys: apikeysConfig?.apikeys?.required ?? [],
+    keys,
   });
 
   return { contents: expected };

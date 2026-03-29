@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import util from 'node:util';
 
 import { jest } from '@jest/globals';
+import { keyrack } from 'rhachet/keyrack';
 
 jest.setTimeout(90000); // we're calling downstream apis
 
@@ -35,36 +36,11 @@ if (
   );
 
 /**
- * .what = verify that required api keys are present; otherwise, fail fast
+ * .what = source credentials from keyrack for test env
  * .why =
- *   - prevent time wasted waiting on tests to fail due to missing api keys
- *   - prevent agents from giving up when they have access to credentials
+ *   - auto-inject keys into process.env
+ *   - fail fast with helpful error if keyrack locked or keys absent
  */
-const apikeysConfigPath = join(
-  process.cwd(),
-  '.agent/repo=.this/role=any/skills/use.apikeys.json',
-);
-if (existsSync(apikeysConfigPath)) {
-  // direct import via require (json resolves automatically)
-  const config = require(apikeysConfigPath);
-  const requiredKeys: string[] = config?.apikeys?.required ?? [];
-  const keysAbsent = requiredKeys.filter((key) => !process.env[key]);
-
-  if (keysAbsent.length > 0) {
-    throw new Error(`
-⛈️  apikeys required to run these acceptance tests were not supplied.
-
-   absent keys: ${keysAbsent.join(', ')}
-
-   you have access to these keys - you just forgot to source them.
-
-   run:
-     source .agent/repo=.this/role=any/skills/use.apikeys.sh && npm run test:acceptance
-
-   you must run these tests with these api keys.
-   you're forbidden to give up.
-   if you don't have privs to run use.apikeys.sh, ask a human for support.
-   chances are, you already have privs to do so though.
-`);
-  }
-}
+const keyrackYmlPath = join(process.cwd(), '.agent/keyrack.yml');
+if (existsSync(keyrackYmlPath))
+  keyrack.source({ env: 'test', owner: 'ehmpath', mode: 'strict' });
