@@ -35,11 +35,11 @@ jobs:
         uses: actions/checkout@v4
 `;
 
-    when('no apikeys are required', () => {
+    when('no keys are required', () => {
       then('it should return template unchanged', () => {
         const result = buildExpectedContent({
           template,
-          apikeys: [],
+          keys: [],
         });
 
         expect(result).toEqual(template);
@@ -50,7 +50,7 @@ jobs:
       then('it should add secrets declaration to workflow_call', () => {
         const result = buildExpectedContent({
           template,
-          apikeys: ['ANTHROPIC_API_KEY'],
+          keys: ['ANTHROPIC_API_KEY'],
         });
 
         expect(result).toContain('secrets:');
@@ -64,7 +64,7 @@ jobs:
       then('it should add env block to test-integration job', () => {
         const result = buildExpectedContent({
           template,
-          apikeys: ['ANTHROPIC_API_KEY'],
+          keys: ['ANTHROPIC_API_KEY'],
         });
 
         expect(result).toContain('env:');
@@ -76,18 +76,18 @@ jobs:
       then('it should match expected snapshot', () => {
         const result = buildExpectedContent({
           template,
-          apikeys: ['ANTHROPIC_API_KEY'],
+          keys: ['ANTHROPIC_API_KEY'],
         });
 
         expect(result).toMatchSnapshot();
       });
     });
 
-    when('multiple apikeys are required', () => {
+    when('multiple keys are required', () => {
       then('it should add all secrets to workflow_call', () => {
         const result = buildExpectedContent({
           template,
-          apikeys: ['ANTHROPIC_API_KEY', 'OPENAI_API_KEY'],
+          keys: ['ANTHROPIC_API_KEY', 'OPENAI_API_KEY'],
         });
 
         expect(result).toContain('ANTHROPIC_API_KEY:');
@@ -97,7 +97,7 @@ jobs:
       then('it should add all env vars to test-integration job', () => {
         const result = buildExpectedContent({
           template,
-          apikeys: ['ANTHROPIC_API_KEY', 'OPENAI_API_KEY'],
+          keys: ['ANTHROPIC_API_KEY', 'OPENAI_API_KEY'],
         });
 
         expect(result).toContain(
@@ -111,7 +111,7 @@ jobs:
       then('it should match expected snapshot', () => {
         const result = buildExpectedContent({
           template,
-          apikeys: ['ANTHROPIC_API_KEY', 'OPENAI_API_KEY'],
+          keys: ['ANTHROPIC_API_KEY', 'OPENAI_API_KEY'],
         });
 
         expect(result).toMatchSnapshot();

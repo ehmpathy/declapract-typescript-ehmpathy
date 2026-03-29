@@ -201,6 +201,11 @@ jobs:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
 
+      # .why = keyrack.yml can extend other manifests via symlinks (e.g., .agent/repo=ehmpathy/role=mechanic/keyrack.yml)
+      #        prepare:rhachet creates these symlinks so keyrack.source() can hydrate extended keys
+      - name: prepare:rhachet
+        run: npm run prepare:rhachet --if-present
+
       - name: get aws auth, if creds supplied
         if: ${{ inputs.creds-aws-role-arn }}
         uses: aws-actions/configure-aws-credentials@v4
@@ -269,6 +274,11 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
+
+      # .why = keyrack.yml can extend other manifests via symlinks (e.g., .agent/repo=ehmpathy/role=mechanic/keyrack.yml)
+      #        prepare:rhachet creates these symlinks so keyrack.source() can hydrate extended keys
+      - name: prepare:rhachet
+        run: npm run prepare:rhachet --if-present
 
       - name: get aws auth, if creds supplied
         if: ${{ inputs.creds-aws-role-arn }}

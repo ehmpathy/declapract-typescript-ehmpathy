@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { given, then, when } from 'test-fns';
 
-import { withApikeysContext } from '../../../../../.test/infra/withApikeysContext';
+import { withKeyrackContext } from '../../../../../.test/infra/withKeyrackContext';
 import { buildWorkflowSecretsBlock } from '../../../../../utils/buildWorkflowSecretsBlock';
 
 const template = fs.readFileSync(path.join(__dirname, 'deploy.yml'), 'utf-8');
@@ -12,7 +12,7 @@ describe('deploy.yml.declapract buildWorkflowSecretsBlock', () => {
   given('the actual deploy.yml template', () => {
     when('no apikeys are required', () => {
       then('it should return template unchanged', async () => {
-        await withApikeysContext({ apikeys: [] }, async (context) => {
+        await withKeyrackContext({ keys: [] }, async (context) => {
           const result = await buildWorkflowSecretsBlock({ template }, context);
           expect(result).toEqual(template);
         });
@@ -21,8 +21,8 @@ describe('deploy.yml.declapract buildWorkflowSecretsBlock', () => {
 
     when('one apikey is required', () => {
       then('it should add secrets block after with block', async () => {
-        await withApikeysContext(
-          { apikeys: ['ANTHROPIC_API_KEY'] },
+        await withKeyrackContext(
+          { keys: ['ANTHROPIC_API_KEY'] },
           async (context) => {
             const result = await buildWorkflowSecretsBlock(
               { template },
@@ -37,8 +37,8 @@ describe('deploy.yml.declapract buildWorkflowSecretsBlock', () => {
       });
 
       then('it should match expected snapshot', async () => {
-        await withApikeysContext(
-          { apikeys: ['ANTHROPIC_API_KEY'] },
+        await withKeyrackContext(
+          { keys: ['ANTHROPIC_API_KEY'] },
           async (context) => {
             const result = await buildWorkflowSecretsBlock(
               { template },
@@ -52,8 +52,8 @@ describe('deploy.yml.declapract buildWorkflowSecretsBlock', () => {
 
     when('multiple apikeys are required', () => {
       then('it should add all secrets to secrets block', async () => {
-        await withApikeysContext(
-          { apikeys: ['ANTHROPIC_API_KEY', 'OPENAI_API_KEY'] },
+        await withKeyrackContext(
+          { keys: ['ANTHROPIC_API_KEY', 'OPENAI_API_KEY'] },
           async (context) => {
             const result = await buildWorkflowSecretsBlock(
               { template },

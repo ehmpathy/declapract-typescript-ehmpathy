@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`.test.yml.declapract buildExpectedContent given: a template with workflow_call inputs when: multiple apikeys are required then: it should match expected snapshot 1`] = `
+exports[`.test.yml.declapract buildExpectedContent given: a template with workflow_call inputs when: multiple keys are required then: it should match expected snapshot 1`] = `
 "name: .test
 
 on:
