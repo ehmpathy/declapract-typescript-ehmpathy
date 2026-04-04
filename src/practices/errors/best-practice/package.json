@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "helpful-errors": "@declapract{check.minVersion('1.5.3')}"
+    "helpful-errors": "@declapract{check.minVersion('1.7.3')}"
   }
 }
