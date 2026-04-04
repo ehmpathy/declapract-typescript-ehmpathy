@@ -83,7 +83,7 @@
     "rhachet-roles-ehmpathy": "1.34.23",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
-    "type-fns": "0.8.1",
+    "type-fns": "1.21.2",
     "typescript": "5.4.5",
     "yalc": "1.0.0-pre.53"
   },
