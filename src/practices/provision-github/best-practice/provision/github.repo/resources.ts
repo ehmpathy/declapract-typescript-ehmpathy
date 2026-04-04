@@ -36,10 +36,10 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
   const repo = DeclaredGithubRepo.as({
     owner: '@declapract{variable.organizationName}',
     name: '@declapract{variable.projectName}',
-    description: (pkg as any).description ?? null,
-    visibility: (pkg as any).private === true ? 'private' : 'public',
-    private: (pkg as any).private ?? false, // todo: why do we have to specify this twice?
-    homepage: (pkg as any).homepage ?? null,
+    description: pkg.description ?? null,
+    visibility: pkg.private === true ? 'private' : 'public',
+    private: pkg.private ?? false, // todo: why do we have to specify this twice?
+    homepage: pkg.homepage ?? null,
 
     // things we haven't changed from the defaults
     archived: false,
