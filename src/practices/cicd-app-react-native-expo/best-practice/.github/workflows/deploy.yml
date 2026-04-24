@@ -37,6 +37,7 @@ jobs:
     with:
       creds-aws-region: us-east-1
       creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.dev}:role/@declapract{variable.projectName}-github-actions-dev
+    secrets: inherit # keyrack firewall in .test.yml filters to declared keys
 
   dev:
     uses: ./.github/workflows/.deploy-expo.yml
