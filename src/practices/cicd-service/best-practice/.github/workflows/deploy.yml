@@ -41,6 +41,7 @@ jobs:
     with:
       creds-aws-region: us-east-1
       creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }} # use aws auth via oidc, if this repo supplies it
+    secrets: inherit # keyrack firewall in .test.yml filters to declared keys
 
   dev:
     uses: ./.github/workflows/.deploy-sls.yml
