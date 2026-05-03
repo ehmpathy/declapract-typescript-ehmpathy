@@ -1,0 +1,160 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`domain-dir bad practice fix edge cases should handle content with no imports (no transformation needed) 1`] = `
+{
+  "contents": "export const VERSION = '1.0.0';
+const internalHelper = () => {};
+export class SimpleClass {}",
+  "relativeFilePath": "src/domain.objects/Simple.ts",
+}
+`;
+
+exports[`domain-dir bad practice fix edge cases should handle content with only absolute imports (no relative transform) 1`] = `
+{
+  "contents": "import { helper } from '@src/utils/helper';
+import { pkg } from 'external-package';",
+  "relativeFilePath": "src/domain.objects/WithAbsolute.ts",
+}
+`;
+
+exports[`domain-dir bad practice fix edge cases should handle empty content 1`] = `
+{
+  "contents": "",
+  "relativeFilePath": "src/domain.objects/Empty.ts",
+}
+`;
+
+exports[`domain-dir bad practice fix edge cases should handle undefined content gracefully 1`] = `
+{
+  "contents": null,
+  "relativeFilePath": "src/domain.objects/User.ts",
+}
+`;
+
+exports[`domain-dir bad practice relative import fix for domain/objects/ files should NOT modify relative imports for nested files in domain/objects/nested/ 1`] = `
+{
+  "contents": "import { User } from '../User';
+import { constants } from '../../constants';",
+  "relativeFilePath": "src/domain.objects/nested/Deep.ts",
+}
+`;
+
+exports[`domain-dir bad practice relative import fix for domain/objects/ files should fix ../ to ./ for files in domain/objects/ 1`] = `
+{
+  "contents": "import { constants } from './constants';",
+  "relativeFilePath": "src/domain.objects/Invoice.ts",
+}
+`;
+
+exports[`domain-dir bad practice relative import fix for domain/objects/ files should fix ../../ to ../ for files in domain/objects/ 1`] = `
+{
+  "contents": "import { calculate } from '../logic/calculate';",
+  "relativeFilePath": "src/domain.objects/Invoice.ts",
+}
+`;
+
+exports[`domain-dir bad practice relative import fix for domain/objects/ files should fix multiple relative imports in domain/objects/ file 1`] = `
+{
+  "contents": "import { constants } from './constants';
+import { helpers } from './utils/helpers';
+import { calculate } from '../logic/calculate';
+import { User } from './User';",
+  "relativeFilePath": "src/domain.objects/Invoice.ts",
+}
+`;
+
+exports[`domain-dir bad practice relative import fix for domain/objects/ files should handle re-exports in domain/objects/ files 1`] = `
+{
+  "contents": "export { constants } from './constants';
+export * from './types';",
+  "relativeFilePath": "src/domain.objects/index.ts",
+}
+`;
+
+exports[`domain-dir bad practice relative import fix for domain/objects/ files should not modify ./ imports (same directory) 1`] = `
+{
+  "contents": "import { User } from './User';",
+  "relativeFilePath": "src/domain.objects/Invoice.ts",
+}
+`;
+
+exports[`domain-dir bad practice relative import fix for domain/objects/ files should not modify relative imports for files NOT in domain/objects/ 1`] = `
+{
+  "contents": "import { constants } from '../constants';",
+  "relativeFilePath": "src/domain.objects/utils.ts",
+}
+`;
+
+exports[`domain-dir bad practice should fix ./objects/ exports in domain/index.ts 1`] = `
+{
+  "contents": "export * from './User';
+export * from './Invoice';
+export { Customer } from './Customer';",
+  "relativeFilePath": "src/domain.objects/index.ts",
+}
+`;
+
+exports[`domain-dir bad practice should fix mixed exports in domain/index.ts 1`] = `
+{
+  "contents": "export * from './User';
+export * from './constants';
+export { helpers } from './utils/helpers';",
+  "relativeFilePath": "src/domain.objects/index.ts",
+}
+`;
+
+exports[`domain-dir bad practice should handle null contents 1`] = `
+{
+  "contents": null,
+  "relativeFilePath": "src/domain.objects/readme.md",
+}
+`;
+
+exports[`domain-dir bad practice should move nested _topublish/*/src/domain/* to _topublish/*/src/domain.objects/* 1`] = `
+{
+  "contents": "export class Customer {}",
+  "relativeFilePath": "src/_topublish/domain-glossary-price/src/domain.objects/Price.ts",
+}
+`;
+
+exports[`domain-dir bad practice should move nested src/domain/objects/nested/* to src/domain.objects/nested/* 1`] = `
+{
+  "contents": "export class Invoice {}",
+  "relativeFilePath": "src/domain.objects/nested/Invoice.ts",
+}
+`;
+
+exports[`domain-dir bad practice should move non-ts files (catch-all) 1`] = `
+{
+  "contents": "{"key": "value"}",
+  "relativeFilePath": "src/domain.objects/config.json",
+}
+`;
+
+exports[`domain-dir bad practice should move src/domain/* to src/domain.objects/* 1`] = `
+{
+  "contents": "export const constants = {};",
+  "relativeFilePath": "src/domain.objects/constants.ts",
+}
+`;
+
+exports[`domain-dir bad practice should move src/domain/objects/* to src/domain.objects/* 1`] = `
+{
+  "contents": "export class User {}",
+  "relativeFilePath": "src/domain.objects/User.ts",
+}
+`;
+
+exports[`domain-dir bad practice should not modify non-index files in domain/ 1`] = `
+{
+  "contents": "import { User } from './objects/User';",
+  "relativeFilePath": "src/domain.objects/utils.ts",
+}
+`;
+
+exports[`domain-dir bad practice should remove barrel export from ./objects in domain/index.ts 1`] = `
+{
+  "contents": "export * from './constants';",
+  "relativeFilePath": "src/domain.objects/index.ts",
+}
+`;
