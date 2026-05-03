@@ -1,0 +1,229 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`old-import-paths bad practice check should match files with @/domain/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with @/logic/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with @src/__nonpublished_modules__/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with @src/data/dao imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with @src/domain/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with @src/logic/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with @src/model/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with @src/services/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with __nonpublished_modules__ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with data/clients imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with data/dao imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with domain/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with domain/objects imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with logic/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with model/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with model/domainObjects imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should match files with services/ imports 1`] = `undefined`;
+
+exports[`old-import-paths bad practice check should not match files with @/domain.objects imports 1`] = `"does not match bad practice"`;
+
+exports[`old-import-paths bad practice check should not match files with @src/access/ imports 1`] = `"does not match bad practice"`;
+
+exports[`old-import-paths bad practice check should not match files with @src/domain.objects imports 1`] = `"does not match bad practice"`;
+
+exports[`old-import-paths bad practice check should not match files with _topublish imports 1`] = `"does not match bad practice"`;
+
+exports[`old-import-paths bad practice check should not match files with domain.objects imports 1`] = `"does not match bad practice"`;
+
+exports[`old-import-paths bad practice check should not match files with new import paths 1`] = `"does not match bad practice"`;
+
+exports[`old-import-paths bad practice check should throw on empty string contents 1`] = `"no contents"`;
+
+exports[`old-import-paths bad practice check should throw on null contents 1`] = `"no contents"`;
+
+exports[`old-import-paths bad practice fix edge cases should handle empty content 1`] = `
+{
+  "contents": "",
+}
+`;
+
+exports[`old-import-paths bad practice fix edge cases should handle null content gracefully 1`] = `
+{
+  "contents": null,
+}
+`;
+
+exports[`old-import-paths bad practice fix edge cases should handle undefined content gracefully 1`] = `
+{
+  "contents": undefined,
+}
+`;
+
+exports[`old-import-paths bad practice fix edge cases should not transform already-correct imports 1`] = `
+{
+  "contents": "import { userDao } from '../access/daos/userDao';
+import { User } from '../domain.objects/User';
+import { calculate } from '../domain.operations/calculate';",
+}
+`;
+
+exports[`old-import-paths bad practice fix edge cases should not transform content without imports 1`] = `
+{
+  "contents": "export const calculate = (a: number, b: number) => a + b;",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @/domain/ imports to @/domain.objects/ 1`] = `
+{
+  "contents": "import { constants } from '@/domain.objects/constants';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @/domain/objects imports to @/domain.objects 1`] = `
+{
+  "contents": "import { User } from '@/domain.objects/User';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @/logic/ imports to @/domain.operations/ 1`] = `
+{
+  "contents": "import { calculate } from '@/domain.operations/calculate';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @src/__nonpublished_modules__/ imports to @src/_topublish/ 1`] = `
+{
+  "contents": "import { helper } from '@src/_topublish/helper';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @src/data/clients imports to @src/access/sdks 1`] = `
+{
+  "contents": "import { stripe } from '@src/access/sdks/stripe';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @src/data/dao imports to @src/access/daos 1`] = `
+{
+  "contents": "import { userDao } from '@src/access/daos/userDao';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @src/domain/ imports to @src/domain.objects/ 1`] = `
+{
+  "contents": "import { constants } from '@src/domain.objects/constants';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @src/domain/objects imports to @src/domain.objects 1`] = `
+{
+  "contents": "import { User } from '@src/domain.objects/User';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @src/logic/ imports to @src/domain.operations/ 1`] = `
+{
+  "contents": "import { calculate } from '@src/domain.operations/calculate';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @src/model/ imports to @src/domain.objects/ 1`] = `
+{
+  "contents": "import { User } from '@src/domain.objects/User';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix @src/services/ imports to @src/domain.operations/ 1`] = `
+{
+  "contents": "import { userService } from '@src/domain.operations/userService';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix __nonpublished_modules__ imports to _topublish 1`] = `
+{
+  "contents": "import { helper } from '../_topublish/helper';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix data/clients imports to access/sdks 1`] = `
+{
+  "contents": "import { stripe } from '../access/sdks/stripe';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix data/dao imports to access/daos 1`] = `
+{
+  "contents": "import { userDao } from '../access/daos/userDao';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix domain/ imports to domain.objects/ 1`] = `
+{
+  "contents": "import { constants } from '../domain.objects/constants';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix domain/objects imports to domain.objects 1`] = `
+{
+  "contents": "import { User } from '../domain.objects/User';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix logic/ imports to domain.operations/ 1`] = `
+{
+  "contents": "import { calculate } from '../domain.operations/calculate';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix mixed relative and @src imports 1`] = `
+{
+  "contents": "
+import { User } from '@src/domain.objects/User';
+import { userDao } from '../access/daos/userDao';
+import { calculate } from '@src/domain.operations/billing/calculate';
+",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix model/ imports to domain.objects/ 1`] = `
+{
+  "contents": "import { User } from '../domain.objects/User';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix model/domainObjects imports to domain.objects 1`] = `
+{
+  "contents": "import { User } from '../domain.objects/User';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix multiple imports in the same file 1`] = `
+{
+  "contents": "
+import { User } from '../domain.objects/User';
+import { userDao } from '../access/daos/userDao';
+import { calculate } from '../domain.operations/billing/calculate';
+",
+}
+`;
+
+exports[`old-import-paths bad practice fix should fix services/ imports to domain.operations/ 1`] = `
+{
+  "contents": "import { userService } from '../domain.operations/userService';",
+}
+`;
+
+exports[`old-import-paths bad practice fix should handle double-quoted imports 1`] = `
+{
+  "contents": "import { User } from "../domain.objects/User";",
+}
+`;
