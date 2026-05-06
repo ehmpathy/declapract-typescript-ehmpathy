@@ -64,11 +64,11 @@ importers:
         specifier: 3.3.0
         version: 3.3.0(@types/node@22.15.21)(typescript@5.4.5)
       declastruct:
-        specifier: 1.7.0
-        version: 1.7.0(domain-objects@0.31.9)
+        specifier: 1.9.1
+        version: 1.9.1(domain-objects@0.31.9)
       declastruct-github:
-        specifier: 1.0.7
-        version: 1.0.7
+        specifier: 1.4.0
+        version: 1.4.0
       depcheck:
         specifier: 1.4.3
         version: 1.4.3
@@ -2644,12 +2644,12 @@ packages:
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  declastruct-github@1.0.7:
-    resolution: {integrity: sha512-BWR7QNjXD/ilmpnIv33JSmGs/cItr7YAbtrydihfv2CNG8I4zYHKaI3sVCU0lSGKxdr9R6heC1sxtuU+hUDzoA==}
+  declastruct-github@1.4.0:
+    resolution: {integrity: sha512-Cp7sjRkzR2UomlBhAj0+8Ow1NGnl02jbYWColjBBjoQa6uHoY2YvGllUsT+/cSp6okIoq77eP0H+Noc7yrcSAA==}
     engines: {node: '>=8.0.0'}
 
-  declastruct@1.7.0:
-    resolution: {integrity: sha512-mQvtJ8ID+5J4g6n3wziHWGxoyEC1UH9QBW48ud8vkdRSkjrVFYpzbxb7u2n4lCs06o0onDFp0nHOw+1TjNHsqw==}
+  declastruct@1.9.1:
+    resolution: {integrity: sha512-cRvTiMf4/Gk9ifpjFSxSOCyMcWj7SEEX4qlO4o2+++A5hhqA6ckAr+wVvIEVxvG8pINE9A1xq1JuJzyZI3Sfhw==}
     engines: {node: '>=8.0.0'}
     hasBin: true
     peerDependencies:
@@ -3575,6 +3575,12 @@ packages:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
     engines: {node: '>=6'}
 
+  libsodium-wrappers@0.7.16:
+    resolution: {integrity: sha512-Gtr/WBx4dKjvRL1pvfwZqu7gO6AfrQ0u9vFL+kXihtHf6NfkROR8pjYWn98MFDI3jN19Ii1ZUfPR9afGiPyfHg==}
+
+  libsodium@0.7.16:
+    resolution: {integrity: sha512-3HrzSPuzm6Yt9aTYCDxYEG8x8/6C0+ag655Y7rhhWZM9PT4NpdnbqlzXhGZlDnkgR6MeSTnOt/VIyHLs9aSf+Q==}
+
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
@@ -4339,10 +4345,6 @@ packages:
 
   simple-log-methods@0.6.9:
     resolution: {integrity: sha512-VeI9erbjgKtZ8bwdpHqkqgZomVqchZHFWidN3/5Jmb6UcKHKdduiADPAVqIwvFmobFOEtIyybyVw5bEaZpKODw==}
-    engines: {node: '>=8.0.0'}
-
-  simple-on-disk-cache@1.7.2:
-    resolution: {integrity: sha512-Jd3RuUcS4/n+AEb3CyuNfuGf6mq0ODgc6gnaJyMsmMYUTG4sOESXkDc4FMM1vIeMmjWLN4koUiqx4AKIvGU+Ag==}
     engines: {node: '>=8.0.0'}
 
   simple-on-disk-cache@1.7.3:
@@ -7859,13 +7861,14 @@ snapshots:
       uuid: 9.0.0
       yaml: 1.6.0
 
-  declastruct-github@1.0.7:
+  declastruct-github@1.4.0:
     dependencies:
       '@ehmpathy/uni-time': 1.7.4
       '@octokit/rest': 21.1.1
       as-procedure: 1.1.1
-      domain-objects: 0.31.3
+      domain-objects: 0.31.9
       helpful-errors: 1.5.3
+      libsodium-wrappers: 0.7.16
       simple-in-memory-cache: 0.4.0
       type-fns: 1.21.0
       visualogic: 1.3.2
@@ -7873,7 +7876,7 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  declastruct@1.7.0(domain-objects@0.31.9):
+  declastruct@1.9.1(domain-objects@0.31.9):
     dependencies:
       bottleneck: 2.19.5
       chalk: 5.4.1
@@ -9122,6 +9125,12 @@ snapshots:
 
   leven@3.1.0: {}
 
+  libsodium-wrappers@0.7.16:
+    dependencies:
+      libsodium: 0.7.16
+
+  libsodium@0.7.16: {}
+
   lines-and-columns@1.2.4: {}
 
   locate-path@5.0.0:
@@ -9952,19 +9961,6 @@ snapshots:
       iso-time: 1.11.4
       type-fns: 1.21.0
 
-  simple-on-disk-cache@1.7.2:
-    dependencies:
-      '@aws-sdk/client-s3': 3.940.0
-      '@ehmpathy/error-fns': 1.0.2
-      '@ehmpathy/uni-time': 1.9.1
-      bottleneck: 2.19.5
-      hash-fns: 1.1.0
-      serde-fns: 1.3.1
-      simple-in-memory-cache: 0.4.0
-      type-fns: 1.21.2
-    transitivePeerDependencies:
-      - aws-crt
-
   simple-on-disk-cache@1.7.3:
     dependencies:
       '@aws-sdk/client-s3': 3.940.0
@@ -10347,7 +10343,7 @@ snapshots:
       procedure-fns: 1.0.1
       serde-fns: 1.3.1
       simple-in-memory-cache: 0.4.0
-      simple-on-disk-cache: 1.7.2
+      simple-on-disk-cache: 1.7.3
       type-fns: 1.21.2
     transitivePeerDependencies:
       - aws-crt

@@ -3,6 +3,7 @@ import { createGetVariables } from 'declapract';
 export const getProjectVariables = createGetVariables({
   organizationName: 'awesum',
   projectName: 'svc-awesome-thing',
+  reviewers: { users: ['user1', 'user2'] },
 });
 
 export const getServiceVariables = createGetVariables({
