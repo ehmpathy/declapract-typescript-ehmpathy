@@ -2,6 +2,7 @@ import type { DeclastructProvider } from 'declastruct';
 import {
   type DeclaredGithubBranch,
   DeclaredGithubBranchProtection,
+  DeclaredGithubEnvironment,
   DeclaredGithubRepo,
   DeclaredGithubRepoConfig,
   getDeclastructGithubProvider,
@@ -118,6 +119,32 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     restrictions: null,
   });
 
+  // declare environment for production deployments from main (auto-approved)
+  const envProductionOnMain = DeclaredGithubEnvironment.as({
+    repo,
+    name: 'production-on-main',
+    reviewers: null, // no approval required — PR merge is the gate
+    waitTimer: null, // no delay
+    deploymentBranchPolicy: { customBranches: ['main'] }, // only main branch
+    preventSelfReview: false,
+  });
+
+  // declare environment for production deployments from other branches (requires approval)
+  const envProductionOnElse = DeclaredGithubEnvironment.as({
+    repo,
+    name: 'production-on-else',
+    reviewers: { users: ['uladkasach', 'caseybrookes'], teams: null }, // either can approve
+    waitTimer: null, // no delay once approved
+    deploymentBranchPolicy: null, // any branch
+    preventSelfReview: false, // self-approval allowed if in reviewers list
+  });
+
   // and return the full set
-  return [repo, repoConfig, branchMainProtection];
+  return [
+    repo,
+    repoConfig,
+    branchMainProtection,
+    envProductionOnMain,
+    envProductionOnElse,
+  ];
 };
