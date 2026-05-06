@@ -14,7 +14,8 @@
       "!**/node_modules",
       "!**/.artifact",
       "!**/.generated",
-      "!**/.test*"
+      "!**/.test*",
+      "!**/src/practices/**/provision/**/*.ts" // !: practice templates contain @declapract{} syntax, valid only post-compile
     ]
   },
   "formatter": {
