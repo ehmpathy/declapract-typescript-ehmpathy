@@ -19,6 +19,8 @@ the `:-` operator provides a default value (empty string if omitted), which sati
 
 ## .the bug this prevents
 
+### shell syntax issues
+
 ```bash
 # BROKEN: when RESNAP is unset, becomes [ -n ] which is TRUE
 [ -n $RESNAP ] && echo '--updateSnapshot'
@@ -26,21 +28,44 @@ the `:-` operator provides a default value (empty string if omitted), which sati
 # BROKEN: fails with "RESNAP: unbound variable" under set -u
 [ -n "$RESNAP" ] && echo '--updateSnapshot'
 
-# CORRECT: returns empty string when unset, [ -n "" ] is FALSE
+# SAFE for syntax: returns empty string when unset, [ -n "" ] is FALSE
 [ -n "${RESNAP:-}" ] && echo '--updateSnapshot'
+```
+
+### boolean semantics issues
+
+the `-n` (non-empty) check has incorrect boolean semantics:
+
+| RESNAP value | `[ -n "${RESNAP:-}" ]` | `[ "${RESNAP:-}" = "true" ]` |
+|--------------|------------------------|------------------------------|
+| unset        | false (correct)        | false (correct)              |
+| `""`         | false (correct)        | false (correct)              |
+| `"true"`     | true (correct)         | true (correct)               |
+| `"false"`    | **true (wrong!)**      | false (correct)              |
+| `"0"`        | **true (wrong!)**      | false (correct)              |
+
+```bash
+# BAD: RESNAP=false still triggers --updateSnapshot
+[ -n "${RESNAP:-}" ] && echo '--updateSnapshot'
+
+# GOOD: explicit equality check, only triggers on exact "true"
+[ "${RESNAP:-}" = "true" ] && echo '--updateSnapshot'
 ```
 
 ## .pattern
 
-### conditional flags in package.json scripts
+### conditional flags in package.json commands
 
 ```json
 {
-  "scripts": {
-    "test:unit": "set -eu && jest $([ -n \"${CI:-}\" ] && echo '--ci') $([ -z \"${THOROUGH:-}\" ] && echo '--changedSince=main')"
+  "commands": {
+    "test:unit": "set -eu && jest $([ -n \"${CI:-}\" ] && echo '--ci') $([ \"${THOROUGH:-}\" != \"true\" ] && echo '--changedSince=main') $([ \"${RESNAP:-}\" = \"true\" ] && echo '--updateSnapshot')"
   }
 }
 ```
+
+- `CI`: use `-n` (non-empty check) since CI systems set this to various truthy values (`"true"`, `"1"`, etc.)
+- `THOROUGH`, `RESNAP`: use explicit equality check (`= "true"` or `!= "true"`) for correct boolean semantics
 
 ### multi-line CI workflow steps
 
