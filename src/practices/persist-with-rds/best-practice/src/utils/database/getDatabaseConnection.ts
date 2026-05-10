@@ -47,7 +47,7 @@ export const getDatabaseConnection = async (): Promise<DatabaseConnection> => {
 
   // determine which tunnel to use based on environment.server
   const tunnel =
-    environment.server === 'AWS:LAMBDA'
+    environment.server === 'cloud@aws.lambda'
       ? config.database.tunnel.lambda
       : config.database.tunnel.local;
 

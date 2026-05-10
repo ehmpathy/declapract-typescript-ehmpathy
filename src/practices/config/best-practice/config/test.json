@@ -1,5 +1,4 @@
 {
-  "parameterStoreNamespace": "@declapract{variable.organizationName}.@declapract{variable.projectName}.test",
   "organization": "@declapract{variable.organizationName}",
   "project": "@declapract{variable.projectName}",
   "environment": {

@@ -72,21 +72,15 @@
           },
           {
             "type": "command",
-            "command": "npx rhachet roles boot --role behaver",
+            "command": "./node_modules/.bin/rhachet roles boot --role behaver",
             "timeout": 10,
             "author": "repo=bhuild/role=behaver"
           },
           {
             "type": "command",
-            "command": "npx rhachet roles boot --role dreamer",
+            "command": "./node_modules/.bin/rhachet roles boot --role dreamer",
             "timeout": 10,
             "author": "repo=bhuild/role=dreamer"
-          },
-          {
-            "type": "command",
-            "command": "npx rhachet roles boot --role dispatcher",
-            "timeout": 10,
-            "author": "repo=bhuild/role=dispatcher"
           }
         ]
       },
@@ -263,6 +257,9 @@
       "Bash(rhx git.repo.test --what unit)",
       "Bash(rhx git.repo.test --what integration)",
       "Bash(rhx git.repo.test --what acceptance)",
+      "Bash(rhx git.repo.test --what unit --scope 'name://getUserById')",
+      "Bash(rhx git.repo.test --what integration --scope 'name://invoice')",
+      "Bash(rhx git.repo.test --what unit --scope 'path://src/domain.operations/customer')",
       "Bash(rhx git.repo.test --what unit --scope getUserById)",
       "Bash(rhx git.repo.test --what integration --scope invoice)",
       "Bash(rhx git.repo.test --what unit --scope src/domain.operations/customer)",

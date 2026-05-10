@@ -4,6 +4,8 @@ import util from 'node:util';
 
 import { jest } from '@jest/globals';
 
+import { stage } from './src/utils/environment';
+
 // mock that getConfig just returns plaintext test env config in unit tests
 jest.mock('./src/utils/config/getConfig', () => ({
   getConfig: jest.fn().mockImplementation(() => require('./config/test.json')),
@@ -13,7 +15,7 @@ jest.mock('./src/utils/config/getConfig', () => ({
 util.inspect.defaultOptions.depth = 5;
 
 /**
- * .what = verify that we're running from a valid project directory; otherwise, fail fast
+ * .what = verify that we're at a valid project directory; otherwise, fail fast
  * .why = prevent confusion and hard-to-debug errors from running tests in the wrong directory
  */
 if (!existsSync(join(process.cwd(), 'package.json')))
@@ -23,11 +25,8 @@ if (!existsSync(join(process.cwd(), 'package.json')))
  * sanity check that unit tests are only run the 'test' environment
  *
  * usecases
- * - prevent polluting prod state with test data
- * - prevent executing financially impacting mutations
+ * - prevent prod state pollution with test data
+ * - prevent financial mutations
  */
-if (
-  (process.env.NODE_ENV !== 'test' || process.env.STAGE) &&
-  process.env.I_KNOW_WHAT_IM_DOING !== 'true'
-)
-  throw new Error(`unit.test is not targeting stage 'test'`);
+if (stage !== 'test' && process.env.I_KNOW_THE_RISKS !== 'true')
+  throw new Error(`unit-test does not target stage 'test'`);

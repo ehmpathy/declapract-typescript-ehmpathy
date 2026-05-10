@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "config-with-paramstore": "@declapract{check.minVersion('0.0.0')}"
+  }
+}

@@ -1,10 +1,17 @@
 service: @declapract{variable.projectName}
 
+variablesResolutionMode: 20210326
+
 package:
   artifact: .artifact/contents.zip
 
 plugins:
   - serverless-prune-plugin
+
+custom:
+  accessByStage:
+    dev: prep
+    prod: prod
 
 provider:
   name: aws
@@ -19,7 +26,8 @@ provider:
   environment:
     TZ: UTC # guarantee that utc timezone will be used explicitly, to facilitate a pit of success
     NODE_ENV: production # deploy with production optimizations of all resources, to make `dev` and `prod` stage deployments equivalent functionally (i.e., the same code paths in dev and prod)
-    STAGE: ${self:provider.stage} # deploy specifying which stage we're targeting, to enable targeting the correct config + resources (e.g., hit dev db -vs- prod db)
+    ACCESS: ${self:custom.accessByStage.${opt:stage}, 'prep'} # sdk-environment access tier, to target the correct config + resources (e.g., hit dev db -vs- prod db)
+    COMMIT: ${env:COMMIT} # sdk-environment commit slug, must be set by deploy command
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
   deploymentBucket: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-${self:provider.stage}
   vpc:
@@ -35,7 +43,9 @@ provider:
       Action: 'ssm:DescribeParameters'
       Resource: '*'
     - Effect: 'Allow'
-      Action: 'ssm:GetParameters'
+      Action:
+        - ssm:GetParameter
+        - ssm:GetParameters
       Resource: arn:aws:ssm:${aws:region}:${aws:accountId}:parameter/*
     - Effect: 'Allow'
       Action: 'kms:Decrypt'
@@ -110,8 +120,8 @@ provider:
         - athena:GetQueryExecution
         - athena:GetQueryResults
       Resource: '*'
-    # allow inferring access from account alias
+    # allow access inference from account name
     - Effect: Allow
       Action:
-        - iam:ListAccountAliases
+        - account:GetAccountInformation
       Resource: '*'

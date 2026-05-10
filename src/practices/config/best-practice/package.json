@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "config-with-paramstore": "@declapract{check.minVersion('1.1.1')}"
+    "sdk-config": "@declapract{check.minVersion('0.1.1')}",
+    "simple-in-memory-cache": "@declapract{check.minVersion('0.4.0')}",
+    "zod": "@declapract{check.minVersion('4.0.0')}"
   }
 }

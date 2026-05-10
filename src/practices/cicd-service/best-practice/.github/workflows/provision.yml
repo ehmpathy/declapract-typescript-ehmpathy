@@ -53,7 +53,7 @@ jobs:
   sql-schema-dev:
     uses: ./.github/workflows/.sql-schema-control.yml
     with:
-      stage: dev
+      stage: prep
       github-environment: dev
       creds-aws-region: us-east-1
       creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }}

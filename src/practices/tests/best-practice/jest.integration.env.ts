@@ -27,29 +27,50 @@ if (!existsSync(join(process.cwd(), 'package.json')))
  */
 if (
   (process.env.NODE_ENV !== 'test' ||
-    (process.env.STAGE && process.env.STAGE !== 'test')) &&
-  process.env.I_KNOW_WHAT_IM_DOING !== 'true'
+    (process.env.CONFIG && process.env.CONFIG !== 'test')) &&
+  process.env.I_KNOW_THE_RISKS !== 'true'
 )
-  throw new Error(`integration.test is not targeting stage 'test'`);
+  throw new Error(`integration.test config must be 'test'`);
 
 /**
- * .what = verify that the env has sufficient auth to run the tests if aws is used; otherwise, fail fast
- * .why =
- *   - prevent time wasted waiting on tests to fail due to lack of credentials
- *   - prevent time wasted debugging tests which are failing due to hard-to-read missed credential errors
+ * .what = source aws profile from keyrack if available
+ * .why = keyrack manages which profile to use per environment
+ */
+const keyrackYmlPath = join(process.cwd(), '.agent/keyrack.yml');
+if (existsSync(keyrackYmlPath) && !process.env.CI)
+  keyrack.source({ env: 'test', owner: 'ehmpath', mode: 'lenient' });
+
+/**
+ * .what = export aws credentials from sso profile if aws is required
+ * .why = aws sdk v2 doesn't handle sso_session profiles natively
  */
 const declapractUsePath = join(process.cwd(), 'declapract.use.yml');
 const declapractUseContent = existsSync(declapractUsePath)
   ? readFileSync(declapractUsePath, 'utf8')
   : '';
 const requiresAwsAuth = declapractUseContent.includes('awsAccountId');
-if (
-  requiresAwsAuth &&
-  !(process.env.AWS_PROFILE || process.env.AWS_ACCESS_KEY_ID)
-)
-  throw new Error(
-    'no aws credentials present. please authenticate with aws to run integration tests',
-  );
+if (requiresAwsAuth && !process.env.AWS_ACCESS_KEY_ID && !process.env.CI) {
+  const awsSsoProfile = process.env.AWS_PROFILE;
+  if (!awsSsoProfile)
+    throw new Error(
+      'AWS_PROFILE not set. keyrack.source() should have set it.',
+    );
+  try {
+    const credOutput = execSync(
+      `aws configure export-credentials --profile ${awsSsoProfile} --format env`,
+      { encoding: 'utf8', timeout: 10000 },
+    );
+    // parse and set env vars from output like "export AWS_ACCESS_KEY_ID=..."
+    credOutput.split('\n').forEach((line) => {
+      const match = line.match(/^export\s+(\w+)=(.*)$/);
+      if (match) process.env[match[1]!] = match[2]!;
+    });
+  } catch {
+    throw new Error(
+      `failed to export aws credentials from sso profile '${awsSsoProfile}'. run: aws sso login --profile ${awsSsoProfile}`,
+    );
+  }
+}
 
 /**
  * .what = verify that the testdb has been provisioned if a databaseUserName is declared
@@ -85,13 +106,3 @@ if (requiresTestDb) {
     );
   }
 }
-
-/**
- * .what = source credentials from keyrack for test env
- * .why =
- *   - auto-inject keys into process.env
- *   - fail fast with helpful error if keyrack locked or keys absent
- */
-const keyrackYmlPath = join(process.cwd(), '.agent/keyrack.yml');
-if (existsSync(keyrackYmlPath))
-  keyrack.source({ env: 'test', owner: 'ehmpath', mode: 'strict' });
