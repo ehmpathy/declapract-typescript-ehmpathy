@@ -1,4 +1,4 @@
-import { type FileCheckFunction, type FileFixFunction } from 'declapract';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
 export const check: FileCheckFunction = (contents) => {
   if (contents?.includes('__PARAM__')) return; // bad practice detected
