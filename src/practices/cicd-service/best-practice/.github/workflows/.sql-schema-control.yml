@@ -60,10 +60,10 @@ jobs:
           aws-region: ${{ inputs.creds-aws-region }}
 
       - name: vpc:tunnel:open
-        run: STAGE=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
+        run: ACCESS=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
 
       - name: plan
-        run: STAGE=${{ inputs.stage }} npm run provision:schema:plan | tee ./plan.log
+        run: ACCESS=${{ inputs.stage }} npm run provision:schema:plan | tee ./plan.log
 
       - name: evaluate plan
         id: evaluate-plan
@@ -115,7 +115,7 @@ jobs:
           aws-region: ${{ inputs.creds-aws-region }}
 
       - name: vpc:tunnel:open
-        run: STAGE=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
+        run: ACCESS=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
 
       - name: apply
-        run: STAGE=${{ inputs.stage }} npm run provision:schema:apply
+        run: ACCESS=${{ inputs.stage }} npm run provision:schema:apply

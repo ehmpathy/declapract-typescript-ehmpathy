@@ -63,7 +63,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: deploy
-        run: STAGE=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy
+        run: ACCESS=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy
 
   assure:
     runs-on: ubuntu-24.04
@@ -92,10 +92,10 @@ jobs:
 
       - name: vpc:tunnel:open
         if: inputs.needs-vpn-for-acceptance
-        run: STAGE=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
+        run: ACCESS=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
 
       - name: test:acceptance
-        run: STAGE=${{ inputs.stage }} npm run test:acceptance
+        run: ACCESS=${{ inputs.stage }} npm run test:acceptance
 
       - name: alarm on failure
         env:
@@ -132,4 +132,4 @@ jobs:
           fail-on-cache-miss: true
 
       - name: prune
-        run: STAGE=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy:prune
+        run: ACCESS=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy:prune

@@ -15,18 +15,18 @@
 #   - Any time you need to ensure the database is ready before proceeding
 #
 # Usage:
-#   STAGE=dev ./.agent/repo=.this/skills/use.rds.capacity.sh
+#   ACCESS=prep ./.agent/repo=.this/skills/use.rds.capacity.sh
 #
 # Prerequisites:
-#   - STAGE environment variable must be set
+#   - ACCESS environment variable must be set
 #   - AWS credentials configured with SSM access
 #   - sudo access (for /etc/hosts modification via vpc tunnel)
 #   - pg_isready command available (postgresql-client)
 #
 set -eo pipefail
 
-# failfast if STAGE is not declared
-[[ -z "${STAGE:-}" ]] && echo "STAGE is not set" && exit 1
+# failfast if ACCESS is not declared
+[[ -z "${ACCESS:-}" ]] && echo "ACCESS is not set" && exit 1
 
 set -u
 

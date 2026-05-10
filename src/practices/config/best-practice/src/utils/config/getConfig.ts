@@ -1,9 +1,19 @@
-// export a default instance of the config object
-import ConfigCache from 'config-with-paramstore';
+import {
+  genGetConfig,
+  genSdkConfigSupplierAwsParameterStore,
+} from 'sdk-config';
+import { createCache } from 'simple-in-memory-cache';
 
-import { getEnvironment } from '../environment';
-import type { Config } from './Config';
+import { envStatic } from '../environment';
+import { schema } from './config.schema';
 
-export const configInstance = new ConfigCache();
-export const getConfig = async (): Promise<Config> =>
-  configInstance.get((await getEnvironment()).config);
+export const getConfig = genGetConfig({
+  schema,
+  statics: 'config/*.json',
+  cache: createCache({ expiration: { minutes: 5 } }),
+  suppliers: [genSdkConfigSupplierAwsParameterStore()],
+  environment: {
+    config: envStatic.config,
+    server: envStatic.server,
+  },
+});

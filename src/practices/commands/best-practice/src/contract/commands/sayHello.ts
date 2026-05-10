@@ -15,5 +15,5 @@ const command = asCommand(
   async () => console.log('hello world'),
 );
 
-// STAGE=prod npx tsx src/contract/commands/sayHello.ts
+// ACCESS=prod npx tsx src/contract/commands/sayHello.ts
 if (require.main === module) void command({});

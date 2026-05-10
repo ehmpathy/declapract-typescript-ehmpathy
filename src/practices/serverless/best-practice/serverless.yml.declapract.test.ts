@@ -3,6 +3,39 @@ import { given, then } from 'test-fns';
 import { fix } from './serverless.yml.declapract';
 
 describe('serverless.yml', () => {
+  given('a sls.yaml with STAGE env var', () => {
+    const example = `
+service: svc-example
+
+provider:
+  name: aws
+  stage: \${opt:stage}
+  environment:
+    NODE_ENV: production
+    STAGE: \${self:provider.stage} # deploy specifying which stage we're targeting
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: true
+    `.trim();
+
+    then('it should add accessByStage custom block', async () => {
+      const fixed = await fix(example, {} as any);
+      expect(fixed.contents).toContain('accessByStage:');
+      expect(fixed.contents).toContain('dev: prep');
+      expect(fixed.contents).toContain('prod: prod');
+    });
+
+    then('it should replace STAGE with ACCESS + COMMIT', async () => {
+      const fixed = await fix(example, {} as any);
+      expect(fixed.contents).toContain('ACCESS:');
+      expect(fixed.contents).toContain('COMMIT:');
+      expect(fixed.contents).not.toContain('STAGE: ${self:provider.stage}');
+    });
+
+    then('it should add variablesResolutionMode after service line', async () => {
+      const fixed = await fix(example, {} as any);
+      expect(fixed.contents).toContain('variablesResolutionMode: 20210326');
+    });
+  });
+
   given('a sls.yaml that needs the timezone environmental variable', () => {
     const example = `
 service: svc-notifications
@@ -35,7 +68,7 @@ provider:
     });
   });
 
-  given('a sls.yaml that needs ListAccountAliases policy', () => {
+  given('a sls.yaml that needs account:GetAccountInformation policy', () => {
     const example = `
 service: svc-example
 
@@ -51,18 +84,18 @@ provider:
     `.trim();
 
     then(
-      'it should append ListAccountAliases policy if not already present',
+      'it should append GetAccountInformation policy if not already present',
       async () => {
         const fixed = await fix(example, {} as any);
-        expect(fixed.contents).toContain('iam:ListAccountAliases');
+        expect(fixed.contents).toContain('account:GetAccountInformation');
         expect(fixed.contents).toContain(
-          '# allow inferring access from account alias',
+          '# allow access inference from account name',
         );
       },
     );
 
     then(
-      'it should not duplicate ListAccountAliases policy if already present',
+      'it should not duplicate GetAccountInformation policy if already present',
       async () => {
         const exampleWithPolicy = `
 service: svc-example
@@ -71,15 +104,16 @@ provider:
   name: aws
   runtime: nodejs16.x
   iamRoleStatements:
-    # allow inferring access from account alias
+    # allow access inference from account name
     - Effect: Allow
       Action:
-        - iam:ListAccountAliases
+        - account:GetAccountInformation
       Resource: '*'
       `.trim();
         const fixed = await fix(exampleWithPolicy, {} as any);
-        const matches = (fixed.contents?.match(/iam:ListAccountAliases/g) || [])
-          .length;
+        const matches = (
+          fixed.contents?.match(/account:GetAccountInformation/g) || []
+        ).length;
         expect(matches).toBe(1);
       },
     );

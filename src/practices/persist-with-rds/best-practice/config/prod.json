@@ -7,11 +7,11 @@
     "role": {
       "cicd": {
         "username": "@declapract{variable.databaseUserName.cicdUser}",
-        "password": "__PARAM__"
+        "password": "$.at(aws::param)"
       },
       "crud": {
         "username": "@declapract{variable.databaseUserName.serviceUser}",
-        "password": "__PARAM__"
+        "password": "$.at(aws::param)"
       }
     },
     "tunnel": {

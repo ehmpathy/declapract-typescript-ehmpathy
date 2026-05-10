@@ -25,6 +25,6 @@
     "provision:testdb:docker:down": "docker compose -f ./provision/docker/testdb/docker-compose.yml down",
     "provision:testdb": "npm run provision:testdb:docker:clear && npm run provision:testdb:docker:prepare && npm run provision:testdb:docker:up && npm run provision:testdb:docker:await && npm run provision:schema:plan && npm run provision:schema:apply && npm run provision:schema:plan",
     "start:testdb": "npm run provision:testdb",
-    "start:livedb:dev": "echo 'will ping the database until assured its not asleep' && STAGE=dev .agent/repo=.this/skills/use.rds.capacity.sh"
+    "start:livedb:prep": "echo 'will ping the database until assured its not asleep' && ACCESS=prep .agent/repo=.this/skills/use.rds.capacity.sh"
   }
 }
