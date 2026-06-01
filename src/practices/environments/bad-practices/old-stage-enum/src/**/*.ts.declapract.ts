@@ -17,7 +17,7 @@ export const check: FileCheckFunction = (contents) => {
 export const fix: FileFixFunction = (contents) => {
   if (!contents) return { contents };
 
-  let fixed = contents
+  const fixed = contents
     // replace enum values with string literals
     .replace(/Stage\.PRODUCTION/g, "'prod'")
     .replace(/Stage\.DEVELOPMENT/g, "'prep'")

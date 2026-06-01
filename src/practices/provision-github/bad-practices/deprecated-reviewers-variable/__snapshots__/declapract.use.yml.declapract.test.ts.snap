@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`deprecated-reviewers-variable declapract.use.yml given: [case1] declapract.use.yml with reviewers variable when: [t1] fix is called then: it should remove the reviewers variable 1`] = `
+"# declapract.use.yml
+declarations: ./
+useCase: npm-package
+variables:
+  organizationName: 'ehmpathy'
+  projectName: 'some-project'
+"
+`;

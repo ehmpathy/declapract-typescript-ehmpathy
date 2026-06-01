@@ -134,7 +134,7 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
   const envProductionOnElse = DeclaredGithubEnvironment.as({
     repo,
     name: 'production-on-else',
-    reviewers: { users: @declapract{variable.reviewers.users}, teams: null },
+    reviewers: { users: null, teams: ['releasers'] },
     waitTimer: null, // no delay once approved
     deploymentBranchPolicy: null, // any branch
     preventSelfReview: false, // self-approval allowed if in reviewers list
