@@ -9,7 +9,9 @@ import yaml from 'yaml';
 export const check: FileCheckFunction = (contents) => {
   if (!contents) throw new Error('no file found');
 
-  const parsed = yaml.parse(contents) as { variables?: Record<string, unknown> };
+  const parsed = yaml.parse(contents) as {
+    variables?: Record<string, unknown>;
+  };
   const variables = parsed?.variables ?? {};
 
   // check if reviewers or reviewers.users exists
