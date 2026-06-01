@@ -10,7 +10,7 @@
     "test:format:biome": "biome format",
     "test:lint:biome": "biome check --diagnostic-level=error",
     "test:lint:biome:all": "biome check",
-    "test:lint:cycles": "dpdm --no-warning --no-tree --exit-code circular:1 --exclude '^$' 'src/**/*.ts'",
+    "test:lint:cycles": "dpdm --no-warning --no-tree --exit-code circular:1 --exclude \"$(yq -r '.exclude | if length > 0 then join(\"|\") else \"^$\" end' .dpdmrc.yaml)\" 'src/**/*.ts'",
     "test:lint:deps": "npx depcheck -c ./.depcheckrc.yml",
     "test:lint": "npm run test:lint:biome && npm run test:lint:cycles && npm run test:lint:deps"
   }
