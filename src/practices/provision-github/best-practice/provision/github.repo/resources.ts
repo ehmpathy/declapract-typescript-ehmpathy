@@ -10,7 +10,13 @@ import {
 import { type DomainEntity, RefByUnique } from 'domain-objects';
 import { UnexpectedCodePathError } from 'helpful-errors';
 
-import pkg from '../../package.json';
+import pkgJson from '../../package.json';
+
+const pkg = pkgJson as {
+  description?: string;
+  private?: boolean;
+  homepage?: string;
+};
 
 export const getProviders = async (): Promise<DeclastructProvider[]> => [
   getDeclastructGithubProvider(
