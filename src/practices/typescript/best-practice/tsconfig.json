@@ -27,6 +27,7 @@
     "**/*.ts"
   ],
   "exclude": [
+    ".agent/.cache",
     "dist",
     "coverage",
     "node_modules",

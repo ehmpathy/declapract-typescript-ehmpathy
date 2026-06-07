@@ -7,6 +7,7 @@ describe('.gitignore best practice', () => {
 *.local.json
 *.log
 *.tsbuildinfo
+.agent/.cache/
 .artifact
 .cache/
 .env

@@ -8,6 +8,7 @@ import expect from 'expect';
 const ignoresSortable = [
   '*.log',
   '*.tsbuildinfo',
+  '.agent/.cache/', // agent cache (trash dir, temp files)
   '.artifact', // deployment artifacts from `simple-artifact-builder` are produced here
   '.cache/', // cache directories from various tools
   '.env',
