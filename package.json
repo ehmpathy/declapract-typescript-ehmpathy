@@ -43,7 +43,7 @@
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify",
     "prepare:husky": "husky install && chmod ug+x .husky/*",
-    "prepare:rhachet": "rhachet init --hooks --roles mechanic behaver driver reviewer librarian ergonomist architect reflector dreamer",
+    "prepare:rhachet": "rhachet init --hooks --roles mechanic behaver driver architect ergonomist reviewer dreamer dispatcher",
     "prepare": "if [ -e .git ] && [ -z \"${CI:-}\" ]; then npm run prepare:husky && npm run prepare:rhachet; fi"
   },
   "dependencies": {
@@ -55,7 +55,7 @@
     "yaml": "2.8.2"
   },
   "peerDependencies": {
-    "declapract": ">=0.13.16"
+    "declapract": ">=0.13.22"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",

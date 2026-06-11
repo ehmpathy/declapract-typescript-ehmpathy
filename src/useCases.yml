@@ -2,6 +2,7 @@
 use-cases:
   typescript-project:
     practices:
+      - cache
       - cicd-common
       - conventional-commits
       - husky
