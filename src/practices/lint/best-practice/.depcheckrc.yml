@@ -7,6 +7,7 @@ ignores:
   - rhachet-roles-bhrain
   - rhachet-roles-bhuild
   - rhachet-roles-ehmpathy
+  - rhachet-roles-rhachet
   - declapract
   - declapract-typescript-ehmpathy
   - "@commitlint/config-conventional"
@@ -20,3 +21,5 @@ ignores:
   - tsx
   - tsc-alias
   - yalc
+  - test-fns
+  - type-fns
