@@ -1,6 +1,9 @@
 # dpdm exclude patterns
 # each entry is joined with | to form a single regex for --exclude
 #
-# only exclude devDependencies here
-# if you exclude a prod dependency, you ship cycles to consumers and break their builds
+# with --transform flag, type imports are erased before analysis
+# and test files are excluded via glob pattern '!(*.test).ts'
+# so excludes are rarely needed even for devDependencies
+#
+# never exclude prod dependencies — you'd ship cycles to consumers
 exclude: []
