@@ -54,18 +54,6 @@
           },
           {
             "type": "command",
-            "command": "./node_modules/.bin/rhachet roles boot --role librarian",
-            "timeout": 30,
-            "author": "repo=bhrain/role=librarian"
-          },
-          {
-            "type": "command",
-            "command": "./node_modules/.bin/rhachet roles boot --role reflector",
-            "timeout": 30,
-            "author": "repo=bhrain/role=reflector"
-          },
-          {
-            "type": "command",
             "command": "./node_modules/.bin/rhachet roles boot --role reviewer",
             "timeout": 30,
             "author": "repo=bhrain/role=reviewer"
