@@ -1,0 +1,4 @@
+# minimal declarations for cache practice integration test
+declare:
+  practices: practices
+  use-cases: useCases.yml

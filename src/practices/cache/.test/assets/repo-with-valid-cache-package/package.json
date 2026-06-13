@@ -1,0 +1,7 @@
+{
+  "name": "test-project-valid-cache",
+  "version": "1.0.0",
+  "dependencies": {
+    "simple-in-memory-cache": "0.4.3"
+  }
+}

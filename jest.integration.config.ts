@@ -35,6 +35,7 @@ const config: Config = {
     // 'node_modules/(?!(@octokit|universal-user-agent|before-after-hook)/)',
   ],
   testMatch: ['**/*.declapract.integration.test.ts', '!**/.yalc/**'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/.agent/'],
   setupFilesAfterEnv: ['./jest.integration.env.ts'],
 
   // use 50% of threads to leave headroom for other processes
