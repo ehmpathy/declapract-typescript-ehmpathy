@@ -1,0 +1,6 @@
+# .note = declarations dir is symlinked by the test (contains declapract.declare.yml + dist/)
+declarations: 'declarations/declapract.declare.yml'
+useCase: typescript-project
+variables:
+  organizationName: 'test-org'
+  projectName: 'test-project-no-cache'

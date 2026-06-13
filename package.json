@@ -55,10 +55,11 @@
     "yaml": "2.8.2"
   },
   "peerDependencies": {
-    "declapract": ">=0.13.22"
+    "declapract": ">=0.13.26"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",
+    "declapract": "0.13.26",
     "@commitlint/cli": "19.5.0",
     "@commitlint/config-conventional": "19.5.0",
     "@swc/core": "1.15.3",

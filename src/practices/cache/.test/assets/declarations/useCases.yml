@@ -1,0 +1,5 @@
+# minimal use case for cache practice integration test
+use-cases:
+  typescript-project:
+    practices:
+      - cache
