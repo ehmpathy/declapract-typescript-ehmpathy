@@ -47,10 +47,10 @@
     "prepare": "if [ -e .git ] && [ -z \"${CI:-}\" ]; then npm run prepare:husky && npm run prepare:rhachet; fi"
   },
   "dependencies": {
-    "domain-objects": "0.31.9",
+    "domain-objects": "0.31.13",
     "expect": "29.4.2",
     "flat": "5.0.2",
-    "helpful-errors": "1.5.3",
+    "helpful-errors": "1.7.3",
     "test-fns": "1.15.7",
     "yaml": "2.8.2"
   },

@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "simple-log-methods": "@declapract{check.minVersion('0.5.0')}"
-  }
-}
