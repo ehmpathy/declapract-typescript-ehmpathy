@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "sdk-logs": "@declapract{check.minVersion('0.9.2')}"
+  }
+}

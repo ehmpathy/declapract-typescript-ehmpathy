@@ -6,7 +6,8 @@
     "rhachet-brains-xai": "@declapract{check.minVersion('0.3.3')}",
     "rhachet-roles-bhrain": "@declapract{check.minVersion('0.29.0')}",
     "rhachet-roles-bhuild": "@declapract{check.minVersion('0.21.15')}",
-    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.35.12')}"
+    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.35.12')}",
+    "rhachet-roles-rhachet": "@declapract{check.minVersion('0.1.7')}"
   },
   "scripts": {
     "prepare:rhachet": "rhachet init --keys --hooks --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher",

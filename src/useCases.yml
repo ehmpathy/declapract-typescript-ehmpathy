@@ -19,6 +19,7 @@ use-cases:
       - tests
       - typescript
       - pnpm
+      - bottleneck
   npm-package:
     extends:
       - typescript-project
@@ -39,7 +40,7 @@ use-cases:
       - environments-aws
       - lambda-clients
       - lambda-handlers
-      - logging
+      - logs
       - node-service
       - runtime-type-checking
       - serverless

@@ -123,7 +123,7 @@ React Native mobile apps with Expo
 - **lambda-handlers** - Standard Lambda function structure
 - **lambda-clients** - Type-safe Lambda client wrappers
 - **config** - Environment configuration with AWS Parameter Store
-- **logs** - Structured logging with `simple-log-methods`
+- **logs** - Structured logging with `sdk-logs`
 - **uuid** - UUID generation standards
 - etc
 
