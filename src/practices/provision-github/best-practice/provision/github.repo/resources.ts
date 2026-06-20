@@ -5,6 +5,7 @@ import {
   DeclaredGithubEnvironment,
   DeclaredGithubRepo,
   DeclaredGithubRepoConfig,
+  DeclaredGithubTeamRepoAccess,
   getDeclastructGithubProvider,
 } from 'declastruct-github';
 import { type DomainEntity, RefByUnique } from 'domain-objects';
@@ -126,6 +127,13 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     restrictions: null,
   });
 
+  // grant releasers team access to the repo (required before they can be environment reviewers)
+  const teamReleasersAccess = DeclaredGithubTeamRepoAccess.as({
+    team: { org: { login: '@declapract{variable.organizationName}' }, slug: 'releasers' },
+    repo,
+    permission: 'push', // write access needed to deploy
+  });
+
   // declare environment for production deployments from main (auto-approved)
   const envProductionOnMain = DeclaredGithubEnvironment.as({
     repo,
@@ -151,6 +159,7 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     repo,
     repoConfig,
     branchMainProtection,
+    teamReleasersAccess, // must come before environments that reference this team
     envProductionOnMain,
     envProductionOnElse,
   ];
