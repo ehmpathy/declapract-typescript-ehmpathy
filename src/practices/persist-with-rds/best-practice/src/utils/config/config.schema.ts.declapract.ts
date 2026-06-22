@@ -18,6 +18,8 @@ const databaseSchema = `  database: z.object({
       }),
     }),
     tunnel: z.object({
+      bastion: z.string(),
+      cluster: z.string(),
       local: z.object({
         host: z.string(),
         port: z.number(),
