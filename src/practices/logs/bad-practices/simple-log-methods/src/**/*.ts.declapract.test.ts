@@ -11,7 +11,7 @@ describe('simple-log-methods source file bad-practice', () => {
     expect(() => check(contents, {} as any)).toThrow('does not match bad practice');
   });
 
-  it('should replace simple-log-methods imports with sdk-logs', async () => {
+  it('should replace simple-log-methods imports with sdk-logs and flow commit', async () => {
     const contents = `import { generateLogMethods } from 'simple-log-methods';\n\nexport const log = generateLogMethods();`;
     const result = await fix(contents, {} as any);
 
@@ -19,6 +19,10 @@ describe('simple-log-methods source file bad-practice', () => {
     expect(result.contents).not.toContain('simple-log-methods');
     expect(result.contents).toContain('genLogMethods');
     expect(result.contents).not.toContain('generateLogMethods');
+
+    // verify sdk-environment import and commit flow
+    expect(result.contents).toContain("import { getEnvironment } from 'sdk-environment';");
+    expect(result.contents).toContain('getEnvironment.static().commit');
   });
 
   it('should handle files that already use genLogMethods but wrong module', async () => {

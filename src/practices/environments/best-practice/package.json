@@ -2,6 +2,6 @@
   "dependencies": {
     "@aws-sdk/client-account": "@declapract{check.minVersion('3.1042.0')}",
     "@aws-sdk/client-iam": "@declapract{check.minVersion('3.1042.0')}",
-    "sdk-environment": "@declapract{check.minVersion('0.1.4')}"
+    "sdk-environment": "@declapract{check.minVersion('0.1.5')}"
   }
 }
