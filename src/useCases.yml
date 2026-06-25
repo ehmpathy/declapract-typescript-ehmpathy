@@ -38,7 +38,7 @@ use-cases:
       - dates-and-times
       - environments
       - environments-aws
-      - logging
+      - logs
       - node-service
       - runtime-schemas
       - serverless
