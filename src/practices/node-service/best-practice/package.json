@@ -1,3 +1,6 @@
 {
-  "private": true
+  "private": true,
+  "dependencies": {
+    "sdk-aws-lambda": "@declapract{check.minVersion('0.0.1')}"
+  }
 }
