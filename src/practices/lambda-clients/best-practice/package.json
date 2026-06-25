@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "simple-lambda-client": "@declapract{check.minVersion('2.1.3')}"
-  }
-}

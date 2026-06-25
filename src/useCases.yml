@@ -38,11 +38,9 @@ use-cases:
       - dates-and-times
       - environments
       - environments-aws
-      - lambda-clients
-      - lambda-handlers
-      - logs
+      - logging
       - node-service
-      - runtime-type-checking
+      - runtime-schemas
       - serverless
       - provision-github
       - terraform-common
