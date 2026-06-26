@@ -9,9 +9,10 @@ module.exports = {
         'break', // use break: instead of feat!: or BREAKING CHANGE footer
         'feat',
         'fix',
-        'docs',
+        // 'docs', // prefer fix(docs): instead of docs
         'chore',
         'revert',
+        'cont', // continue progress within a p
       ],
     ],
     // forbid ! prefix (use break: instead)
