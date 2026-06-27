@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`old-dev-scripts package.json fix should rename scripts from :dev to :prep 1`] = `
+"{
+  "name": "test-package",
+  "scripts": {
+    "test:unit": "jest",
+    "start:hot:prep": "npm run start:hot -- --stage dev",
+    "deploy:prep": "sls deploy --stage dev"
+  }
+}"
+`;

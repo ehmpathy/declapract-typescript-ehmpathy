@@ -5,8 +5,8 @@
     "if-env": "@declapract{check.minVersion('1.0.4')}"
   },
   "scripts": {
-    "deploy:prune": "SLS_STAGE=$(if [ \"$ACCESS\" = 'prep' ]; then echo 'dev'; else echo \"$ACCESS\"; fi) && export COMMIT=$(npx sdk-environment get commit) && npx sls prune -n 7 --stage $SLS_STAGE",
-    "deploy:release": "SLS_STAGE=$(if [ \"$ACCESS\" = 'prep' ]; then echo 'dev'; else echo \"$ACCESS\"; fi) && export COMMIT=$(npx sdk-environment get commit) && npm run build && sls deploy --verbose --stage $SLS_STAGE",
+    "deploy:prune": "export COMMIT=$(npx sdk-environment get commit) && export SLS_STAGE=$([ \"$ACCESS\" = 'prep' ] && echo 'dev' || echo \"$ACCESS\") && npx sls prune -n 7 --stage $SLS_STAGE",
+    "deploy:release": "export COMMIT=$(npx sdk-environment get commit) && export SLS_STAGE=$([ \"$ACCESS\" = 'prep' ] && echo 'dev' || echo \"$ACCESS\") && npm run build && sls deploy --verbose --stage $SLS_STAGE",
     "deploy:send-notification": "curl -X POST -H 'Content-type: application/json' --data \"{\\\"text\\\":\\\"$([ -z $DEPLOYER_NAME ] && git config user.name || echo $DEPLOYER_NAME) has deployed $npm_package_name@v$npm_package_version:\nhttps://github.com/@declapract{variable.organizationName}/$npm_package_name/tree/v$npm_package_version\\\"}\" @declapract{variable.slackWebhookUrl}",
     "deploy:prep": "ACCESS=prep npm run deploy:release",
     "deploy:prod": "ACCESS=prod npm run deploy:release && npm run deploy:send-notification",

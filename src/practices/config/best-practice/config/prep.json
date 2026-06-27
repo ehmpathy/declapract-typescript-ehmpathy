@@ -5,7 +5,7 @@
     "access": "prep"
   },
   "aws": {
-    "account": "@declapract{variable.awsAccountId.dev}",
+    "account": "@declapract{variable.awsAccountId.prep}",
     "namespace": "@declapract{variable.infrastructureNamespaceId}"
   }
 }

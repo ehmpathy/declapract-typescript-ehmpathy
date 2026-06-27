@@ -13,10 +13,10 @@ on:
         description: 'which stage do you want to deploy to?'
         type: choice
         options:
-          - dev
+          - prep
           - prod
         required: true
-        default: 'dev'
+        default: 'prep'
       thoroughly:
         description: 'should we run tests before this deployment?'
         type: choice
@@ -36,22 +36,22 @@ jobs:
     if: github.event_name != 'workflow_dispatch' || github.event.inputs.thoroughly == 'true'
     with:
       creds-aws-region: us-east-1
-      creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.dev}:role/@declapract{variable.projectName}-github-actions-dev
+      creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.prep}:role/@declapract{variable.projectName}-github-actions-prep
     secrets: inherit # keyrack firewall in .test.yml filters to declared keys
 
-  dev:
+  prep:
     uses: ./.github/workflows/.deploy-expo.yml
     needs: [test]
     # dont deploy on merge to main by default, since builds are expensive
     if: |
-      ((github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch' && false) || github.event.inputs.stage == 'dev') &&
+      ((github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch' && false) || github.event.inputs.stage == 'prep') &&
       always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
     with:
-      stage: dev
+      stage: prep
       build: development
-      github-environment: dev
+      github-environment: prep
       creds-aws-region: us-east-1
-      creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.dev}:role/@declapract{variable.projectName}-github-actions-dev
+      creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.prep}:role/@declapract{variable.projectName}-github-actions-prep
     secrets:
       expo-token: ${{ secrets.EXPO_TOKEN }}
 

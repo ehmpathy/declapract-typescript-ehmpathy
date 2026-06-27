@@ -19,17 +19,17 @@ jobs:
     uses: ./.github/workflows/.terraform.yml
     with:
       working-directory: provision/aws/environments/test
-      github-environment: dev
+      github-environment: prep
       creds-aws-region: us-east-1
-      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }}
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
 
-  aws-dev:
+  aws-prep:
     uses: ./.github/workflows/.terraform.yml
     with:
-      working-directory: provision/aws/environments/dev
-      github-environment: dev
+      working-directory: provision/aws/environments/prep
+      github-environment: prep
       creds-aws-region: us-east-1
-      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }}
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
 
   aws-prod:
     uses: ./.github/workflows/.terraform.yml
@@ -50,13 +50,13 @@ jobs:
     secrets:
       creds-github-app-private-key: ${{ secrets.DECLASTRUCT_GITHUB_CONFORMER_APP_PRIVATE_KEY }}
 
-  sql-schema-dev:
+  sql-schema-prep:
     uses: ./.github/workflows/.sql-schema-control.yml
     with:
       stage: prep
-      github-environment: dev
+      github-environment: prep
       creds-aws-region: us-east-1
-      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }}
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
 
   sql-schema-prod:
     uses: ./.github/workflows/.sql-schema-control.yml

@@ -1,6 +1,6 @@
 provider "aws" {
   region              = "us-east-1"
-  allowed_account_ids = ["@declapract{variable.awsAccountId.dev}"] # `test` environment resources are provisioned in the `dev` aws account
+  allowed_account_ids = ["@declapract{variable.awsAccountId.prep}"] # `test` environment resources are provisioned in the `prep` aws account
 }
 
 terraform {
