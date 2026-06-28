@@ -10,7 +10,7 @@ export const getServiceVariables = createGetVariables({
   infrastructureNamespaceId: 'abcde12345',
   slackWebhookUrl: 'https://...',
   awsAccountId: {
-    dev: '123abc',
+    prep: '123abc',
     prod: '456def',
   },
 });
@@ -18,8 +18,12 @@ export const getServiceVariables = createGetVariables({
 export const getRdsVariables = createGetVariables({
   databaseName: 'awesomethingdb',
   databaseClusterHost: {
-    dev: 'awesomesdb.cluster-abc123.us-east-1.rds.amazonaws.com',
+    prep: 'awesomesdb.cluster-abc123.us-east-1.rds.amazonaws.com',
     prod: 'awesomesdb.cluster-def456.us-east-1.rds.amazonaws.com',
+  },
+  databaseTunnelHost: {
+    prep: 'aws.ssmproxy.awesomesdb.prep',
+    prod: 'aws.ssmproxy.awesomesdb.prod',
   },
   databaseUserName: {
     serviceUser: 'svc_awesome_thing_user',

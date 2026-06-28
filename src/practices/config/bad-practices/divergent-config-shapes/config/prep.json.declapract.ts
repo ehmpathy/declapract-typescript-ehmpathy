@@ -16,18 +16,18 @@ export const check: FileCheckFunction = async (contents, context) => {
   const flattenedTestConfigKeys = Object.keys(flatten(testConfigObject));
 
   // grab the found keys
-  const devConfigObject = JSON.parse(contents);
-  const flattenedDevConfigKeys = Object.keys(flatten(devConfigObject));
+  const prepConfigObject = JSON.parse(contents);
+  const flattenedPrepConfigKeys = Object.keys(flatten(prepConfigObject));
 
   // determine which keys are not matched
-  const keysInTestButNotInDev = flattenedTestConfigKeys.filter(
-    (key) => !flattenedDevConfigKeys.includes(key),
+  const keysInTestButNotInPrep = flattenedTestConfigKeys.filter(
+    (key) => !flattenedPrepConfigKeys.includes(key),
   );
-  const keysInDevButNotInTest = flattenedDevConfigKeys.filter(
+  const keysInPrepButNotInTest = flattenedPrepConfigKeys.filter(
     (key) => !flattenedTestConfigKeys.includes(key),
   );
-  if (keysInTestButNotInDev.length) return; // matches bad practice
-  if (keysInDevButNotInTest.length) return; // matches bad practice
+  if (keysInTestButNotInPrep.length) return; // matches bad practice
+  if (keysInPrepButNotInTest.length) return; // matches bad practice
 
   // otherwise, does not match a bad practice
   throw new Error('its fine');

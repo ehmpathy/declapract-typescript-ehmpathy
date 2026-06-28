@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`old-dev-config-location should update .dev hostnames to .prep 1`] = `
+"{
+  "organization": "ahbode",
+  "project": "svc-example",
+  "environment": {
+    "access": "prep"
+  },
+  "database": {
+    "host": "bastion.prep.example.com",
+    "tunnel": "aws.ssmproxy.mydb.prep"
+  }
+}"
+`;
+
+exports[`old-dev-config-location should update access: dev to access: prep 1`] = `
+"{
+  "organization": "ahbode",
+  "project": "svc-example",
+  "environment": {
+    "access": "prep"
+  },
+  "aws": {
+    "account": "123456789",
+    "namespace": "test"
+  }
+}"
+`;

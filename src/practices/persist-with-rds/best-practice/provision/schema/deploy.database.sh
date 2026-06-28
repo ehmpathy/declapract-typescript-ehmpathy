@@ -13,20 +13,20 @@
 ##
 ## usage example:
 ## ```sh
-## ./provision/schema/deploy.database.sh dev $(op item get ahbodedb.dev.postgres --fields label=password --format json | jq -r .value)
+## ./provision/schema/deploy.database.sh prep $(op item get ahbodedb.prep.postgres --fields label=password --format json | jq -r .value)
 ## ```
 #####################################################
 
 # check that user has defined the environment that they want this key created for correctly
 ENVIRONMENT=$1;
-if [ "$ENVIRONMENT" != "prod" ] && [ "$ENVIRONMENT" != "dev" ]; then
-  echo "\nerror: Environment, the first argument, must be specified as either 'prod' or 'dev'. You specified '$ENVIRONMENT'";
+if [ "$ENVIRONMENT" != "prod" ] && [ "$ENVIRONMENT" != "prep" ]; then
+  echo "\nerror: Environment, the first argument, must be specified as either 'prod' or 'prep'. You specified '$ENVIRONMENT'";
   exit 1;
 fi
 
 # check that user is authed into correct account
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account');
-EXPECTED_AWS_ACCOUNT_ID=$([ "$ENVIRONMENT" = 'prod' ] && echo "@declapract{variable.awsAccountId.prod}" || echo "@declapract{variable.awsAccountId.dev}");
+EXPECTED_AWS_ACCOUNT_ID=$([ "$ENVIRONMENT" = 'prod' ] && echo "@declapract{variable.awsAccountId.prod}" || echo "@declapract{variable.awsAccountId.prep}");
 if [ "$AWS_ACCOUNT_ID" != "$EXPECTED_AWS_ACCOUNT_ID" ]; then
   echo "\nerror: the AWS_ACCOUNT that you are signed into is not correct for the environment you specified. You are authed into account '$AWS_ACCOUNT_ID' but the correct account id for '$ENVIRONMENT' IS '$EXPECTED_AWS_ACCOUNT_ID'";
   exit 1;
@@ -41,20 +41,20 @@ fi;
 
 # check that the cicd password was provisioned, if in prod, since this is used to create the cicd user
 if [ "$ENVIRONMENT" = "prod" ]; then
-  CICD_USER_PASSWORD=$(aws ssm get-parameter --name "@declapract{variable.organizationName}.@declapract{variable.projectName}.$ENVIRONMENT.database.admin.password" --with-decryption --output text --query Parameter.Value)
+  CICD_USER_PASSWORD=$(aws ssm get-parameter --name "@declapract{variable.organizationName}.@declapract{variable.projectName}.$ENVIRONMENT.database.role.cicd.password" --with-decryption --output text --query Parameter.Value)
   if [ -z "$CICD_USER_PASSWORD" ]; then
     echo "\nerror: CICD_USER_PASSWORD must be provisioned with terraform before running this"
     exit 1;
   fi;
-  if [ "$CICD_USER_PASSWORD" = "__IGNORED__" ]; then
-    echo "\nerror: CICD_USER_PASSWORD must be set to a value other than the default of '__IGNORED__'"
+  if [ "$CICD_USER_PASSWORD" = "__IGNORED__" ] || [ "$CICD_USER_PASSWORD" = "__CHANG3_ME__" ]; then
+    echo "\nerror: CICD_USER_PASSWORD must be set to a value other than the default placeholder"
     exit 1;
   fi;
 fi;
 
 
 # define the postgres connecition string
-CLUSTER_HOST=$([ "$ENVIRONMENT" = 'prod' ] && echo "@declapract{variable.databaseTunnelHost.prod}" || echo "@declapract{variable.databaseTunnelHost.dev}");
+CLUSTER_HOST=$([ "$ENVIRONMENT" = 'prod' ] && echo "@declapract{variable.databaseTunnelHost.prod}" || echo "@declapract{variable.databaseTunnelHost.prep}");
 CLUSTER_CONNECTION_STRING=postgresql://postgres:$POSTGRES_ADMIN_PASSWORD@$CLUSTER_HOST:5432
 ROOT_DB_CONNECTION_STRING=$CLUSTER_CONNECTION_STRING/postgres
 SVC_DB_CONNECTION_STRING=$CLUSTER_CONNECTION_STRING/@declapract{variable.databaseName}
@@ -75,7 +75,7 @@ echo "\n 🔨 creating the schema..."
 psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.schema.sql
 
 if [ "$ENVIRONMENT" = "prod" ]; then
-  echo "\n 🔨 granting reads to the datalakedb user..." # only in prod env; we dont want dev's testing data in our datalake
+  echo "\n 🔨 granting reads to the datalakedb user..." # only in prod env; we dont want prep's test data in our datalake
   psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.user.datalakedb.sql
 fi;
 

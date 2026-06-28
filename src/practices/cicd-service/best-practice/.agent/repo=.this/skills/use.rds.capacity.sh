@@ -30,7 +30,7 @@ set -eo pipefail
 
 set -u
 
-# ensure the dev tunnel is awake
+# ensure the prep tunnel is awake
 .agent/repo=.this/skills/use.vpc.tunnel.ts
 
 # ping until available

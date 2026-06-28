@@ -57,7 +57,7 @@ const exampleFoundContents = `
     "provision:schema:apply": "npx sql-schema-control apply -c provision/schema/control.yml",
     "provision:testdb": "npm run provision:docker:prepare && npm run provision:docker:up && npm run provision:docker:await && npm run provision:schema:plan && npm run provision:schema:apply && npm run provision:schema:plan",
     "start:testdb": "any",
-    "start:livedb:dev": "any",
+    "start:livedb:prep": "any",
     "test:types": "tsc -p ./tsconfig.build.json --noEmit",
     "test:format": "prettier --parser typescript --check 'src/**/*.ts' --config ./prettier.config.js",
     "test:unit": "jest -c ./jest.unit.config.js --forceExit --coverage --verbose --passWithNoTests",
@@ -69,7 +69,7 @@ const exampleFoundContents = `
     "test:acceptance:locally": "npm run build && LOCALLY=true jest -c ./jest.acceptance.config.js",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify",
-    "deploy:dev": "STAGE=dev npm run deploy:release",
+    "deploy:prep": "STAGE=prep npm run deploy:release",
     "deploy:prod": "STAGE=prod npm run deploy:release && npm run deploy:send-notification",
     "fix:lint": "eslint -c ./.eslintrc.js src/**/*.ts --fix"
   },

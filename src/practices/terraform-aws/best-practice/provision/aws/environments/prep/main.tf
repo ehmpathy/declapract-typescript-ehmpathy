@@ -1,6 +1,6 @@
 provider "aws" {
   region              = "us-east-1"
-  allowed_account_ids = ["@declapract{variable.awsAccountId.dev}"] # `dev` environment resources are provisioned in the `dev` aws account
+  allowed_account_ids = ["@declapract{variable.awsAccountId.prep}"] # `prep` access tier resources are provisioned in the `prep` aws account
 }
 
 terraform {
@@ -14,5 +14,5 @@ terraform {
 
 module "product" {
   source      = "../../product"
-  environment = "dev"
+  environment = "dev" # infrastructure stays named 'dev', application uses ACCESS=prep
 }

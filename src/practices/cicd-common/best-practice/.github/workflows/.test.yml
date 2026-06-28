@@ -226,8 +226,8 @@ jobs:
       - name: start:testdb
         run: npm run start:testdb --if-present
 
-      - name: start:livedb:dev
-        run: npm run start:livedb:dev --if-present
+      - name: start:livedb:prep
+        run: npm run start:livedb:prep --if-present
 
       - name: build
         run: npm run build
@@ -310,8 +310,8 @@ jobs:
       - name: start:testdb
         run: npm run start:testdb --if-present
 
-      - name: start:livedb:dev
-        run: npm run start:livedb:dev --if-present
+      - name: start:livedb:prep
+        run: npm run start:livedb:prep --if-present
 
       - name: build
         run: npm run build

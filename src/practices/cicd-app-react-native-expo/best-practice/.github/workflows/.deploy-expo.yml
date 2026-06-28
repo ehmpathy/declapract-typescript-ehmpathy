@@ -5,7 +5,7 @@ on:
     inputs:
       stage:
         type: string
-        description: "the stage of infrastructure to deploy against (e.g., prod, dev)"
+        description: "the stage of infrastructure to deploy against (e.g., prod, prep)"
         required: true
       build:
         type: string

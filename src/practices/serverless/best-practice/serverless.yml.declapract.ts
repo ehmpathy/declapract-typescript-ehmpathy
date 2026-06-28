@@ -11,7 +11,7 @@ const accessInferencePolicy = `    # allow access inference from account name
 
 const accessByStageCustom = `custom:
   accessByStage:
-    dev: prep
+    dev: prep # stage=dev deploys to $service-dev but uses ACCESS=prep (config/prep.json)
     prod: prod
 
 `;
@@ -70,7 +70,7 @@ export const fix: FileFixFunction = (contents) => {
   ) {
     fixed = fixed.replace(
       /STAGE: \$\{self:provider\.stage\}[^\n]*/,
-      "ACCESS: ${self:custom.accessByStage.${opt:stage}, 'prep'} # sdk-environment access tier, to target the correct config + resources (e.g., hit dev db -vs- prod db)\n    COMMIT: ${env:COMMIT} # sdk-environment commit slug, must be set by deploy command",
+      "ACCESS: ${self:custom.accessByStage.${opt:stage}, 'prep'} # sdk-environment access tier, to target the correct config + resources (e.g., hit prep db -vs- prod db)\n    COMMIT: ${env:COMMIT} # sdk-environment commit slug, must be set by deploy command",
     );
   }
 
