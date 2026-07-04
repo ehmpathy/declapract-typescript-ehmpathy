@@ -5,6 +5,7 @@ import {
   DeclaredGithubEnvironment,
   DeclaredGithubRepo,
   DeclaredGithubRepoConfig,
+  DeclaredGithubRepoRuleset,
   DeclaredGithubTeamRepoAccess,
   getDeclastructGithubProvider,
 } from 'declastruct-github';
@@ -154,6 +155,37 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     preventSelfReview: false, // self-approval allowed if in reviewers list
   });
 
+  // restrict who may cut `v*` release tags to the rhelease app only
+  // .why = prod apply is gated on a version tag cut from main; if anyone could push a
+  //        `v*` tag, that gate is bypassable. this ruleset blocks creation, update, and
+  //        deletion of `v*` tags for everyone except the rhelease app — the github half
+  //        of the prod-apply oidc guarantee, and the immutability of released tags
+  const rulesetReleaseTags = DeclaredGithubRepoRuleset.as({
+    repo,
+    name: 'protect-release-tags',
+    target: 'tag',
+    enforcement: 'active',
+
+    // only the rhelease github app may write `v*` tags
+    bypassActors: [
+      {
+        actorId: 2472031, // rhelease github app id (gh api /apps/rhelease)
+        actorType: 'Integration',
+        bypassMode: 'always',
+      },
+    ],
+
+    // applies to release tags only
+    conditions: {
+      refNameInclude: ['refs/tags/v*'],
+      refNameExclude: [],
+    },
+
+    // enforce release-tag immutability: only the bypass actor may create, move, or delete
+    // matched tags. a released `v1.2.3` must never be re-pointed or removed once cut
+    rules: [{ type: 'creation' }, { type: 'update' }, { type: 'deletion' }],
+  });
+
   // and return the full set
   return [
     repo,
@@ -162,5 +194,6 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     teamReleasersAccess, // must come before environments that reference this team
     envProductionOnMain,
     envProductionOnElse,
+    rulesetReleaseTags,
   ];
 };

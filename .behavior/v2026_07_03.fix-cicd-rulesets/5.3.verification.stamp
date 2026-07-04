@@ -1,0 +1,36 @@
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 5.3.verification
+   ├─ passage = allowed
+   ├─ guard
+   │  ├─ artifacts
+   │  │   ├─ $route/5.3.verification.yield.md
+   │  │   └─ src/**/*
+   │  ├─ reviews
+   │  │   ├─ r1: repo-rules (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v2026_07_03.fix-cicd-rulesets/.reviews/peer/5.3.verification._.review.i1.ae266f75faad0ab7b2.r1._.given.by_peer.repo-rules.md
+   │  │   ├─ r2: enroll-verif-snapshot-coverage (l3, 2/3)
+   │  │   │   ├─ constraint, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v2026_07_03.fix-cicd-rulesets/.reviews/peer/5.3.verification._.review.i4.ae266f75faad0ab7b2.r2._.given.by_peer.enroll-verif-snapshot-coverage.md
+   │  │   ├─ r3: enroll-verif-snapshot-blemishes (l3, 2/3)
+   │  │   │   ├─ constraint 184.1s
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v2026_07_03.fix-cicd-rulesets/.reviews/peer/5.3.verification._.review.i5.ae266f75faad0ab7b2.r3._.given.by_peer.enroll-verif-snapshot-blemishes.md
+   │  │   └─ r4: enroll-verif-test-intent (l3, 2/3)
+   │  │       ├─ constraint 135.7s
+   │  │       ├─ 0 blockers ✓
+   │  │       ├─ 0 nitpicks ✓
+   │  │       └─ review: .behavior/v2026_07_03.fix-cicd-rulesets/.reviews/peer/5.3.verification._.review.i5.ae266f75faad0ab7b2.r4._.given.by_peer.enroll-verif-test-intent.md
+   │  └─ judges
+   │      └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 0
+   │          └─ finished 0.4s ✓
+   │
+   └─ the way continues, run
+      └─ rhx route.drive
