@@ -48,8 +48,8 @@ jobs:
           NPM_VERSION=$(npm --version)
           MIN_VERSION="11.5.1"
           if [ "$(printf '%s\n' "$MIN_VERSION" "$NPM_VERSION" | sort -V | head -n1)" != "$MIN_VERSION" ]; then
-            echo "npm $NPM_VERSION < $MIN_VERSION, will upgrade npm now to support oidc..."
-            npm install -g npm@latest
+            echo "npm $NPM_VERSION < $MIN_VERSION, will upgrade npm to the latest 11.x for oidc..."
+            npm install -g npm@11
           else
             echo "npm $NPM_VERSION >= $MIN_VERSION, ready to use!"
           fi
