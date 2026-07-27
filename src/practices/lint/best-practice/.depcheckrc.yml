@@ -1,14 +1,13 @@
 ignores:
   - "@src/*"
   - "@src/.*"
-  - rhachet
-  - rhachet-brains-anthropic
-  - rhachet-brains-fireworksai
-  - rhachet-brains-xai
-  - rhachet-roles-bhrain
-  - rhachet-roles-bhuild
-  - rhachet-roles-ehmpathy
-  - rhachet-roles-rhachet
+  # all rhachet packages (roles/brains churn as prepare:rhachet installs vary)
+  - "rhachet*"
+  # runtime deps of the ghlitch operator use.vpc.tunnel skill (installed under
+  # .agent/repo=ghlitch via prepare:rhachet); no committed src imports them, so
+  # depcheck cannot attribute them in the ci lint job where the skill is absent
+  - declastruct-aws
+  - declastruct-unix-network
   - declapract
   - declapract-typescript-ehmpathy
   - "@commitlint/config-conventional"

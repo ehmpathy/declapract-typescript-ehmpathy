@@ -6,8 +6,14 @@
     },
     "role": {
       "cicd": {
-        "username": "@declapract{variable.databaseUserName.cicdUser}",
-        "password": "__CHANG3_ME__"
+        "for-plan": {
+          "username": "@declapract{variable.databaseUserName.cicdUser}",
+          "password": "__CHANG3_ME__"
+        },
+        "for-apply": {
+          "username": "@declapract{variable.databaseUserName.cicdUser}",
+          "password": "__CHANG3_ME__"
+        }
       },
       "crud": {
         "username": "@declapract{variable.databaseUserName.serviceUser}",

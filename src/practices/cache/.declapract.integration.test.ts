@@ -20,7 +20,7 @@ describe('cache practice with ifInstalled', () => {
       slug: 'cache-not-installed',
       clone: './src/practices/cache/.test/assets/repo-without-cache-package',
       symlink: [
-        { at: 'declarations', to: './src/practices/cache/.test/assets/declarations' },
+        { at: 'declarations', to: './test/assets/cache/declarations' },
         { at: 'node_modules', to: 'node_modules' },
       ],
     });
@@ -53,7 +53,7 @@ describe('cache practice with ifInstalled', () => {
       slug: 'cache-outdated',
       clone: './src/practices/cache/.test/assets/repo-with-old-cache-package',
       symlink: [
-        { at: 'declarations', to: './src/practices/cache/.test/assets/declarations' },
+        { at: 'declarations', to: './test/assets/cache/declarations' },
         { at: 'node_modules', to: 'node_modules' },
       ],
     });
@@ -82,7 +82,7 @@ describe('cache practice with ifInstalled', () => {
       slug: 'cache-valid',
       clone: './src/practices/cache/.test/assets/repo-with-valid-cache-package',
       symlink: [
-        { at: 'declarations', to: './src/practices/cache/.test/assets/declarations' },
+        { at: 'declarations', to: './test/assets/cache/declarations' },
         { at: 'node_modules', to: 'node_modules' },
       ],
     });

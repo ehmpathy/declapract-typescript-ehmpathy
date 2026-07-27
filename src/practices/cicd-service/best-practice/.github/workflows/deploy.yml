@@ -13,10 +13,10 @@ on:
         description: "which stage do you want to deploy to?"
         type: choice
         options:
-          - dev
+          - prep
           - prod
         required: true
-        default: "dev"
+        default: "prep"
       thoroughly:
         description: "should we run tests before this deployment?"
         type: choice
@@ -43,17 +43,18 @@ jobs:
       creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }} # use aws auth via oidc, if this repo supplies it
     secrets: inherit # keyrack firewall in .test.yml filters to declared keys
 
-  dev:
+  prep:
     uses: ./.github/workflows/.deploy-sls.yml
     needs: [test]
     if: |
-      ((github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch') || github.event.inputs.stage == 'dev') &&
+      ((github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch') || github.event.inputs.stage == 'prep') &&
       always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
+    # prep omits github-environment: the ahbode-prep-oidc role trusts any branch
+    # (repo-scoped sub), so no env claim is needed — only prod gates on environment.
     with:
-      stage: dev
-      github-environment: prep # github environment stays as prep (where secrets/vars live)
+      stage: prep
       creds-aws-region: us-east-1
-      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
 
   prod:
     uses: ./.github/workflows/.deploy-sls.yml
@@ -63,6 +64,6 @@ jobs:
     needs: [test]
     with:
       stage: prod
-      github-environment: prod
+      github-environment-apply: production-on-main # tags cut from main; carries the tag v* deploy policy
       creds-aws-region: us-east-1
-      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PROD_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: ${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}

@@ -1,14 +1,35 @@
 name: .declastruct
 
+# .what = reusable declastruct plan/apply for a wish, against either a github-app or an
+#   aws-oidc backend. one workflow, two auth models — each auth step fires only when its
+#   creds are supplied.
+# .why = declastruct wishes share the plan->artifact->apply shape regardless of backend;
+#   only the auth differs. github-provider wishes auth via a github-app token; aws-provider
+#   wishes auth via oidc role assumption (with a plan/apply role split — plan readonly, apply
+#   writer) + the ACCESS envar (read by the wish via sdk-environment). the plan is uploaded as
+#   an artifact so apply executes the EXACT plan reviewers saw.
+
 on:
   workflow_call:
     inputs:
       wish-path:
         type: string
         description: "the path to the wish declaration"
-      github-environment:
+        required: true
+      scope:
         type: string
-        description: "the github environment that the apply step will be executed in"
+        description: "the provider backend this wish targets (github | aws); scopes the plan artifact name"
+        required: true
+      access:
+        type: string
+        description: "the access tier this wish targets (test | prep | prod); read by the wish via sdk-environment as the ACCESS envar (aws wishes), and scopes the plan artifact name so parallel calls do not collide"
+        required: true
+      github-environment-plan:
+        type: string
+        description: "github environment for the plan job (empty = no env gate)"
+      github-environment-apply:
+        type: string
+        description: "github environment for the apply job (empty = no env gate)"
       allow-apply:
         type: boolean
         description: "whether the apply step is enabled. defaults to true on main"
@@ -16,24 +37,42 @@ on:
       creds-github-app-owner:
         type: string
         required: false
-        description: "the owner of the github app to generate a token for"
+        description: "github-app wishes: the owner of the github app to generate a token for"
       creds-github-app-id:
         type: string
         required: false
-        description: "the id of the github app to generate a token for"
+        description: "github-app wishes: the id of the github app to generate a token for"
+      creds-aws-region:
+        type: string
+        required: false
+        description: "aws wishes: the aws region for oidc auth"
+      creds-aws-role-arn-plan:
+        type: string
+        required: false
+        description: "aws wishes: oidc role arn for the plan job (readonly — DescribeParameters, no kms:Decrypt)"
+      creds-aws-role-arn-apply:
+        type: string
+        required: false
+        description: "aws wishes: oidc role arn for the apply job (writer — PutParameter, kms:Encrypt)"
     secrets:
       creds-github-app-private-key:
         required: false
-        description: the private key of the github app to generate a token for
+        description: "github-app wishes: the private key of the github app to generate a token for"
+
+permissions:
+  id-token: write # required for aws oidc (unused by github-app wishes)
+  contents: read
 
 jobs:
-  # install the dependencies
   install:
     uses: ./.github/workflows/.install.yml
 
   plan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.github-environment-plan }}
     needs: [install]
+    env:
+      ACCESS: ${{ inputs.access }} # aws wishes: sdk-environment getEnvironment reads ACCESS
     outputs:
       has-changes-planned: ${{ steps.evaluate-plan.outputs.has-changes-planned }}
     steps:
@@ -50,6 +89,7 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       - name: get github auth, if creds supplied
         if: ${{ inputs.creds-github-app-id }}
@@ -60,6 +100,13 @@ jobs:
           repositories: ${{ github.event.repository.name }}
           app-id: ${{ inputs.creds-github-app-id }}
           private-key: ${{ secrets.creds-github-app-private-key }}
+
+      - name: get aws auth, if creds supplied
+        if: ${{ inputs.creds-aws-role-arn-plan }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.creds-aws-role-arn-plan }}
+          aws-region: ${{ inputs.creds-aws-region }}
 
       - name: declastruct plan
         id: plan
@@ -72,8 +119,8 @@ jobs:
       - name: evaluate plan
         id: evaluate-plan
         run: |
-          # check whether it said there were required changes
-          if grep "Everything is in sync" ./plan.log
+          # declastruct prints this exact phrase when there is no diff
+          if grep "in sync" ./plan.log
           then
             echo "has-changes-planned=false" >> "$GITHUB_OUTPUT"
           else
@@ -87,17 +134,19 @@ jobs:
         if: ${{ inputs.allow-apply == true && steps.evaluate-plan.outputs.has-changes-planned == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: declastruct-plan
+          name: declastruct-${{ inputs.scope }}-${{ inputs.access }}-plan
           path: |
             ${{ inputs.wish-path }}.plan.json
           retention-days: 1
           include-hidden-files: false
 
   apply:
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.github-environment }}
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.github-environment-apply }}
     needs: [install, plan]
     if: ${{ inputs.allow-apply == true && needs.plan.outputs.has-changes-planned == 'true' }}
+    env:
+      ACCESS: ${{ inputs.access }} # aws wishes: sdk-environment getEnvironment reads ACCESS
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -112,6 +161,7 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       - name: extract directory from wish-path
         id: extract-dir
@@ -120,7 +170,7 @@ jobs:
       - name: download plan artifact
         uses: actions/download-artifact@v4
         with:
-          name: declastruct-plan
+          name: declastruct-${{ inputs.scope }}-${{ inputs.access }}-plan
           path: ${{ steps.extract-dir.outputs.wish-dir }}
 
       - name: get github auth, if creds supplied
@@ -132,6 +182,13 @@ jobs:
           repositories: ${{ github.event.repository.name }}
           app-id: ${{ inputs.creds-github-app-id }}
           private-key: ${{ secrets.creds-github-app-private-key }}
+
+      - name: get aws auth, if creds supplied
+        if: ${{ inputs.creds-aws-role-arn-apply }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.creds-aws-role-arn-apply }}
+          aws-region: ${{ inputs.creds-aws-region }}
 
       - name: declastruct apply
         run: |

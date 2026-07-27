@@ -19,7 +19,9 @@ jobs:
     uses: ./.github/workflows/.declastruct.yml
     with:
       wish-path: provision/github.repo/resources.ts
-      github-environment: prod
+      scope: github
+      access: prod # github repo settings are inherently a prod resource
+      github-environment-apply: prod
       creds-github-app-owner: ${{ github.repository_owner }}
       creds-github-app-id: ${{ vars.DECLASTRUCT_GITHUB_CONFORMER_APP_ID }}
     secrets:

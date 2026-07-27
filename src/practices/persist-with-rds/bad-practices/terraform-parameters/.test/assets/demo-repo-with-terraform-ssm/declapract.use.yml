@@ -1,0 +1,18 @@
+declarations: './'
+useCase: lambda-service-with-rds
+variables:
+  organizationName: 'test-org'
+  projectName: 'test-project'
+  databaseName: 'testdb'
+  databaseUserName:
+    cicdUser: 'testdb_cicd'
+    serviceUser: 'testdb_service'
+  databaseTunnelHost:
+    prep: 'localhost'
+    prod: 'localhost'
+  databaseClusterHost:
+    prep: 'localhost'
+    prod: 'localhost'
+  awsAccountId:
+    prep: '123456789012'
+    prod: '123456789012'
