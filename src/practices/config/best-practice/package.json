@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "sdk-aws-s3": "@declapract{check.minVersion('0.1.1')}",
     "sdk-config": "@declapract{check.minVersion('0.1.1')}",
     "zod": "@declapract{check.minVersion('4.0.0')}"
   }

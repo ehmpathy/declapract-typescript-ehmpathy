@@ -6,9 +6,12 @@ on:
       working-directory:
         type: string
         description: "the directory from within which to execute terraform commands"
-      github-environment:
+      github-environment-plan:
         type: string
-        description: "the github environment that the apply step will be executed in"
+        description: "github environment for the plan job (prod only; omit for prep — its oidc role is repo-scoped, no env claim)"
+      github-environment-apply:
+        type: string
+        description: "github environment for the apply job (prod only; omit for prep)"
       allow-apply:
         type: boolean
         description: "whether the apply step is enabled. defaults to true on main"
@@ -17,8 +20,12 @@ on:
         description: "creds for aws, specifies the region"
         required: true
         type: string
-      creds-aws-role-arn:
-        description: "creds for aws, specifies the role to assume via oidc"
+      creds-aws-role-arn-plan:
+        description: "oidc role arn for the plan job (readonly)"
+        required: true
+        type: string
+      creds-aws-role-arn-apply:
+        description: "oidc role arn for the apply job"
         required: true
         type: string
 
@@ -29,6 +36,7 @@ permissions:
 jobs:
   plan:
     runs-on: ubuntu-24.04
+    environment: ${{ inputs.github-environment-plan }}
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}
@@ -39,10 +47,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: get aws auth
-        if: ${{ inputs.creds-aws-role-arn }}
+        if: ${{ inputs.creds-aws-role-arn-plan }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.creds-aws-role-arn }}
+          role-to-assume: ${{ inputs.creds-aws-role-arn-plan }}
           aws-region: ${{ inputs.creds-aws-region }}
 
       - name: setup terraform
@@ -73,7 +81,7 @@ jobs:
 
   apply:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment }}
+    environment: ${{ inputs.github-environment-apply }}
     needs: plan
     if: ${{ inputs.allow-apply == true && needs.plan.outputs.has-changes-planned == 'true' }}
     defaults:
@@ -84,10 +92,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: get aws auth
-        if: ${{ inputs.creds-aws-role-arn }}
+        if: ${{ inputs.creds-aws-role-arn-apply }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.creds-aws-role-arn }}
+          role-to-assume: ${{ inputs.creds-aws-role-arn-apply }}
           aws-region: ${{ inputs.creds-aws-region }}
 
       - name: setup terraform

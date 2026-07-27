@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "simple-in-memory-cache": "@declapract{check.minVersion('0.4.3').ifInstalled()}",
-    "simple-on-disk-cache": "@declapract{check.minVersion('1.7.10').ifInstalled()}",
+    "simple-on-disk-cache": "@declapract{check.minVersion('1.7.11').ifInstalled()}",
     "with-simple-cache": "@declapract{check.minVersion('0.16.2').ifInstalled()}"
   }
 }

@@ -3,14 +3,17 @@ import {
   type DeclaredGithubBranch,
   DeclaredGithubBranchProtection,
   DeclaredGithubEnvironment,
+  type DeclaredGithubOrg,
   DeclaredGithubRepo,
   DeclaredGithubRepoConfig,
   DeclaredGithubRepoRuleset,
+  type DeclaredGithubTeam,
   DeclaredGithubTeamRepoAccess,
   getDeclastructGithubProvider,
 } from 'declastruct-github';
 import { type DomainEntity, RefByUnique } from 'domain-objects';
 import { UnexpectedCodePathError } from 'helpful-errors';
+import { genLogMethods } from 'sdk-logs';
 
 import pkgJson from '../../package.json';
 
@@ -30,12 +33,8 @@ export const getProviders = async (): Promise<DeclastructProvider[]> => [
       },
     },
     {
-      log: {
-        info: () => {},
-        debug: () => {},
-        warn: console.warn,
-        error: console.error,
-      },
+      // MUST be an sdk-logs logger — 1.6.0 DAOs read log._.level via as-procedure
+      log: genLogMethods(),
     },
   ),
 ];
@@ -128,9 +127,15 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     restrictions: null,
   });
 
-  // grant releasers team access to the repo (required before they can be environment reviewers)
-  const teamReleasersAccess = DeclaredGithubTeamRepoAccess.as({
-    team: { org: { login: '@declapract{variable.organizationName}' }, slug: 'releasers' },
+  // ref the releasers team
+  const teamReleasers = RefByUnique.as<typeof DeclaredGithubTeam>({
+    org: RefByUnique.as<typeof DeclaredGithubOrg>({ login: '@declapract{variable.organizationName}' }),
+    slug: 'releasers',
+  });
+
+  // grant the releasers team push access to the repo (standalone; no env depends on it)
+  const teamReleasersRepoAccess = DeclaredGithubTeamRepoAccess.as({
+    team: teamReleasers,
     repo,
     permission: 'push', // write access needed to deploy
   });
@@ -141,32 +146,56 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     name: 'production-on-main',
     reviewers: null, // no approval required — PR merge is the gate
     waitTimer: null, // no delay
-    deploymentBranchPolicy: { customBranches: ['main'] }, // only main branch
+    deploymentBranchPolicy: {
+      // accept both the main branch and `v*` release tags: prod deploys are
+      // triggered by a release tag cut from main (see protect-release-tags
+      // ruleset below), so the ref gate must admit that tag. a branch-only
+      // policy would have the environment reject the tag-triggered deploy.
+      // (requires declastruct-github >=1.7.2 for tag-target customPatterns.)
+      customPatterns: [
+        { name: 'main', target: 'branch' },
+        { name: 'v*', target: 'tag' },
+      ],
+    },
     preventSelfReview: false,
   });
 
-  // declare environment for production deployments from other branches (requires approval)
-  const envProductionOnElse = DeclaredGithubEnvironment.as({
+  // declare environment for adhoc production apply from a non-main branch
+  // .why = github env "required reviewers" is Enterprise-only; on a private repo
+  //        under the Free/Pro/Team plan the api returns 422 for BOTH team and user
+  //        reviewers. so this env carries NO protection rule — the human gate lives
+  //        in aws via an `actor_id` allowlist on this env's sts trust statement
+  //        (declared org-wide in aws.auth). do NOT add `reviewers` here (it will 422 on apply).
+  const envProductionOnElseApply = DeclaredGithubEnvironment.as({
     repo,
-    name: 'production-on-else',
-    reviewers: { users: null, teams: ['releasers'] },
-    waitTimer: null, // no delay once approved
+    name: 'production-on-else-apply',
+    reviewers: null, // gate is the aws actor_id allowlist, not a github reviewer
+    waitTimer: null,
     deploymentBranchPolicy: null, // any branch
-    preventSelfReview: false, // self-approval allowed if in reviewers list
+    preventSelfReview: false,
+  });
+
+  // declare environment for production plan from any branch (readonly, no approval)
+  const envProductionOnElsePlan = DeclaredGithubEnvironment.as({
+    repo,
+    name: 'production-on-else-plan',
+    reviewers: null, // no approval required — plan is readonly, safe
+    waitTimer: null, // no delay
+    deploymentBranchPolicy: null, // any branch
+    preventSelfReview: false,
   });
 
   // restrict who may cut `v*` release tags to the rhelease app only
-  // .why = prod apply is gated on a version tag cut from main; if anyone could push a
-  //        `v*` tag, that gate is bypassable. this ruleset blocks creation, update, and
-  //        deletion of `v*` tags for everyone except the rhelease app — the github half
-  //        of the prod-apply oidc guarantee, and the immutability of released tags
+  // .why = prod apply is gated on a release tag cut from main; if anyone could push a
+  //        `v*` tag, that gate is bypassable. this ruleset blocks create/move/delete of
+  //        `v*` tags for everyone except the rhelease app (the github half of the oidc guarantee)
   const rulesetReleaseTags = DeclaredGithubRepoRuleset.as({
     repo,
     name: 'protect-release-tags',
     target: 'tag',
     enforcement: 'active',
 
-    // only the rhelease github app may write `v*` tags
+    // only the rhelease github app may create `v*` tags
     bypassActors: [
       {
         actorId: 2472031, // rhelease github app id (gh api /apps/rhelease)
@@ -191,9 +220,10 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     repo,
     repoConfig,
     branchMainProtection,
-    teamReleasersAccess, // must come before environments that reference this team
+    teamReleasersRepoAccess,
     envProductionOnMain,
-    envProductionOnElse,
+    envProductionOnElseApply,
+    envProductionOnElsePlan,
     rulesetReleaseTags,
   ];
 };

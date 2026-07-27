@@ -7,9 +7,12 @@ on:
         type: string
         description: "the stage to execute against"
         required: true
-      github-environment:
+      github-environment-plan:
         type: string
-        description: "the github environment that the apply step will be executed in"
+        description: "github environment for the plan job (prod only; omit for prep — its oidc role is repo-scoped, no env claim)"
+      github-environment-apply:
+        type: string
+        description: "github environment for the apply job (prod only; omit for prep)"
       allow-apply:
         type: boolean
         description: "whether the apply step is enabled. defaults to true on main"
@@ -18,9 +21,13 @@ on:
         type: string
         description: creds for aws, specifies the region
         required: true
-      creds-aws-role-arn:
+      creds-aws-role-arn-plan:
         type: string
-        description: creds for aws, specifies the role to assume via oidc
+        description: "oidc role arn for the plan job (readonly)"
+        required: true
+      creds-aws-role-arn-apply:
+        type: string
+        description: "oidc role arn for the apply job"
         required: true
 
 permissions:
@@ -33,7 +40,13 @@ jobs:
 
   plan:
     runs-on: ubuntu-24.04
+    environment: ${{ inputs.github-environment-plan }}
     needs: [install]
+    # opt into the readonly plan grant for every step in this job (tunnel + plan
+    # both call getConfig): under plan the oidc role can read only the for-plan
+    # db credential, so config must select it and tolerate the denied secrets.
+    env:
+      GRANT: plan
     outputs:
       has-changes-planned: ${{ steps.evaluate-plan.outputs.has-changes-planned }}
     steps:
@@ -53,17 +66,23 @@ jobs:
           fail-on-cache-miss: true
 
       - name: get aws auth
-        if: ${{ inputs.creds-aws-role-arn }}
+        if: ${{ inputs.creds-aws-role-arn-plan }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.creds-aws-role-arn }}
+          role-to-assume: ${{ inputs.creds-aws-role-arn-plan }}
           aws-region: ${{ inputs.creds-aws-region }}
 
+      # register the ghlitch operator role so `rhx use.vpc.tunnel` resolves
+      - name: prepare:rhachet
+        run: npm run prepare:rhachet --if-present
+
       - name: vpc:tunnel:open
-        run: ACCESS=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
+        run: npx rhx use.vpc.tunnel --env ${{ inputs.stage }}
 
       - name: plan
-        run: ACCESS=${{ inputs.stage }} npm run provision:schema:plan | tee ./plan.log
+        run: |
+          set -o pipefail
+          ACCESS=${{ inputs.stage }} npm run provision:schema:plan | tee ./plan.log
 
       - name: evaluate plan
         id: evaluate-plan
@@ -88,7 +107,7 @@ jobs:
 
   apply:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment }}
+    environment: ${{ inputs.github-environment-apply }}
     needs: [install, plan]
     if: ${{ inputs.allow-apply == true && needs.plan.outputs.has-changes-planned == 'true' }}
     steps:
@@ -108,14 +127,18 @@ jobs:
           fail-on-cache-miss: true
 
       - name: get aws auth
-        if: ${{ inputs.creds-aws-role-arn }}
+        if: ${{ inputs.creds-aws-role-arn-apply }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.creds-aws-role-arn }}
+          role-to-assume: ${{ inputs.creds-aws-role-arn-apply }}
           aws-region: ${{ inputs.creds-aws-region }}
 
+      # register the ghlitch operator role so `rhx use.vpc.tunnel` resolves
+      - name: prepare:rhachet
+        run: npm run prepare:rhachet --if-present
+
       - name: vpc:tunnel:open
-        run: ACCESS=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
+        run: npx rhx use.vpc.tunnel --env ${{ inputs.stage }}
 
       - name: apply
         run: ACCESS=${{ inputs.stage }} npm run provision:schema:apply

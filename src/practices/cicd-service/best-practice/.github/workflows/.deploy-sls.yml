@@ -7,16 +7,15 @@ on:
         type: string
         description: "the stage to deploy to"
         required: true
-      github-environment:
+      github-environment-apply:
         type: string
-        description: "the github environment that the apply step will be executed in"
-        required: true
+        description: "github environment for the deploy jobs (prod only; omit for prep — its oidc role is repo-scoped, no env claim)"
       creds-aws-region:
         description: "creds for aws, specifies the region"
         required: true
         type: string
-      creds-aws-role-arn:
-        description: "creds for aws, specifies the role to assume via oidc"
+      creds-aws-role-arn-apply:
+        description: "oidc role arn for the deploy jobs"
         required: true
         type: string
       needs-vpn-for-acceptance:
@@ -39,6 +38,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-24.04
+    environment: ${{ inputs.github-environment-apply }}
     needs: [install]
     steps:
       - name: checkout
@@ -52,7 +52,7 @@ jobs:
       - name: configure aws credentials (oidc)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.creds-aws-role-arn }}
+          role-to-assume: ${{ inputs.creds-aws-role-arn-apply }}
           aws-region: ${{ inputs.creds-aws-region }}
 
       - name: node-modules cache get
@@ -67,6 +67,7 @@ jobs:
 
   assure:
     runs-on: ubuntu-24.04
+    environment: ${{ inputs.github-environment-apply }}
     needs: [install, deploy]
     steps:
       - name: checkout
@@ -80,7 +81,7 @@ jobs:
       - name: configure aws credentials (oidc)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.creds-aws-role-arn }}
+          role-to-assume: ${{ inputs.creds-aws-role-arn-apply }}
           aws-region: ${{ inputs.creds-aws-region }}
 
       - name: node-modules cache get
@@ -90,14 +91,14 @@ jobs:
           key: ${{ needs.install.outputs.node-modules-cache-key }}
           fail-on-cache-miss: true
 
-      # .why = keyrack.yml can extend other manifests via symlinks (e.g., .agent/repo=ehmpathy/role=mechanic/keyrack.yml)
-      #        prepare:rhachet creates these symlinks so keyrack.source() can hydrate extended keys
+      # register the ghlitch operator role so `rhx use.vpc.tunnel` resolves
       - name: prepare:rhachet
+        if: inputs.needs-vpn-for-acceptance
         run: npm run prepare:rhachet --if-present
 
       - name: vpc:tunnel:open
         if: inputs.needs-vpn-for-acceptance
-        run: ACCESS=${{ inputs.stage }} .agent/repo=.this/skills/use.vpc.tunnel.ts
+        run: npx rhx use.vpc.tunnel --env ${{ inputs.stage }}
 
       - name: test:acceptance
         run: ACCESS=${{ inputs.stage }} npm run test:acceptance
@@ -113,6 +114,7 @@ jobs:
 
   prune:
     runs-on: ubuntu-24.04
+    environment: ${{ inputs.github-environment-apply }}
     needs: [install, deploy]
     steps:
       - name: checkout
@@ -126,7 +128,7 @@ jobs:
       - name: configure aws credentials (oidc)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.creds-aws-role-arn }}
+          role-to-assume: ${{ inputs.creds-aws-role-arn-apply }}
           aws-region: ${{ inputs.creds-aws-region }}
 
       - name: node-modules cache get
