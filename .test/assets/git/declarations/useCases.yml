@@ -1,0 +1,18 @@
+# minimal use case for the gitignore integration test
+#
+# .why = BOTH practices declare the repo-root `.gitignore`. that contention is what
+#        this fixture exists to observe, so the use case must carry both -- exactly
+#        as `typescript-project` does in the real src/useCases.yml.
+use-cases:
+  typescript-project:
+    practices:
+      - git
+      - rhachet
+
+  # .why = the case that motivates the rhachet declaration at all: a repo which takes
+  #        `rhachet` WITHOUT `git` still writes `.agent/.cache/`, so it must still get
+  #        the ignore for it. no real use-case does this today -- which is exactly why
+  #        it needs a test. the gap is latent, so prod cannot reveal it.
+  rhachet-only:
+    practices:
+      - rhachet

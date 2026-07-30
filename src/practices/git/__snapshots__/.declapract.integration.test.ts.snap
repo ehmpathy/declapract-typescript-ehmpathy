@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`gitignore practices given: [case1] a repo whose .gitignore lacks both cache dirs when: [t0] before any apply then: the input file matches snapshot: .gitignore -- before 1`] = `
+"dist
+coverage
+.idea
+node_modules
+"
+`;
+
+exports[`gitignore practices given: [case1] a repo whose .gitignore lacks both cache dirs when: [t3] both practices are applied a second time then: the settled file matches snapshot: .gitignore -- settled 1`] = `
+"*.bak.*
+*.local.json
+*.log
+*.tsbuildinfo
+.agent/.cache/
+.artifact
+.cache/
+.env
+.idea
+.log/slowtest/
+.serverless
+.temp
+.terraform
+.terraform.lock
+.vscode
+.yalc
+coverage
+dist
+node_modules
+!.test*/**/node_modules
+!.test*/**/node_modules/**
+"
+`;
+
+exports[`gitignore practices given: [case2] a repo whose use case has rhachet but NOT git when: [t0] before any apply then: the input file matches snapshot: .gitignore -- rhachet only -- before 1`] = `
+"dist
+node_modules
+.idea
+"
+`;
+
+exports[`gitignore practices given: [case2] a repo whose use case has rhachet but NOT git when: [t1] the rhachet practice is applied then: the settled file matches snapshot: .gitignore -- rhachet only 1`] = `
+".agent/.cache/
+.idea
+dist
+node_modules
+!.test*/**/node_modules
+!.test*/**/node_modules/**
+"
+`;

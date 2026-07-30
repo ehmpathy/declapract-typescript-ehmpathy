@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`.gitignore best practice cache dirs are declared should emit a declared file that matches snapshot: .gitignore -- as declared by git 1`] = `
+"*.bak.*
+*.local.json
+*.log
+*.tsbuildinfo
+.agent/.cache/
+.artifact
+.cache/
+.env
+.log/slowtest/
+.serverless
+.temp
+.terraform
+.terraform.lock
+.vscode
+.yalc
+coverage
+dist
+node_modules
+!.test*/**/node_modules
+!.test*/**/node_modules/**
+"
+`;

@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`.gitignore best practice (rhachet) cache dir is declared should emit a declared file that matches snapshot: .gitignore -- as declared by rhachet 1`] = `
+".agent/.cache/
+node_modules
+!.test*/**/node_modules
+!.test*/**/node_modules/**
+"
+`;
