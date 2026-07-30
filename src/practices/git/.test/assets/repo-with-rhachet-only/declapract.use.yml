@@ -1,0 +1,6 @@
+# .note = declarations dir is symlinked by the test
+# .why  = `rhachet-only` deliberately omits the `git` practice, to prove rhachet
+#         declares the ignore for the dir rhachet writes without help from a
+#         neighbor practice
+declarations: 'declarations/declapract.declare.yml'
+useCase: rhachet-only

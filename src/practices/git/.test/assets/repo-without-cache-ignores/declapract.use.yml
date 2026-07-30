@@ -1,0 +1,9 @@
+# .note = declarations dir is symlinked by the test
+# .note = NO `variables:` block. the rule's top gotcha is that apply evaluates the
+#         whole practice, so every `@declapract{variable.*}` it references must be
+#         defined here. both `git` and `rhachet` reference ZERO -- verified by grep,
+#         and by this fixture, which applies clean without any. a variables block
+#         copied from another fixture "to be safe" would be a claim the practices
+#         make demands they do not.
+declarations: 'declarations/declapract.declare.yml'
+useCase: typescript-project
