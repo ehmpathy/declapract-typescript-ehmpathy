@@ -11,6 +11,7 @@ use-cases:
       - errors
       - format
       - git
+      - git-merge-packagejson
       - lint
       - node
       - nonpublished-modules
