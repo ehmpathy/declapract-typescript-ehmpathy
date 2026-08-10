@@ -30,6 +30,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }} # per [workflow] x [branch, tag] x [event]
   cancel-in-progress: true # only cancel work flows on non-latest commits
 
+permissions:
+  id-token: write # required for oidc; a called workflow cannot exceed its caller's grant
+  contents: read
+
 jobs:
   test:
     uses: ./.github/workflows/.test.yml
