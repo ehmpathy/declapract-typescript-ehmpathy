@@ -1,0 +1,6 @@
+# .note = declarations dir is symlinked by the test
+# .why  = `typescript-project` here carries `cicd-common` ALONE, so the apply exercises
+#         the workflow declarations and no others. the claim under test is about one
+#         file's delivery, not about a full scaffold
+declarations: 'declarations/declapract.declare.yml'
+useCase: typescript-project

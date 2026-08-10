@@ -1,0 +1,21 @@
+# .what = a workflow NO practice declares — it belongs to the consumer alone
+# .why = wish constraint 2: "the template's reach ends at the refs it owns. do not silently
+#        rewrite what the practice does not own."
+# .note = the tag refs below are DELIBERATE and must NOT be pinned. they are what the test
+#         asserts survives untouched. a "helpful" pin here makes the clamp vacuous
+name: consumer-owned
+
+on:
+  workflow_dispatch:
+
+jobs:
+  whatever:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20

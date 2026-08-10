@@ -1,0 +1,8 @@
+# minimal declarations for the action-pin integration test
+#
+# .note = this dir lives OUTSIDE src/practices on purpose. declapract deep-walks
+#         src/practices/** through symlinks, so a fixture that symlinks back to an
+#         ancestor it lives under forms a cycle -> ELOOP under full-suite load.
+declare:
+  practices: practices
+  use-cases: useCases.yml

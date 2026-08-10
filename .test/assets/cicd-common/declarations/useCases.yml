@@ -1,0 +1,11 @@
+# minimal use case for the action-pin integration test
+#
+# .why = only `cicd-common` is carried. the claim under test is that declapract's
+#        default EQUALS path delivers a pinned workflow template to a consumer
+#        verbatim, and one practice that declares one workflow is the whole of it.
+#        a broader use case would slow every apply with declarations that have no
+#        bearing on the pin.
+use-cases:
+  typescript-project:
+    practices:
+      - cicd-common

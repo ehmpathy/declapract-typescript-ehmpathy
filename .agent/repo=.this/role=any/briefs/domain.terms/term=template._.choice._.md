@@ -8,6 +8,9 @@ term.synonyms.forbidden:
 - boilerplate
 - scaffold
 
+⚠️ `fixture` is forbidden **as a name for a template** and canonical in its own sense — a file that
+is an input to a test. see `term=fixture._.choice._.md`.
+
 ## .what
 
 a plain file under `best-practice/` that is **copied into a consumer repo** — the literal content a

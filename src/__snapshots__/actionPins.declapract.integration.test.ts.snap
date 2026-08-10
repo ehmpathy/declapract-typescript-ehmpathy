@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`action pins given: [case1] every yaml template declared under a practice .github tree when: [t2] the refs are read together then: the pin table reads as declared -- if the diff surprises you, a bump reached more or fewer sites than intended 1`] = `
+[
+  "Entle/action-pagerduty-alert@e6ca54cd88948b8a50f5bb1071dfa5bdb149ce7e — 1 site",
+  "actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 — 19 sites",
+  "actions/checkout@11d5960a326750d5838078e36cf38b85af677262 — 22 sites",
+  "actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 — 3 sites",
+  "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 — 1 site",
+  "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 — 18 sites",
+  "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 — 1 site",
+  "amannn/action-semantic-pull-request@e32d7e603df1aa1ba07e981f2a23455dee596825 — 1 site",
+  "aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a — 13 sites",
+  "expo/expo-github-action@c7b66a9c327a43a8fa7c0158e7f30d6040d2481e — 2 sites",
+  "hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd — 3 sites",
+  "pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 — 1 site",
+]
+`;
+
+exports[`action pins given: [case2] every yaml under this repo's own .github tree when: [t2] the refs are read together then: the pin table reads as declared -- if the diff surprises you, a bump reached more or fewer sites than intended 1`] = `
+[
+  "actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 — 12 sites",
+  "actions/checkout@11d5960a326750d5838078e36cf38b85af677262 — 12 sites",
+  "actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 — 3 sites",
+  "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 — 1 site",
+  "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 — 11 sites",
+  "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 — 1 site",
+  "amannn/action-semantic-pull-request@e32d7e603df1aa1ba07e981f2a23455dee596825 — 1 site",
+  "aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a — 4 sites",
+  "hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd — 1 site",
+  "pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 — 1 site",
+]
+`;
+
+exports[`action pins given: [case6] a corpus that is defective on purpose, one line per defect when: [t0] the defective corpus is read the way the walk reads a real one then: and the pin table still reads, defects and all: the pin table over a defective corpus 1`] = `
+[
+  "actions/checkout@11d5960a326750d5838078e36cf38b85af677262 + deadbeefdeadbeefdeadbeefdeadbeefdeadbeef + v4 — 3 sites",
+  "actions/setup-node@cafebabecafebabecafebabecafebabecafebabe — 1 site",
+  "pnpm/action-setup@b906aff — 1 site",
+]
+`;
+
+exports[`action pins given: [case6] a corpus that is defective on purpose, one line per defect when: [t0] the defective corpus is read the way the walk reads a real one then: the drift report names the repo and both shas -- which is what tells a maintainer the bump reached some sites and missed others: drifted -- the report a half-applied bump produces 1`] = `
+[
+  "actions/checkout — 11d5960a326750d5838078e36cf38b85af677262 vs deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+]
+`;
+
+exports[`action pins given: [case6] a corpus that is defective on purpose, one line per defect when: [t0] the defective corpus is read the way the walk reads a real one then: the unpinned report names each offender with a path an editor accepts -- if this snapshot ever carries an absolute path, the label named the machine that ran the suite: unpinned -- the report a tag ref and a short sha produce 1`] = `
+[
+  "src/practices/cicd-demo/best-practice/.github/workflows/deploy.yml:1 — actions/checkout@v4",
+  "src/practices/cicd-demo/best-practice/.github/workflows/deploy.yml:5 — pnpm/action-setup@b906aff",
+]
+`;
+
+exports[`action pins given: [case6] a corpus that is defective on purpose, one line per defect when: [t0] the defective corpus is read the way the walk reads a real one then: the untailed report names each ref whose sha records no provenance: untailed -- the report a bare sha produces 1`] = `
+[
+  "src/practices/cicd-demo/best-practice/.github/workflows/deploy.yml:1 — actions/checkout@v4",
+  "src/practices/cicd-demo/best-practice/.github/workflows/deploy.yml:2 — actions/setup-node@cafebabecafebabecafebabecafebabecafebabe",
+]
+`;
+
+exports[`action pins given: [case6] a corpus that is defective on purpose, one line per defect when: [t1] the corpus is empty then: every report reads as empty rather than absent: the reports over a corpus of zero refs 1`] = `
+{
+  "drifted": [],
+  "table": [],
+  "unpinned": [],
+  "untailed": [],
+}
+`;

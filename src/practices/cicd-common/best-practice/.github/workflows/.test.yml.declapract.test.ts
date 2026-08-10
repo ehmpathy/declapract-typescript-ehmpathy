@@ -2,6 +2,17 @@ import { given, then, when } from 'test-fns';
 
 import { fix } from './.test.yml.declapract';
 
+/**
+ * .note = the two strings below are synthetic, not copies of the real `.test.yml`. they are
+ *         pass-through props: this unit proves only that `fix` discards its input and echoes
+ *         `declaredFileContents`. their `actions/checkout@v4` needs no pin — a pin here would
+ *         read as though the suite verified real content, and it compares a hand-written string
+ *         to itself through a mocked context.
+ * .note = delivery of the real pinned file is proven one grain up, by an executed pipeline —
+ *         `[case2]` of `src/practices/cicd-common/.declapract.integration.test.ts`. that case
+ *         exists because `.test.yml` is the only pinned template with a hand-written fix, and
+ *         `src/actionPins.declapract.integration.test.ts` asserts that set stays exactly one file wide
+ */
 describe('.test.yml.declapract', () => {
   given('a workflow file with outdated content', () => {
     const outdatedContent = `name: .test
