@@ -1,0 +1,4 @@
+# minimal declarations for the pnpm bad-practice integration tests
+declare:
+  practices: practices
+  use-cases: useCases.yml

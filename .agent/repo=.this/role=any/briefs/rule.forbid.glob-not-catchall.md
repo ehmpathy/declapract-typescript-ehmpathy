@@ -70,5 +70,5 @@ export const fix: FileFixFunction = (contents, context) => {
 
 ## .see also
 
-- `src/practices/tests/bad-practices/old-acceptance-dir-location/` — the source of this lesson
+- `src/practices/tests-any/bad-practices/old-acceptance-dir-location/` — the source of this lesson
 

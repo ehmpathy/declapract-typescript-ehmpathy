@@ -24,9 +24,9 @@ conflate and the conflation has a measured cost.
 
 - `src/practices/git/best-practice/.gitignore.declapract.ts` — declares the repo-root `.gitignore`
 - `src/practices/rhachet/best-practice/.gitignore.declapract.ts` — declares the same file
-- `src/practices/typescript/best-practice/package.json.declapract.ts:3` — a declaration that
+- `src/practices/typescript-node/best-practice/package.json.declapract.ts:3` — a declaration that
   imports `src/utils/readFile`, at the same depth, from inside `best-practice/`
-- `src/practices/tests/best-practice/jest.unit.env.ts.declapract.ts:6` — likewise
+- `src/practices/tests-node/best-practice/jest.unit.env.ts.declapract.ts:6` — likewise
 - `.agent/repo=.this/role=any/briefs/declapract-check-semantics.md` — the inverted throw/return
   contract a declaration obeys
 

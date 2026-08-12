@@ -1,6 +1,18 @@
 # define the different types of combinations of the best practices that we support
 use-cases:
-  typescript-project:
+  # the runtime-agnostic platform baseline: every practice shared by a node project and an
+  # expo app alike (agent tools, package manager, domain organization, lint/format, git).
+  # extracted so `typescript-project` and `app-react-native-expo` COMPOSE it via `extends`
+  # rather than hand-copy it — a practice added HERE reaches both consumers, so neither can
+  # silently drift from the baseline (the exact bug the fix-expo wish exists to fix).
+  #
+  # .note = declapract's `extends` is NON-TRANSITIVE (it pulls a usecase's OWN base
+  #         `.practices`, never its resolved-with-extends set — see declapract#17). so a
+  #         consumer that wants this core must extend `typescript-project-core` DIRECTLY; it
+  #         cannot inherit it through a usecase that itself extends core. every consumer below
+  #         does. the `getAllPracticesForUsecase` characterization test pins every usecase's
+  #         resolved set, so this extraction is proven to change zero practice for any repo.
+  typescript-project-core:
     practices:
       - cache
       - cicd-common
@@ -16,12 +28,20 @@ use-cases:
       - nonpublished-modules
       - package-json-order
       - rhachet
-      - tests
-      - typescript
+      - tests-any
+      - typescript-any
       - pnpm
+  typescript-project:
+    extends:
+      - typescript-project-core
+    practices:
+      # the node runtime delta atop the shared core: the tsc build + node jest + rate-limit lib
+      - tests-node
+      - typescript-node
       - bottleneck
   npm-package:
     extends:
+      - typescript-project-core # non-transitive: must extend core directly (declapract#17)
       - typescript-project
     practices:
       - cicd-package
@@ -29,6 +49,7 @@ use-cases:
       - provision-github
   lambda-service:
     extends:
+      - typescript-project-core # non-transitive: must extend core directly (declapract#17)
       - typescript-project
     practices:
       - artifact
@@ -49,29 +70,28 @@ use-cases:
       - uuid
   lambda-service-with-rds:
     extends:
-      - typescript-project # https://github.com/ehmpathy/declapract/issues/17
+      - typescript-project-core # https://github.com/ehmpathy/declapract/issues/17
+      - typescript-project
       - lambda-service
     practices:
       - persist-with-rds
-  lambda-service-with-dynamodb: # note that projects can still use both by specifying the `declapract.use-case: [lambda-service-with-dynamodb, lambda-service-with-rds]` since we allow use-cases to add together. `use-cases` just enable us to enforce a "minimum" set of practices
+  lambda-service-with-dynamodb: # projects can use both at once via `declapract.use-case: [lambda-service-with-dynamodb, lambda-service-with-rds]` since use-cases add together. a use-case just enforces a "minimum" set of practices
     extends:
-      - typescript-project # https://github.com/ehmpathy/declapract/issues/17
+      - typescript-project-core # https://github.com/ehmpathy/declapract/issues/17
+      - typescript-project
       - lambda-service
     practices:
       - persist-with-dynamodb
   app-react-native-expo:
+    extends:
+      - typescript-project-core # composes the shared platform baseline; only the expo delta is listed below
     practices:
-      - cicd-common
+      # the expo runtime delta atop the shared core: the expo cicd, the metro/expo lint,
+      # and the expo cuts of the typescript/tests triads. NO terraform-common — an expo app
+      # owns no terraform-managed infra (declastruct is the go-forward; see define.declastruct-goforward.md).
       - cicd-app-react-native-expo
-      - conventional-commits
-      - husky
-      - format
-      - git
-      - node
-      - nonpublished-modules
-      - package-json-order
-      - terraform-common
       - provision-github
-      - lint
       - lint-react
       - lint-react-native
+      - tests-expo
+      - typescript-expo

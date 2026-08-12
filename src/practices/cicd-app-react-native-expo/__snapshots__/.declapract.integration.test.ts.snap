@@ -1,0 +1,289 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`app-react-native-expo — graceful migration of an app-protools-shaped repo given: [case1] a customized npm expo repo on the deprecated src layers when: [t5c] the expo deploy workflow is migrated npm -> pnpm then: the before + after .deploy-expo.yml match snapshot: .deploy-expo.yml — after migration 1`] = `
+"name: .deploy-expo
+
+on:
+  workflow_call:
+    inputs:
+      stage:
+        type: string
+        description: "the stage of infrastructure to deploy against (e.g., prod, prep)"
+        required: true
+      build:
+        type: string
+        description: "the build to deploy (e.g., production, preview, development)"
+        required: true
+      github-environment:
+        type: string
+        description: "the github environment that the apply step will be executed in"
+        required: true
+      creds-aws-region:
+        type: string
+        description: creds for aws, specifies the region
+        required: true
+      creds-aws-role-arn:
+        type: string
+        description: creds for aws, specifies the role to assume via oidc
+        required: true
+      app-web-deployment-s3-bucket:
+        type: string
+        description: the s3 bucket within which the web app is deployed
+        required: false
+
+    secrets:
+      expo-token:
+        required: true
+        description: required credentials to authenticate with expo eas
+
+permissions:
+  id-token: write # required for oidc
+  contents: read
+
+jobs:
+  install:
+    uses: ./.github/workflows/.install.yml
+
+  deploy-os:
+    strategy:
+      fail-fast: false # allow them to independently succeed; an issue on one platform shouldn't block others
+      matrix:
+        platform:
+          - ios
+          - android
+    name: \${{ matrix.platform }}
+    runs-on: ubuntu-24.04
+    environment: \${{ inputs.github-environment }}
+    needs: [install]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: set node-version
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: configure aws credentials (oidc)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: \${{ inputs.creds-aws-role-arn }}
+          aws-region: \${{ inputs.creds-aws-region }}
+
+      - name: node-modules cache get
+        uses: actions/cache/restore@v4
+        with:
+          path: ./node_modules
+          key: \${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
+
+      - name: setup expo
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: \${{ secrets.expo-token }}
+
+      - name: deploy ota update
+        run: eas update --auto --channel \${{ inputs.build }} --platform \${{ matrix.platform }} --non-interactive
+
+      - name: deploy app binary
+        run: eas build --profile \${{ inputs.build }} --platform \${{ matrix.platform }} --non-interactive --no-wait \${{ inputs.build == 'production' && '--auto-submit' || '' }}
+
+  deploy-web:
+    name: web
+    runs-on: ubuntu-24.04
+    environment: \${{ inputs.github-environment }}
+    needs: [install]
+    if: \${{ inputs.stage == 'prod' && inputs.app-web-deployment-s3-bucket }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: set node-version
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: configure aws credentials (oidc)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: \${{ inputs.creds-aws-role-arn }}
+          aws-region: \${{ inputs.creds-aws-region }}
+
+      - name: node-modules cache get
+        uses: actions/cache/restore@v4
+        with:
+          path: ./node_modules
+          key: \${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
+
+      - name: setup expo
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: \${{ secrets.expo-token }}
+
+      - name: compile
+        run: npm run build:web
+
+      - name: deploy
+        run: aws s3 sync ./dist \${{ inputs.app-web-deployment-s3-bucket }} --delete --cache-control max-age=60,stale-while-revalidate=604800 # todo: fine tune the cache control; https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#stale-while-revalidate
+"
+`;
+
+exports[`app-react-native-expo — graceful migration of an app-protools-shaped repo given: [case1] a customized npm expo repo on the deprecated src layers when: [t5c] the expo deploy workflow is migrated npm -> pnpm then: the before + after .deploy-expo.yml match snapshot: .deploy-expo.yml — before 1`] = `
+"name: .deploy-expo
+
+on:
+  workflow_call:
+    inputs:
+      stage:
+        type: string
+        required: true
+
+jobs:
+  deploy-os:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: set node-version
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: \${{ runner.os }}-node-\${{ hashFiles('package-lock.json') }}
+
+      - name: install
+        run: npm ci
+"
+`;
+
+exports[`app-react-native-expo — graceful migration of an app-protools-shaped repo given: [case1] a customized npm expo repo on the deprecated src layers when: [t6] the migration is re-applied then: the before + settled package.json match snapshot: package.json — after migration 1`] = `
+"{
+  "name": "app-protools-native",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.31.7",
+  "scripts": {
+    "install:deps": "npm install",
+    "start": "expo start",
+    "start:hot:proxy": "npx local-ssl-proxy --source 3447 --target 8081",
+    "start:hot:prep": "STAGE=prep npx expo start --clear --dev-client",
+    "start:hot:prep:link": "echo '🚀 https://localhost.protools.prep.ahbode.dev:3447'",
+    "start:hot:prep:proxy": "npm run start:hot:prep:link && npm run start:hot:proxy",
+    "start:hot:prod": "STAGE=prod npx expo start --clear --dev-client",
+    "start:hot:prod:link": "echo '🚀 https://localhost.protools.ahbode.dev:3447'",
+    "start:hot:prod:proxy": "npm run start:hot:prod:link && npm run start:hot:proxy",
+    "start:cold:proxy": "npx local-ssl-proxy --source 3449 --target 3000",
+    "start:cold:prep": "npm run build:web && npx serve dist --single",
+    "start:cold:prep:link": "echo '🚀 https://localhost.protools.prep.ahbode.dev:3449'",
+    "start:cold:prep:proxy": "echo npm run start:cold:prep:link && npm run start:cold:proxy",
+    "start:cold:prod": "npm run build:web && npx serve dist --single",
+    "start:cold:prod:link": "echo '🚀 https://localhost.protools.ahbode.dev:3449'",
+    "register:device:apple:info": "echo 'learn more here https://docs.expo.dev/build/internal-distribution/'",
+    "register:device:apple:inclusions:rebuild:prod": "npx eas build --platform ios --clear-cache",
+    "register:device:apple:inclusions:rebuild:prep": "npx eas build --profile development --platform ios --clear-cache",
+    "register:device:apple:add": "echo 'register an apple device to allow it to install internal builds' && eas device:create && npm run register:device:apple:inclusions:rebuild",
+    "register:device:apple:list": "eas device:list",
+    "register:device:apple:delete": "eas device:delete",
+    "register:device:apple:rename": "eas device:rename",
+    "register:profile:apple:list": "echo 'see list here https://developer.apple.com/account/resources/profiles/list'",
+    "build:prep:ios": "eas build --profile development --platform ios --non-interactive",
+    "build:prep:android": "eas build --profile development --platform android --non-interactive",
+    "deploy:prod:ios:metadata": "eas metadata:push",
+    "deploy:prod": "echo 'use github actions'",
+    "open:store:android": "https://play.google.com/console/u/0/developers/",
+    "open:store:ios": "browser https://appstoreconnect.apple.com/apps/",
+    "fix": "npm run fix:format && npm run fix:lint",
+    "prepare": "if [ -e .git ] && [ -z $CI ]; then npm run prepare:husky && npm run prepare:rhachet; fi",
+    "prepush": "npm run test && npm run build",
+    "preversion": "npm run prepush",
+    "postversion": "git push origin HEAD --tags --no-verify",
+    "prepare:rhachet": "rhachet init --keys --hooks --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher learner operator observer deployer playwright enroller",
+    "upgrade:rhachet": "rhachet upgrade",
+    "test:unit": "set -eu && jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${THOROUGH:-}\\" != \\"true\\" ] && echo '--changedSince=main') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
+    "test:integration": "set -eu && jest -c ./jest.integration.config.ts --forceExit --verbose --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${THOROUGH:-}\\" != \\"true\\" ] && echo '--changedSince=main') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
+    "test:acceptance:locally": "set -eu && npm run build && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
+    "test": "set -eu && npm run test:commits && npm run test:types && npm run test:format && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally",
+    "test:acceptance": "set -eu && npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
+    "test:types": "tsc -p ./tsconfig.json --noEmit",
+    "build": "npm run build:web",
+    "build:web": "npx expo export --platform web"
+  },
+  "devDependencies": {
+    "expo": "54.0.0",
+    "rhachet": "1.43.1",
+    "rhachet-brains-anthropic": "0.4.1",
+    "rhachet-brains-fireworksai": "0.1.3",
+    "rhachet-brains-xai": "0.3.3",
+    "rhachet-roles-bhrain": "0.29.24",
+    "rhachet-roles-bhrowser": "0.1.0",
+    "rhachet-roles-bhuild": "0.21.22",
+    "rhachet-roles-ehmpathy": "1.38.1",
+    "rhachet-roles-ghlitch": "0.2.5",
+    "rhachet-roles-rhachet": "0.1.7",
+    "@jest/globals": "30.2.0",
+    "@types/jest": "30.0.0",
+    "jest": "30.2.0",
+    "esbuild-register": "3.6.0",
+    "test-fns": "1.15.8",
+    "tsx": "4.20.6",
+    "jest-expo": "54.0.0",
+    "@babel/core": "7.24.0",
+    "babel-preset-expo": "12.0.0",
+    "react-test-renderer": "19.0.0",
+    "isomorphic-fetch": "3.0.0",
+    "typescript": "5.4.5"
+  },
+  "dependencies": {
+    "expo": "51.0.22",
+    "expo-dev-client": "4.0.20",
+    "expo-updates": "0.25.21",
+    "domain-objects": "0.31.13",
+    "type-fns": "1.21.3"
+  },
+  "author": "ahbode",
+  "repository": "ahbode/app-protools-native",
+  "homepage": "https://github.com/ahbode/app-protools-native",
+  "bugs": "https://github.com/ahbode/app-protools-native/issues",
+  "pnpm": {
+    "overrides": {
+      "@commitlint/format": "19.9.9",
+      "type-fns": "1.9.9"
+    }
+  }
+}
+"
+`;
+
+exports[`app-react-native-expo — graceful migration of an app-protools-shaped repo given: [case1] a customized npm expo repo on the deprecated src layers when: [t6] the migration is re-applied then: the before + settled package.json match snapshot: package.json — before 1`] = `
+"{
+  "name": "app-protools-shaped",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "install:deps": "npm install",
+    "start": "expo start"
+  },
+  "overrides": {
+    "type-fns": "1.9.9"
+  },
+  "resolutions": {
+    "@commitlint/format": "19.9.9"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testEnvironment": "jsdom"
+  },
+  "devDependencies": {
+    "expo": "54.0.0"
+  }
+}
+"
+`;

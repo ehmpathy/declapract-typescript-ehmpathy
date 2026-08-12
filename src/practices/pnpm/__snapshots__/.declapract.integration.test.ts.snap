@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`pnpm npm→pnpm migration — pipeline given: [case1] a repo mid-migration from npm to pnpm when: [t0] the pnpm practice is applied to package.json then: before + after match snapshot: package.json — after 1`] = `
+"{
+  "name": "app-example-native",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.31.7",
+  "scripts": {
+    "fix:format": "npm run fix:format:prettier",
+    "prepush": "npm run test && npm run build",
+    "fix:deps:expo": "npx expo install --fix"
+  },
+  "pnpm": {
+    "overrides": {
+      "react-refresh": "~0.14.0"
+    }
+  }
+}
+"
+`;
+
+exports[`pnpm npm→pnpm migration — pipeline given: [case1] a repo mid-migration from npm to pnpm when: [t0] the pnpm practice is applied to package.json then: before + after match snapshot: package.json — before 1`] = `
+"{
+  "name": "app-example-native",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.31.7",
+  "scripts": {
+    "fix:format": "npm run fix:format:prettier",
+    "prepush": "npm run test && npm run build",
+    "fix:deps:expo": "npx expo install --fix"
+  },
+  "overrides": {
+    "react-refresh": "~0.14.0"
+  },
+  "resolutions": {
+    "react-refresh": "~0.14.0"
+  }
+}
+"
+`;
+
+exports[`pnpm npm→pnpm migration — pipeline given: [case1] a repo mid-migration from npm to pnpm when: [t1] the pnpm practice is applied to the husky hook then: before + after match snapshot: check.lockfile.sh — after 1`] = `
+"#!/bin/bash
+
+# posix style fn definition; https://stackoverflow.com/a/12469057/3068233
+changed () {
+  git diff --name-only HEAD@{1} HEAD | grep "^$1"
+}
+
+if changed 'pnpm-lock.yaml'; then
+  echo "📦 pnpm-lock.yaml changed. Run 'pnpm install' to update your locally installed dependencies."
+fi
+"
+`;
+
+exports[`pnpm npm→pnpm migration — pipeline given: [case1] a repo mid-migration from npm to pnpm when: [t1] the pnpm practice is applied to the husky hook then: before + after match snapshot: check.lockfile.sh — before 1`] = `
+"#!/bin/bash
+
+# posix style fn definition; https://stackoverflow.com/a/12469057/3068233
+changed () {
+  git diff --name-only HEAD@{1} HEAD | grep "^$1"
+}
+
+if changed 'package-lock.json'; then
+  echo "📦 package-lock.json changed. Run 'npm install' to update your locally installed dependencies."
+fi
+"
+`;

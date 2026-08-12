@@ -1,0 +1,23 @@
+# .note = declarations dir is symlinked by the test to test/assets/expo/declarations
+# .why  = an expo consumer repo, used to prove the node practice's .npmrc contents fn
+#         appends the hoisted-linker block when the expo usecase is in play.
+declarations: 'declarations/declapract.declare.yml'
+useCase: app-react-native-expo
+# .note = the apply evaluates the WHOLE usecase (node + cicd-app-react-native-expo)
+#         before the file-filter narrows to .npmrc, so EVERY variable any file in
+#         those practices references must be defined here, or evaluation throws.
+variables:
+  projectName: app-example-native
+  organizationName: ahbode
+  infrastructureNamespaceId: aaa000
+  awsAccountId:
+    prep: '111111111111'
+    prod: '222222222222'
+  app:
+    web:
+      domain:
+        prep: example.prep.ahbode.dev
+        prod: example.ahbode.dev
+      port:
+        hot: 3447
+        cold: 3449

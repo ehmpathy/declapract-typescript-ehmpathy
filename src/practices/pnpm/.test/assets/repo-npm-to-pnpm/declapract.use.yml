@@ -1,0 +1,7 @@
+# .note = declarations dir is symlinked by the test to test/assets/pnpm/declarations
+# .why  = a repo mid-migration from npm to pnpm, used to prove the pnpm bad-practices
+#         (npm-overrides, husky-lockfile-check) end to end.
+# .note = no variables — the pnpm-repo usecase carries only the pnpm practice, which
+#         references no @declapract{variable.*}.
+declarations: 'declarations/declapract.declare.yml'
+useCase: pnpm-repo

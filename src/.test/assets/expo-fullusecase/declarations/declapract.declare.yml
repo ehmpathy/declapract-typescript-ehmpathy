@@ -1,0 +1,10 @@
+# declarations for the full-usecase evaluation smoke test
+# .why  = the migration fixture curates 11 practices to keep the graceful-migration
+#         assertions legible; this fixture carries the FULL resolved set for
+#         app-react-native-expo (23 practices, extends typescript-project-core), so
+#         executeApply evaluates the REAL usecase shape end-to-end. the point is to
+#         prove the complete usecase resolves + applies without a variable gap or
+#         crash, not just the migration-risk slice.
+declare:
+  practices: practices
+  use-cases: useCases.yml

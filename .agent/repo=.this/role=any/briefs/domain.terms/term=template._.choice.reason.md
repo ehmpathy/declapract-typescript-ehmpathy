@@ -73,7 +73,7 @@ half of them.
 
 **what the over-extension cost:** the sentence *"best-practice files are templates, not a module
 tree"* was recorded as fact and cited five times to defer a refactor. it is false of exactly the
-files it was applied to — and `src/practices/tests/best-practice/jest.unit.env.ts.declapract.ts:6`
+files it was applied to — and `src/practices/tests-node/best-practice/jest.unit.env.ts.declapract.ts:6`
 imports `../../../utils/readFile` from inside `best-practice/`, which is the disproof that sat in
 the same directory the claim describes.
 

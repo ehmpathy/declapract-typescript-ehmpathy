@@ -1,0 +1,36 @@
+# the REAL app-react-native-expo usecase shape, mirrored for the full-usecase smoke.
+# .why  = a copy of src/useCases.yml's typescript-project-core + app-react-native-expo
+#         entries, so executeApply resolves the identical 23-practice set the live
+#         usecase does (extends is non-transitive — the consumer extends core directly).
+#         a drift guard in the smoke test pins this fixture's resolved set === the real
+#         src/useCases.yml resolved set, so this copy can never silently diverge.
+use-cases:
+  typescript-project-core:
+    practices:
+      - cache
+      - cicd-common
+      - conventional-commits
+      - husky
+      - directory-structure-src
+      - domain
+      - errors
+      - format
+      - git
+      - lint
+      - node
+      - nonpublished-modules
+      - package-json-order
+      - rhachet
+      - tests-any
+      - typescript-any
+      - pnpm
+  app-react-native-expo:
+    extends:
+      - typescript-project-core
+    practices:
+      - cicd-app-react-native-expo
+      - provision-github
+      - lint-react
+      - lint-react-native
+      - tests-expo
+      - typescript-expo

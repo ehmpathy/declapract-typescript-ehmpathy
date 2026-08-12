@@ -38,15 +38,20 @@ permissions:
   contents: read
 
 jobs:
+  install:
+    uses: ./.github/workflows/.install.yml
+
   deploy-os:
     strategy:
-      fail-fast: false # allow them to independently succeed; one platform having an issue shouldn't block others
+      fail-fast: false # allow them to independently succeed; an issue on one platform shouldn't block others
       matrix:
         platform:
           - ios
           - android
     name: ${{ matrix.platform }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.github-environment }}
+    needs: [install]
     steps:
       - name: checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -64,14 +69,10 @@ jobs:
 
       - name: node-modules cache get
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        id: cache
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
-      - name: node-modules cache miss install
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts --prefer-offline --no-audit
+          key: ${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       - name: setup expo
         uses: expo/expo-github-action@c7b66a9c327a43a8fa7c0158e7f30d6040d2481e # v8
@@ -87,7 +88,9 @@ jobs:
 
   deploy-web:
     name: web
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.github-environment }}
+    needs: [install]
     if: ${{ inputs.stage == 'prod' && inputs.app-web-deployment-s3-bucket }}
     steps:
       - name: checkout
@@ -106,14 +109,10 @@ jobs:
 
       - name: node-modules cache get
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        id: cache
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
-      - name: node-modules cache miss install
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts --prefer-offline --no-audit
+          key: ${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       - name: setup expo
         uses: expo/expo-github-action@c7b66a9c327a43a8fa7c0158e7f30d6040d2481e # v8

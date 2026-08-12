@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`.npmrc matches the full expo .npmrc snapshot: expo .npmrc — full 1`] = `
+"engine-strict=true
+save-exact=true
+message=%s 🎉
+
+# hoisted linker flattens node_modules — create-expo-app default for pnpm,
+# the documented fallback when isolated installs break metro native lookup
+node-linker=hoisted
+public-hoist-pattern[]=*expo*
+public-hoist-pattern[]=*react-native*
+public-hoist-pattern[]=@react-native/*
+public-hoist-pattern[]=metro*
+public-hoist-pattern[]=*metro-*
+"
+`;

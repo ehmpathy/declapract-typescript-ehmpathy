@@ -1,0 +1,30 @@
+name: .deploy-expo
+
+on:
+  workflow_call:
+    inputs:
+      stage:
+        type: string
+        required: true
+
+jobs:
+  deploy-os:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: set node-version
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+
+      - name: install
+        run: npm ci

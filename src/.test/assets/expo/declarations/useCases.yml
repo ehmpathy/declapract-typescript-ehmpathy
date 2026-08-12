@@ -1,0 +1,8 @@
+# minimal expo use case for integration tests
+# .why = the .npmrc branch fires on context.projectPractices.includes('cicd-app-react-native-expo'),
+#        so both practices must be listed for the usecase to carry that signal.
+use-cases:
+  app-react-native-expo:
+    practices:
+      - node
+      - cicd-app-react-native-expo

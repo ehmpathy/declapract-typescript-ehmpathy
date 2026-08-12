@@ -25,4 +25,9 @@ ignores:
   - yalc
   - test-fns
 ignorePatterns:
-  - src/practices/lint/bad-practices/*
+  # the lint bad-practice eslintrc is a forbidden-pattern template declapract
+  # ships, never a real dep consumer. depcheck reaches it at its canonical src
+  # path AND via the per-practice symlink mirrors in test-asset fixtures (e.g.
+  # src/.test/assets/expo-fullusecase/declarations/practices/lint -> src/practices/lint),
+  # so the glob spans both with a `**/` prefix.
+  - "**/practices/lint/bad-practices/*"
