@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "jest-expo": "@declapract{check.minVersion('54.0.0')}",
+    "@babel/core": "@declapract{check.minVersion('7.24.0')}",
+    "babel-preset-expo": "@declapract{check.minVersion('12.0.0')}",
+    "react-test-renderer": "@declapract{check.minVersion('19.0.0')}",
+    "isomorphic-fetch": "@declapract{check.minVersion('3.0.0')}"
+  }
+}

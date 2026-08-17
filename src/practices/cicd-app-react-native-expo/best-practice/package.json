@@ -1,14 +1,8 @@
 {
-  "jest": {
-    "preset": "jest-expo"
-  },
   "dependencies": {
     "expo": "@declapract{check.minVersion('51.0.22')}",
     "expo-dev-client": "@declapract{check.minVersion('4.0.20')}",
     "expo-updates": "@declapract{check.minVersion('0.25.21')}"
-  },
-  "devDependencies": {
-    "jest-expo": "@declapract{check.minVersion('51.0.3')}"
   },
   "scripts": {
     "start:hot:proxy": "npx local-ssl-proxy --source 3447 --target 8081",
@@ -34,7 +28,6 @@
     "register:profile:apple:list": "echo 'see list here https://developer.apple.com/account/resources/profiles/list'",
     "build:prep:ios": "eas build --profile development --platform ios --non-interactive",
     "build:prep:android": "eas build --profile development --platform android --non-interactive",
-    "build:web": "npx expo export --platform web",
     "deploy:prod:ios:metadata": "eas metadata:push",
     "deploy:prod": "echo 'use github actions'",
     "open:store:android": "https://play.google.com/console/u/0/developers/",

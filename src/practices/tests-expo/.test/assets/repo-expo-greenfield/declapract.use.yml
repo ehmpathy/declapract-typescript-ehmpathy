@@ -1,0 +1,6 @@
+# .note = declarations dir is symlinked by the test to test/assets/expo-toolchain/declarations
+# .why  = a fresh expo repo, used to prove the typescript + tests triads emit the expo
+#         build/typecheck/jest stack that cicd-common's .test.yml runs.
+# .note = no variables — the four triad practices reference only @declapract{check.minVersion}.
+declarations: 'declarations/declapract.declare.yml'
+useCase: app-react-native-expo

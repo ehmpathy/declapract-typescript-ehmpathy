@@ -1,0 +1,12 @@
+# minimal expo usecase for the test-toolchain integration test
+# .why = proves the typescript + tests triads emit the expo build/typecheck/jest stack
+#        that cicd-common's .test.yml runs (npm run build / test:types / test:unit /
+#        test:integration / test:acceptance), so a fresh expo consumer's CI is not broken.
+# .note = no variables — these four practices reference only @declapract{check.minVersion}.
+use-cases:
+  app-react-native-expo:
+    practices:
+      - typescript-any
+      - typescript-expo
+      - tests-any
+      - tests-expo

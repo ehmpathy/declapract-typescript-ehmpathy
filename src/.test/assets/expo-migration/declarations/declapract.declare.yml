@@ -1,0 +1,4 @@
+# declarations for the app-protools-shaped graceful-migration integration test
+declare:
+  practices: practices
+  use-cases: useCases.yml

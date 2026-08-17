@@ -1,0 +1,16 @@
+{
+  "name": "app-example-native",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.31.7",
+  "scripts": {
+    "fix:format": "npm run fix:format:prettier",
+    "prepush": "npm run test && npm run build",
+    "fix:deps:expo": "npx expo install --fix"
+  },
+  "overrides": {
+    "react-refresh": "~0.14.0"
+  },
+  "resolutions": {
+    "react-refresh": "~0.14.0"
+  }
+}

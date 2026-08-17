@@ -1,0 +1,21 @@
+# the migration slice of the app-react-native-expo usecase
+# .why = these are the practices that touch a file an already-built expo app repo already
+#        has, so they are the ones whose GRACEFUL migration (rename / union / forget /
+#        merge-not-clobber) must be proven against a real app-protools-native-shaped repo.
+#        config-only practices that merely DROP a net-new file (lint, format, husky, …) add
+#        no migration risk and are already covered by the tests-expo pipeline test; this
+#        fixture isolates the practices that MUTATE an extant repo's files.
+use-cases:
+  app-react-native-expo:
+    practices:
+      - git
+      - rhachet
+      - node
+      - pnpm
+      - directory-structure-src
+      - domain
+      - typescript-any
+      - typescript-expo
+      - tests-any
+      - tests-expo
+      - cicd-app-react-native-expo

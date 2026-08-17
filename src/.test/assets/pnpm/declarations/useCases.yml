@@ -1,0 +1,7 @@
+# minimal pnpm-only usecase for the npm→pnpm migration integration tests
+# .why = scopes the apply to the pnpm practice alone, so no other practice's
+#        variables are needed to evaluate the usecase.
+use-cases:
+  pnpm-repo:
+    practices:
+      - pnpm

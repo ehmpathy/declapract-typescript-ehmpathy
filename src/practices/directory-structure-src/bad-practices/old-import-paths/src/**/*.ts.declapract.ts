@@ -1,5 +1,7 @@
 import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
+import { isDeferredToDeprecatedDirMove } from '../../../../../../utils/isDeferredToDeprecatedDirMove';
+
 // patterns to detect old import paths
 const OLD_PATH_PATTERNS = [
   /from\s+['"][^'"]*\/data\/dao/,
@@ -14,8 +16,18 @@ const OLD_PATH_PATTERNS = [
   /from\s+['"][^'"]*\/__nonpublished_modules__\//,
 ];
 
-export const check: FileCheckFunction = (contents) => {
+export const check: FileCheckFunction = (contents, context) => {
   if (!contents) throw new Error('no contents');
+
+  // defer a file still under a deprecated dir to its peer dir-move: the move
+  // relocates it this pass, then this rewrite fires at the new path next pass.
+  // the two never touch one file in one apply, so no relocate+rewrite ENOENT.
+  if (
+    isDeferredToDeprecatedDirMove({
+      relativeFilePath: context?.relativeFilePath,
+    })
+  )
+    throw new Error('deferred to peer dir-move this pass');
 
   // check if any old import path pattern matches
   const hasOldImport = OLD_PATH_PATTERNS.some((pattern) =>

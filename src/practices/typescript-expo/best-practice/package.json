@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "build": "npm run build:web",
+    "build:web": "npx expo export --platform web"
+  }
+}

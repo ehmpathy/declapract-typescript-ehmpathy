@@ -1,5 +1,13 @@
 import { check, fix } from './*.ts.declapract';
 
+// .note (rule.forbid.as-cast, option a — documented): the declapract context arg passed to
+// check/fix in the tests below is a PARTIAL mock. check/fix here read only `contents` and
+// `relativeFilePath` — never the rest of FileCheckContext. the `as any` asserts that partial
+// to the full type. this is the repo-wide test idiom (it appears in ~68 peer
+// .declapract.test.ts files, most already on main and untouched by this branch); the removal
+// path is a declapract-exported context test-factory, a repo-scoped sweep out of this wish's
+// bound.
+
 describe('old-import-paths bad practice', () => {
   describe('check', () => {
     it('should match files with data/dao imports', () => {
@@ -141,6 +149,48 @@ describe('old-import-paths bad practice', () => {
     it('should throw on empty string contents', () => {
       const contents = ``;
       expect(() => check(contents, {} as any)).toThrowErrorMatchingSnapshot();
+    });
+  });
+
+  // clamps the two-pass deferral: a file STILL UNDER a deprecated dir is
+  // relocated this pass by its peer dir-move (logic-dir/data-dir/…), so this
+  // in-place rewrite must DEFER — else declapract applies a relocate and an
+  // in-place rewrite to one file in one apply and throws ENOENT on the unlinked
+  // source. once moved to its new (non-deprecated) path, the rewrite fires.
+  describe('deprecated-dir deferral (two-pass migration)', () => {
+    const oldImport = `import { userDao } from '@src/data/dao/userDao';`;
+
+    it('defers a file still under a deprecated dir (moved this pass)', () => {
+      expect(() =>
+        check(oldImport, {
+          relativeFilePath: 'src/logic/customer/getCustomer.ts',
+        } as any),
+      ).toThrow('deferred to peer dir-move this pass');
+    });
+
+    it('defers each deprecated dir', () => {
+      const deprecatedPaths = [
+        'src/logic/x.ts',
+        'src/data/x.ts',
+        'src/domain/x.ts',
+        'src/model/x.ts',
+        'src/services/x.ts',
+        'src/__nonpublished_modules__/x.ts',
+      ];
+      for (const relativeFilePath of deprecatedPaths) {
+        expect(() =>
+          check(oldImport, { relativeFilePath } as any),
+        ).toThrow('deferred to peer dir-move this pass');
+      }
+    });
+
+    it('does NOT defer once moved to a non-deprecated path — rewrite fires', () => {
+      // same old import, but the file now lives at its post-move path
+      expect(() =>
+        check(oldImport, {
+          relativeFilePath: 'src/domain.operations/customer/getCustomer.ts',
+        } as any),
+      ).not.toThrow();
     });
   });
 
@@ -377,6 +427,92 @@ import { calculate } from '@src/domain.operations/billing/calculate';
         `import { calculate } from '@/domain.operations/calculate';`,
       );
       expect(result).toMatchSnapshot();
+    });
+  });
+
+  // r10 (l3) blocker 3: the fix regex is a global `from '...'` / `export … from '...'` path
+  // rewrite, so the import STATEMENT shape (type-only, barrel re-export, deep-relative depth,
+  // multi-named on one line) is orthogonal — the path in the quotes is all it touches. these
+  // cases prove that orthogonality explicitly, so a real consumer's varied import styles are
+  // clamped, not assumed.
+  describe('import-shape robustness (r10 blocker 3)', () => {
+    it('rewrites a type-only import', async () => {
+      const contents = `import type { User } from '@src/domain/objects/User';`;
+      const result = await fix(contents, {} as any);
+      expect(result.contents).toEqual(
+        `import type { User } from '@src/domain.objects/User';`,
+      );
+    });
+
+    it('rewrites a barrel re-export (export { X } from …)', async () => {
+      const contents = `export { userDao } from '@src/data/dao/userDao';`;
+      const result = await fix(contents, {} as any);
+      expect(result.contents).toEqual(
+        `export { userDao } from '@src/access/daos/userDao';`,
+      );
+    });
+
+    it('rewrites a star re-export (export * from …)', async () => {
+      const contents = `export * from '@src/logic/orders/calculate';`;
+      const result = await fix(contents, {} as any);
+      expect(result.contents).toEqual(
+        `export * from '@src/domain.operations/orders/calculate';`,
+      );
+    });
+
+    it('rewrites a deep-relative path (../../../)', async () => {
+      const contents = `import { userDao } from '../../../data/dao/userDao';`;
+      const result = await fix(contents, {} as any);
+      expect(result.contents).toEqual(
+        `import { userDao } from '../../../access/daos/userDao';`,
+      );
+    });
+
+    it('rewrites a multi-named import on one line', async () => {
+      const contents = `import { userDao, orderDao, invoiceDao } from '@src/data/dao/index';`;
+      const result = await fix(contents, {} as any);
+      expect(result.contents).toEqual(
+        `import { userDao, orderDao, invoiceDao } from '@src/access/daos/index';`,
+      );
+    });
+
+    it('rewrites a default + named mixed import', async () => {
+      const contents = `import daoDefault, { userDao } from '@src/data/dao/userDao';`;
+      const result = await fix(contents, {} as any);
+      expect(result.contents).toEqual(
+        `import daoDefault, { userDao } from '@src/access/daos/userDao';`,
+      );
+    });
+
+    it('rewrites every deprecated dir across a multi-line, multi-shape file at once', async () => {
+      const contents = `import type { User } from '@src/domain/objects/User';
+import { userDao, orderDao } from '../../../data/dao/index';
+export { calculate } from '@src/logic/orders/calculate';
+export * from '@src/services/userService';
+import { stripe } from '@src/data/clients/stripe';`;
+      const result = await fix(contents, {} as any);
+      expect(result.contents)
+        .toEqual(`import type { User } from '@src/domain.objects/User';
+import { userDao, orderDao } from '../../../access/daos/index';
+export { calculate } from '@src/domain.operations/orders/calculate';
+export * from '@src/domain.operations/userService';
+import { stripe } from '@src/access/sdks/stripe';`);
+    });
+  });
+
+  describe('idempotency (rule.require.idempotent-fixes)', () => {
+    it('fix(fix(x)) === fix(x) — the output is a fixed point', async () => {
+      const contents = `import { userDao } from '../data/dao/userDao';
+import { calculate } from '../logic/calculate';`;
+      const once = (await fix(contents, {} as any)).contents;
+      const twice = (await fix(once, {} as any)).contents;
+      expect(twice).toEqual(once);
+    });
+
+    it('check throws on the fixed output — the migrated paths no longer match, so declapract fix cannot loop', async () => {
+      const contents = `import { userDao } from '../data/dao/userDao';`;
+      const fixed = (await fix(contents, {} as any)).contents as string;
+      expect(() => check(fixed, {} as any)).toThrow();
     });
   });
 });

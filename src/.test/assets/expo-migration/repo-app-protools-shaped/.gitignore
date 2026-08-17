@@ -1,0 +1,6 @@
+# app-protools-shaped custom ignores
+.idea
+*.pyc
+.expo
+dist
+node_modules

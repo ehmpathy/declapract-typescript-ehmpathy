@@ -1,0 +1,24 @@
+# .note = a BARE create-expo-app-shaped tree — package.json + app.json only, NO src/ at all.
+# .why  = the r10 (l3) blocker-2 case: a brand-new expo app's FIRST `declapract fix`. proves the
+#         full usecase applies to a repo with no src/ — the domain / directory-structure EXISTS
+#         checks are unmet, and the apply must FLAG them without a halt or crash, not abort.
+# .note = declarations dir is symlinked by the test to src/.test/assets/expo-fullusecase/declarations,
+#         so the WHOLE resolved usecase (23 practices) is evaluated — every variable any of them
+#         references must be defined below.
+declarations: 'declarations/declapract.declare.yml'
+useCase: app-react-native-expo
+variables:
+  projectName: greenfield-expo
+  organizationName: ahbode
+  infrastructureNamespaceId: bbb111
+  awsAccountId:
+    prep: '111111111111'
+    prod: '222222222222'
+  app:
+    web:
+      domain:
+        prep: greenfield.prep.ahbode.dev
+        prod: greenfield.ahbode.dev
+      port:
+        hot: 3547
+        cold: 3549

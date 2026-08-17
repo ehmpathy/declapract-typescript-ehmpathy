@@ -111,9 +111,16 @@ assert no `@declapract{` leaked into the output.
   must define EVERY `@declapract{variable.*}` that ANY file in the practice
   references, or evaluation throws `Variable … was not defined`. grep the practice's
   best-practice dir for `variable\.` to enumerate them.
-- **scope with `file`.** to prove one fix without the noise of the whole practice,
-  pass `file: '<relative path>'` — apply narrows to that file, evaluation still needs
-  all vars.
+- **scope with `file`, NEVER with `practice`, for a usecase-aware `contents` fn.** the
+  `practice` filter narrows the practice LIST before the plan runs (`getDesiredPractices`),
+  and `projectPractices = practices.map(p => p.name)`. so `executeApply({ practice: 'node' })`
+  makes `context.projectPractices === ['node']` — any `contents`/`check` that branches on
+  `context.projectPractices.includes('<other-practice>')` sees the OTHER practice as ABSENT,
+  and its usecase-aware branch never fires. to prove such a branch, filter by
+  `file: '<relative path>'` ONLY: that keeps every usecase practice in `projectPractices`
+  while it applies just the one file. the trade: the WHOLE usecase is evaluated, so
+  `declapract.use.yml` must define every var ANY file in ANY of those practices references
+  (grep each best-practice dir for `variable\.`).
 - **shared tempDir across `when`s.** declare `genTempDir` at the `given` level so
   sequential `when` blocks compose (e.g. generate the new owner in `[t0]`, then forget
   the old one in `[t1]`) against the same repo as it mutates step to step.
@@ -124,10 +131,28 @@ assert no `@declapract{` leaked into the output.
   `.../declarations/practices/<p> -> ../../../..` that resolves to the `<p>` practice
   root the fixture sits inside) forms a cycle → `ELOOP: too many symbolic links` under
   full-suite load (nondeterministic; declapract's realpath-dedup can lose the race). keep
-  such fixtures OUTSIDE `src/practices` (repo-root `test/assets/…`, not under `src` —
-  tsconfig includes `src/**/*.declapract.ts` and would double-compile a `.declapract.ts`
-  reached via a symlink under `src`). the cache practice's `declarations` fixture lives at
-  `test/assets/cache/declarations` for exactly this reason.
+  such fixtures OUTSIDE `src/practices` but UNDER a `.test` dot-dir — `src/.test/assets/…`.
+  a repo-root `test/` dir is FORBIDDEN (firm rule), so never place a fixture there. the
+  `.test` dot-dir is excluded from the tsconfig / jest globs, so a `.declapract.ts` reached
+  via a symlink under it is NOT double-compiled — the concern that once drove the root-`test/`
+  placement, now served by `.test`. the cache practice's `declarations` fixture lives at
+  `src/.test/assets/cache/declarations` for exactly this reason.
+- **the `declarations/practices/<p>` mirror uses LOCAL relative symlinks.** the
+  `declapract.declare.yml` says `practices: practices` (a local subdir), so declapract
+  resolves it robustly through the tempdir symlink. each `practices/<p>` symlink targets
+  `src/practices/<p>` relative to the fixture's REAL location, so a move of the fixture
+  re-parents every target — recompute them with the `symlink --mode relative` skill, never
+  by hand.
+- **never place the test at the `bad-practices/` DIRECTORY ROOT.** declapract walks a practice
+  and reads every `.declapract.*` file under `bad-practices/<name>/` as that named bad-practice's
+  declaration. a file at `bad-practices/.declapract.integration.test.ts` (directly under
+  `bad-practices/`, no `<name>` subdir) has no name to extract, so declapract throws
+  `Unexpected code path error. neither best-practice name nor bad-practice name was extractable`.
+  two safe homes: the PRACTICE ROOT — `src/practices/<p>/.declapract.integration.test.ts` (treated
+  as a meta file, the cache + git exemplars), OR inside a NAMED bad-practice subdir —
+  `bad-practices/<name>/.declapract.integration.test.ts` (the terraform-parameters exemplar, where
+  `<name>` IS extractable). the practice root is the simplest when a test spans several
+  bad-practices at once.
 
 ## .exemplar
 

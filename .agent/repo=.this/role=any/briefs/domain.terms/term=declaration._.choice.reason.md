@@ -52,8 +52,8 @@ what disproves it is one `grep`:
 
 | declaration | imports |
 |---|---|
-| `src/practices/typescript/best-practice/package.json.declapract.ts:3` | `../../../utils/readFile` |
-| `src/practices/tests/best-practice/jest.unit.env.ts.declapract.ts:6` | `../../../utils/readFile` |
+| `src/practices/typescript-node/best-practice/package.json.declapract.ts:3` | `../../../utils/readFile` |
+| `src/practices/tests-node/best-practice/jest.unit.env.ts.declapract.ts:6` | `../../../utils/readFile` |
 | `src/practices/config/bad-practices/…/prod.json.declapract.ts:4` | `../../../../../utils/readFile` |
 | `src/practices/config/bad-practices/…/prep.json.declapract.ts:4` | `../../../../../utils/readFile` |
 

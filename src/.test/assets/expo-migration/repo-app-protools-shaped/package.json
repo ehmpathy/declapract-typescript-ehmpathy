@@ -1,0 +1,22 @@
+{
+  "name": "app-protools-shaped",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "install:deps": "npm install",
+    "start": "expo start"
+  },
+  "overrides": {
+    "type-fns": "1.9.9"
+  },
+  "resolutions": {
+    "@commitlint/format": "19.9.9"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testEnvironment": "jsdom"
+  },
+  "devDependencies": {
+    "expo": "54.0.0"
+  }
+}

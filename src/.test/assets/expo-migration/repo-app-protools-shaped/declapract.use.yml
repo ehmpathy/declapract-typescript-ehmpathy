@@ -1,0 +1,24 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/expo-migration/declarations
+# .why  = an already-built expo app repo (the app-protools-native shape) on npm + the
+#         deprecated src/logic/ + src/data/ layers, used to prove the whole migration slice
+#         applies gracefully — rename, not delete; union, not clobber; forget, not destroy.
+declarations: 'declarations/declapract.declare.yml'
+useCase: app-react-native-expo
+# .note = the apply evaluates the WHOLE usecase before any file-filter, so EVERY variable
+#         any file in ANY of the ten practices references must be defined here, or evaluation
+#         throws `Variable … was not defined`.
+variables:
+  projectName: app-protools-native
+  organizationName: ahbode
+  infrastructureNamespaceId: aaa000
+  awsAccountId:
+    prep: '111111111111'
+    prod: '222222222222'
+  app:
+    web:
+      domain:
+        prep: protools.prep.ahbode.dev
+        prod: protools.ahbode.dev
+      port:
+        hot: 3447
+        cold: 3449

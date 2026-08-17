@@ -1,0 +1,4 @@
+# minimal declarations for the expo test-toolchain integration test
+declare:
+  practices: practices
+  use-cases: useCases.yml
