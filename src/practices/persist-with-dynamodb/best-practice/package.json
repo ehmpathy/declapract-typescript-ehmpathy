@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "simple-dynamodb-client": "@declapract{check.minVersion('0.10.0')}"
+    "simple-dynamodb-client": "@declapract{check.minVersion('0.10.4')}"
   },
   "devDependencies": {
-    "dynamodb-dao-generator": "@declapract{check.minVersion('1.0.7')}"
+    "dynamodb-dao-generator": "@declapract{check.minVersion('1.1.0')}"
   },
   "scripts": {
     "generate:dao:dynamodb": "npx dynamodb-dao-generator generate && npm run fix:format",

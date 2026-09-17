@@ -85,4 +85,49 @@ export const handler = createApiGatewayHandler({ log, schema, logic, cors });`;
       );
     });
   });
+
+  // #594 — the schema+invoke contract differs between the two frameworks and cannot be
+  // mechanically rewritten. a rename-only migration answers 400 to every request yet typechecks,
+  // so a handler CALL must carry a loud @declapract:review marker, not a silent rename.
+  // .note = the marker is a COMPENSATION, not the endpoint: a consumer who runs `declapract plan`
+  //         still reads only a green/red status, so the in-file marker text is the sole
+  //         could-not-fire signal. the durable "could-not-fire vs passed" plan signal is owed
+  //         upstream (ehmpathy/declapract#107); until it lands, this clamp verifies the marker text
+  //         so a reword cannot silently drop the diagnostic.
+  describe('@declapract:review marker (#594)', () => {
+    it('flags an api-gateway handler call with the body + rawEvent contract', async () => {
+      const contents = `
+import { createApiGatewayHandler } from 'simple-lambda-handlers';
+
+export const handler = createApiGatewayHandler({ log, schema, logic, cors });`;
+      const { contents: fixed } = await fix(contents, {} as any);
+
+      expect(fixed).toContain('@declapract:review');
+      expect(fixed).toContain('request BODY');
+      expect(fixed).toContain('rawEvent');
+      // snapshot the marker verbatim — user-faced output; a reword must redden a vibecheck
+      expect(fixed).toMatchSnapshot('api-gateway handler call — review marker');
+    });
+
+    it('flags a standard handler call with the schema+invoke contract (no rawEvent)', async () => {
+      const contents = `
+import { createStandardHandler } from 'simple-lambda-handlers';
+
+export const handler = createStandardHandler({ log, schema, logic });`;
+      const { contents: fixed } = await fix(contents, {} as any);
+
+      expect(fixed).toContain('@declapract:review');
+      expect(fixed).toContain('invoke context');
+      expect(fixed).not.toContain('rawEvent'); // rawEvent is api-gateway-specific
+      // snapshot the marker verbatim — user-faced output; a reword must redden a vibecheck
+      expect(fixed).toMatchSnapshot('standard handler call — review marker');
+    });
+
+    it('does NOT mark an import-only file (no handler call to restructure)', async () => {
+      const contents = `import { createApiGatewayHandler } from 'simple-lambda-handlers';`;
+      const { contents: fixed } = await fix(contents, {} as any);
+
+      expect(fixed).not.toContain('@declapract:review');
+    });
+  });
 });

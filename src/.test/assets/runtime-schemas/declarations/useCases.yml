@@ -1,0 +1,5 @@
+# minimal use case for the runtime-schemas practice integration test
+use-cases:
+  lambda-service:
+    practices:
+      - runtime-schemas

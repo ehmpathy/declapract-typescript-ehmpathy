@@ -4,5 +4,6 @@ export { getEnvironment };
 
 export const envStatic = getEnvironment.static();
 
-export const stage = envStatic.access;
-export const serviceClientStage = stage === 'prod' ? 'prod' : 'prep';
+// the access (`test | prep | prod`), re-exported flat for convenience. one axis, never a
+// divergent deploy slug.
+export const access = envStatic.access;

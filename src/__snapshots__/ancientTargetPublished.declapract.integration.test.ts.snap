@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`the EnvAccess target op emits only slugs the dual-publish scaffold publishes (case=2 no-404) given: the ancient/contemp target ops and the serverless accessByStage scaffold when: the per-tier emitted slugs are derived for both target ops then: the target-slug shape matches snapshot: per-tier target slug vs published stages 1`] = `
+{
+  "perTier": [
+    {
+      "access": "prep",
+      "ancient": "dev",
+      "contemp": "prep",
+    },
+    {
+      "access": "prod",
+      "ancient": "prod",
+      "contemp": "prod",
+    },
+  ],
+  "publishedStages": [
+    "dev",
+    "prep",
+    "prod",
+  ],
+}
+`;
+
+exports[`the EnvAccess target op emits only slugs the dual-publish scaffold publishes (case=2 no-404) given: the ancient/contemp target ops and the serverless accessByStage scaffold when: the scaffold is read then: the derived scaffold shape matches snapshot: dual-publish scaffold shape 1`] = `
+{
+  "accessByStage": {
+    "dev": "prep",
+    "prep": "prep",
+    "prod": "prod",
+  },
+  "deployedTiers": [
+    "prep",
+    "prod",
+  ],
+  "publishedStages": [
+    "dev",
+    "prep",
+    "prod",
+  ],
+}
+`;

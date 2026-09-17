@@ -30,13 +30,16 @@ import { getEnvironment } from 'sdk-environment';
 const { access } = getEnvironment.static();
 
 /**
- * .what = the legacy terraform stage label used inside the live param NAMES.
+ * .what = the access as it is SPELLED in the live SSM param NAMES — a legacy slug.
  * .why = terraform seeded these params under var.environment, where the prep account carried the
- *        legacy `dev` label (see define.infrastructure-dev-vs-application-prep). the live param
+ *        legacy `dev` slug (see define.infrastructure-dev-vs-application-prep). the live param
  *        names contain that literal string, so the dotted namespace casts prep→dev. test/prod are
  *        unchanged. (tags do NOT cast — they conform to the access vocab; see `secret` below.)
+ * .note = this is NOT the lambda-fleet slug bridge `sdkAwsLambdaEnvAccessAncient`, which collapses
+ *        BOTH test and prep to `dev`. here test keeps its own name, because this casts a literal
+ *        legacy SSM param string, not a fleet slug — a deliberately narrower cast, not a drifted copy.
  */
-const stage = access === 'prep' ? 'dev' : access;
+const accessSlug = access === 'prep' ? 'dev' : access;
 
 /**
  * .what = declare a secret ssm parameter for adoption (write-only, default key).
@@ -46,9 +49,9 @@ const stage = access === 'prep' ? 'dev' : access;
  *        org access vocab (`prep`, not the legacy `dev`), so the first apply reconciles the live
  *        `environment` tag from dev→prep (a metadata-only change, no value write).
  */
-const secret = (name: string): DeclaredAwsSsmParameterSecure =>
+const secret = (input: { name: string }): DeclaredAwsSsmParameterSecure =>
   DeclaredAwsSsmParameterSecure.as({
-    name,
+    name: input.name,
     keyId: null, // default aws/ssm key (matches the terraform resources)
     description: null,
     tags: {
@@ -61,22 +64,38 @@ const secret = (name: string): DeclaredAwsSsmParameterSecure =>
 
 /**
  * .what = the full set of secret ssm parameters this wish declares.
- * .why = the db-role credentials the service + migrations use. declared for every access tier —
+ * .why = the db-role credentials the service + migrations use. declared for every access —
  *        no per-tier conditional. only prep + prod ever APPLY this wish (there is no
  *        aws-test-declastruct provision job — see .github/workflows/provision.yml), so the
  *        value-less-absent throw on apply cannot trigger in test. test sources its non-sensitive
  *        db creds straight from config/test.json and never reconciles these params.
- * .note = the for-plan credential is the plan role's one decrypt exception; its name is pinned in
- *         the prod plan role's iam policy, so it MUST stay byte-identical.
+ * .note = the two cicd credentials are pinned in the prod plan role's iam policy as SLASH paths
+ *         with NO tier segment — `parameter/*/svc-*/database/role/cicd/for-plan/*` and
+ *         `.../for-apply/*`. that pin's arn needs literal `/` separators after `parameter/`, so a
+ *         dotted name cannot match it and the plan role gets ciphertext or a denial, forever. it
+ *         omits a tier segment on purpose: the aws ACCOUNT separates prep from prod, never the
+ *         name. so the for-plan name MUST stay byte-identical to the pin. the crud credential is
+ *         pinned by NO policy, so it keeps the dotted `${org}.${project}.${accessSlug}` name that
+ *         config/${env}.json matches — hence the three names differ in shape by design, not by
+ *         accident.
  */
-export const getParameters = (): DeclaredAwsSsmParameterSecure[] => {
-  // dotted namespace that prefixes the env-scoped param names
+export const getAllParameters = (input: {
+  accessSlug: string | null;
+}): DeclaredAwsSsmParameterSecure[] => {
+  // dotted namespace that prefixes the env-scoped crud param name
   // keep in sync with terraform local.parameter_store_namespace + config/${env}.json
-  const namespace = `@declapract{variable.organizationName}.@declapract{variable.projectName}.${stage}`;
+  const slug = input.accessSlug ?? accessSlug;
+  const namespace = `@declapract{variable.organizationName}.@declapract{variable.projectName}.${slug}`;
 
   return [
-    secret(`${namespace}.database.role.crud.password`),
-    secret(`${namespace}.database.role.cicd.for-plan.password`),
-    secret(`${namespace}.database.role.cicd.for-apply.password`),
+    // crud: dotted + tier-scoped, matched by config/${env}.json; no policy pins it
+    secret({ name: `${namespace}.database.role.crud.password` }),
+    // cicd: SLASH path, NO tier segment — byte-identical to the prod plan role's iam pin
+    secret({
+      name: `/@declapract{variable.organizationName}/@declapract{variable.projectName}/database/role/cicd/for-plan/password`,
+    }),
+    secret({
+      name: `/@declapract{variable.organizationName}/@declapract{variable.projectName}/database/role/cicd/for-apply/password`,
+    }),
   ];
 };

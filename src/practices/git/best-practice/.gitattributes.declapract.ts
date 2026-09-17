@@ -54,40 +54,55 @@ const ALL_PRIOR_ENTRIES = SECTIONS.flatMap((s) => s.entries.priors);
 const ALL_PRIOR_HEADERS = SECTIONS.flatMap((s) => s.header.priors);
 
 /**
+ * .what = drops prior headers + prior entries, and dedupes latest entries (keep first)
+ * .why = the fix must not re-emit a legacy line, nor a second copy of a managed entry;
+ *        a named transform keeps cleanContent a narrative of what happens, not how
+ */
+const asLinesWithLegacyDroppedAndDeduped = (input: {
+  lines: string[];
+}): string[] => {
+  const { lines } = input.lines.reduce<{
+    lines: string[];
+    seen: Set<string>;
+  }>(
+    (acc, line) => {
+      const trimmed = line.trim();
+
+      // skip prior headers + prior entries
+      if (ALL_PRIOR_HEADERS.includes(trimmed)) return acc;
+      if (ALL_PRIOR_ENTRIES.includes(trimmed)) return acc;
+
+      // skip duplicate latest entries (keep first occurrence)
+      if (ALL_LATEST_ENTRIES.includes(trimmed)) {
+        if (acc.seen.has(trimmed)) return acc;
+        return {
+          lines: [...acc.lines, line],
+          seen: new Set([...acc.seen, trimmed]),
+        };
+      }
+
+      return { lines: [...acc.lines, line], seen: acc.seen };
+    },
+    { lines: [], seen: new Set<string>() },
+  );
+  return lines;
+};
+
+/**
  * removes legacy headers, duplicate entries, and cleans up empty lines
  */
 const cleanContent = (content: string): string => {
-  const lines = content.split('\n');
-  const seenEntries = new Set<string>();
-  const cleanedLines: string[] = [];
+  // drop legacy headers, legacy entries, and duplicate latest entries (keep first)
+  const cleanedLines = asLinesWithLegacyDroppedAndDeduped({
+    lines: content.split('\n'),
+  });
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    // skip prior headers
-    if (ALL_PRIOR_HEADERS.includes(trimmed)) continue;
-
-    // skip prior entries
-    if (ALL_PRIOR_ENTRIES.includes(trimmed)) continue;
-
-    // skip duplicate latest entries (keep first occurrence)
-    if (ALL_LATEST_ENTRIES.includes(trimmed)) {
-      if (seenEntries.has(trimmed)) continue;
-      seenEntries.add(trimmed);
-    }
-
-    cleanedLines.push(line);
-  }
-
-  // collapse multiple consecutive empty lines into one
-  const collapsedLines: string[] = [];
-  let prevWasEmpty = false;
-  for (const line of cleanedLines) {
+  // collapse multiple consecutive empty lines into one (drop an empty that follows an empty)
+  const collapsedLines = cleanedLines.filter((line, index) => {
     const isEmpty = line.trim() === '';
-    if (isEmpty && prevWasEmpty) continue;
-    collapsedLines.push(line);
-    prevWasEmpty = isEmpty;
-  }
+    const prevWasEmpty = index > 0 && cleanedLines[index - 1]!.trim() === '';
+    return !(isEmpty && prevWasEmpty);
+  });
 
   return collapsedLines.join('\n').trim();
 };
@@ -146,14 +161,12 @@ export const fix: FileFixFunction = (contents) => {
     return { contents: allSections + '\n' };
   }
 
-  // clean up legacy headers and duplicates first
-  let result = cleanContent(contents);
+  // clean up legacy headers and duplicates, then ensure each section exists
+  const result = SECTIONS.reduce(
+    (acc, section) => ensureSection(acc, section),
+    cleanContent(contents),
+  );
 
-  // ensure each section exists
-  for (const section of SECTIONS) {
-    result = ensureSection(result, section);
-  }
-
-  // normalize to exactly one final newline
+  // trim to exactly one final newline
   return { contents: result.trimEnd() + '\n' };
 };

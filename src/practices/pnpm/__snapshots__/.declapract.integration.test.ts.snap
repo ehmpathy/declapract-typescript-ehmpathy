@@ -4,7 +4,7 @@ exports[`pnpm npm→pnpm migration — pipeline given: [case1] a repo mid-migrat
 "{
   "name": "app-example-native",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.31.7",
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "fix:format": "npm run fix:format:prettier",
     "prepush": "npm run test && npm run build",
@@ -23,7 +23,7 @@ exports[`pnpm npm→pnpm migration — pipeline given: [case1] a repo mid-migrat
 "{
   "name": "app-example-native",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.31.7",
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "fix:format": "npm run fix:format:prettier",
     "prepush": "npm run test && npm run build",
@@ -64,5 +64,12 @@ changed () {
 if changed 'package-lock.json'; then
   echo "📦 package-lock.json changed. Run 'npm install' to update your locally installed dependencies."
 fi
+"
+`;
+
+exports[`pnpm npm→pnpm migration — pipeline given: [case4] a repo carrying an inert v11 allowBuilds block under the v10 pin when: [t0] the pnpm practice is applied to pnpm-workspace.yaml then: before matches snapshot (the inert block that was removed): pnpm-workspace.yaml — before 1`] = `
+"allowBuilds:
+  esbuild: true
+  node-pty: true
 "
 `;

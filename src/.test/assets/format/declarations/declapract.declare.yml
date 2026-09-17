@@ -1,0 +1,9 @@
+# minimal declarations for the format package.json usecase-aware `contents` (b3) pipeline test.
+# .why = a `file`-only apply (never `--practice`, so `projectPractices` keeps every usecase
+#        practice — see the test's .note) compiles EVERY practice under `practices:`. pointed at
+#        the real `src/practices` (~40 practices) that blows the jest hook timeout, so this mirror
+#        holds symlinks to only the two the format branch reads: format (its package.json is the
+#        applied declaration) and terraform-common (its NAME is the branch signal).
+declare:
+  practices: practices
+  use-cases: useCases.yml

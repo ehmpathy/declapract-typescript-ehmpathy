@@ -1,0 +1,102 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds deploy.database.sh gerund-free given: the shipped deploy.database.sh when: the template body is read then: the emitted deploy.database.sh matches snapshot: deploy.database.sh 1`] = `
+"#####################################################
+## initialize the database in a live cluster
+## - in other words, it does all of the things that docker does for us when we spin up a cluster without the db already
+## - i.e.,
+##    - create the database
+##    - install the extensions
+##    - creates the schema
+##    - creates the cicd user
+##    - grants the cicd user ownership of the db
+## - note:
+##   - requires pg admin access
+##   - requires _you_ to change the passwords in prod manually
+##
+## usage example:
+## \`\`\`sh
+## ./provision/schema/deploy.database.sh prep $(op item get ahbodedb.prep.postgres --fields label=password --format json | jq -r .value)
+## \`\`\`
+#####################################################
+
+set -eu
+
+# check that the human has defined the environment that they want this key created for correctly
+ENVIRONMENT="\${1:-}";
+if [ "$ENVIRONMENT" != "prod" ] && [ "$ENVIRONMENT" != "prep" ]; then
+  echo "\\nerror: environment, the first argument, must be specified as either 'prod' or 'prep'. you specified '$ENVIRONMENT'";
+  exit 2;
+fi
+
+# check that the human is authed into correct account
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account');
+EXPECTED_AWS_ACCOUNT_ID=$([ "$ENVIRONMENT" = 'prod' ] && echo "@declapract{variable.awsAccountId.prod}" || echo "@declapract{variable.awsAccountId.prep}");
+if [ "$AWS_ACCOUNT_ID" != "$EXPECTED_AWS_ACCOUNT_ID" ]; then
+  echo "\\nerror: the AWS_ACCOUNT that you are signed into is not correct for the environment you specified. you are authed into account '$AWS_ACCOUNT_ID' but the correct account id for '$ENVIRONMENT' is '$EXPECTED_AWS_ACCOUNT_ID'";
+  exit 2;
+fi
+
+# check that pg admin password was specified
+POSTGRES_ADMIN_PASSWORD="\${2:-}"
+if [ -z "\${POSTGRES_ADMIN_PASSWORD:-}" ]; then
+  echo "\\nerror: POSTGRES_ADMIN_PASSWORD must be defined as second arg";
+  exit 2;
+fi;
+
+# check that the cicd password was provisioned, if in prod, since this is used to create the cicd user
+# note: this reads the legacy DOTTED param name (\`....database.role.cicd.password\`), a live consumer
+#       distinct from the slash-path plan/apply secrets. it is the prod cicd-user bootstrap credential
+#       and stays alive on purpose — do not prune it as an unreferenced legacy param.
+if [ "$ENVIRONMENT" = "prod" ]; then
+  CICD_USER_PASSWORD=$(aws ssm get-parameter --name "@declapract{variable.organizationName}.@declapract{variable.projectName}.$ENVIRONMENT.database.role.cicd.password" --with-decryption --output text --query Parameter.Value)
+  if [ -z "\${CICD_USER_PASSWORD:-}" ]; then
+    echo "\\nerror: CICD_USER_PASSWORD must be provisioned with terraform before you run this"
+    exit 2;
+  fi;
+  if [ "$CICD_USER_PASSWORD" = "__IGNORED__" ] || [ "$CICD_USER_PASSWORD" = "__CHANG3_ME__" ]; then
+    echo "\\nerror: CICD_USER_PASSWORD must be set to a value other than the default placeholder"
+    exit 2;
+  fi;
+fi;
+
+
+# define the postgres connection string
+CLUSTER_HOST=$([ "$ENVIRONMENT" = 'prod' ] && echo "@declapract{variable.databaseTunnelHost.prod}" || echo "@declapract{variable.databaseTunnelHost.prep}");
+CLUSTER_CONNECTION_STRING=postgresql://postgres:$POSTGRES_ADMIN_PASSWORD@$CLUSTER_HOST:5432
+ROOT_DB_CONNECTION_STRING=$CLUSTER_CONNECTION_STRING/postgres
+SVC_DB_CONNECTION_STRING=$CLUSTER_CONNECTION_STRING/@declapract{variable.databaseName}
+
+# define path to the init sqls
+SRC_PATH=$(readlink --canonicalize "$0");
+SRC_DIR=$(dirname $SRC_PATH);
+INIT_SQLS_DIR=$SRC_DIR/sql/init;
+
+# run the create database command on root db
+echo "\\n 🔨 create the database..."
+psql $ROOT_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.database.sql
+
+echo "\\n 🔨 install the extensions..."
+psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.extensions.sql
+
+echo "\\n 🔨 create the schema..."
+psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.schema.sql
+
+if [ "$ENVIRONMENT" = "prod" ]; then
+  echo "\\n 🔨 grant reads to the datalakedb user..." # only in prod env; we dont want prep's test data in our datalake
+  psql $SVC_DB_CONNECTION_STRING -f $INIT_SQLS_DIR/.user.datalakedb.sql
+fi;
+
+echo "\\n 🔨 create the cicd user..."
+CICD_USER_CREATE_SQL_PATH=$INIT_SQLS_DIR/.user.cicd.sql
+if [ "$ENVIRONMENT" = "prod" ]; then
+  CICD_USER_CREATE_SQL_PATH_TEMP=$CICD_USER_CREATE_SQL_PATH.tmp # in prod, we must create a temp file which will have the actual password we'll use to create the cicd user
+  cat $CICD_USER_CREATE_SQL_PATH | sed "s/__CHANG3_ME__/\${CICD_USER_PASSWORD}/" > $CICD_USER_CREATE_SQL_PATH_TEMP # create the temp file w/ the actual password
+  psql $SVC_DB_CONNECTION_STRING -f $CICD_USER_CREATE_SQL_PATH_TEMP # run the temp create sql w/ the actual password
+  rm $CICD_USER_CREATE_SQL_PATH_TEMP # remove the temp file, so the password doesn't get checked in
+else
+  psql $SVC_DB_CONNECTION_STRING -f $CICD_USER_CREATE_SQL_PATH # otherwise, we can run the file directly. no password replacement required
+fi
+echo "\\n 🎉 done"
+"
+`;

@@ -5,8 +5,8 @@ exports[`old-dev-scripts package.json fix should rename scripts from :dev to :pr
   "name": "test-package",
   "scripts": {
     "test:unit": "jest",
-    "start:hot:prep": "npm run start:hot -- --stage dev",
-    "deploy:prep": "sls deploy --stage dev"
+    "start:hot:prep": "npm run start:hot",
+    "deploy:prep": "npm run deploy:release"
   }
 }"
 `;

@@ -1,0 +1,13 @@
+# minimal use cases for the format package.json (b3) pipeline test.
+# .why = the format `contents` branch fires on
+#        `context.projectPractices.includes('terraform-common')`. these two lean use cases carry the
+#        one signal the branch reads (terraform present vs absent) while each evaluates only 1-2
+#        practices — not the ~40 of the real declarations tree, which blows the jest hook timeout.
+use-cases:
+  with-terraform:
+    practices:
+      - format
+      - terraform-common
+  without-terraform:
+    practices:
+      - format

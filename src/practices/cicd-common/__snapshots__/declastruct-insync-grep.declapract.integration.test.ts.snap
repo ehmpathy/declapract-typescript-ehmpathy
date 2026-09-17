@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`cicd-common .declastruct.yml in-sync grep given: the shipped .declastruct.yml when: the apply-gate grep is read then: the emitted apply-gate grep line matches snapshot: declastruct apply-gate grep 1`] = `"if grep -qF "everything is in sync" ./plan.log"`;

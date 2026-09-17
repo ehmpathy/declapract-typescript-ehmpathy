@@ -1,0 +1,165 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`serverless.yml given: a legacy serverless.yml — the full composed fix (snapshot + idempotency) then: the full composed fix matches snapshot (after): legacy serverless.yml — after 1`] = `
+"# @declapract:review — could not auto-insert \`ACCESS: \${self:custom.access}\` + \`COMMIT: \${env:COMMIT}\` under \`environment:\` because no \`STAGE: \${self:provider.stage}\` env var was present to convert; add both as children of your \`environment:\` block by hand — the failing \`declapract plan\` diff names them.
+service: svc-orders # orders domain service
+
+variablesResolutionMode: 20210326
+
+plugins:
+  - serverless-prune-plugin
+
+package:
+  artifact: .artifact/contents.zip
+
+custom:
+  accessByStage:
+    dev: prep # stage=dev deploys to $service-dev but uses ACCESS=prep (config/prep.json)
+    prep: prep # stage=prep deploys to $service-prep also with ACCESS=prep; one service answers to both the -dev and -prep fleets while callers migrate
+    prod: prod
+  access: \${self:custom.accessByStage.\${opt:stage}, 'prep'} # the resolved access for this deploy — one source, referenced by the ACCESS env var + every access-keyed resource arn below, so a partial edit cannot re-split the stage/access axes
+  deploymentBucketByStage: # the deployment bucket is ACCOUNT-scoped: it must live in the account the deploy role assumes, so it is keyed by stage like accessByStage above
+    dev: serverless-deployment-dev # prep-account bucket
+    prep: serverless-deployment-dev # prep-account bucket, shared with the -dev fleet, so no separate -prep bucket need exist
+    prod: serverless-deployment-prod # prod-account bucket — a prod deploy assumes the prod-account oidc role, which has no cross-account grant to the prep-account -dev bucket
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  memorySize: 1024
+  timeout: 60 # default timeout to 1min, for resilience against increased cold start times; individual functions can override this
+  stage: \${opt:stage}
+  environment:
+    TZ: UTC # guarantee that utc timezone will be used explicitly, to facilitate a pit of success
+    NODE_ENV: production # deploy with production optimizations of all resources, to make \`prep\` and \`prod\` stage deployments equivalent functionally (i.e., the same code paths in prep and prod)
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
+  deploymentBucket: \${self:custom.deploymentBucketByStage.\${opt:stage}, 'serverless-deployment-dev'} # account-scoped via deploymentBucketByStage above; provision the -prod bucket in the prod account before the first prod deploy, or a prod deploy trades a cross-account-deny for an absent-bucket error
+  iamRoleStatements:
+    # parameter store access
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+        - ssm:GetParameters
+      Resource: arn:aws:ssm:\${aws:region}:\${aws:accountId}:parameter/*
+    # allow access inference from account name
+    - Effect: Allow
+      Action:
+        - account:GetAccountInformation
+      Resource: '*'
+    # allow invocation of other lambdas
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: '*'"
+`;
+
+exports[`serverless.yml given: a legacy serverless.yml — the full composed fix (snapshot + idempotency) then: the legacy input matches snapshot (before): legacy serverless.yml — before 1`] = `
+"service: svc-orders # orders domain service
+
+plugins:
+  - serverless-offline # local invoke for dev
+  - serverless-pseudo-parameters # obsolete once native vars land
+  - serverless-prune-plugin
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  memorySize: 1024
+  timeout: 10
+  stage: \${opt:stage}
+  environment:
+    NODE_ENV: \${self:custom.stageToNodeEnvMapping.\${self:provider.stage}}
+  deploymentBucket: serverless-deployment-\${self:provider.stage}
+  iamRoleStatements:
+    ## paramstore access
+    - Effect: Allow
+      Action: 'ssm:GetParameters'
+      Resource: arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/*
+    # allow inferring access from account alias
+    - Effect: Allow
+      Action:
+        - iam:ListAccountAliases
+      Resource: '*'
+    ## allow invocation of other lambdas
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: '*'"
+`;
+
+exports[`serverless.yml given: a legacy sls.yaml that already holds a section under different content (r7 clobber-refusal) then: the section soft-skip injects an actionable @declapract:review marker, not a silent stall: section soft-skip custom clobber — review marker 1`] = `
+"service: svc-hascustom
+
+variablesResolutionMode: 20210326
+
+# @declapract:review — a \`custom:\` block is already present; merge the declared \`custom\` keys (from the failing \`declapract plan\` diff) into your extant \`custom:\` block by hand — auto-insert was declined to avoid a yaml last-wins clobber that would drop your block.
+custom:
+  domain: api.example.com
+
+package:
+  artifact: .artifact/contents.zip
+
+plugins:
+  - serverless-prune-plugin
+
+provider:
+  name: aws
+  stage: \${opt:stage}"
+`;
+
+exports[`serverless.yml given: a sls.yaml whose environment block exists but the anchors miss (r7 soft-skip) then: withUtcTimezone emits an actionable review marker when NODE_ENV sits below another env var: withUtcTimezone shuffled-env — review marker 1`] = `
+"# @declapract:review — could not auto-insert \`TZ: UTC\` under \`environment:\` because NODE_ENV is not the block's first key (the positional anchor missed); add \`TZ: UTC\` as a child of your \`environment:\` block by hand — the failing \`declapract plan\` diff names it.
+service: svc-shuffled
+
+variablesResolutionMode: 20210326
+
+package:
+  artifact: .artifact/contents.zip
+
+plugins:
+  - serverless-prune-plugin
+
+custom:
+  accessByStage:
+    dev: prep # stage=dev deploys to $service-dev but uses ACCESS=prep (config/prep.json)
+    prep: prep # stage=prep deploys to $service-prep also with ACCESS=prep; one service answers to both the -dev and -prep fleets while callers migrate
+    prod: prod
+  access: \${self:custom.accessByStage.\${opt:stage}, 'prep'} # the resolved access for this deploy — one source, referenced by the ACCESS env var + every access-keyed resource arn below, so a partial edit cannot re-split the stage/access axes
+
+provider:
+  name: aws
+  environment:
+    ACCESS: \${self:custom.access} # sdk-environment access, to target the correct config + resources (e.g., hit prep db -vs- prod db)
+    COMMIT: \${env:COMMIT} # sdk-environment commit slug, must be set by deploy command
+    NODE_ENV: production
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html"
+`;
+
+exports[`serverless.yml given: a sls.yaml with STAGE env var then: the composed fix over this example matches snapshot: STAGE example — after 1`] = `
+"service: svc-example
+
+variablesResolutionMode: 20210326
+
+package:
+  artifact: .artifact/contents.zip
+
+plugins:
+  - serverless-prune-plugin
+
+custom:
+  accessByStage:
+    dev: prep # stage=dev deploys to $service-dev but uses ACCESS=prep (config/prep.json)
+    prep: prep # stage=prep deploys to $service-prep also with ACCESS=prep; one service answers to both the -dev and -prep fleets while callers migrate
+    prod: prod
+  access: \${self:custom.accessByStage.\${opt:stage}, 'prep'} # the resolved access for this deploy — one source, referenced by the ACCESS env var + every access-keyed resource arn below, so a partial edit cannot re-split the stage/access axes
+
+provider:
+  name: aws
+  stage: \${opt:stage}
+  environment:
+    TZ: UTC # guarantee that utc timezone will be used explicitly, to facilitate a pit of success
+    NODE_ENV: production
+    ACCESS: \${self:custom.access} # sdk-environment access, to target the correct config + resources (e.g., hit prep db -vs- prod db)
+    COMMIT: \${env:COMMIT} # sdk-environment commit slug, must be set by deploy command
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: true"
+`;

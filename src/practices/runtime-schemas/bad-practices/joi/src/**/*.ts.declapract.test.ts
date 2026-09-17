@@ -115,4 +115,42 @@ export { userSchema };`;
       expect(fixed).not.toContain('.required()');
     });
   });
+
+  // #594 — the rewrite makes three SILENT semantic changes a regex cannot get right
+  // (optionality flip, unknown-key policy, date coercion). it must flag them loud, not guess.
+  // .note = the marker is a COMPENSATION, not the endpoint: a consumer who runs `declapract plan`
+  //         still reads only a green/red status, so the in-file marker text is the sole
+  //         could-not-fire signal. the durable "could-not-fire vs passed" plan signal is owed
+  //         upstream (ehmpathy/declapract#107); until it lands, this clamp verifies the marker text
+  //         so a reword cannot silently drop the diagnostic.
+  describe('@declapract:review marker (#594)', () => {
+    it('prepends a review marker to every rewritten file', async () => {
+      const contents = `import Joi from 'joi';
+const schema = Joi.object({ name: Joi.string() });`;
+      const { contents: fixed } = await fix(contents, {} as any);
+
+      expect(fixed).toContain('@declapract:review');
+    });
+
+    it('the marker names the three silent semantic changes', async () => {
+      const contents = `import Joi from 'joi';
+const schema = Joi.object({ name: Joi.string() });`;
+      const { contents: fixed } = await fix(contents, {} as any);
+
+      expect(fixed).toContain('optionality');
+      expect(fixed).toContain('unknown keys');
+      expect(fixed).toContain('date coercion');
+      // snapshot the marker verbatim — user-faced output; a reword must redden a vibecheck
+      expect(fixed).toMatchSnapshot('joi rewrite — review marker');
+    });
+
+    it('is idempotent: the check no longer fires on the rewritten output', async () => {
+      const contents = `import Joi from 'joi';
+const schema = Joi.object({ name: Joi.string() });`;
+      const { contents: fixed } = await fix(contents, {} as any);
+
+      // post-rewrite the joi import is gone, so a second pass skips (no double marker)
+      expect(() => check(fixed!, {} as any)).toThrow('does not import from joi');
+    });
+  });
 });

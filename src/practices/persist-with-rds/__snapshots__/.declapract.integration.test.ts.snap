@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds — old-dev-config-location relocate + tier-migrate (row-4 clamp) given: [case1] an rds repo with a config/dev.json to migrate when: [t0] the migration input (before any fix) then: config/dev.json holds the dev tier + the placeholder + matches snapshot: config/dev.json — before 1`] = `
+"{
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "dev"
+  },
+  "database": {
+    "host": "bastion.dev.example.com",
+    "tunnel": "aws.ssmproxy.mydb.dev",
+    "password": "__CHANG3_ME__"
+  },
+  "upstream": {
+    "paypal": "api.dev.paypal.com"
+  },
+  "auth": {
+    "callbackUrl": "https://auth.myapp.dev"
+  }
+}
+"
+`;
+
+exports[`persist-with-rds — old-dev-config-location relocate + tier-migrate (row-4 clamp) given: [case1] an rds repo with a config/dev.json to migrate when: [t1] the relocate + migrate fix is applied then: config/prep.json now holds the migrated content + config/dev.json is gone + matches snapshot: config/prep.json — after 1`] = `
+"{
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "prep"
+  },
+  "database": {
+    "host": "bastion.dev.example.com",
+    "tunnel": "aws.ssmproxy.mydb.dev",
+    "password": "$.at(aws::param)"
+  },
+  "upstream": {
+    "paypal": "api.dev.paypal.com"
+  },
+  "auth": {
+    "callbackUrl": "https://auth.myapp.dev"
+  }
+}
+"
+`;

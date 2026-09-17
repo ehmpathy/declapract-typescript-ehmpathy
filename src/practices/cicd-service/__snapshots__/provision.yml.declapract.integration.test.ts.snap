@@ -1,0 +1,297 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`provision.yml — the D28 rds-jobs gate, end to end given: [case1] an rds-usecase consumer (lambda-service-with-rds) when: [t1] the cicd-service provision declaration is applied then: the emitted rds workflow matches snapshot: provision.yml — rds usecase (emitted superset) 1`] = `
+"name: provision
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - "main"
+      - "master"
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: \${{ github.workflow }}-\${{ github.ref }} # per [workflow] x [branch, tag]
+  cancel-in-progress: true #  cancel workflows for non-latest commits
+
+permissions:
+  id-token: write # required for oidc; a called workflow cannot exceed its caller's grant
+  contents: read
+
+jobs:
+  aws-test-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/test
+      github-environment-plan: preparation
+      github-environment-apply: preparation
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prep-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prep
+      github-environment-plan: preparation
+      github-environment-apply: preparation
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prod-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply (actor_id-gated writer)
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+
+  github:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/github.repo/resources.ts
+      scope: github
+      access: prod # github repo settings are inherently a prod resource
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply
+      creds-github-app-owner: \${{ github.repository_owner }}
+      creds-github-app-id: \${{ vars.DECLASTRUCT_GITHUB_CONFORMER_APP_ID }}
+    secrets:
+      creds-github-app-private-key: \${{ secrets.DECLASTRUCT_GITHUB_CONFORMER_APP_PRIVATE_KEY }}
+
+  sql-schema-prep:
+    uses: ./.github/workflows/.sql-schema-control.yml
+    with:
+      access: prep
+      github-environment-plan: preparation
+      github-environment-apply: preparation
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  sql-schema-prod:
+    uses: ./.github/workflows/.sql-schema-control.yml
+    with:
+      access: prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply (actor_id-gated writer)
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+
+  aws-prep-declastruct:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/aws/resources.ts
+      scope: aws
+      access: prep
+      github-environment-plan: preparation
+      github-environment-apply: preparation
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prod-declastruct:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/aws/resources.ts
+      scope: aws
+      access: prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply (actor_id-gated writer)
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+"
+`;
+
+exports[`provision.yml — the D28 rds-jobs gate, end to end given: [case2] a non-rds consumer (lambda-service) when: [t0] the cicd-service provision declaration is applied then: the emitted narrowed workflow matches snapshot (the strip diff a reviewer eyeballs): provision.yml — non-rds usecase (emitted, narrowed) 1`] = `
+"name: provision
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - "main"
+      - "master"
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: \${{ github.workflow }}-\${{ github.ref }} # per [workflow] x [branch, tag]
+  cancel-in-progress: true #  cancel workflows for non-latest commits
+
+permissions:
+  id-token: write # required for oidc; a called workflow cannot exceed its caller's grant
+  contents: read
+
+jobs:
+  aws-test-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/test
+      github-environment-plan: preparation
+      github-environment-apply: preparation
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prep-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prep
+      github-environment-plan: preparation
+      github-environment-apply: preparation
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prod-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply (actor_id-gated writer)
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+
+  github:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/github.repo/resources.ts
+      scope: github
+      access: prod # github repo settings are inherently a prod resource
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply
+      creds-github-app-owner: \${{ github.repository_owner }}
+      creds-github-app-id: \${{ vars.DECLASTRUCT_GITHUB_CONFORMER_APP_ID }}
+    secrets:
+      creds-github-app-private-key: \${{ secrets.DECLASTRUCT_GITHUB_CONFORMER_APP_PRIVATE_KEY }}
+"
+`;
+
+exports[`provision.yml — the D28 rds-jobs gate, end to end given: [case3] the shipped source superset the strip acts on when: [t0] the practice ships its provision.yml superset then: the source superset holds all 4 rds jobs + matches snapshot: provision.yml — source superset (before strip) 1`] = `
+"name: provision
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - "main"
+      - "master"
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: \${{ github.workflow }}-\${{ github.ref }} # per [workflow] x [branch, tag]
+  cancel-in-progress: true #  cancel workflows for non-latest commits
+
+permissions:
+  id-token: write # required for oidc; a called workflow cannot exceed its caller's grant
+  contents: read
+
+jobs:
+  aws-test-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/test
+      github-environment-plan: preparation
+      github-environment-apply: preparation
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prep-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prep
+      github-environment-plan: preparation
+      github-environment-apply: preparation
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prod-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply (actor_id-gated writer)
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+
+  github:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/github.repo/resources.ts
+      scope: github
+      access: prod # github repo settings are inherently a prod resource
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply
+      creds-github-app-owner: \${{ github.repository_owner }}
+      creds-github-app-id: \${{ vars.DECLASTRUCT_GITHUB_CONFORMER_APP_ID }}
+    secrets:
+      creds-github-app-private-key: \${{ secrets.DECLASTRUCT_GITHUB_CONFORMER_APP_PRIVATE_KEY }}
+
+  sql-schema-prep:
+    uses: ./.github/workflows/.sql-schema-control.yml
+    with:
+      access: prep
+      github-environment-plan: preparation
+      github-environment-apply: preparation
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  sql-schema-prod:
+    uses: ./.github/workflows/.sql-schema-control.yml
+    with:
+      access: prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply (actor_id-gated writer)
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+
+  aws-prep-declastruct:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/aws/resources.ts
+      scope: aws
+      access: prep
+      github-environment-plan: preparation
+      github-environment-apply: preparation
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prod-declastruct:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/aws/resources.ts
+      scope: aws
+      access: prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply (actor_id-gated writer)
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+"
+`;

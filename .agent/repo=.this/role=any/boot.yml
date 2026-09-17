@@ -1,0 +1,73 @@
+# budget — the token cap for the resident `say` payload at each boot.
+# a boot whose say-content exceeds this halts, so the corpus cannot silently bloat
+# context. remedies: demote a say glob to ref, adopt a .min brief variant, or raise
+# this cap deliberately. enforced by rhachet once ehmpathy/rhachet#536 lands (with the
+# --manifest boot of #537); declared here now so the cap is in place on arrival.
+# NOTE: plain `5000`, not `5_000` — yaml 1.2 (the yaml v2 default) reads an underscore
+# integer as a STRING, which would silently make the cap non-numeric.
+budget:
+  tokens: 5000
+
+# boot.yml — curate which briefs load into context at each session boot.
+#
+# every brief loads at one of two levels:
+#   say = full content in context        (costs tokens on every boot)
+#   ref = path only, fetched on demand   (near-zero tokens)
+#
+# this file is SIMPLE mode: a top-level `briefs:` with `say` and/or `ref` glob
+# lists. the `say` key sets the DEFAULT level for every brief it does not match:
+#
+#   say absent (this file)    say ALL, except what the `ref` globs demote below.
+#                             the backcompat default — the whole corpus loads say.
+#   say present + non-empty    say ONLY what `say` matches; ref everything else.
+#                             (once `say` is set the `ref` list is inert — anything
+#                              `say` does not match is already ref.)
+#   say present + empty []     say none; ref all.
+#
+# TO CURATE (recommended once a repo grows brief-heavy): add a `say:` allowlist of
+# the briefs you want resident each boot. the moment `say` is non-empty the default
+# FLIPS to ref-by-default, so a large corpus stops loading whole. e.g.:
+#
+#   briefs:
+#     say:
+#       - briefs/rule.*.md
+#       - briefs/howto.*.md
+#
+# the `ref` globs below are the backcompat demotions — they bite ONLY while `say`
+# is absent, and demote the deep glossary variants (reason + example) to on-demand.
+# skills curate the same way, via a top-level `skills:` block.
+#
+# this file is FINDSERTED into a consumer, never overwritten — your own say/ref
+# entries survive an upgrade; the fix only unions the declared ref globs in.
+
+# budget — the token cap for the resident `say` payload at each boot.
+# a boot whose say-content exceeds this halts, so the corpus cannot silently bloat
+# context. remedies: demote a say glob to ref, adopt a .min brief variant, or raise
+# this cap deliberately. enforced by rhachet once ehmpathy/rhachet#536 lands (with the
+# --manifest boot of #537); declared here now so the cap is in place on arrival.
+# NOTE: plain `5000`, not `5_000` — yaml 1.2 (the yaml v2 default) reads an underscore
+# integer as a STRING, which would silently make the cap non-numeric.
+budget:
+  tokens: 5000
+
+briefs:
+  # this repo OPTS IN: it is the practice library (30+ briefs + a glossary), so it says
+  # only the core declapract-mechanics briefs + the load-carrying rules, and refs the rest.
+  # the moment `say` is non-empty the default flips to ref-by-default, so the corpus no
+  # longer loads whole. every other brief stays one fetch away by its ref path.
+  say:
+    # the declapract mechanics — how a check/fix + template work
+    - briefs/declapract-*.md
+    # the practice-author invariants a session must not violate
+    - briefs/rule.require.entool-requests-as-practices.md
+    - briefs/rule.require.declapract-integration-tests.md
+    - briefs/rule.require.idempotent-fixes.md
+    - briefs/rule.avoid.runtime-forks.md
+    # the domain axis invariants this repo turns on (access, never a divergent stage)
+    - briefs/rule.forbid.stage-term.md
+    - briefs/rule.forbid.access-permission-not-place.md
+  # inert while `say` is non-empty (kept only to satisfy the rhachet findsert, which
+  # enforces these two globs are present — see boot.yml.declapract.ts).
+  ref:
+    - briefs/domain.terms/term=*._.choice.reason.md
+    - briefs/domain.terms/term=*._.choice.example=*.md

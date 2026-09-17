@@ -1,5 +1,6 @@
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
+import { ConstraintError } from 'helpful-errors';
 import { join } from 'path';
 import util from 'util';
 
@@ -14,7 +15,9 @@ util.inspect.defaultOptions.depth = 5;
  * .why = prevent confusion and hard-to-debug errors from running tests in the wrong directory
  */
 if (!existsSync(join(process.cwd(), 'package.json')))
-  throw new Error('no package.json found in cwd. are you @gitroot?');
+  throw new ConstraintError('no package.json found in cwd. are you @gitroot?', {
+    cwd: process.cwd(),
+  });
 
 /**
  * sanity check that unit tests are only run the 'test' environment
@@ -25,10 +28,16 @@ if (!existsSync(join(process.cwd(), 'package.json')))
  */
 if (
   (process.env.NODE_ENV !== 'test' ||
-    (process.env.STAGE && process.env.STAGE !== 'test')) &&
+    (process.env.ACCESS && process.env.ACCESS !== 'test')) &&
   process.env.I_KNOW_WHAT_IM_DOING !== 'true'
 )
-  throw new Error(`integration.test is not targeting stage 'test'`);
+  throw new ConstraintError(
+    `integration.test must run against access 'test' — set NODE_ENV=test and unset ACCESS (or I_KNOW_WHAT_IM_DOING=true to override)`,
+    {
+      nodeEnv: process.env.NODE_ENV ?? null,
+      access: process.env.ACCESS ?? null,
+    },
+  );
 
 /**
  * .what = verify that the env has sufficient auth to run the tests if aws is used; otherwise, fail fast
@@ -45,8 +54,9 @@ if (
   requiresAwsAuth &&
   !(process.env.AWS_PROFILE || process.env.AWS_ACCESS_KEY_ID)
 )
-  throw new Error(
+  throw new ConstraintError(
     'no aws credentials present. please authenticate with aws to run integration tests',
+    { awsProfile: process.env.AWS_PROFILE ?? null },
   );
 
 /**
@@ -59,8 +69,9 @@ const requiresTestDb = declapractUseContent.includes('databaseUserName');
 if (requiresTestDb) {
   const testConfigPath = join(process.cwd(), 'config', 'test.json');
   if (!existsSync(testConfigPath))
-    throw new Error(
+    throw new ConstraintError(
       'config/test.json not found but serviceUser is declared in declapract.use.yml',
+      { testConfigPath },
     );
   const testConfig = JSON.parse(readFileSync(testConfigPath, 'utf8'));
   if (
@@ -68,17 +79,56 @@ if (requiresTestDb) {
     !testConfig.database?.role?.crud ||
     !testConfig.database?.target?.database
   )
-    throw new Error(
+    throw new ConstraintError(
       'config/test.json database.tunnel.local, database?.role?.crud, or database?.target?.database not found but expected',
+      { testConfigPath },
     );
+  // preflight the testdb. PGPASSWORD rides in `env`, never the args (node puts the failed command
+  // verbatim onto the thrown error's message). stderr is piped so psql's own words reach the human,
+  // rather than collapse every cause into one hardcoded guess (rule.forbid.failhide).
   try {
-    execSync(
-      `PGPASSWORD="${testConfig.database.role.crud.password}" psql -h ${testConfig.database.tunnel.local.host} -p ${testConfig.database.tunnel.local.port} -U ${testConfig.database.role.crud.username} -d ${testConfig.database.target.database} -c "SELECT 1" > /dev/null 2>&1`,
-      { timeout: 3000 },
+    execFileSync(
+      'psql',
+      [
+        '-h',
+        String(testConfig.database.tunnel.local.host),
+        '-p',
+        String(testConfig.database.tunnel.local.port),
+        '-U',
+        testConfig.database.role.crud.username,
+        '-d',
+        testConfig.database.target.database,
+        '-c',
+        'SELECT 1',
+      ],
+      {
+        timeout: 3000,
+        stdio: ['ignore', 'ignore', 'pipe'],
+        env: {
+          ...process.env,
+          PGPASSWORD: testConfig.database.role.crud.password,
+        },
+      },
     );
-  } catch {
-    throw new Error(
-      `did you forget to \`npm run start:testdb\`? cant connect to database`,
+  } catch (error) {
+    const said =
+      error && typeof error === 'object' && 'stderr' in error
+        ? String((error as { stderr?: Buffer }).stderr ?? '').trim()
+        : '';
+    throw new ConstraintError(
+      [
+        `cant connect to the testdb at ${testConfig.database.tunnel.local.host}:${testConfig.database.tunnel.local.port}`,
+        '',
+        'psql said:',
+        `  ${said || '(no stderr -- psql may be absent from PATH, or the call timed out)'}`,
+        '',
+        'fix: run `npm run start:testdb`',
+      ].join('\n'),
+      {
+        host: testConfig.database.tunnel.local.host,
+        port: testConfig.database.tunnel.local.port,
+        psqlSaid: said || null,
+      },
     );
   }
 }

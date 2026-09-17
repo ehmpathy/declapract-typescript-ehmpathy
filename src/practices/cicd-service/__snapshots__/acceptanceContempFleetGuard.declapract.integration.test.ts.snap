@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`contemp-only acceptance guard — the shipped deploy template cannot re-split into a dual fleet fan-out given: [case2] the acceptance-job block as a whole when: [t0] the block is read from the shipped deploy template then: the acceptance-job block matches snapshot (a reworded step reddens): deploy-sls acceptance-job block 1`] = `
+"      # acceptance targets the contemp fleet — the service's own access-tier slug (-prep- at prep,
+      # -prod- at prod). dual-publish ships the SAME artifact under the ancient (-dev-) slug too, so
+      # a run against contemp proves the deployed code; the ancient slug is an alias for inbound
+      # callers still on the old name, never a second target to test. contemp maps to the deployed
+      # access at both prep and prod, so one run covers every tier this job deploys — no
+      # per-fleet fan-out, no per-tier skip.
+      - name: test:acceptance
+        run: ACCESS=\${{ inputs.access }} npm run test:acceptance
+"
+`;

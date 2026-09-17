@@ -6,9 +6,9 @@ exports[`app-react-native-expo — graceful migration of an app-protools-shaped 
 on:
   workflow_call:
     inputs:
-      stage:
+      access:
         type: string
-        description: "the stage of infrastructure to deploy against (e.g., prod, prep)"
+        description: "the access to deploy with (test | prep | prod)"
         required: true
       build:
         type: string
@@ -16,7 +16,7 @@ on:
         required: true
       github-environment:
         type: string
-        description: "the github environment that the apply step will be executed in"
+        description: "github environment for the deploy jobs"
         required: true
       creds-aws-region:
         type: string
@@ -53,7 +53,12 @@ jobs:
           - android
     name: \${{ matrix.platform }}
     runs-on: ubuntu-24.04
-    environment: \${{ inputs.github-environment }}
+    environment:
+      # deployment: false keeps the built-in gate but suppresses the auto-Deployment, so no
+      # "deployed to <env>" status accretes on the PR timeline. the environment is ALWAYS
+      # declared — for prep and prod alike.
+      name: \${{ inputs.github-environment }}
+      deployment: false
     needs: [install]
     steps:
       - name: checkout
@@ -92,9 +97,14 @@ jobs:
   deploy-web:
     name: web
     runs-on: ubuntu-24.04
-    environment: \${{ inputs.github-environment }}
+    environment:
+      # deployment: false keeps the built-in gate but suppresses the auto-Deployment, so no
+      # "deployed to <env>" status accretes on the PR timeline. the environment is ALWAYS
+      # declared — for prep and prod alike.
+      name: \${{ inputs.github-environment }}
+      deployment: false
     needs: [install]
-    if: \${{ inputs.stage == 'prod' && inputs.app-web-deployment-s3-bucket }}
+    if: \${{ inputs.access == 'prod' && inputs.app-web-deployment-s3-bucket }}
     steps:
       - name: checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -137,7 +147,7 @@ exports[`app-react-native-expo — graceful migration of an app-protools-shaped 
 on:
   workflow_call:
     inputs:
-      stage:
+      access:
         type: string
         required: true
 
@@ -169,15 +179,15 @@ exports[`app-react-native-expo — graceful migration of an app-protools-shaped 
 "{
   "name": "app-protools-native",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.31.7",
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "install:deps": "npm install",
     "start": "expo start",
     "start:hot:proxy": "npx local-ssl-proxy --source 3447 --target 8081",
-    "start:hot:prep": "STAGE=prep npx expo start --clear --dev-client",
+    "start:hot:prep": "ACCESS=prep npx expo start --clear --dev-client",
     "start:hot:prep:link": "echo '🚀 https://localhost.protools.prep.ahbode.dev:3447'",
     "start:hot:prep:proxy": "npm run start:hot:prep:link && npm run start:hot:proxy",
-    "start:hot:prod": "STAGE=prod npx expo start --clear --dev-client",
+    "start:hot:prod": "ACCESS=prod npx expo start --clear --dev-client",
     "start:hot:prod:link": "echo '🚀 https://localhost.protools.ahbode.dev:3447'",
     "start:hot:prod:proxy": "npm run start:hot:prod:link && npm run start:hot:proxy",
     "start:cold:proxy": "npx local-ssl-proxy --source 3449 --target 3000",
@@ -201,14 +211,14 @@ exports[`app-react-native-expo — graceful migration of an app-protools-shaped 
     "open:store:android": "https://play.google.com/console/u/0/developers/",
     "open:store:ios": "browser https://appstoreconnect.apple.com/apps/",
     "fix": "npm run fix:format && npm run fix:lint",
-    "prepare": "if [ -e .git ] && [ -z $CI ]; then npm run prepare:husky && npm run prepare:rhachet; fi",
+    "prepare": "if [ -e .git ] && [ -z \\"\${CI:-}\\" ]; then npm run prepare:husky && npm run prepare:rhachet; fi",
     "prepush": "npm run test && npm run build",
     "preversion": "npm run prepush",
     "postversion": "git push origin HEAD --tags --no-verify",
-    "prepare:rhachet": "rhachet init --keys --hooks --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher learner operator observer deployer playwright enroller",
+    "prepare:rhachet": "rhachet init --keys --hooks --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher learner achiever telepath operator observer deployer playwright enroller",
     "upgrade:rhachet": "rhachet upgrade",
-    "test:unit": "set -eu && jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${THOROUGH:-}\\" != \\"true\\" ] && echo '--changedSince=main') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
-    "test:integration": "set -eu && jest -c ./jest.integration.config.ts --forceExit --verbose --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${THOROUGH:-}\\" != \\"true\\" ] && echo '--changedSince=main') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
+    "test:unit": "set -eu && jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${THOROUGH:-}\\" != \\"true\\" ] && echo '--changedSince=origin/main') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
+    "test:integration": "set -eu && jest -c ./jest.integration.config.ts --forceExit --verbose --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${THOROUGH:-}\\" != \\"true\\" ] && echo '--changedSince=origin/main') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
     "test:acceptance:locally": "set -eu && npm run build && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
     "test": "set -eu && npm run test:commits && npm run test:types && npm run test:format && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally",
     "test:acceptance": "set -eu && npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
@@ -218,35 +228,34 @@ exports[`app-react-native-expo — graceful migration of an app-protools-shaped 
   },
   "devDependencies": {
     "expo": "54.0.0",
-    "rhachet": "1.43.1",
-    "rhachet-brains-anthropic": "0.4.1",
-    "rhachet-brains-fireworksai": "0.1.3",
+    "rhachet": "1.47.5",
+    "rhachet-brains-anthropic": "0.4.3",
+    "rhachet-brains-fireworksai": "0.1.6",
     "rhachet-brains-xai": "0.3.3",
-    "rhachet-roles-bhrain": "0.29.24",
+    "rhachet-roles-bhrain": "0.34.1",
     "rhachet-roles-bhrowser": "0.1.0",
-    "rhachet-roles-bhuild": "0.21.22",
-    "rhachet-roles-ehmpathy": "1.38.1",
-    "rhachet-roles-ghlitch": "0.2.5",
+    "rhachet-roles-bhuild": "0.21.36",
+    "rhachet-roles-ehmpathy": "1.38.12",
+    "rhachet-roles-ghlitch": "0.3.0",
     "rhachet-roles-rhachet": "0.1.7",
     "@jest/globals": "30.2.0",
     "@types/jest": "30.0.0",
     "jest": "30.2.0",
     "esbuild-register": "3.6.0",
-    "test-fns": "1.15.8",
+    "test-fns": "1.17.0",
     "tsx": "4.20.6",
-    "jest-expo": "54.0.0",
-    "@babel/core": "7.24.0",
-    "babel-preset-expo": "12.0.0",
-    "react-test-renderer": "19.0.0",
-    "isomorphic-fetch": "3.0.0",
+    "jest-expo": "^54.0.0",
+    "@babel/core": "^7.24.0",
+    "babel-preset-expo": "^12.0.0",
+    "isomorphic-fetch": "^3.0.0",
     "typescript": "5.4.5"
   },
   "dependencies": {
     "expo": "51.0.22",
     "expo-dev-client": "4.0.20",
     "expo-updates": "0.25.21",
-    "domain-objects": "0.31.13",
-    "type-fns": "1.21.3"
+    "domain-objects": "0.34.0",
+    "type-fns": "1.21.4"
   },
   "author": "ahbode",
   "repository": "ahbode/app-protools-native",
@@ -287,3 +296,5 @@ exports[`app-react-native-expo — graceful migration of an app-protools-shaped 
 }
 "
 `;
+
+exports[`cicd-app-react-native-expo — prod test-gate precedence (silent-break clamp) given: [case1] the expo deploy.yml prod job when: [t1] the emitted prod-job gate is snapshotted for review then: the prod job \`if:\` gate matches snapshot: deploy.yml prod job if: (test-gate precedence) 1`] = `"((startsWith(github.ref, 'refs/tags/') && github.event_name != 'workflow_dispatch') || github.event.inputs.access == 'prod') && always() && (needs.test.result == 'success' || needs.test.result == 'skipped')"`;

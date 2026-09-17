@@ -9,8 +9,8 @@ on:
       - 'master'
   workflow_dispatch:
     inputs:
-      stage:
-        description: 'which stage do you want to deploy to?'
+      access:
+        description: 'which access do you want to deploy with?'
         type: choice
         options:
           - prep
@@ -40,7 +40,7 @@ jobs:
     if: github.event_name != 'workflow_dispatch' || github.event.inputs.thoroughly == 'true'
     with:
       creds-aws-region: us-east-1
-      creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.prep}:role/@declapract{variable.projectName}-github-actions-prep
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }} # use aws auth via oidc, if this repo supplies it
     secrets: inherit # keyrack firewall in .test.yml filters to declared keys
 
   prep:
@@ -48,14 +48,14 @@ jobs:
     needs: [test]
     # dont deploy on merge to main by default, since builds are expensive
     if: |
-      ((github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch' && false) || github.event.inputs.stage == 'prep') &&
+      ((github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch' && false) || github.event.inputs.access == 'prep') &&
       always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
     with:
-      stage: prep
+      access: prep
+      github-environment: preparation # deployment:false keeps the gate and suppresses the PR-timeline spam
       build: development
-      github-environment: prep
       creds-aws-region: us-east-1
-      creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.prep}:role/@declapract{variable.projectName}-github-actions-prep
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
     secrets:
       expo-token: ${{ secrets.EXPO_TOKEN }}
 
@@ -63,14 +63,14 @@ jobs:
     uses: ./.github/workflows/.deploy-expo.yml
     needs: [test]
     if: |
-      (startsWith(github.ref, 'refs/tags/') && github.event_name != 'workflow_dispatch') || (github.event.inputs.stage == 'prod') &&
+      ((startsWith(github.ref, 'refs/tags/') && github.event_name != 'workflow_dispatch') || github.event.inputs.access == 'prod') &&
       always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
     with:
-      stage: prod
+      access: prod
       build: production
-      github-environment: prod
+      github-environment: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply (actor_id-gated writer)
       creds-aws-region: us-east-1
-      creds-aws-role-arn: arn:aws:iam::@declapract{variable.awsAccountId.prod}:role/@declapract{variable.projectName}-github-actions-prod
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
       app-web-deployment-s3-bucket: s3://@declapract{variable.projectName}-@declapract{variable.infrastructureNamespaceId}-prod
     secrets:
       expo-token: ${{ secrets.EXPO_TOKEN }}

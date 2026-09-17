@@ -5,6 +5,7 @@
 .agent/.cache/
 .artifact
 .cache/
+.claude/scheduled_tasks*
 .env
 .log/slowtest/
 .serverless

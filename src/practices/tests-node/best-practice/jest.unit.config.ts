@@ -38,6 +38,13 @@ const config: Config = {
   ],
   setupFilesAfterEnv: ['./jest.unit.env.ts'],
 
+  // reclaim every temp dir genTempDir made this run (test-fns autoprune; needs test-fns >=1.16,
+  // the floor is 1.17). jest needs BOTH keys -- globalSetup stamps the run, globalTeardown reclaims
+  // its dirs. one key without the other stamps and never reclaims, a half-wired state test-fns itself
+  // detects + reports at runtime.
+  globalSetup: 'test-fns/autoprune.setup.jest',
+  globalTeardown: 'test-fns/autoprune.teardown.jest',
+
   // use 50% of threads to leave headroom for other processes
   maxWorkers: '50%', // https://stackoverflow.com/questions/71287710/why-does-jest-run-faster-with-maxworkers-50
 };

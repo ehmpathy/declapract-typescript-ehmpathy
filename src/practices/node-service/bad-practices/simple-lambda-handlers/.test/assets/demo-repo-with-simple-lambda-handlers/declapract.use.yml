@@ -1,0 +1,5 @@
+# .note = the declarations dir is symlinked by the test (holds declapract.declare.yml + a
+#         practices/node-service symlink to the real practice), so the consumer's own src/ tree
+#         stays free to hold the target .ts file the src/**/*.ts glob matches.
+declarations: 'declarations/declapract.declare.yml'
+useCase: lambda-service

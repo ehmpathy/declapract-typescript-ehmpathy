@@ -4,10 +4,10 @@
     "yesql": "@declapract{check.minVersion('3.2.2')}"
   },
   "devDependencies": {
-    "sql-code-generator": "@declapract{check.minVersion('0.10.1')}",
-    "sql-dao-generator": "@declapract{check.minVersion('0.12.0')}",
-    "sql-schema-control": "@declapract{check.minVersion('1.7.0')}",
-    "sql-schema-generator": "@declapract{check.minVersion('0.25.2')}",
+    "sql-code-generator": "@declapract{check.minVersion('0.10.2')}",
+    "sql-dao-generator": "@declapract{check.minVersion('0.13.1')}",
+    "sql-schema-control": "@declapract{check.minVersion('1.8.1')}",
+    "sql-schema-generator": "@declapract{check.minVersion('0.26.1')}",
     "@types/yesql": "@declapract{check.minVersion('3.2.2')}",
     "@types/pg": "@declapract{check.minVersion('8.6.1')}"
   },
@@ -23,7 +23,7 @@
     "provision:testdb:docker:up": "docker compose -f ./provision/docker/testdb/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
     "provision:testdb:docker:await": "docker compose -f ./provision/docker/testdb/docker-compose.yml exec -T postgres /root/wait-for-postgres.sh",
     "provision:testdb:docker:down": "docker compose -f ./provision/docker/testdb/docker-compose.yml down",
-    "provision:testdb": "npm run provision:testdb:docker:clear && npm run provision:testdb:docker:prepare && npm run provision:testdb:docker:up && npm run provision:testdb:docker:await && npm run provision:schema:plan && npm run provision:schema:apply && npm run provision:schema:plan",
+    "provision:testdb": "npm run provision:testdb:docker:clear && npm run provision:testdb:docker:prepare && npm run provision:testdb:docker:up && npm run provision:testdb:docker:await && ACCESS=test npm run provision:schema:plan && ACCESS=test npm run provision:schema:apply && ACCESS=test npm run provision:schema:plan",
     "start:testdb": "npm run provision:testdb",
     "start:livedb:prep": "rhx use.rds.capacity --env prep"
   }

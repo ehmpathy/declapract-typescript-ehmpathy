@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`check.timestamps guard given: [case1] a non-code file with an iso timestamp when: [t0] the guard runs then: the verbatim halt output matches snapshot: check.timestamps halt output 1`] = `
+"✋ timestamps are forbidden in snapshots. mask them to prevent permadrift
+   └─ snapshot.json:1:{ "createdAt": "[timestamp]" }
+"
+`;

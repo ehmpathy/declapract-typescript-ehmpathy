@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`rhachet boot.yml defaults to say, refs only deep glossary variants given: [case1] the shipped boot.yml template when: [t0] the template is read then: the emitted glossary ref lines match snapshot: boot.yml glossary refs 1`] = `
+"- briefs/domain.terms/term=*._.choice.reason.md
+- briefs/domain.terms/term=*._.choice.example=*.md"
+`;

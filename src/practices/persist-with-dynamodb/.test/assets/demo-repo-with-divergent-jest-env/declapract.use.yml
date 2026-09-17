@@ -1,0 +1,2 @@
+declarations: './'
+useCase: lambda-service-with-dynamodb

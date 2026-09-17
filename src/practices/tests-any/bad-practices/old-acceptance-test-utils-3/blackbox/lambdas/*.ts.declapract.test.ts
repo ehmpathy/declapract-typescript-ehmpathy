@@ -13,7 +13,6 @@ describe('*.ts.declapract', () => {
     const exampleOldPatternContents = `
 import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
 
-import { stage } from '../../src/utils/environment';
 import { locally } from '../_utils/environment';
 
 describe('addDecoratedImage', () => {
@@ -23,7 +22,6 @@ describe('addDecoratedImage', () => {
       service: 'svc-images',
       function: 'addDecoratedImage',
       locally,
-      stage,
       event: {
         url:
           'https://some.url',

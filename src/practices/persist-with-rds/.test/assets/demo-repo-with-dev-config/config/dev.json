@@ -1,0 +1,18 @@
+{
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "dev"
+  },
+  "database": {
+    "host": "bastion.dev.example.com",
+    "tunnel": "aws.ssmproxy.mydb.dev",
+    "password": "__CHANG3_ME__"
+  },
+  "upstream": {
+    "paypal": "api.dev.paypal.com"
+  },
+  "auth": {
+    "callbackUrl": "https://auth.myapp.dev"
+  }
+}

@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`tests-expo package.json — pipeline gate on the repo expo/react major given: [case1] an expo-51 / react-18 repo seeded with a react-19-era jest-expo 54 the gate aligns down to the expo major (51) when: [t0] the tests-expo gate is applied to the seeded package.json then: before + after match snapshot: package.json — after gate 1`] = `
+"{
+  "name": "app-protools-shaped",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "install:deps": "npm install",
+    "start": "expo start"
+  },
+  "overrides": {
+    "type-fns": "1.9.9"
+  },
+  "resolutions": {
+    "@commitlint/format": "19.9.9"
+  },
+  "devDependencies": {
+    "expo": "~51.0.0",
+    "react": "18.2.0",
+    "jest-expo": "^51.0.0",
+    "react-test-renderer": "^18.0.0",
+    "babel-preset-expo": "^12.0.0",
+    "isomorphic-fetch": "^3.0.0",
+    "@babel/core": "^7.24.0"
+  }
+}
+"
+`;
+
+exports[`tests-expo package.json — pipeline gate on the repo expo/react major given: [case1] an expo-51 / react-18 repo seeded with a react-19-era jest-expo 54 the gate aligns down to the expo major (51) when: [t0] the tests-expo gate is applied to the seeded package.json then: before + after match snapshot: package.json — before 1`] = `
+"{
+  "name": "app-protools-shaped",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "install:deps": "npm install",
+    "start": "expo start"
+  },
+  "overrides": {
+    "type-fns": "1.9.9"
+  },
+  "resolutions": {
+    "@commitlint/format": "19.9.9"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testEnvironment": "jsdom"
+  },
+  "devDependencies": {
+    "expo": "~51.0.0",
+    "react": "18.2.0",
+    "jest-expo": "^54.0.0",
+    "react-test-renderer": "^19.0.0",
+    "babel-preset-expo": "^12.0.0",
+    "isomorphic-fetch": "^3.0.0"
+  }
+}
+"
+`;

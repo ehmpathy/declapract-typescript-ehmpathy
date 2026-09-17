@@ -1,7 +1,9 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
 
 import { given, then, useBeforeAll, when } from 'test-fns';
+
+import { getAllPathsUnderDir } from './utils/getAllPathsUnderDir';
 
 /**
  * .what = holds every third-party action ref on BOTH of this repo's github surfaces to a pinned
@@ -147,23 +149,6 @@ interface ActionRef {
   ref: string;
   comment: string;
 }
-
-/**
- * .what = every file path under a directory, walked with node's own readdir
- * .why = most of the workflow templates are dot-prefixed (`.test.yml`, `.install.yml`).
- *        a glob library that omits dotfiles by default would silently walk a third of
- *        the tree and pass vacuously — readdir has no such blind spot
- * .note = the fixtures skip stays here, in the walk, because it is a TRAVERSAL decision — do not
- *         descend — rather than a selection one. every selection lives in the transformers below
- */
-const getAllPathsUnderDir = (input: { dir: string; skip: string[] }): string[] =>
-  readdirSync(input.dir, { withFileTypes: true }).flatMap((entry) => {
-    const path = `${input.dir}/${entry.name}`;
-    if (!entry.isDirectory()) return [path];
-    return input.skip.includes(entry.name)
-      ? []
-      : getAllPathsUnderDir({ dir: path, skip: input.skip });
-  });
 
 /**
  * .what = the yaml among a set of paths

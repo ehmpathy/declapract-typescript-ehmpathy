@@ -5,7 +5,10 @@ import path from 'node:path';
 import { executeApply } from 'declapract';
 import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
 
-import { check as checkOfRhachet } from '../rhachet/best-practice/.gitignore.declapract';
+import {
+  check as checkOfRhachet,
+  fix as fixOfRhachet,
+} from '../rhachet/best-practice/.gitignore.declapract';
 import { check as checkOfGit } from './best-practice/.gitignore.declapract';
 
 // executeApply is slow (90+ seconds per invocation due to full practice evaluation)
@@ -305,14 +308,61 @@ describe('gitignore practices', () => {
        *         if that ever drifts, `declapract fix` rewrites the file on every run,
        *         forever -- and a hoisted negation turns inert, which silently
        *         un-ignores the test-fixture node_modules the tail exists to protect.
+       * .note = rhachet is DISJOINT from git, not a subset, so a rhachet apply on top of
+       *         git's output ADDS its own line(s) rather than a no-op. this test asserts
+       *         only that git's lines SURVIVE the second declarer -- the settle/no-loss
+       *         property. it does NOT name rhachet's specific line: that line is rhachet's
+       *         to own and assert (its own unit suite + snapshot do), and a git test that
+       *         pinned it would reach across the practice boundary
+       *         (rule.require.entool-requests-as-practices -- the practice that creates an
+       *         artifact declares and asserts it). the full settled artifact, both
+       *         practices' lines included, is the `[t3]` snapshot.
        */
-      then('the file is byte-identical -- the practices converge', async () => {
+      then('the second declarer preserves every git line', async () => {
         const contentsAfterRhachet = await fs.readFile(
           path.join(tempDir, '.gitignore'),
           'utf-8',
         );
 
-        expect(contentsAfterRhachet).toEqual(fileBefore.contents);
+        // every line git emitted survives the second declarer -- no loss
+        fileBefore.contents
+          .split('\n')
+          .filter((line) => line)
+          .forEach((line) => expect(contentsAfterRhachet).toContain(line));
+      });
+
+      /**
+       * .what = the settled file is EXACTLY rhachet's fix of git's output -- so the
+       *         second declarer adds no line but what it declares, and reorders none
+       * .why  = the survival loop above proves no git line is LOST, but a per-line
+       *         `toContain` is blind to two things: a reorder of the lines, and an
+       *         extraneous line appended beyond the union. this strict form closes both
+       *         -- the bytes on disk must equal what rhachet's own `fix` emits from
+       *         git's output, whole and in order.
+       * .note = the expectation is DERIVED from rhachet's own declaration (`fixOfRhachet`),
+       *         never a literal copied here -- so rhachet still owns and declares its line
+       *         (`rule.require.entool-requests-as-practices` holds), while the git test
+       *         still proves the second declarer emits no line but what it declares. a
+       *         `toEqual(fileBefore.contents)` would be WRONG: rhachet legitimately unions
+       *         its own `.agent/.cache/` line in, so the file GAINS a line -- deriving the
+       *         expectation THROUGH rhachet's fix accounts for exactly that gain.
+       * .note = the pipeline writes through `writeFileAsync`, which rewrites the final
+       *         newline (`content.replace(/\n$/, '') + '\n'` -- the seam `[t3]` names), so
+       *         both sides are compared with that one final newline stripped.
+       */
+      then("the settled file is exactly rhachet's fix of git's output", async () => {
+        const contentsAfterRhachet = await fs.readFile(
+          path.join(tempDir, '.gitignore'),
+          'utf-8',
+        );
+
+        const expected =
+          (await fixOfRhachet(fileBefore.contents, {} as any)).contents ?? '';
+
+        // strip the one final newline the pipeline's writeFileAsync rewrites
+        const asStripped = (value: string): string => value.replace(/\n$/, '');
+
+        expect(asStripped(contentsAfterRhachet)).toEqual(asStripped(expected));
       });
 
       then('both cache paths are still ignored', () => {
@@ -334,9 +384,10 @@ describe('gitignore practices', () => {
        *         different input -- one already full of git's 17 lines, rather than the
        *         3-line file `[case2]` hands it. a union or tail defect can behave
        *         differently on that input, and this is the only place it is reachable.
-       * .note = `the practices converge` would go red too, but only as a DISAGREEMENT
-       *         between the two declarers. a reader who saw that alone would look at
-       *         the ordered tail, not at lost lines. these name the actual loss.
+       * .note = `the second declarer preserves every git line` covers the gross no-loss,
+       *         but these name the SPECIFIC union/tail guarantees -- a repo's own custom
+       *         line, no duplicate, a live negation -- each of which a defect could break
+       *         while the gross no-loss still held.
        */
       then("the repo's own custom ignores survive the second apply", () => {
         expect(fileAfterRhachet.lines).toContain('.idea');

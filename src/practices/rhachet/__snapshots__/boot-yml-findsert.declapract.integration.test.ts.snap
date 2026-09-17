@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`rhachet — boot.yml findsert (req 1: consumer entries survive) given: [case1] a consumer whose boot.yml carries its own entries when: [t0] the input (before any fix) then: the consumer boot.yml carries its own picks, no budget, + matches snapshot: boot.yml — before 1`] = `
+"# a consumer's OWN boot curation — it predates the declapract fix and carries entries
+# the fix must preserve: a say pick of its own, and a ref pick of its own deep variant.
+briefs:
+  say:
+    - briefs/my-own-brief.md
+  ref:
+    - briefs/my-own-deep-variant.md
+"
+`;
+
+exports[`rhachet — boot.yml findsert (req 1: consumer entries survive) given: [case1] a consumer whose boot.yml carries its own entries when: [t1] the findsert fix is applied then: both declared globs land AND the consumer's own say + ref picks survive, and it matches snapshot: boot.yml — after 1`] = `
+"# a consumer's OWN boot curation — it predates the declapract fix and carries entries
+# the fix must preserve: a say pick of its own, and a ref pick of its own deep variant.
+briefs:
+  say:
+    - briefs/my-own-brief.md
+  ref:
+    - briefs/my-own-deep-variant.md
+    - briefs/domain.terms/term=*._.choice.reason.md
+    - briefs/domain.terms/term=*._.choice.example=*.md
+budget:
+  tokens: 5000
+"
+`;

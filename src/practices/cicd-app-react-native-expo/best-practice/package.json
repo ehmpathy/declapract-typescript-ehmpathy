@@ -6,10 +6,10 @@
   },
   "scripts": {
     "start:hot:proxy": "npx local-ssl-proxy --source 3447 --target 8081",
-    "start:hot:prep": "STAGE=prep npx expo start --clear --dev-client",
+    "start:hot:prep": "ACCESS=prep npx expo start --clear --dev-client",
     "start:hot:prep:link": "echo '🚀 https://localhost.@declapract{variable.app.web.domain.prep}:@declapract{variable.app.web.port.hot}'",
     "start:hot:prep:proxy": "npm run start:hot:prep:link && npm run start:hot:proxy",
-    "start:hot:prod": "STAGE=prod npx expo start --clear --dev-client",
+    "start:hot:prod": "ACCESS=prod npx expo start --clear --dev-client",
     "start:hot:prod:link": "echo '🚀 https://localhost.@declapract{variable.app.web.domain.prod}:@declapract{variable.app.web.port.hot}'",
     "start:hot:prod:proxy": "npm run start:hot:prod:link && npm run start:hot:proxy",
     "start:cold:proxy": "npx local-ssl-proxy --source 3449 --target 3000",

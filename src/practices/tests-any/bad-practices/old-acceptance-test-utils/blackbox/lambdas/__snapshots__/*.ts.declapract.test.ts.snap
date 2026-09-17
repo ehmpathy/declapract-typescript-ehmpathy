@@ -6,7 +6,6 @@ exports[`*.ts.declapract should be able to fix a test file using old acceptance 
 
 import { exampleEmailClickEvent } from '../../src/__test_assets__/exampleEmailClickEvent';
 import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
-import { stage } from '../../src/utils/environment';
 import { locally } from '../environment';
 
 describe('consumeSESEmailEventFromSNS', () => {
@@ -23,9 +22,8 @@ describe('consumeSESEmailEventFromSNS', () => {
     try {
       await invokeLambdaForTesting({
         service: 'svc-notifications',
-function: 'consumeSESEmailEventFromSNS',
-stage,
-locally,
+        function: 'consumeSESEmailEventFromSNS',
+        locally,
         event: exampleSnsEvent,
       });
       throw new Error('should not reach here');

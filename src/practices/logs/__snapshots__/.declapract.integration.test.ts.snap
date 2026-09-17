@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`logs/leveled-term removal given: [case1] a repo with simple-leveled-log-methods in both dep sections when: [t0] the input (before any fix) then: the package.json input matches snapshot: package.json — before 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "simple-leveled-log-methods": "0.1.7",
+    "uuid": "9.0.0"
+  },
+  "devDependencies": {
+    "simple-leveled-log-methods": "0.1.7",
+    "jest": "29.3.1"
+  }
+}
+"
+`;
+
+exports[`logs/leveled-term removal given: [case1] a repo with simple-leveled-log-methods in both dep sections when: [t1] the leveled-term fix is applied then: the dep is gone from dependencies AND devDependencies, both sections preserved, and matches snapshot: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "uuid": "9.0.0",
+    "sdk-environment": "@declapract{check.minVersion('0.1.5')}",
+    "sdk-logs": "@declapract{check.minVersion('0.9.2')}"
+  },
+  "devDependencies": {
+    "jest": "29.3.1"
+  }
+}
+"
+`;

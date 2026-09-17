@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`old-stage-enum fix should mark each DEVELOPMENT reference with a review pointer for where + what (r9.b2): old-stage-enum DEVELOPMENT — review marker 1`] = `
+"import { Stage } from './environment';
+// @declapract:review: Stage.DEVELOPMENT is axis-ambiguous — pick by hand: an access ('test'|'prep'|'prod') or the deploy-stage slug ('dev'), then delete this marker
+if (stage === Stage.DEVELOPMENT) doAction();"
+`;

@@ -140,6 +140,16 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     permission: 'push', // write access needed to deploy
   });
 
+  // declare the sole preparation environment — one env for every prep/test deploy
+  const envPreparation = DeclaredGithubEnvironment.as({
+    repo,
+    name: 'preparation',
+    reviewers: null, // no approval — prep is the pre-production tier; feature branches deploy freely
+    waitTimer: null, // no delay
+    deploymentBranchPolicy: null, // any branch
+    preventSelfReview: false,
+  });
+
   // declare environment for production deployments from main (auto-approved)
   const envProductionOnMain = DeclaredGithubEnvironment.as({
     repo,
@@ -166,6 +176,9 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
   //        reviewers. so this env carries NO protection rule — the human gate lives
   //        in aws via an `actor_id` allowlist on this env's sts trust statement
   //        (declared org-wide in aws.auth). do NOT add `reviewers` here (it will 422 on apply).
+  //        this is a SEPARATE env from production-on-else-plan on purpose: its name is the oidc
+  //        `sub` anchor for the actor_id-gated WRITER role, so a readonly plan job (anchored to
+  //        -plan) cannot assume the writer role. do NOT collapse the two.
   const envProductionOnElseApply = DeclaredGithubEnvironment.as({
     repo,
     name: 'production-on-else-apply',
@@ -176,6 +189,8 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
   });
 
   // declare environment for production plan from any branch (readonly, no approval)
+  // .why = a SEPARATE env from production-on-else-apply on purpose: its name is the oidc `sub`
+  //        anchor for the READONLY plan role, so a plan job cannot assume the writer role.
   const envProductionOnElsePlan = DeclaredGithubEnvironment.as({
     repo,
     name: 'production-on-else-plan',
@@ -221,6 +236,7 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     repoConfig,
     branchMainProtection,
     teamReleasersRepoAccess,
+    envPreparation,
     envProductionOnMain,
     envProductionOnElseApply,
     envProductionOnElsePlan,

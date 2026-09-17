@@ -24,6 +24,12 @@ ignores:
   - yaml
   - yalc
   - test-fns
+  # consumer-runtime deps imported ONLY by best-practice env templates (e.g.
+  # tests-expo/best-practice/jest.acceptance.env.ts), never by this library's own
+  # executed src. depcheck reaches the template file and mis-attributes its
+  # consumer-bound imports as this repo's absent deps.
+  - "@jest/globals"
+  - isomorphic-fetch
 ignorePatterns:
   # the lint bad-practice eslintrc is a forbidden-pattern template declapract
   # ships, never a real dep consumer. depcheck reaches it at its canonical src

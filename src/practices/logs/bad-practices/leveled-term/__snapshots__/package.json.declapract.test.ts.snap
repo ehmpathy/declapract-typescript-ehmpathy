@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`logs leveled-term bad practice package.json check should skip when the deprecated dep is absent: check skip message — dep absent 1`] = `"does not match bad practice: 'simple-leveled-log-methods' absent from dependencies|devDependencies"`;
+
+exports[`logs leveled-term bad practice package.json check states the practice + remediation when the manifest is malformed json: check malformed-json message (engine reason normalized) 1`] = `
+"✋ ConstraintError: [logs/leveled-term] could not parse package.json: <engine reason normalized>. fix: ensure the package.json holds valid json (a stray comma or character is the usual cause).
+
+{
+  "practice": "logs/leveled-term",
+  "reason": "<engine reason normalized>"
+}"
+`;
+
+exports[`logs leveled-term bad practice package.json fix should remove the dep from dependencies (runtime placement): fixed package.json — runtime placement 1`] = `
+"{
+  "dependencies": {
+    "lodash": "4.0.0"
+  }
+}"
+`;
+
+exports[`logs leveled-term bad practice package.json fix should remove the dep from devDependencies: fixed package.json — devDependencies 1`] = `
+"{
+  "devDependencies": {
+    "jest": "29.0.0"
+  }
+}"
+`;

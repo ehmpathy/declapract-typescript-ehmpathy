@@ -1,0 +1,9 @@
+# minimal declarations for the cicd-service provision.yml (D28) integration test.
+# .why = a `file`-only apply (never `--practice`, so `projectPractices` keeps every usecase
+#        practice — see the test's .note) compiles EVERY practice under `practices:`. pointed at
+#        the real `src/practices` (~40 practices) that blows the jest hook timeout, so this mirror
+#        holds symlinks to only the two the D28 branch reads: cicd-service (its provision.yml is the
+#        applied declaration) and persist-with-rds (its NAME is the branch signal).
+declare:
+  practices: practices
+  use-cases: useCases.yml

@@ -1,0 +1,10 @@
+# minimal declarations for the tests-service package.json (#598 wake-command gate) integration test.
+# .why = a `file`-only apply (never `--practice`, so `projectPractices` keeps every usecase
+#        practice) compiles EVERY practice under `practices:`. pointed at the real `src/practices`
+#        (~40 practices) that blows the jest hook timeout, so this mirror holds a symlink to only
+#        the one practice the applied declaration lives in: tests-service. the #598 emit gate keys
+#        off the CONSUMER's config/prep.json tunnel (written by the test), not projectPractices, so
+#        a single lean practice suffices.
+declare:
+  practices: practices
+  use-cases: useCases.yml

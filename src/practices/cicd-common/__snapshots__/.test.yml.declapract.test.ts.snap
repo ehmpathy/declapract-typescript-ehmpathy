@@ -1,0 +1,92 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`.test.yml.declapract given: [case2] empty input content when: fix is applied then: it should still return the template content 1`] = `
+{
+  "contents": "name: .test
+on:
+  workflow_call:
+",
+}
+`;
+
+exports[`.test.yml.declapract given: [case3] context with null declared file contents when: fix is applied then: it THROWS — an absent template is an internal invariant violation, not an empty write 1`] = `
+[Error: 💥 MalfunctionError: no declaredFileContents for .test.yml — declapract could not read the template beside its declaration
+
+{
+  "relativeFilePath": ".github/workflows/.test.yml"
+}]
+`;
+
+exports[`.test.yml.declapract given: [case4] context with undefined declared file contents when: fix is applied then: it THROWS — same invariant as [case3], for the undefined form 1`] = `
+[Error: 💥 MalfunctionError: no declaredFileContents for .test.yml — declapract could not read the template beside its declaration
+
+{
+  "relativeFilePath": ".github/workflows/.test.yml"
+}]
+`;
+
+exports[`.test.yml.declapract given: a workflow file with outdated content when: fix is applied then: it should return the template content 1`] = `
+{
+  "contents": "name: .test
+
+on:
+  workflow_call:
+    inputs:
+      creds-aws-role-arn:
+        description: "creds for aws, specifies the role to assume via oidc. if not provided, aws auth is skipped"
+        required: false
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  install:
+    uses: ./.github/workflows/.install.yml
+
+  test-types:
+    runs-on: ubuntu-24.04
+    needs: [install]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: build
+        run: npm run build # build before test:types, to ensure .dist/ artifacts are importable for blackbox tests
+",
+}
+`;
+
+exports[`.test.yml.declapract given: a workflow file with outdated content when: fix is applied then: the template content should include the build step 1`] = `
+{
+  "contents": "name: .test
+
+on:
+  workflow_call:
+    inputs:
+      creds-aws-role-arn:
+        description: "creds for aws, specifies the role to assume via oidc. if not provided, aws auth is skipped"
+        required: false
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  install:
+    uses: ./.github/workflows/.install.yml
+
+  test-types:
+    runs-on: ubuntu-24.04
+    needs: [install]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: build
+        run: npm run build # build before test:types, to ensure .dist/ artifacts are importable for blackbox tests
+",
+}
+`;

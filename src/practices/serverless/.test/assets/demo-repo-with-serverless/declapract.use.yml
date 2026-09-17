@@ -1,0 +1,8 @@
+declarations: './'
+useCase: lambda-service-with-rds
+variables:
+  organizationName: 'test-org'
+  projectName: 'test-project'
+  infrastructureNamespaceId: 'testns'
+  databaseName: 'testdb'
+  slackWebhookUrl: 'https://hooks.slack.test/webhook'

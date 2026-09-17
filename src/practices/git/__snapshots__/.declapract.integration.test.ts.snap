@@ -16,6 +16,7 @@ exports[`gitignore practices given: [case1] a repo whose .gitignore lacks both c
 .agent/.cache/
 .artifact
 .cache/
+.claude/scheduled_tasks*
 .env
 .idea
 .log/slowtest/
@@ -42,6 +43,7 @@ node_modules
 
 exports[`gitignore practices given: [case2] a repo whose use case has rhachet but NOT git when: [t1] the rhachet practice is applied then: the settled file matches snapshot: .gitignore -- rhachet only 1`] = `
 ".agent/.cache/
+.claude/scheduled_tasks*
 .idea
 dist
 node_modules

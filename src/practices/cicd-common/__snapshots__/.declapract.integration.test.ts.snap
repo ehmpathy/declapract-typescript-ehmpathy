@@ -338,16 +338,7 @@ jobs:
 
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''
-        run: |
-          set -eu
-          jq -r '.testResults[] | select(.perfStats.runtime != null) | "\\(.name):\\(.perfStats.runtime)"' jest-results.json | while IFS=: read -r name runtime; do
-            seconds=$((runtime / 1000))
-            if [[ $seconds -ge 30 ]]; then
-              echo "::warning file=\${name}::slow test: \${seconds}s"
-            elif [[ $seconds -ge 10 ]]; then
-              echo "::notice file=\${name}::test duration: \${seconds}s"
-            fi
-          done
+        run: bash .github/workflows/report-slow-tests.sh jest-results.json
 
   test-shards-acceptance:
     runs-on: ubuntu-24.04
@@ -402,12 +393,18 @@ jobs:
       - name: build
         run: npm run build
 
+      # .why = the PR acceptance gate runs IN-PROCESS (LOCALLY=true), not against a deployed fleet.
+      #        a PR has no deployed lambda to invoke, and a service that publishes only dev/prep (no
+      #        \`test\` fleet) would target \`svc-<name>-test-*\` — a slug that does not exist — and 404
+      #        on every call. in-process runs the handler directly, so a fleetless service inherits a
+      #        green PR gate out of the box rather than hand-patching LOCALLY=true into this shard.
+      #        the deployed-fleet acceptance run is a separate post-deploy grain (.deploy-sls.yml).
       - name: test:acceptance (explicit \${{ matrix.shard.index }})
         if: matrix.shard.type == 'explicit'
         run: |
           set -eu
           patterns='\${{ join(matrix.shard.patterns, '|') }}'
-          THOROUGH=true npm run test:acceptance -- --testPathPatterns="$patterns" --json --outputFile=jest-results.json
+          LOCALLY=true THOROUGH=true npm run test:acceptance -- --testPathPatterns="$patterns" --json --outputFile=jest-results.json
 
       - name: test:acceptance (dynamic \${{ matrix.shard.shard }}/\${{ matrix.shard.total }})
         if: matrix.shard.type == 'dynamic'
@@ -415,23 +412,14 @@ jobs:
           set -eu
           exclude='\${{ needs.enshard.outputs.acceptance-patterns }}'
           if [[ -n "$exclude" ]]; then
-            THOROUGH=true npm run test:acceptance -- --testPathIgnorePatterns="$exclude" --shard=\${{ matrix.shard.shard }}/\${{ matrix.shard.total }} --json --outputFile=jest-results.json
+            LOCALLY=true THOROUGH=true npm run test:acceptance -- --testPathIgnorePatterns="$exclude" --shard=\${{ matrix.shard.shard }}/\${{ matrix.shard.total }} --json --outputFile=jest-results.json
           else
-            THOROUGH=true npm run test:acceptance -- --shard=\${{ matrix.shard.shard }}/\${{ matrix.shard.total }} --json --outputFile=jest-results.json
+            LOCALLY=true THOROUGH=true npm run test:acceptance -- --shard=\${{ matrix.shard.shard }}/\${{ matrix.shard.total }} --json --outputFile=jest-results.json
           fi
 
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''
-        run: |
-          set -eu
-          jq -r '.testResults[] | select(.perfStats.runtime != null) | "\\(.name):\\(.perfStats.runtime)"' jest-results.json | while IFS=: read -r name runtime; do
-            seconds=$((runtime / 1000))
-            if [[ $seconds -ge 30 ]]; then
-              echo "::warning file=\${name}::slow test: \${seconds}s"
-            elif [[ $seconds -ge 10 ]]; then
-              echo "::notice file=\${name}::test duration: \${seconds}s"
-            fi
-          done
+        run: bash .github/workflows/report-slow-tests.sh jest-results.json
 
   # union job: aggregates shard results into single status for pr merge constraints
   test-integration:

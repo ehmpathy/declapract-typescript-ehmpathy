@@ -40,8 +40,9 @@ path) maps onto the write-only contract exactly:
 
 - **plan role** (`CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN`): `ssm:DescribeParameters` +
   `ssm:ListTagsForResource` only. NO `ssm:GetParameter`, NO `kms:Decrypt` — it
-  reconciles metadata. its ONE decrypt exception is the `database.role.cicd.for-plan`
-  credential at the config layer.
+  reconciles metadata. its ONE decrypt exception is the
+  `/{org}/{project}/database/role/cicd/for-plan/password` credential — a SLASH path with
+  no tier segment, byte-identical to the arn the policy pins.
 - **apply role** (`CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN`): `ssm:PutParameter` +
   `kms:Encrypt` (default `aws/ssm` key) + the tag write perms. never needs decrypt.
 
@@ -52,10 +53,12 @@ declared `name` must be byte-identical. do NOT reshape the path.
 
 terraform seeded these params under `var.environment`, where the prep account carries
 the legacy `dev` label (see `define.infrastructure-dev-vs-application-prep`). the live
-param NAMES contain that literal `dev`, so `resources.parameters.ts` casts the
-namespace prep→dev. tags do NOT cast — they conform to the access vocab (`prep`), so
-the first apply reconciles the live `environment` tag dev→prep (a metadata-only change,
-no value write).
+CRUD param name contains that literal `dev`, so `resources.parameters.ts` casts the
+dotted crud namespace prep→dev. the two cicd names do NOT cast — they are slash paths
+with no tier segment at all (the aws ACCOUNT separates prep from prod, and the plan
+role's iam pin omits a tier), so they stay byte-identical across every tier. tags do
+NOT cast either — they conform to the access vocab (`prep`), so the first apply
+reconciles the live `environment` tag dev→prep (a metadata-only change, no value write).
 
 ## order of operations (once per env — prep, then prod)
 

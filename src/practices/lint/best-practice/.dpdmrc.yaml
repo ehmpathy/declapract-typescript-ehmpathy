@@ -1,9 +1,13 @@
-# dpdm exclude patterns
-# each entry is joined with | to form a single regex for --exclude
+# dpdm exclude patterns — each entry is joined with | into a single --exclude regex.
 #
-# with --transform flag, type imports are erased before analysis
-# and test files are excluded via glob pattern '!(*.test).ts'
-# so excludes are rarely needed even for devDependencies
+# an empty `exclude: []` means dpdm checks every file for cycles, node_modules included. this is
+# the org policy `rule.forbid.dpdm-exclude-change`: we check dependencies too, because a prod-dep
+# cycle ships to consumers.
 #
-# never exclude prod dependencies — you'd ship cycles to consumers
+# with --transform, type imports are erased before analysis and test files drop via the
+# '!(*.test).ts' glob, so an exclude is rarely needed even for a devDep. a devDep may be added as
+# an escape hatch; a prod dep must not, since that ships cycles.
+#
+# the empty list is the policy — an entry of `node_modules` (or dpdm's own `/node_modules/`
+# default) disables the check across every consumer repo.
 exclude: []

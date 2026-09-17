@@ -26,10 +26,12 @@ export const check: FileCheckFunction = (contents) => {
  *
  * handles both `:dev` at end (deploy:dev) and `:dev:` in middle (build:dev:ios)
  *
- * .note = only renames script NAMES, not VALUES. script values may still reference
- *         `--stage dev` for infrastructure naming (cloudformation stacks stay named
- *         `$service-dev`). the serverless package.json handles this via SLS_STAGE
- *         mapping. see brief: define.infrastructure-dev-vs-application-prep.md
+ * .note = renames script NAMES only; script VALUES pass through untouched. this practice
+ *         does not own the deploy-slug axis: a serverless deploy command must derive its
+ *         slug from ACCESS (`--stage "${SLS_STAGE:-}"`, where SLS_STAGE = ACCESS with a
+ *         prep→dev bridge for the ancient fleet), never a hardcoded divergent `--stage dev`.
+ *         that value-axis migration is the serverless practice's STAGE→ACCESS rewrite. see
+ *         rule.forbid.stage-term.md + define.infrastructure-dev-vs-application-prep.md
  */
 export const fix: FileFixFunction = (contents) => {
   if (!contents) return {};

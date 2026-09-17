@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`serverless shared-cache IAM grant globs the stage segment (#597) given: [case1] the shared domain-driven cache grant when: [t0] serverless.yml is read then: the emitted cache grant line matches snapshot: serverless cache IAM grant 1`] = `"- arn:aws:dynamodb:\${aws:region}:\${aws:accountId}:table/infrastructure-*-table-domain-driven-cache # global cache: one SHARED table, name-globbed so every fleet's role can read it — see .declapract.readme.md"`;

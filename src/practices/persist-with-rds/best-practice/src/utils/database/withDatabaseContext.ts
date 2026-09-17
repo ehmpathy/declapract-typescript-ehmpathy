@@ -1,7 +1,7 @@
 import {
   DatabaseConnection,
-  getDatabaseConnection,
-} from './getDatabaseConnection';
+  getOneDatabaseConnection,
+} from './getOneDatabaseConnection';
 
 export interface DatabaseContext {
   dbConnection: DatabaseConnection;
@@ -32,11 +32,19 @@ export const withDatabaseContext = <P1, P2 extends DatabaseContext, R>(
   ) => {
     // open the db connection, if one was not given
     const dbConnection =
-      context.dbConnection ?? (await getDatabaseConnection());
+      context.dbConnection ?? (await getOneDatabaseConnection());
 
     // try and run the logic with db connection
     try {
-      return await logic(input, { ...context, dbConnection } as P2); // as P2 because: https://github.com/microsoft/TypeScript/issues/35858
+      // as-cast — why types miss: the input context is `Omit<P2,'dbConnection'> &
+      //   { dbConnection? }`; the spread `{ ...context, dbConnection }` re-adds a
+      //   NON-optional dbConnection, but ts cannot prove a spread of a generic
+      //   `Omit<P2,…> & {…}` reconstitutes the exact `P2` (microsoft/TypeScript#35858).
+      // correct type: the value IS `P2` — every P2 key is present (the omit dropped
+      //   only dbConnection, which the spread restores with a concrete connection).
+      // removal path: ts resolves spread-of-generic to the original type
+      //   (microsoft/TypeScript#35858), or the caller passes a fully-typed P2 in.
+      return await logic(input, { ...context, dbConnection } as P2);
     } finally {
       // make sure to close the db connection, both when `logic` throws an error or succeeds
       if (!context.dbConnection) await dbConnection.end();

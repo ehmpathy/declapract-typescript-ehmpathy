@@ -46,6 +46,10 @@ export const fix: FileFixFunction = (contents) => {
   if (denylistedPresent.length === 0) return { contents };
 
   // Remove denylisted ignores from the document
+  // note = `as any` at an external boundary (the `yaml` library ships no node type for
+  //        `doc.get`, which returns `unknown`). correct type = the library's `YAMLSeq`
+  //        with an `items` array. removal path = when `yaml` exports a typed `get`, or a
+  //        local `isYamlSeq` type-guard narrows the node before the `.items` access.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ignoresNode = doc.get('ignores') as any;
   if (ignoresNode?.items) {

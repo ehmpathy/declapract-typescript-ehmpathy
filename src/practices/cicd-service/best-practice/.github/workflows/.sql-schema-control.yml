@@ -3,16 +3,16 @@ name: .sql-schema-control
 on:
   workflow_call:
     inputs:
-      stage:
+      access:
         type: string
-        description: "the stage to execute against"
+        description: "the access to execute with (test | prep | prod)"
         required: true
       github-environment-plan:
         type: string
-        description: "github environment for the plan job (prod only; omit for prep — its oidc role is repo-scoped, no env claim)"
+        description: "github environment for the plan job"
       github-environment-apply:
         type: string
-        description: "github environment for the apply job (prod only; omit for prep)"
+        description: "github environment for the apply job"
       allow-apply:
         type: boolean
         description: "whether the apply step is enabled. defaults to true on main"
@@ -40,7 +40,12 @@ jobs:
 
   plan:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment-plan }}
+    environment:
+      # deployment: false keeps the built-in gate but suppresses the auto-Deployment, so a plan
+      # run posts no "deployed to <env>" status to the PR timeline. the environment is ALWAYS
+      # declared — for prep and prod alike.
+      name: ${{ inputs.github-environment-plan }}
+      deployment: false
     needs: [install]
     # opt into the readonly plan grant for every step in this job (tunnel + plan
     # both call getConfig): under plan the oidc role can read only the for-plan
@@ -77,12 +82,12 @@ jobs:
         run: npm run prepare:rhachet --if-present
 
       - name: vpc:tunnel:open
-        run: npx rhx use.vpc.tunnel --env ${{ inputs.stage }}
+        run: npx rhx use.vpc.tunnel --env ${{ inputs.access }}
 
       - name: plan
         run: |
           set -o pipefail
-          ACCESS=${{ inputs.stage }} npm run provision:schema:plan | tee ./plan.log
+          ACCESS=${{ inputs.access }} npm run provision:schema:plan | tee ./plan.log
 
       - name: evaluate plan
         id: evaluate-plan
@@ -107,7 +112,12 @@ jobs:
 
   apply:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment-apply }}
+    environment:
+      # deployment: false keeps the built-in gate but suppresses the auto-Deployment, so the apply
+      # run posts no "deployed to <env>" status to the PR timeline. the environment is ALWAYS
+      # declared — for prep and prod alike.
+      name: ${{ inputs.github-environment-apply }}
+      deployment: false
     needs: [install, plan]
     if: ${{ inputs.allow-apply == true && needs.plan.outputs.has-changes-planned == 'true' }}
     steps:
@@ -138,7 +148,7 @@ jobs:
         run: npm run prepare:rhachet --if-present
 
       - name: vpc:tunnel:open
-        run: npx rhx use.vpc.tunnel --env ${{ inputs.stage }}
+        run: npx rhx use.vpc.tunnel --env ${{ inputs.access }}
 
       - name: apply
-        run: ACCESS=${{ inputs.stage }} npm run provision:schema:apply
+        run: ACCESS=${{ inputs.access }} npm run provision:schema:apply

@@ -1,0 +1,6 @@
+# .note = declarations dir is symlinked by the test to src/practices/format/.test/assets/declarations
+# .why  = a consumer on a NON-terraform usecase, used to prove the format practice's package.json
+#         `contents` fn OMITS the terraform formatter (fix:format is biome-only) when no terraform
+#         practice is in play.
+declarations: 'declarations/declapract.declare.yml'
+useCase: without-terraform

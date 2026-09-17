@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds ssm cicd param names are slash-path, tierless given: [case1] the two cicd credentials when: [t0] resources.parameters.ts is read then: the emitted cicd + crud param-name lines match snapshot: ssm cicd + crud param names 1`] = `
+[
+  "*         with NO tier segment — \`parameter/*/svc-*/database/role/cicd/for-plan/*\` and",
+  "secret({ name: \`\${namespace}.database.role.crud.password\` }),",
+  "name: \`/@declapract{variable.organizationName}/@declapract{variable.projectName}/database/role/cicd/for-plan/password\`,",
+  "name: \`/@declapract{variable.organizationName}/@declapract{variable.projectName}/database/role/cicd/for-apply/password\`,",
+]
+`;

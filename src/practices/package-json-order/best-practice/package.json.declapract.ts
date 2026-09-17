@@ -1,5 +1,6 @@
 import type { FileCheckFunction, FileFixFunction } from 'declapract';
 import expect from 'expect';
+import { ConstraintError } from 'helpful-errors';
 
 /**
  * define the relative key order of keys we care about
@@ -80,6 +81,8 @@ export const desiredRelativeKeyOrder = {
     'prepare:rhachet',
     'prepare',
     'deploy:prune',
+    'deploy:release:ancient',
+    'deploy:release:contemp',
     'deploy:release',
     'deploy:send-notification',
     'deploy:prep',
@@ -212,7 +215,10 @@ const sortPackageJSONObjectKeys = (packageJSONObject: Record<string, any>) => {
 
 // define fix and check
 export const check: FileCheckFunction = (contents) => {
-  if (!contents) throw new Error('file not defined');
+  if (!contents)
+    throw new ConstraintError(
+      'package.json not defined; the repo must carry a package.json for key-order to apply',
+    );
   const packageJSONObject = JSON.parse(contents);
   const sortedPackageJSONObject = sortPackageJSONObjectKeys(packageJSONObject);
   expect(JSON.stringify(packageJSONObject, null, 2)).toEqual(

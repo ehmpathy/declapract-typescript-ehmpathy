@@ -25,17 +25,18 @@ export const fix: FileFixFunction = (contents, context) => {
 
   if (missingIgnores.length === 0) return { contents };
 
-  // Add missing ignores to the document (preserves comments)
+  // get the ignores seq node, seeding an empty seq onto the doc if absent
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let ignoresNode = currentDoc.get('ignores') as any;
-  if (!ignoresNode) {
+  const ignoresNode = ((): any => {
+    const node = currentDoc.get('ignores');
+    if (node) return node;
     currentDoc.set('ignores', []);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ignoresNode = currentDoc.get('ignores') as any;
-  }
-  for (const ignore of missingIgnores) {
-    ignoresNode.add(ignore);
-  }
+    return currentDoc.get('ignores');
+  })();
+
+  // .note = deliberate mutation — the yaml document api mutates the seq node in
+  // place to preserve the surrounding comments; there is no immutable seq-add
+  missingIgnores.forEach((ignore) => ignoresNode.add(ignore));
 
   return { contents: currentDoc.toString() };
 };

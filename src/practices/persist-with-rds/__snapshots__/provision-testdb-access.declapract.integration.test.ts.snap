@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds provision:testdb access given: the shipped best-practice package.json when: the provision:testdb chain is read then: the emitted provision:testdb chain matches snapshot: provision:testdb chain 1`] = `"npm run provision:testdb:docker:clear && npm run provision:testdb:docker:prepare && npm run provision:testdb:docker:up && npm run provision:testdb:docker:await && ACCESS=test npm run provision:schema:plan && ACCESS=test npm run provision:schema:apply && ACCESS=test npm run provision:schema:plan"`;

@@ -3,7 +3,6 @@
 exports[`*.ts.declapract should be able to fix a test file using old acceptance test pattern 1`] = `
 "import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
 
-import { stage } from '../../src/utils/environment';
 import { locally } from '../environment';
 
 describe('addDecoratedImage', () => {
@@ -13,7 +12,6 @@ describe('addDecoratedImage', () => {
       service: 'svc-images',
       function: 'addDecoratedImage',
       locally,
-      stage,
       event: {
         url:
           'https://some.url',

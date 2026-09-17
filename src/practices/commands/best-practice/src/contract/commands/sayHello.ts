@@ -1,14 +1,15 @@
 import { asCommand } from '@ehmpathy/as-command';
 import { getResourceNameFromFileName } from 'visualogic';
 
-import { stage } from '../../utils/environment';
+import { access } from '../../utils/environment';
 import { log } from '../../utils/logger';
 import { COMMANDS_OUTPUT_DIRECTORY } from './__tmp__/directory';
 
 const command = asCommand(
   {
     name: getResourceNameFromFileName(__filename),
-    stage,
+    stage: access, // as-command names this field `stage`; it takes the access
+
     dir: COMMANDS_OUTPUT_DIRECTORY,
     log,
   },

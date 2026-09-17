@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`tests-any changedSince=origin/main policy given: the shipped best-practice/package.json when: the changed-file test commands are read then: the emitted changed-file commands match snapshot: tests-any changed-file commands 1`] = `
+{
+  "test:integration": "set -eu && jest -c ./jest.integration.config.ts --forceExit --verbose --passWithNoTests $([ -n "\${CI:-}" ] && echo '--ci') $([ "\${THOROUGH:-}" != "true" ] && echo '--changedSince=origin/main') $([ "\${RESNAP:-}" = "true" ] && echo '--updateSnapshot')",
+  "test:unit": "set -eu && jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -n "\${CI:-}" ] && echo '--ci') $([ "\${THOROUGH:-}" != "true" ] && echo '--changedSince=origin/main') $([ "\${RESNAP:-}" = "true" ] && echo '--updateSnapshot')",
+}
+`;

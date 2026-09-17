@@ -20,7 +20,6 @@ export const fix: FileFixFunction = async (contents, context) => {
         `import { invokeLambda } from '../_utils/invokeLambda';`,
         [
           `import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';`,
-          `import { stage } from '../../src/utils/environment';`,
           `import { locally } from '../environment';`,
         ].join('\n'),
       )
@@ -30,14 +29,15 @@ export const fix: FileFixFunction = async (contents, context) => {
         'invokeLambdaForTesting({',
       )
       .replace(
-        // replace the inputs
-        /name: '(\w+)',/g,
-        [
-          `service: '${projectName}',`,
-          `function: '$1',`,
-          `stage,`,
-          `locally,`,
-        ].join('\n'),
+        // replace the inputs; capture the indent that precedes `name:` so the
+        // expanded 3-line option block stays aligned with its siblings
+        /^([ \t]*)name: '(\w+)',/gm,
+        (_match, indent, fnName) =>
+          [
+            `${indent}service: '${projectName}',`,
+            `${indent}function: '${fnName}',`,
+            `${indent}locally,`,
+          ].join('\n'),
       )
       .replace(/data: /g, 'event: '),
   };
