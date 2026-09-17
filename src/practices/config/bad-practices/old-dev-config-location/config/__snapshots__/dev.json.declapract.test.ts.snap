@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`old-dev-config-location should update .dev hostnames to .prep 1`] = `
+exports[`old-dev-config-location should migrate the access key and PRESERVE every host verbatim — mid-dotted, terminal, foreign, and url \`.dev\` all left exactly as found (guard #3: never guess a host) 1`] = `
 "{
   "organization": "ahbode",
   "project": "svc-example",
@@ -8,8 +8,14 @@ exports[`old-dev-config-location should update .dev hostnames to .prep 1`] = `
     "access": "prep"
   },
   "database": {
-    "host": "bastion.prep.example.com",
-    "tunnel": "aws.ssmproxy.mydb.prep"
+    "host": "bastion.dev.example.com",
+    "tunnel": "aws.ssmproxy.mydb.dev"
+  },
+  "upstream": {
+    "paypal": "api.dev.paypal.com"
+  },
+  "auth": {
+    "callbackUrl": "https://auth.myapp.dev"
   }
 }"
 `;

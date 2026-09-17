@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`workflow templates gate without a timeline Deployment (#578) given: every workflow template under src/practices when: the walk resolves then: the resolved environment-gate shape matches snapshot: workflow environment-gate shape 1`] = `
+[
+  {
+    "blockOpeners": 2,
+    "deploymentFalseKeys": 2,
+    "flatInline": 0,
+    "path": "/practices/cicd-app-react-native-expo/best-practice/.github/workflows/.deploy-expo.yml",
+  },
+  {
+    "blockOpeners": 2,
+    "deploymentFalseKeys": 2,
+    "flatInline": 0,
+    "path": "/practices/cicd-common/best-practice/.github/workflows/.declastruct.yml",
+  },
+  {
+    "blockOpeners": 3,
+    "deploymentFalseKeys": 3,
+    "flatInline": 0,
+    "path": "/practices/cicd-service/best-practice/.github/workflows/.deploy-sls.yml",
+  },
+  {
+    "blockOpeners": 2,
+    "deploymentFalseKeys": 2,
+    "flatInline": 0,
+    "path": "/practices/cicd-service/best-practice/.github/workflows/.sql-schema-control.yml",
+  },
+  {
+    "blockOpeners": 2,
+    "deploymentFalseKeys": 2,
+    "flatInline": 0,
+    "path": "/practices/cicd-service/best-practice/.github/workflows/.terraform.yml",
+  },
+]
+`;

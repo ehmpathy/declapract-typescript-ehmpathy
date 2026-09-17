@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`simple-lambda-handlers migration given: [case1] a repo with a simple-lambda-handlers api-gateway handler when: [t0] the migration input (before any fix) then: the src file imports + calls the simple-lambda-handlers factory + matches snapshot: getWidget.ts — before 1`] = `
+"import { createApiGatewayHandler } from 'simple-lambda-handlers';
+
+import { log } from '../../utils/logger';
+import { getWidgetSchema } from './getWidget.schema';
+
+// an api-gateway handler CALL — the schema+invoke contract differs between the two
+// frameworks, so the fix cannot rename-only; it must emit a loud review marker.
+export const handler = createApiGatewayHandler({
+  log,
+  schema: getWidgetSchema,
+  logic: async (event) => ({ widget: event.widgetId }),
+  cors: true,
+});
+"
+`;
+
+exports[`simple-lambda-handlers migration given: [case1] a repo with a simple-lambda-handlers api-gateway handler when: [t1] the simple-lambda-handlers fix is applied then: the import + call are rewritten to sdk-aws-lambda, the review marker lands, and it matches snapshot: getWidget.ts — after 1`] = `
+"/**
+ * @declapract:review — auto-migrated to sdk-aws-lambda; the api-gateway handler CONTRACT differs
+ * and MUST be restructured by hand (a rename-only migration answers 400 to every request):
+ *  - schema: the prior single schema described the WHOLE event; the sdk input schema describes the
+ *    request BODY only. split into \`schema: { input, output }\` and unwrap the \`body\` key.
+ *  - invoke: \`logic: (event) => O\` becomes \`invoke: async ({ event, rawEvent }) => O\`. \`event\` is
+ *    the parsed body; thread headers through \`rawEvent.headers\`.
+ * delete this marker once restructured.
+ */
+import { genLambdaEndpoint } from 'sdk-aws-lambda';
+
+import { log } from '../../utils/logger';
+import { getWidgetSchema } from './getWidget.schema';
+
+// an api-gateway handler CALL — the schema+invoke contract differs between the two
+// frameworks, so the fix cannot rename-only; it must emit a loud review marker.
+export const handler = genLambdaEndpoint.for.apiGateway({
+  log,
+  schema: getWidgetSchema,
+  logic: async (event) => ({ widget: event.widgetId }),
+  cors: true,
+});
+"
+`;

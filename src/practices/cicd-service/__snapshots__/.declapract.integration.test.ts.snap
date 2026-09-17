@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`cicd-service — deploy caller↔callee secret reconciliation (D29 clamp) given: [case1] the \`.deploy-sls.yml\` callee and the \`deploy.yml\` caller when: [t3] the emitted prod-job contract is snapshotted for review then: the callee alarm-on-failure step matches snapshot: .deploy-sls.yml alarm-on-failure step 1`] = `
+"      - name: alarm on failure
+        env:
+          PAGERDUTY_INTEGRATION_KEY: \${{ secrets.pagerduty-integration-key }}
+        if: failure() && env.PAGERDUTY_INTEGRATION_KEY
+        uses: Entle/action-pagerduty-alert@e6ca54cd88948b8a50f5bb1071dfa5bdb149ce7e # 0.2.0 — https://github.com/marketplace/actions/pagerduty-alert
+        with:
+          pagerduty-integration-key: "\${{ secrets.pagerduty-integration-key }}"
+          pagerduty-dedup-key: github_workflow_failed
+"
+`;
+
+exports[`cicd-service — deploy caller↔callee secret reconciliation (D29 clamp) given: [case1] the \`.deploy-sls.yml\` callee and the \`deploy.yml\` caller when: [t3] the emitted prod-job contract is snapshotted for review then: the prod job \`if:\` gate matches snapshot: deploy.yml prod job if: (test-gate precedence) 1`] = `
+"((startsWith(github.ref, 'refs/tags/') && github.event_name != 'workflow_dispatch') || github.event.inputs.access == 'prod') &&
+always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
+"
+`;
+
+exports[`cicd-service — deploy caller↔callee secret reconciliation (D29 clamp) given: [case1] the \`.deploy-sls.yml\` callee and the \`deploy.yml\` caller when: [t3] the emitted prod-job contract is snapshotted for review then: the prod job \`secrets:\` pass-through matches snapshot: deploy.yml prod job secrets: (pagerduty pass-through) 1`] = `
+"pagerduty-integration-key: \${{ secrets.PAGERDUTY_INTEGRATION_KEY }}
+"
+`;

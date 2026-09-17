@@ -11,7 +11,13 @@ plugins:
 custom:
   accessByStage:
     dev: prep # stage=dev deploys to $service-dev but uses ACCESS=prep (config/prep.json)
+    prep: prep # stage=prep deploys to $service-prep also with ACCESS=prep; one service answers to both the -dev and -prep fleets while callers migrate
     prod: prod
+  access: ${self:custom.accessByStage.${opt:stage}, 'prep'} # the resolved access for this deploy — one source, referenced by the ACCESS env var + every access-keyed resource arn below, so a partial edit cannot re-split the stage/access axes
+  deploymentBucketByStage: # the deployment bucket is ACCOUNT-scoped: it must live in the account the deploy role assumes, so it is keyed by stage like accessByStage above
+    dev: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-dev # prep-account bucket
+    prep: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-dev # prep-account bucket, shared with the -dev fleet, so no separate -prep bucket need exist
+    prod: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-prod # prod-account bucket — a prod deploy assumes the prod-account oidc role, which has no cross-account grant to the prep-account -dev bucket
 
 provider:
   name: aws
@@ -21,15 +27,15 @@ provider:
   stage: ${opt:stage}
   stackTags:
     app: @declapract{variable.organizationName}
-    environment: ${self:provider.stage}
+    environment: ${self:custom.access} # the ACCESS tier (test|prep|prod), NOT the deploy stage slug — a -dev-fleet stack is still access=prep, so a `stage`-valued tag would read as the two-word lie the access axis retired; matches the ACCESS env var below
     product: ${self:service}
   environment:
     TZ: UTC # guarantee that utc timezone will be used explicitly, to facilitate a pit of success
     NODE_ENV: production # deploy with production optimizations of all resources, to make `prep` and `prod` stage deployments equivalent functionally (i.e., the same code paths in prep and prod)
-    ACCESS: ${self:custom.accessByStage.${opt:stage}, 'prep'} # sdk-environment access tier, to target the correct config + resources (e.g., hit prep db -vs- prod db)
+    ACCESS: ${self:custom.access} # sdk-environment access, to target the correct config + resources (e.g., hit prep db -vs- prod db)
     COMMIT: ${env:COMMIT} # sdk-environment commit slug, must be set by deploy command
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
-  deploymentBucket: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-${self:provider.stage}
+  deploymentBucket: ${self:custom.deploymentBucketByStage.${opt:stage}, 'serverless-deployment-@declapract{variable.infrastructureNamespaceId}-dev'} # account-scoped via deploymentBucketByStage above; provision the -prod bucket in the prod account before the first prod deploy, or a prod deploy trades a cross-account-deny for an absent-bucket error
   vpc:
     securityGroupIds:
       - ${ssm:/tf/infrastructure/vpc/main/lambdaSecurityGroupId}
@@ -87,7 +93,7 @@ provider:
         - dynamodb:DeleteItem
       Resource:
         - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-* # allow read and write to all tables w/ this services name prefix
-        - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/infrastructure-${self:provider.stage}-table-domain-driven-cache # allow read and write to global domain driven cache
+        - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/infrastructure-*-table-domain-driven-cache # global cache: one SHARED table, name-globbed so every fleet's role can read it — see .declapract.readme.md
     # allow publishing to sns topics namespaced by this service
     - Effect: Allow
       Action:
@@ -111,8 +117,10 @@ provider:
         - glue:BatchCreatePartition
       Resource:
         - arn:aws:glue:${aws:region}:${aws:accountId}:catalog
-        - arn:aws:glue:${aws:region}:${aws:accountId}:database/@declapract{variable.databaseName}_${self:provider.stage}
-        - arn:aws:glue:${aws:region}:${aws:accountId}:table/@declapract{variable.databaseName}_${self:provider.stage}/*
+        - arn:aws:glue:${aws:region}:${aws:accountId}:database/@declapract{variable.databaseName}_${self:provider.stage} # glue db, stage-keyed name
+        - arn:aws:glue:${aws:region}:${aws:accountId}:database/@declapract{variable.databaseName}_${self:custom.access} # glue db, access-keyed name — the glue db has the same stage/access split as the cache above, so it gets both grants; drop the stage-keyed line once every deploy names resources by access alone
+        - arn:aws:glue:${aws:region}:${aws:accountId}:table/@declapract{variable.databaseName}_${self:provider.stage}/* # glue table, stage-keyed name
+        - arn:aws:glue:${aws:region}:${aws:accountId}:table/@declapract{variable.databaseName}_${self:custom.access}/* # glue table, access-keyed name, paired with the db grant above
     # allow athena queries
     - Effect: Allow
       Action:

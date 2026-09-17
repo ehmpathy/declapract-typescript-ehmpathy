@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`old-stage-enum migration given: [case1] a repo with Stage.* enum references in a src file when: [t0] the migration input (before any fix) then: the src file holds the raw Stage.* references + matches snapshot: getDeployTarget.ts — before 1`] = `
+"import { Stage } from 'sdk-environment';
+
+// unambiguous property accesses — migrated to their string literals
+export const prodStage = Stage.PRODUCTION;
+export const testStage = Stage.TEST;
+
+// axis-ambiguous — LEFT in place, never guessed (a human decides the axis)
+export const devStage = Stage.DEVELOPMENT;
+
+// a regex literal that MENTIONS the enum text — the parser classifies it as a
+// RegularExpressionLiteral, never a property access, so it must survive byte-for-byte
+export const stageMatcher = /Stage\\.PRODUCTION/;
+
+// a template literal whose STATIC text mentions the enum — also never spliced
+export const label = \`deploy target: Stage.TEST\`;
+"
+`;
+
+exports[`old-stage-enum migration given: [case1] a repo with Stage.* enum references in a src file when: [t1] the old-stage-enum fix is applied then: the unambiguous members migrate, DEVELOPMENT + non-code mentions survive, and it matches snapshot: getDeployTarget.ts — after 1`] = `
+"import { Stage } from 'sdk-environment';
+
+// unambiguous property accesses — migrated to their string literals
+export const prodStage = 'prod';
+export const testStage = 'test';
+
+// axis-ambiguous — LEFT in place, never guessed (a human decides the axis)
+// @declapract:review: Stage.DEVELOPMENT is axis-ambiguous — pick by hand: an access ('test'|'prep'|'prod') or the deploy-stage slug ('dev'), then delete this marker
+export const devStage = Stage.DEVELOPMENT;
+
+// a regex literal that MENTIONS the enum text — the parser classifies it as a
+// RegularExpressionLiteral, never a property access, so it must survive byte-for-byte
+export const stageMatcher = /Stage\\.PRODUCTION/;
+
+// a template literal whose STATIC text mentions the enum — also never spliced
+export const label = \`deploy target: Stage.TEST\`;
+"
+`;

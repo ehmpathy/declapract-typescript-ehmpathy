@@ -1,0 +1,9 @@
+# minimal use case for the tests-service package.json (#598) pipeline test.
+# .why = the wake-command emit branches on the CONSUMER's config/prep.json tunnel (the test writes
+#        it per case), NOT on projectPractices — so one lean usecase with just tests-service carries
+#        every signal the branch reads, while it evaluates only 1 practice (not the ~40 of the real
+#        declarations tree, which blows the jest hook timeout).
+use-cases:
+  service-tests:
+    practices:
+      - tests-service

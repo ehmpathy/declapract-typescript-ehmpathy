@@ -20,8 +20,6 @@ jobs:
   suite:
     uses: ./.github/workflows/.test.yml
     with:
-      aws-region: us-east-1
-      aws-account-id: '@declapract{variable.awsAccountId.prep}'
-    secrets:
-      aws-access-key-id: ${{ secrets.PREP_AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.PREP_AWS_SECRET_ACCESS_KEY }}
+      creds-aws-region: us-east-1
+      creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }} # use aws auth via oidc, if this repo supplies it
+    secrets: inherit # keyrack firewall in .test.yml filters to declared keys

@@ -25,11 +25,11 @@ describe('prettier bad practice package.json', () => {
     const { contents: fixed } = await fix(contents, {} as any);
     const parsed = JSON.parse(fixed!);
 
-    // Should keep non-prettier deps
+    // keep non-prettier deps
     expect(parsed.devDependencies.jest).toBe('29.3.1');
     expect(parsed.devDependencies.typescript).toBe('5.4.5');
 
-    // Should remove prettier deps
+    // remove prettier deps
     expect(parsed.devDependencies.prettier).toBeUndefined();
     expect(
       parsed.devDependencies['@trivago/prettier-plugin-sort-imports'],

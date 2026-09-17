@@ -18,18 +18,18 @@ on:
         required: true
       scope:
         type: string
-        description: "the provider backend this wish targets (github | aws); scopes the plan artifact name"
+        description: "the provider backend this wish targets (github | aws)"
         required: true
       access:
         type: string
-        description: "the access tier this wish targets (test | prep | prod); read by the wish via sdk-environment as the ACCESS envar (aws wishes), and scopes the plan artifact name so parallel calls do not collide"
+        description: "the access to provision with (test | prep | prod)"
         required: true
       github-environment-plan:
         type: string
-        description: "github environment for the plan job (empty = no env gate)"
+        description: "github environment for the plan job"
       github-environment-apply:
         type: string
-        description: "github environment for the apply job (empty = no env gate)"
+        description: "github environment for the apply job"
       allow-apply:
         type: boolean
         description: "whether the apply step is enabled. defaults to true on main"
@@ -69,7 +69,12 @@ jobs:
 
   plan:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment-plan }}
+    environment:
+      # deployment: false keeps the built-in gate but suppresses the auto-Deployment, so a plan
+      # run posts no "deployed to <env>" status to the PR timeline. the environment is ALWAYS
+      # declared — for prep and prod alike.
+      name: ${{ inputs.github-environment-plan }}
+      deployment: false
     needs: [install]
     env:
       ACCESS: ${{ inputs.access }} # aws wishes: sdk-environment getEnvironment reads ACCESS
@@ -119,8 +124,12 @@ jobs:
       - name: evaluate plan
         id: evaluate-plan
         run: |
-          # declastruct prints this exact phrase when there is no diff
-          if grep "in sync" ./plan.log
+          # declastruct prints `🎉 everything is in sync!` (LOWERCASE) when there is no diff.
+          # grep -qF: fixed-string (no char read as regex), quiet (the exit code is the whole
+          # signal), and the full phrase so an unrelated line that holds "in sync" cannot
+          # false-match. the marker is lowercase — a capital-lead grep never matches it, so the
+          # fast path would be dead code (#561).
+          if grep -qF "everything is in sync" ./plan.log
           then
             echo "has-changes-planned=false" >> "$GITHUB_OUTPUT"
           else
@@ -142,7 +151,12 @@ jobs:
 
   apply:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment-apply }}
+    environment:
+      # deployment: false keeps the built-in gate but suppresses the auto-Deployment, so the apply
+      # run posts no "deployed to <env>" status to the PR timeline. the environment is ALWAYS
+      # declared — for prep and prod alike.
+      name: ${{ inputs.github-environment-apply }}
+      deployment: false
     needs: [install, plan]
     if: ${{ inputs.allow-apply == true && needs.plan.outputs.has-changes-planned == 'true' }}
     env:

@@ -9,8 +9,8 @@ on:
       - "master"
   workflow_dispatch:
     inputs:
-      stage:
-        description: "which stage do you want to deploy to?"
+      access:
+        description: "which access do you want to deploy with?"
         type: choice
         options:
           - prep
@@ -47,23 +47,31 @@ jobs:
     uses: ./.github/workflows/.deploy-sls.yml
     needs: [test]
     if: |
-      ((github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch') || github.event.inputs.stage == 'prep') &&
+      ((github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch') || github.event.inputs.access == 'prep') &&
       always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
-    # prep omits github-environment: the ahbode-prep-oidc role trusts any branch
-    # (repo-scoped sub), so no env claim is needed — only prod gates on environment.
+    # github-environment is ALWAYS declared — for prep as well as prod. deployment:false (in
+    # .deploy-sls.yml) keeps the gate (required reviewers, oidc claim) and suppresses the
+    # PR-timeline Deployment spam, so prep declares its environment without the noise.
     with:
-      stage: prep
+      access: prep
+      github-environment-apply: preparation
       creds-aws-region: us-east-1
       creds-aws-role-arn-apply: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
 
   prod:
     uses: ./.github/workflows/.deploy-sls.yml
     if: |
-      (startsWith(github.ref, 'refs/tags/') && github.event_name != 'workflow_dispatch') || (github.event.inputs.stage == 'prod') &&
+      ((startsWith(github.ref, 'refs/tags/') && github.event_name != 'workflow_dispatch') || github.event.inputs.access == 'prod') &&
       always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
     needs: [test]
     with:
-      stage: prod
-      github-environment-apply: production-on-main # tags cut from main; carries the tag v* deploy policy
+      access: prod
+      github-environment-apply: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply (actor_id-gated writer)
       creds-aws-region: us-east-1
       creds-aws-role-arn-apply: ${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+    secrets:
+      # .deploy-sls.yml declares AND uses this secret to page on a failed prod deploy/acceptance.
+      # omit it and the alarm step's `if: env.PAGERDUTY_INTEGRATION_KEY` is false, so the step is
+      # SKIPPED silently and prod alerts are dead. the callee marks it `required: false`, so github
+      # never errors on the omission — this pass-through is what keeps the alert live.
+      pagerduty-integration-key: ${{ secrets.PAGERDUTY_INTEGRATION_KEY }}

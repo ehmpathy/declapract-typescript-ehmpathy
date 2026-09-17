@@ -332,6 +332,31 @@ describe('cicd-common workflow templates', () => {
       });
 
       /**
+       * .what = #595 — the PR acceptance shard defaults to IN-PROCESS (LOCALLY=true), so a
+       *         fleetless service (one that publishes only dev/prep, no `test` fleet) inherits a
+       *         green PR gate rather than 404ing against a `svc-<name>-test-*` slug that does not
+       *         exist. this is the delivered template, through the real pipeline — so it proves a
+       *         consumer receives the in-process default, not that the source file merely holds it.
+       * .teeth = both acceptance shard steps (explicit + dynamic) carry `LOCALLY=true`, and NO
+       *          acceptance step runs a bare `THOROUGH=true npm run test:acceptance` without it —
+       *          the cloud-invoke default that regressed a fleetless service to all-404. revert
+       *          either step to the bare command and the count assertions redden.
+       */
+      then('the acceptance shard defaults to in-process (LOCALLY=true) -- #595 fleetless gate', () => {
+        // every `test:acceptance` shard command carries LOCALLY=true (the explicit + both dynamic branches)
+        const acceptanceRuns = (
+          fileAfter.contents.match(/npm run test:acceptance/g) || []
+        ).length;
+        const localAcceptanceRuns = (
+          fileAfter.contents.match(/LOCALLY=true THOROUGH=true npm run test:acceptance/g) || []
+        ).length;
+        expect(acceptanceRuns).toBeGreaterThan(0);
+        // teeth: EVERY acceptance run carries LOCALLY=true — a bare cloud-invoke step (the all-404
+        // regression) would make localAcceptanceRuns < acceptanceRuns.
+        expect(localAcceptanceRuns).toEqual(acceptanceRuns);
+      });
+
+      /**
        * .why = the wish's third acceptance criterion — "the pin is LEGIBLE: a reader can tell
        *        WHICH version each SHA corresponds to" — is the one criterion no assertion can
        *        settle, because legibility is a property a human reads rather than a machine

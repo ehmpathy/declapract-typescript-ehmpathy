@@ -20,16 +20,17 @@ const env = await getEnvironment.filled();    // Promise<Environment>
 
 | field | type | .what |
 | ----- | ---- | ----- |
-| `access` | `test \| prep \| prod` | which tier of **resources** this process may touch |
+| `access` | `test \| prep \| prod` | the **permission** this process acts WITH — which resources it may touch, and with what weight (see `define.access`) |
 | `config` | config slug (`test*`/`prep*`/`prod*`) | which config/secrets to load |
 | `server` | `` local@${string} \| cloud@${string} `` | where the process **executes** |
 | `commit` | commit slug | what code the process runs |
 
 the two that matter most day-to-day:
 
-- **`access`** — the resource tier. this is THE ubiqlang term for "which environment"
-  in the tier sense (test/prep/prod). it replaces ad-hoc `stage` / `ENVIRONMENT` / `NODE_ENV`
-  reads.
+- **`access`** — the permission a process acts WITH (`test`/`prep`/`prod`). you deploy WITH prod
+  access to overwrite prod resources, reach the prod db — access is a key you hold, never a place
+  you enter (`define.access`). this is THE ubiqlang term for "which environment", and it replaces
+  ad-hoc `stage` / `ENVIRONMENT` / `NODE_ENV` reads.
 - **`server`** — orthogonal to access: WHERE the code runs (`local@…` dev laptop vs
   `cloud@…` lambda), not which resources it reaches. a `local@…` server can hold
   `access=prep`. keep the two axes distinct.
@@ -78,6 +79,8 @@ name-level cast (prep→dev) is a separate concern — see
 
 ## .see also
 
+- `define.access` — access is a permission you act WITH, never a place you act ON
+- `rule.forbid.access-permission-not-place` — forbid the `access tier` synonym + the deploy-to model
 - `define.infrastructure-dev-vs-application-prep` — the dev↔prep name bridge for infra
 - package: `sdk-environment` (ehmpathy) — `getEnvironment`, `Environment`,
   `EnvironmentAccessTier`

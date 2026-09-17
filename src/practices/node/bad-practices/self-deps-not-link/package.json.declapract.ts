@@ -16,19 +16,13 @@ const findBadSelfDeps = (
   const packageName = packageJson.name as string | undefined;
   if (!packageName) return [];
 
-  const badSelfDeps: { depKey: string; version: string }[] = [];
-
-  for (const depKey of DEP_KEYS) {
+  return DEP_KEYS.flatMap((depKey) => {
     const deps = packageJson[depKey] as Record<string, string> | undefined;
-    if (!deps) continue;
-
-    const selfDepVersion = deps[packageName];
-    if (selfDepVersion && selfDepVersion !== 'link:.') {
-      badSelfDeps.push({ depKey, version: selfDepVersion });
-    }
-  }
-
-  return badSelfDeps;
+    const selfDepVersion = deps?.[packageName];
+    if (selfDepVersion && selfDepVersion !== 'link:.')
+      return [{ depKey, version: selfDepVersion }];
+    return [];
+  });
 };
 
 export const check: FileCheckFunction = (contents) => {
@@ -50,27 +44,26 @@ export const fix: FileFixFunction = (contents) => {
   const packageName = packageJson.name as string | undefined;
   if (!packageName) return { contents };
 
-  let modified = false;
+  const badSelfDeps = findBadSelfDeps(packageJson);
+  if (badSelfDeps.length === 0) return { contents };
 
-  for (const depKey of DEP_KEYS) {
-    const deps = packageJson[depKey] as Record<string, string> | undefined;
-    if (!deps) continue;
+  const badDepKeys = new Set(badSelfDeps.map((dep) => dep.depKey));
 
-    const selfDepVersion = deps[packageName];
-    if (selfDepVersion && selfDepVersion !== 'link:.') {
-      delete deps[packageName];
-      modified = true;
+  // rebuild the manifest without the self-deps; drop any dep object left empty
+  const cleaned = Object.fromEntries(
+    Object.entries(packageJson).flatMap(([key, value]) => {
+      if (!badDepKeys.has(key)) return [[key, value]];
 
-      // if deps object is now empty, remove it
-      if (Object.keys(deps).length === 0) {
-        delete packageJson[depKey];
-      }
-    }
-  }
-
-  if (!modified) return { contents };
+      const { [packageName]: _selfDep, ...rest } = value as Record<
+        string,
+        string
+      >;
+      if (Object.keys(rest).length === 0) return [];
+      return [[key, rest]];
+    }),
+  );
 
   return {
-    contents: JSON.stringify(packageJson, null, 2),
+    contents: JSON.stringify(cleaned, null, 2),
   };
 };

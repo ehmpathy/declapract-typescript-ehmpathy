@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'fs';
+import { ConstraintError } from 'helpful-errors';
 import { join } from 'path';
 import util from 'util';
 
@@ -13,7 +14,9 @@ util.inspect.defaultOptions.depth = 5;
  * .why = prevent confusion and hard-to-debug errors from running tests in the wrong directory
  */
 if (!existsSync(join(process.cwd(), 'package.json')))
-  throw new Error('no package.json found in cwd. are you @gitroot?');
+  throw new ConstraintError('no package.json found in cwd. are you @gitroot?', {
+    cwd: process.cwd(),
+  });
 
 /**
  * .what = verify that the env has sufficient auth to run the tests if aws is used; otherwise, fail fast
@@ -29,6 +32,7 @@ if (
   requiresAwsAuth &&
   !(process.env.AWS_PROFILE || process.env.AWS_ACCESS_KEY_ID)
 )
-  throw new Error(
+  throw new ConstraintError(
     'no aws credentials present. please authenticate with aws to run acceptance tests',
+    { awsProfile: process.env.AWS_PROFILE ?? null },
   );

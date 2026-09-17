@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-dynamodb — jest.integration.env divergence repair (D39 clamp) given: [case1] a repo with a divergent jest.integration.env.ts when: [t0] the divergent input (before any fix) then: the env input carries the drifted port and matches snapshot: jest.integration.env.ts — before 1`] = `
+"import { access } from './src/utils/environment';
+
+if (access === 'test')
+  process.env.USE_CUSTOM_DYNAMODB_ENDPOINT = 'http://localhost:9999';
+"
+`;
+
+exports[`persist-with-dynamodb — jest.integration.env divergence repair (D39 clamp) given: [case1] a repo with a divergent jest.integration.env.ts when: [t1] the EQUALS repair is applied then: the consumer file now byte-equals the canonical template and matches snapshot: jest.integration.env.ts — after 1`] = `
+"import { access } from './src/utils/environment';
+
+/**
+ * specify that dynamodb should use the local dynamodb database, under the test access
+ */
+if (access === 'test')
+  process.env.USE_CUSTOM_DYNAMODB_ENDPOINT = 'http://localhost:7337';
+"
+`;

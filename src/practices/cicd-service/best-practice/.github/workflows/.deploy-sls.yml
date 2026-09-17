@@ -3,13 +3,13 @@ name: .deploy-sls
 on:
   workflow_call:
     inputs:
-      stage:
+      access:
         type: string
-        description: "the stage to deploy to"
+        description: "the access to deploy with (test | prep | prod)"
         required: true
       github-environment-apply:
         type: string
-        description: "github environment for the deploy jobs (prod only; omit for prep — its oidc role is repo-scoped, no env claim)"
+        description: "github environment for the deploy jobs"
       creds-aws-region:
         description: "creds for aws, specifies the region"
         required: true
@@ -38,7 +38,12 @@ jobs:
 
   deploy:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment-apply }}
+    environment:
+      # deployment: false keeps the built-in environment gate (required reviewers, tag/branch
+      # policy) but suppresses the auto-Deployment, so no "deployed to <env>" status accretes on
+      # the PR timeline. the environment is ALWAYS declared — for prep and prod alike.
+      name: ${{ inputs.github-environment-apply }}
+      deployment: false
     needs: [install]
     steps:
       - name: checkout
@@ -63,11 +68,16 @@ jobs:
           fail-on-cache-miss: true
 
       - name: deploy
-        run: ACCESS=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy
+        run: ACCESS=${{ inputs.access }} DEPLOYER_NAME="${GITHUB_ACTOR:-}" npm run deploy
 
   assure:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment-apply }}
+    environment:
+      # deployment: false keeps the built-in environment gate (required reviewers, tag/branch
+      # policy) but suppresses the auto-Deployment, so no "deployed to <env>" status accretes on
+      # the PR timeline. the environment is ALWAYS declared — for prep and prod alike.
+      name: ${{ inputs.github-environment-apply }}
+      deployment: false
     needs: [install, deploy]
     steps:
       - name: checkout
@@ -98,10 +108,16 @@ jobs:
 
       - name: vpc:tunnel:open
         if: inputs.needs-vpn-for-acceptance
-        run: npx rhx use.vpc.tunnel --env ${{ inputs.stage }}
+        run: npx rhx use.vpc.tunnel --env ${{ inputs.access }}
 
+      # acceptance targets the contemp fleet — the service's own access-tier slug (-prep- at prep,
+      # -prod- at prod). dual-publish ships the SAME artifact under the ancient (-dev-) slug too, so
+      # a run against contemp proves the deployed code; the ancient slug is an alias for inbound
+      # callers still on the old name, never a second target to test. contemp maps to the deployed
+      # access at both prep and prod, so one run covers every tier this job deploys — no
+      # per-fleet fan-out, no per-tier skip.
       - name: test:acceptance
-        run: ACCESS=${{ inputs.stage }} npm run test:acceptance
+        run: ACCESS=${{ inputs.access }} npm run test:acceptance
 
       - name: alarm on failure
         env:
@@ -114,7 +130,12 @@ jobs:
 
   prune:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment-apply }}
+    environment:
+      # deployment: false keeps the built-in environment gate (required reviewers, tag/branch
+      # policy) but suppresses the auto-Deployment, so no "deployed to <env>" status accretes on
+      # the PR timeline. the environment is ALWAYS declared — for prep and prod alike.
+      name: ${{ inputs.github-environment-apply }}
+      deployment: false
     needs: [install, deploy]
     steps:
       - name: checkout
@@ -139,4 +160,4 @@ jobs:
           fail-on-cache-miss: true
 
       - name: prune
-        run: ACCESS=${{ inputs.stage }} DEPLOYER_NAME=$GITHUB_ACTOR npm run deploy:prune
+        run: ACCESS=${{ inputs.access }} DEPLOYER_NAME="${GITHUB_ACTOR:-}" npm run deploy:prune

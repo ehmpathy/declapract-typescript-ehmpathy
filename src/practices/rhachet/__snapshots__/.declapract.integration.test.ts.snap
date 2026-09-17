@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`rhachet/prod-deps relocation given: [case1] a repo with rhachet + a rhachet-brains-* package in prod deps when: [t0] the input (before any fix) then: the package.json input matches snapshot: package.json — before 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "rhachet": "1.47.5",
+    "rhachet-brains-anthropic": "0.4.3",
+    "uuid": "9.0.0"
+  },
+  "devDependencies": {
+    "jest": "29.3.1"
+  }
+}
+"
+`;
+
+exports[`rhachet/prod-deps relocation given: [case1] a repo with rhachet + a rhachet-brains-* package in prod deps when: [t1] the prod-deps fix is applied then: both rhachet packages leave dependencies and land in devDependencies, the non-rhachet prod dep is retained, and it matches snapshot: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "uuid": "9.0.0"
+  },
+  "devDependencies": {
+    "jest": "29.3.1",
+    "rhachet": "1.47.5",
+    "rhachet-brains-anthropic": "0.4.3",
+    "rhachet-brains-fireworksai": "@declapract{check.minVersion('0.1.6')}",
+    "rhachet-brains-xai": "@declapract{check.minVersion('0.3.3')}",
+    "rhachet-roles-bhrain": "@declapract{check.minVersion('0.34.1')}",
+    "rhachet-roles-bhrowser": "@declapract{check.minVersion('0.1.0')}",
+    "rhachet-roles-bhuild": "@declapract{check.minVersion('0.21.36')}",
+    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.38.12')}",
+    "rhachet-roles-ghlitch": "@declapract{check.minVersion('0.3.0')}",
+    "rhachet-roles-rhachet": "@declapract{check.minVersion('0.1.7')}"
+  },
+  "scripts": {
+    "prepare:rhachet": "rhachet init --keys --hooks --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher learner achiever telepath operator observer deployer playwright enroller",
+    "upgrade:rhachet": "rhachet upgrade"
+  }
+}
+"
+`;

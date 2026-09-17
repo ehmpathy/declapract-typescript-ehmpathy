@@ -1,0 +1,8 @@
+declarations: './'
+useCase: lambda-service
+# executeApply({ practice: 'node' }) evaluates the WHOLE node practice before the `file` filter
+# narrows it, so every @declapract{variable.*} any node file references must be defined here
+# (rule.require.declapract-integration-tests gotcha). node/best-practice references these two.
+variables:
+  projectName: svc-example
+  organizationName: ehmpathy

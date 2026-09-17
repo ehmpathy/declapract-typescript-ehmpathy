@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`serverless practice — the real executeApply pipeline (r001.b1) given: [case1] a legacy consumer serverless.yml (old runtime, legacy env block) when: [t0] the legacy input (before any fix) then: the serverless.yml input matches snapshot: serverless.yml — before 1`] = `
+"service: test-project
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: \${opt:stage}
+  environment:
+    NODE_ENV: \${self:custom.stageToNodeEnvMapping.\${self:provider.stage}}
+"
+`;
+
+exports[`serverless practice — the real executeApply pipeline (r001.b1) given: [case1] a legacy consumer serverless.yml (old runtime, legacy env block) when: [t1] the serverless fix is applied then: the emitted file matches snapshot: serverless.yml — after 1`] = `
+"# @declapract:review — could not auto-insert \`ACCESS: \${self:custom.access}\` + \`COMMIT: \${env:COMMIT}\` under \`environment:\` because no \`STAGE: \${self:provider.stage}\` env var was present to convert; add both as children of your \`environment:\` block by hand — the failing \`declapract plan\` diff names them.
+service: test-project
+
+variablesResolutionMode: 20210326
+
+package:
+  artifact: .artifact/contents.zip
+
+plugins:
+  - serverless-prune-plugin
+
+custom:
+  accessByStage:
+    dev: prep # stage=dev deploys to $service-dev but uses ACCESS=prep (config/prep.json)
+    prep: prep # stage=prep deploys to $service-prep also with ACCESS=prep; one service answers to both the -dev and -prep fleets while callers migrate
+    prod: prod
+  access: \${self:custom.accessByStage.\${opt:stage}, 'prep'} # the resolved access for this deploy — one source, referenced by the ACCESS env var + every access-keyed resource arn below, so a partial edit cannot re-split the stage/access axes
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  stage: \${opt:stage}
+  environment:
+    TZ: UTC # guarantee that utc timezone will be used explicitly, to facilitate a pit of success
+    NODE_ENV: production # deploy with production optimizations of all resources, to make \`prep\` and \`prod\` stage deployments equivalent functionally (i.e., the same code paths in prep and prod)
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: true # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
+"
+`;

@@ -13,6 +13,13 @@ set -eu
 # the timestamp pattern: optional lead T, HH:MM:SS, optional timezone (Z, ±HH:MM, ±HHMM)
 TIMESTAMP_PATTERN='T?[0-9][0-9]:[0-9][0-9]:[0-9][0-9](Z|[+-][0-9][0-9]:?[0-9][0-9])?'
 
+# an iso-8601 DURATION is a fixed span, not an instant, so it cannot permadrift — it is a
+# valid, stable value to assert on. a duration carries a lead `P` designator and a `T` with
+# NO date part (PT12:30:00, P1DT02:15:30, P3Y6M4DT12:30:05), unlike a stamp
+# (2026-08-08T14:30:00Z). strip durations before the timestamp scan, so a duration-only line
+# falls through and a line with a real stamp still halts (the stamp survives the strip).
+DURATION_PATTERN='P([0-9]+[YMWD])*T([0-9]+[HMS])*[0-9][0-9]:[0-9][0-9]:[0-9][0-9]'
+
 # collect staged files (added/copied/modified); skip deletions
 staged=$(git diff --cached --name-only --diff-filter=ACM)
 
@@ -36,8 +43,10 @@ while IFS= read -r file; do
     exit 1
   fi
 
-  # halt if the staged content embeds a raw timestamp
-  match=$(printf '%s\n' "$content" | grep -nIE "$TIMESTAMP_PATTERN" | head -n 1)
+  # halt if the staged content embeds a raw timestamp. strip iso durations first (sed is
+  # line-by-line, so line numbers are preserved): a duration-only line loses its HH:MM:SS run
+  # and falls through; a line that also holds a real stamp still matches (the stamp wins)
+  match=$(printf '%s\n' "$content" | sed -E "s/$DURATION_PATTERN//g" | grep -nIE "$TIMESTAMP_PATTERN" | head -n 1)
   if [ -n "$match" ]; then
     printf '✋ timestamps are forbidden in snapshots. mask them to prevent permadrift\n'
     printf '   └─ %s:%s\n' "$file" "$match"

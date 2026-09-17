@@ -1,9 +1,11 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import util from 'node:util';
 
 import { jest } from '@jest/globals';
-import { keyrack } from 'rhachet/keyrack';
+import { ConstraintError } from 'helpful-errors';
+
+import { useKeyrack } from './src/.test/useKeyrack';
 
 jest.setTimeout(90000); // we're calling downstream apis
 
@@ -15,32 +17,20 @@ util.inspect.defaultOptions.depth = 5;
  * .why = prevent confusion and hard-to-debug errors from running tests in the wrong directory
  */
 if (!existsSync(join(process.cwd(), 'package.json')))
-  throw new Error('no package.json found in cwd. are you @gitroot?');
-
-/**
- * .what = verify that the env has sufficient auth to run the tests if aws is used; otherwise, fail fast
- * .why =
- *   - prevent time wasted waiting on tests to fail due to lack of credentials
- *   - prevent time wasted debugging tests which are failing due to hard-to-read missed credential errors
- */
-const declapractUsePath = join(process.cwd(), 'declapract.use.yml');
-const requiresAwsAuth =
-  existsSync(declapractUsePath) &&
-  readFileSync(declapractUsePath, 'utf8').includes('awsAccountId');
-if (
-  requiresAwsAuth &&
-  !(process.env.AWS_PROFILE || process.env.AWS_ACCESS_KEY_ID)
-)
-  throw new Error(
-    'no aws credentials present. please authenticate with aws to run acceptance tests',
+  throw new ConstraintError(
+    'no package.json found in cwd — run the acceptance suite from the git root',
+    { cwd: process.cwd() },
   );
 
 /**
- * .what = source credentials from keyrack for test env
+ * .what = source credentials from keyrack for the target tier and export them for the aws-sdk-v2
+ *         lambda caller, in one call.
  * .why =
- *   - auto-inject keys into process.env
- *   - fail fast with helpful error if keyrack locked or keys absent
+ *   - a cloud acceptance run targets a deployed tier (e.g. prep), derived from ACCESS; default to the
+ *     lowest-privilege `test` when unset, so a PR / local in-process run stays on test creds.
+ *   - useKeyrack is the org convention: it sources keyrack (sets AWS_PROFILE), sets ACCESS, and — for
+ *     an aws consumer — exports the sso profile's static creds so aws-sdk-v2 auths against the target
+ *     (keyrack.source alone sets only AWS_PROFILE, which v2 cannot use). #586.
+ *   - `strict` fails fast with a helpful error if keyrack is locked or a key is absent.
  */
-const keyrackYmlPath = join(process.cwd(), '.agent/keyrack.yml');
-if (existsSync(keyrackYmlPath))
-  keyrack.source({ env: 'test', owner: 'ehmpath', mode: 'strict' });
+useKeyrack({ env: (process.env.ACCESS ?? 'test') as 'test' | 'prep' | 'prod', mode: 'strict' });

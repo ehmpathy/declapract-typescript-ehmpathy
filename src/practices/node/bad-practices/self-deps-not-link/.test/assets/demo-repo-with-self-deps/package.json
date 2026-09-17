@@ -1,0 +1,15 @@
+{
+  "name": "svc-example",
+  "version": "1.0.0",
+  "dependencies": {
+    "svc-example": "1.2.3",
+    "uuid": "9.0.0"
+  },
+  "devDependencies": {
+    "svc-example": "link:.",
+    "jest": "29.3.1"
+  },
+  "peerDependencies": {
+    "svc-example": "1.2.3"
+  }
+}

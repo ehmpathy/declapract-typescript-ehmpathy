@@ -92,11 +92,15 @@ describe('expo test-toolchain triad — pipeline', () => {
         expect(pkg.scripts.build).toEqual('npm run build:web');
       });
 
-      then('package.json carries the typescript + jest-expo deps at concrete versions', () => {
+      then('package.json carries the typescript dep at a concrete version, and the SDK-coupled expo deps gated to the repo majors', () => {
         const pkg = JSON.parse(state.pkgSettled!);
+        // typescript is a plain minVersion floor (tests-any), resolved concrete on pass 2
         expect(pkg.devDependencies.typescript).toEqual('5.4.5');
-        expect(pkg.devDependencies['jest-expo']).toEqual('54.0.0');
-        expect(pkg.devDependencies['react-test-renderer']).toEqual('19.0.0');
+        // jest-expo + react-test-renderer are GATED to the repo's own expo/react majors (#584):
+        // the fixture declares expo ^54 + react ^19, so the gate pins jest-expo to the expo major
+        // and react-test-renderer to the react major (caret, not a fixed pin — the major is the gate)
+        expect(pkg.devDependencies['jest-expo']).toEqual('^54.0.0');
+        expect(pkg.devDependencies['react-test-renderer']).toEqual('^19.0.0');
       });
 
       then('tsconfig.json extends the expo base, not the node base', () => {

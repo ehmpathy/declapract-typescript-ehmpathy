@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`tests-service package.json — the #598 wake-command gate, end to end given: [case1] a consumer that reaches the shared cluster (tunnel declared) when: [t0] the tests-service package.json declaration is applied then: the emitted package.json matches snapshot: package.json — tunnel consumer (wake command emitted) 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "devDependencies": {
+    "simple-lambda-testing-methods": "@declapract{check.minVersion('0.5.1')}"
+  },
+  "scripts": {
+    "start:livedb:prep": "rhx use.rds.capacity --env prep"
+  }
+}
+"
+`;
+
+exports[`tests-service package.json — the #598 wake-command gate, end to end given: [case2] a consumer that reaches NO cluster (no tunnel declared) when: [t0] the tests-service package.json declaration is applied then: the emitted package.json matches snapshot (the stripped shape): package.json — no-tunnel consumer (wake command stripped) 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "devDependencies": {
+    "simple-lambda-testing-methods": "@declapract{check.minVersion('0.5.1')}"
+  }
+}
+"
+`;

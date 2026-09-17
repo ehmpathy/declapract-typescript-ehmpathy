@@ -1,4 +1,8 @@
 {
   "name": "test-expo-app",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "dependencies": {
+    "expo": "^54.0.0",
+    "react": "^19.0.0"
+  }
 }

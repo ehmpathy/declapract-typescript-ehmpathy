@@ -1,4 +1,5 @@
 import type { FileCheckFunction, FileFixFunction } from 'declapract';
+import { ConstraintError } from 'helpful-errors';
 
 import { defineExpectedNpmrcContents } from '../../../utils/defineExpectedNpmrcContents';
 
@@ -41,7 +42,10 @@ export const check: FileCheckFunction = (contents, context) => {
   // (rule.forbid.friction-hazards) — the caller only needs a clean, stable signal.
   const expected = defineExpectedContents(contents, context.projectPractices);
   if (contents !== expected)
-    throw new Error('.npmrc does not carry the declared node/expo lines');
+    throw new ConstraintError(
+      '.npmrc does not carry the declared node/expo lines; run `declapract apply` to findsert them',
+      { relativeFilePath: context.relativeFilePath },
+    );
 };
 
 /**

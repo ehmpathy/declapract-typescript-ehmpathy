@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`divergent-stage guard — the shipped templates cannot re-split the stage/access axis given: [case4] the deploy-command ACCESS fall-through when: [t0] every deploy command that derives SLS_STAGE is read then: the shipped deploy commands match snapshot (a reworded message reddens): serverless deploy commands 1`] = `
+{
+  "deploy": "if [ "\${ACCESS:-}" = 'prod' ]; then npm run deploy:prod; elif [ "\${ACCESS:-}" = 'prep' ]; then npm run deploy:prep; else echo '🛑 invalid ACCESS, must be prod or prep' && exit 2; fi",
+  "deploy:prep": "ACCESS=prep npm run deploy:release",
+  "deploy:prod": "ACCESS=prod npm run deploy:release:ancient && npm run deploy:send-notification",
+  "deploy:prune": "if [ "\${ACCESS:-}" != 'prep' ] && [ "\${ACCESS:-}" != 'prod' ]; then echo '🛑 invalid ACCESS, must be prod or prep' && exit 2; fi && export COMMIT=$(npx sdk-environment get commit) && export SLS_STAGE=$([ "\${ACCESS:-}" = 'prep' ] && echo 'dev' || echo "\${ACCESS:-}") && npx sls prune -n 7 --stage "\${SLS_STAGE:-}" && if [ "\${ACCESS:-}" = 'prep' ]; then npx sls prune -n 7 --stage prep; fi",
+  "deploy:release": "npm run deploy:release:ancient && npm run deploy:release:contemp",
+  "deploy:release:ancient": "if [ "\${ACCESS:-}" != 'prep' ] && [ "\${ACCESS:-}" != 'prod' ]; then echo '🛑 invalid ACCESS, must be prod or prep' && exit 2; fi && export COMMIT=$(npx sdk-environment get commit) && export SLS_STAGE=$([ "\${ACCESS:-}" = 'prep' ] && echo 'dev' || echo "\${ACCESS:-}") && npm run build && sls deploy --verbose --stage "\${SLS_STAGE:-}"",
+  "deploy:release:contemp": "export COMMIT=$(npx sdk-environment get commit) && if [ "\${ACCESS:-}" = 'prep' ]; then sls deploy --verbose --stage prep; else echo '🛑 skip contemp dual-publish: ACCESS is not prep (contemp publishes the -prep- fleet only)'; fi",
+  "deploy:send-notification": "curl -X POST -H 'Content-type: application/json' --data "{\\"text\\":\\"$([ -z "\${DEPLOYER_NAME:-}" ] && git config user.name || echo "\${DEPLOYER_NAME:-}") has deployed $npm_package_name@v$npm_package_version:
+https://github.com/@declapract{variable.organizationName}/$npm_package_name/tree/v$npm_package_version\\"}" @declapract{variable.slackWebhookUrl}",
+}
+`;

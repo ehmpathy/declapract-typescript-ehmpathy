@@ -1,18 +1,18 @@
 {
   "devDependencies": {
-    "rhachet": "@declapract{check.minVersion('1.43.1')}",
-    "rhachet-brains-anthropic": "@declapract{check.minVersion('0.4.1')}",
-    "rhachet-brains-fireworksai": "@declapract{check.minVersion('0.1.3')}",
+    "rhachet": "@declapract{check.minVersion('1.47.5')}",
+    "rhachet-brains-anthropic": "@declapract{check.minVersion('0.4.3')}",
+    "rhachet-brains-fireworksai": "@declapract{check.minVersion('0.1.6')}",
     "rhachet-brains-xai": "@declapract{check.minVersion('0.3.3')}",
-    "rhachet-roles-bhrain": "@declapract{check.minVersion('0.29.24')}",
+    "rhachet-roles-bhrain": "@declapract{check.minVersion('0.34.1')}",
     "rhachet-roles-bhrowser": "@declapract{check.minVersion('0.1.0')}",
-    "rhachet-roles-bhuild": "@declapract{check.minVersion('0.21.22')}",
-    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.38.1')}",
-    "rhachet-roles-ghlitch": "@declapract{check.minVersion('0.2.5')}",
+    "rhachet-roles-bhuild": "@declapract{check.minVersion('0.21.36')}",
+    "rhachet-roles-ehmpathy": "@declapract{check.minVersion('1.38.12')}",
+    "rhachet-roles-ghlitch": "@declapract{check.minVersion('0.3.0')}",
     "rhachet-roles-rhachet": "@declapract{check.minVersion('0.1.7')}"
   },
   "scripts": {
-    "prepare:rhachet": "rhachet init --keys --hooks --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher learner operator observer deployer playwright enroller",
+    "prepare:rhachet": "rhachet init --keys --hooks --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher learner achiever telepath operator observer deployer playwright enroller",
     "upgrade:rhachet": "rhachet upgrade"
   }
 }

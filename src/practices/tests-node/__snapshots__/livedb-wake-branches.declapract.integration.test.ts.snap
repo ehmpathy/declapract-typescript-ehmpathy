@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`the useWakeOfLivedb decide-gate runs its real branches (executed, no live infra) given: the wake command fails when: it fails with a child-process shape (a non-zero exit) then: the wake-failure warn matches snapshot: useWakeOfLivedb wake-failure warn 1`] = `
+"useWakeOfLivedb: 'rhx use.rds.capacity --env prep' failed (non-fatal): {"status":1}
+"
+`;

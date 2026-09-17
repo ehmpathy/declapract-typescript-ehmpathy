@@ -1,0 +1,9 @@
+declarations: './'
+useCase: lambda-service
+variables:
+  organizationName: 'test-org'
+  projectName: 'test-project'
+  infrastructureNamespaceId: 'test'
+  awsAccountId:
+    prep: '123456789012'
+    prod: '123456789012'

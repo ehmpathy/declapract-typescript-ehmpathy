@@ -3,8 +3,9 @@ import { join } from 'node:path';
 import util from 'node:util';
 
 import { jest } from '@jest/globals';
+import { ConstraintError } from 'helpful-errors';
 
-import { stage } from './src/utils/environment';
+import { access } from './src/utils/environment';
 
 // mock that getConfig just returns plaintext test env config in unit tests
 jest.mock('./src/utils/config/getConfig', () => ({
@@ -19,7 +20,10 @@ util.inspect.defaultOptions.depth = 5;
  * .why = prevent confusion and hard-to-debug errors from running tests in the wrong directory
  */
 if (!existsSync(join(process.cwd(), 'package.json')))
-  throw new Error('no package.json found in cwd. are you @gitroot?');
+  throw new ConstraintError(
+    'no package.json found in cwd — run the unit suite from the git root',
+    { cwd: process.cwd() },
+  );
 
 /**
  * sanity check that unit tests are only run the 'test' environment
@@ -28,5 +32,8 @@ if (!existsSync(join(process.cwd(), 'package.json')))
  * - prevent prod state pollution with test data
  * - prevent financial mutations
  */
-if (stage !== 'test' && process.env.I_KNOW_THE_RISKS !== 'true')
-  throw new Error(`unit-test does not target stage 'test'`);
+if (access !== 'test' && process.env.I_KNOW_THE_RISKS !== 'true')
+  throw new ConstraintError(
+    `unit tests must target the 'test' tier — set I_KNOW_THE_RISKS=true to override`,
+    { access },
+  );

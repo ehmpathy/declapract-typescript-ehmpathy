@@ -6,7 +6,7 @@ describe('old-dev-scripts package.json', () => {
       const contents = JSON.stringify(
         {
           scripts: {
-            'start:hot:dev': 'npm run start:hot -- --stage dev',
+            'start:hot:dev': 'npm run start:hot',
             'test:unit': 'jest',
           },
         },
@@ -34,7 +34,7 @@ describe('old-dev-scripts package.json', () => {
       const contents = JSON.stringify(
         {
           scripts: {
-            'start:hot:prep': 'npm run start:hot -- --stage prep',
+            'start:hot:prep': 'npm run start:hot',
             'test:unit': 'jest',
           },
         },
@@ -60,8 +60,8 @@ describe('old-dev-scripts package.json', () => {
         {
           name: 'test-package',
           scripts: {
-            'start:hot:dev': 'npm run start:hot -- --stage dev',
-            'deploy:dev': 'sls deploy --stage dev',
+            'start:hot:dev': 'npm run start:hot',
+            'deploy:dev': 'npm run deploy:release',
             'test:unit': 'jest',
           },
         },
@@ -77,8 +77,9 @@ describe('old-dev-scripts package.json', () => {
 
       expect(parsed.scripts['start:hot:dev']).toBeUndefined();
       expect(parsed.scripts['deploy:dev']).toBeUndefined();
-      expect(parsed.scripts['start:hot:prep']).toBe('npm run start:hot -- --stage dev');
-      expect(parsed.scripts['deploy:prep']).toBe('sls deploy --stage dev');
+      // the VALUE passes through untouched — this practice renames NAMES only
+      expect(parsed.scripts['start:hot:prep']).toBe('npm run start:hot');
+      expect(parsed.scripts['deploy:prep']).toBe('npm run deploy:release');
       expect(parsed.scripts['test:unit']).toBe('jest');
     });
 

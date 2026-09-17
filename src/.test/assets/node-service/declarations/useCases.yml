@@ -1,0 +1,5 @@
+# minimal use case for the node-service practice integration test
+use-cases:
+  lambda-service:
+    practices:
+      - node-service

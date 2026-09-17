@@ -15,16 +15,23 @@ export type Grant = 'plan' | 'apply';
  * .note = grant is a per-schema arg, NOT read from env here; getConfig picks which
  *         schema to parse with at call time (see getConfig.ts).
  */
-const getSchema = <TGrant extends Grant>(grant: TGrant) => {
+const getOneSchema = <TGrant extends Grant>(grant: TGrant) => {
   // required by default; optional only under grant=plan. generic on the LITERAL
   // TGrant so each schema infers monomorphically (all-required for apply,
   // reader-denied-optional for plan) instead of the widened union.
-  // .note on `as`: a conditional return type cannot be proven from the runtime
-  //   ternary, so TS needs this one assertion. it is sound — the branch matches
-  //   TGrant exactly (plan => .optional(), apply => schema).
   const secret = <T extends z.ZodTypeAny>(
     schema: T,
   ): TGrant extends 'plan' ? z.ZodOptional<T> : T =>
+    // as-cast — why types miss: TS cannot relate a conditional return type
+    //   (`TGrant extends 'plan' ? … : …`) to a runtime `grant === 'plan'`
+    //   ternary; the two are unrelated to the checker, so the ternary widens to
+    //   `ZodOptional<T> | T` and does not fit the declared conditional return.
+    // correct type: the value IS `ZodOptional<T>` when TGrant='plan' and `T`
+    //   otherwise — exactly the declared return; the runtime branch matches the
+    //   type branch one-to-one, so the assertion is sound.
+    // removal path: TS learns to relate a conditional return type to a runtime
+    //   discriminant check (microsoft/TypeScript#33912), or the caller splits
+    //   into two monomorphic overloads that never share this body.
     (grant === 'plan' ? schema.optional() : schema) as TGrant extends 'plan'
       ? z.ZodOptional<T>
       : T;
@@ -88,8 +95,8 @@ const getSchema = <TGrant extends Grant>(grant: TGrant) => {
  * .why = getConfig picks which to parse with by grant (see getConfig.ts).
  */
 export const schema = {
-  apply: getSchema('apply'),
-  plan: getSchema('plan'),
+  apply: getOneSchema('apply'),
+  plan: getOneSchema('plan'),
 } as const;
 
 /**

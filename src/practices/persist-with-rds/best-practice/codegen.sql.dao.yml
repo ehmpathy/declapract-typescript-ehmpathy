@@ -5,7 +5,7 @@ generates:
     to: src/access/daos
     using:
       log: src/utils/logger#log
-      DatabaseConnection: src/utils/database/getDatabaseConnection#DatabaseConnection
+      DatabaseConnection: src/utils/database/getOneDatabaseConnection#DatabaseConnection
   schema:
     config: codegen.sql.schema.yml
   control:

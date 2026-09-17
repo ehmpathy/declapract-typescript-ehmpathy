@@ -62,6 +62,20 @@ describe('check.timestamps guard', () => {
           '   └─ snapshot.json:1:{ "createdAt": "2026-06-25T14:30:00Z" }',
         );
       });
+      then('the verbatim halt output matches snapshot', () => {
+        // user-faced halt message — a reword must redden a vibecheck, not slip past the
+        // toContain asserts above (rule.require.snapshots). the fixture timestamp is a fixed
+        // input (not a live clock), so the output is deterministic.
+        // mask the instant to [timestamp] before the snapshot: the .snap is itself scanned by
+        // this very guard (only .ts/.sh are exempt), so a raw instant here would forbid its own
+        // commit. the raw detail-line toContain above already locks the exact instant in the
+        // output; the snapshot vibechecks the message shape, per the guard's own mask remedy (case8).
+        const masked = result.stdout.replace(
+          /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/g,
+          '[timestamp]',
+        );
+        expect(masked).toMatchSnapshot('check.timestamps halt output');
+      });
     });
   });
 
@@ -142,6 +156,57 @@ describe('check.timestamps guard', () => {
 
       then('it allows the commit with exit 0 (mask remedy is committable)', () => {
         expect(result.code).toEqual(0);
+      });
+    });
+  });
+
+  // #566: an iso-8601 duration is a fixed span, not an instant, so it cannot permadrift —
+  // the matcher must not halt on it (a false positive that trains folks to bypass the hook)
+  given('[case9] a non-code file with a simple iso duration (PT12:30:00)', () => {
+    when('[t0] the guard runs', () => {
+      const dir = genStagedRepo({ 'fixture.json': '{ "window": "PT12:30:00" }\n' });
+      const result = runGuard(dir);
+
+      then('it allows the commit with exit 0 (a duration is not a timestamp)', () => {
+        expect(result.code).toEqual(0);
+      });
+    });
+  });
+
+  given('[case10] a non-code file with a day+time duration (P1DT02:15:30)', () => {
+    when('[t0] the guard runs', () => {
+      const dir = genStagedRepo({ 'fixture.json': '{ "elapsed": "P1DT02:15:30" }\n' });
+      const result = runGuard(dir);
+
+      then('it allows the commit with exit 0 (a duration is not a timestamp)', () => {
+        expect(result.code).toEqual(0);
+      });
+    });
+  });
+
+  given('[case11] a non-code file with a full-designator duration (P3Y6M4DT12:30:05)', () => {
+    when('[t0] the guard runs', () => {
+      const dir = genStagedRepo({
+        'fixture.json': '{ "span": "P3Y6M4DT12:30:05" }\n',
+      });
+      const result = runGuard(dir);
+
+      then('it allows the commit with exit 0 (a duration is not a timestamp)', () => {
+        expect(result.code).toEqual(0);
+      });
+    });
+  });
+
+  given('[case12] a non-code file with BOTH a duration and a real timestamp', () => {
+    when('[t0] the guard runs', () => {
+      const dir = genStagedRepo({
+        'fixture.json':
+          '{ "window": "PT12:30:00", "createdAt": "2026-06-25T14:30:00Z" }\n',
+      });
+      const result = runGuard(dir);
+
+      then('it halts with exit 2 (the real stamp wins, despite the duration)', () => {
+        expect(result.code).toEqual(2);
       });
     });
   });

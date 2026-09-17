@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`node/self-deps-not-link removal given: [case1] a repo with its own name as a self-dep across three dep sections when: [t0] the input (before any fix) then: the package.json input matches snapshot: package.json — before 1`] = `
+"{
+  "name": "svc-example",
+  "version": "1.0.0",
+  "dependencies": {
+    "svc-example": "1.2.3",
+    "uuid": "9.0.0"
+  },
+  "devDependencies": {
+    "svc-example": "link:.",
+    "jest": "29.3.1"
+  },
+  "peerDependencies": {
+    "svc-example": "1.2.3"
+  }
+}
+"
+`;
+
+exports[`node/self-deps-not-link removal given: [case1] a repo with its own name as a self-dep across three dep sections when: [t1] the self-deps-not-link fix is applied then: the bad self-deps are gone, the link:. self-dep survives, the emptied section is pruned, and it matches snapshot: package.json — after 1`] = `
+"{
+  "name": "svc-example",
+  "version": "1.0.0",
+  "dependencies": {
+    "uuid": "9.0.0"
+  },
+  "devDependencies": {
+    "svc-example": "link:.",
+    "jest": "29.3.1"
+  },
+  "author": "ehmpathy",
+  "repository": "ehmpathy/svc-example",
+  "homepage": "https://github.com/ehmpathy/svc-example",
+  "bugs": "https://github.com/ehmpathy/svc-example/issues",
+  "scripts": {
+    "fix": "npm run fix:format && npm run fix:lint",
+    "prepare": "if [ -e .git ] && [ -z \\"\${CI:-}\\" ]; then npm run prepare:husky && npm run prepare:rhachet; fi",
+    "prepush": "npm run test && npm run build",
+    "preversion": "npm run prepush",
+    "postversion": "git push origin HEAD --tags --no-verify"
+  }
+}
+"
+`;

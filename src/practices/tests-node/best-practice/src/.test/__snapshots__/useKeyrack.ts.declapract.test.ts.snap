@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`exportAwsCredentialsFromSsoProfile given: [case1] the aws cli fails (a stale or absent sso login) when: [t0] the export runs against the failed cli then: the user-faced message matches snapshot: credential-export failure message 1`] = `"✋ ConstraintError: failed to export aws credentials from sso profile 'my-sso-profile'. run: aws sso login --profile my-sso-profile"`;
+
+exports[`exportAwsCredentialsFromSsoProfile given: [case2] the aws cli returns a valid env-format credential block when: [t0] the export runs against the valid cli then: the parsed record matches snapshot: credential-export all-clear record 1`] = `
+{
+  "AWS_ACCESS_KEY_ID": "AKIAEXAMPLE",
+  "AWS_SECRET_ACCESS_KEY": "secretExampleValue",
+  "AWS_SESSION_TOKEN": "sessionExampleToken",
+}
+`;

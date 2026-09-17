@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`tests-service — blackbox acceptance-test check (D52 clamp) [case3] a file that lacks a still-required import [t0] throws when \`invokeLambdaForTesting\` is absent 1`] = `
+"✋ ConstraintError: - Expected imports 
+  - import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+  - import { locally } from '../environment';
+
+{
+  "relativeFilePath": "blackbox/lambdas/getSurfReport.acceptance.test.ts",
+  "missedImports": [
+    "import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';"
+  ]
+}"
+`;
+
+exports[`tests-service — blackbox acceptance-test check (D52 clamp) [case3] a file that lacks a still-required import [t1] throws when \`locally\` is absent 1`] = `
+"✋ ConstraintError: - Expected imports 
+  - import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+  - import { locally } from '../environment';
+
+{
+  "relativeFilePath": "blackbox/lambdas/getSurfReport.acceptance.test.ts",
+  "missedImports": [
+    "import { locally } from '../environment';"
+  ]
+}"
+`;
+
+exports[`tests-service — blackbox acceptance-test check (D52 clamp) [case4] a file whose describe name does not match the file [t0] throws — the describe must name the derived function 1`] = `
+"✋ ConstraintError: expected a \`describe\` block that names the derived function: describe('getSurfReport', () => {
+
+{
+  "relativeFilePath": "blackbox/lambdas/getSurfReport.acceptance.test.ts",
+  "expectedTestName": "getSurfReport"
+}"
+`;
+
+exports[`tests-service — blackbox acceptance-test check (D52 clamp) [case5] an empty file [t0] throws — at least one lambda acceptance test is expected 1`] = `
+"✋ ConstraintError: expected at least one lambda acceptance test; add a \`describe\` block that invokes the lambda
+
+{
+  "relativeFilePath": "blackbox/lambdas/getSurfReport.acceptance.test.ts"
+}"
+`;

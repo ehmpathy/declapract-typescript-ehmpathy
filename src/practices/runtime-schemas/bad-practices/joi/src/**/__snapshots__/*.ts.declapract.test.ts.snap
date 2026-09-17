@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`joi-imports source files @declapract:review marker (#594) the marker names the three silent semantic changes: joi rewrite — review marker 1`] = `
+"/**
+ * @declapract:review — auto-migrated to zod; VERIFY these three semantics by hand:
+ *  - optionality: a source field with no explicit required marker was OPTIONAL, but the zod field
+ *    is now REQUIRED by default. re-mark any truly-optional field \`.optional()\`.
+ *  - unknown keys: the prior \`.object()\` rejected unknown keys; \`z.object()\` strips them silently.
+ *    use \`z.looseObject()\` only where the shape must pass unknown keys through.
+ *  - date coercion: the prior \`.date()\` coerced strings to Date; \`z.date()\` rejects a string.
+ *    use \`z.coerce.date()\` where the input arrives as a string.
+ * delete this marker once each point is verified.
+ */
+import { z } from 'zod';
+const schema = z.object({ name: z.string() });"
+`;

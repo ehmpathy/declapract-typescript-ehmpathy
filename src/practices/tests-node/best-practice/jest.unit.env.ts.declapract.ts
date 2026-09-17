@@ -14,7 +14,9 @@ import { readFile } from '../../../utils/readFile';
  */
 export const contents: FileContentsFunction = async (context) => {
   // grab the superset of best practices content
-  const contentsSuperset = await readFile(`${__dirname}/jest.unit.env.ts`);
+  const contentsSuperset = await readFile({
+    filePath: `${__dirname}/jest.unit.env.ts`,
+  });
 
   // remove the config mock block when the config practice is absent — immutable const, no reassign
   const contents = context.projectPractices.includes('config')

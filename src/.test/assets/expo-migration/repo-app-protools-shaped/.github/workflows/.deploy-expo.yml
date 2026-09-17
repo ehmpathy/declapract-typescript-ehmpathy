@@ -3,7 +3,7 @@ name: .deploy-expo
 on:
   workflow_call:
     inputs:
-      stage:
+      access:
         type: string
         required: true
 

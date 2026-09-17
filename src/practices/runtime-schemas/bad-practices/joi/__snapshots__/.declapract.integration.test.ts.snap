@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`joi->zod migration given: [case1] a repo with a joi schema in a src file when: [t0] the migration input (before any fix) then: the src file imports joi + declares a Joi schema + matches snapshot: widget.schema.ts — before 1`] = `
+"import Joi from 'joi';
+
+// a joi schema — the shape-for-shape rewrite to zod makes three silent semantic
+// changes a regex cannot get right, so the fix prepends a loud review marker.
+export const widgetSchema = Joi.object({
+  name: Joi.string().required(),
+  count: Joi.number(),
+  createdAt: Joi.date(),
+});
+"
+`;
+
+exports[`joi->zod migration given: [case1] a repo with a joi schema in a src file when: [t1] the joi fix is applied then: the import + schema are rewritten to zod, the review marker lands, and it matches snapshot: widget.schema.ts — after 1`] = `
+"/**
+ * @declapract:review — auto-migrated to zod; VERIFY these three semantics by hand:
+ *  - optionality: a source field with no explicit required marker was OPTIONAL, but the zod field
+ *    is now REQUIRED by default. re-mark any truly-optional field \`.optional()\`.
+ *  - unknown keys: the prior \`.object()\` rejected unknown keys; \`z.object()\` strips them silently.
+ *    use \`z.looseObject()\` only where the shape must pass unknown keys through.
+ *  - date coercion: the prior \`.date()\` coerced strings to Date; \`z.date()\` rejects a string.
+ *    use \`z.coerce.date()\` where the input arrives as a string.
+ * delete this marker once each point is verified.
+ */
+import { z } from 'zod';
+
+// a joi schema — the shape-for-shape rewrite to zod makes three silent semantic
+// changes a regex cannot get right, so the fix prepends a loud review marker.
+export const widgetSchema = z.object({
+  name: z.string(),
+  count: z.number(),
+  createdAt: z.date(),
+});
+"
+`;

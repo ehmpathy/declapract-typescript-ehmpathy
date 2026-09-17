@@ -3,9 +3,9 @@ name: .deploy-expo
 on:
   workflow_call:
     inputs:
-      stage:
+      access:
         type: string
-        description: "the stage of infrastructure to deploy against (e.g., prod, prep)"
+        description: "the access to deploy with (test | prep | prod)"
         required: true
       build:
         type: string
@@ -13,7 +13,7 @@ on:
         required: true
       github-environment:
         type: string
-        description: "the github environment that the apply step will be executed in"
+        description: "github environment for the deploy jobs"
         required: true
       creds-aws-region:
         type: string
@@ -50,7 +50,12 @@ jobs:
           - android
     name: ${{ matrix.platform }}
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment }}
+    environment:
+      # deployment: false keeps the built-in gate but suppresses the auto-Deployment, so no
+      # "deployed to <env>" status accretes on the PR timeline. the environment is ALWAYS
+      # declared — for prep and prod alike.
+      name: ${{ inputs.github-environment }}
+      deployment: false
     needs: [install]
     steps:
       - name: checkout
@@ -89,9 +94,14 @@ jobs:
   deploy-web:
     name: web
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.github-environment }}
+    environment:
+      # deployment: false keeps the built-in gate but suppresses the auto-Deployment, so no
+      # "deployed to <env>" status accretes on the PR timeline. the environment is ALWAYS
+      # declared — for prep and prod alike.
+      name: ${{ inputs.github-environment }}
+      deployment: false
     needs: [install]
-    if: ${{ inputs.stage == 'prod' && inputs.app-web-deployment-s3-bucket }}
+    if: ${{ inputs.access == 'prod' && inputs.app-web-deployment-s3-bucket }}
     steps:
       - name: checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

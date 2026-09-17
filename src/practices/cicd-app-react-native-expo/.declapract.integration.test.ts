@@ -171,16 +171,17 @@ describe('app-react-native-expo — graceful migration of an app-protools-shaped
       });
 
       then('the packageManager pin converges to the blessed exact version', () => {
-        // the fixture is AHEAD of the blessed pin (pnpm@10.32.1). the pnpm
-        // best-practice CONTAINS declares the ONE blessed version (pnpm@10.31.7),
-        // so a consumer ahead of it is pinned BACK on fix — that downgrade is the
-        // wisher-settled org-convergence REQUIREMENT (one blessed pnpm across CI,
-        // local, every repo), not a regression. this characterizes it.
+        // the fixture is OFF the blessed pin (pnpm@10.32.1). the pnpm
+        // best-practice CONTAINS declares the ONE blessed version (pnpm@10.34.5),
+        // so a consumer off it is converged onto the blessed pin on fix — in
+        // either direction. that convergence-to-one-version is the wisher-settled
+        // org-convergence REQUIREMENT (one blessed pnpm across CI, local, every
+        // repo), not a regression. this characterizes it.
         const pkgBefore = JSON.parse(state.before.pkg!);
         expect(pkgBefore.packageManager).toEqual('pnpm@10.32.1');
 
         const pkg = JSON.parse(state.after2.pkg!);
-        expect(pkg.packageManager).toEqual('pnpm@10.31.7');
+        expect(pkg.packageManager).toEqual('pnpm@10.34.5');
       });
 
       then('the inline jest dual-source block is dropped', () => {
@@ -389,6 +390,20 @@ describe('app-react-native-expo — migration-fixture drift guard', () => {
     return parsed['use-cases'][input.usecase].practices;
   };
 
+  // the practices in `of` absent from `reference` — the set-difference the drift asserts on.
+  const getPracticesAbsentFrom = (input: {
+    of: string[];
+    reference: string[];
+  }): string[] =>
+    input.of.filter((practice) => !input.reference.includes(practice));
+
+  // the practices in `of` also present in `reference` — the set-overlap the drift forbids.
+  const getPracticesPresentIn = (input: {
+    of: string[];
+    reference: string[];
+  }): string[] =>
+    input.of.filter((practice) => input.reference.includes(practice));
+
   const repoRoot = path.join(__dirname, '../../..');
 
   given('the real usecase and the fixture usecase', () => {
@@ -410,34 +425,34 @@ describe('app-react-native-expo — migration-fixture drift guard', () => {
 
     when('the fixture subset is measured against the real usecase', () => {
       then('the fixture invents no practice absent from the real usecase', () => {
-        const invented = fixturePractices.filter(
-          (practice) => !realPractices.includes(practice),
-        );
+        const invented = getPracticesAbsentFrom({
+          of: fixturePractices,
+          reference: realPractices,
+        });
         expect(invented).toEqual([]);
       });
 
       then('a fixture practice is never also on the config-only allowlist', () => {
-        const overlap = fixturePractices.filter((practice) =>
-          configOnlyAllowlist.includes(practice),
-        );
+        const overlap = getPracticesPresentIn({
+          of: fixturePractices,
+          reference: configOnlyAllowlist,
+        });
         expect(overlap).toEqual([]);
       });
 
       then('the allowlist names no practice absent from the real usecase', () => {
-        const dead = configOnlyAllowlist.filter(
-          (practice) => !realPractices.includes(practice),
-        );
+        const dead = getPracticesAbsentFrom({
+          of: configOnlyAllowlist,
+          reference: realPractices,
+        });
         expect(dead).toEqual([]);
       });
 
       then('every real usecase practice is classified — exercised or config-only', () => {
-        const classified = new Set([
-          ...fixturePractices,
-          ...configOnlyAllowlist,
-        ]);
-        const unclassified = realPractices.filter(
-          (practice) => !classified.has(practice),
-        );
+        const unclassified = getPracticesAbsentFrom({
+          of: realPractices,
+          reference: [...fixturePractices, ...configOnlyAllowlist],
+        });
         expect(unclassified).toEqual([]);
       });
     });
@@ -662,6 +677,91 @@ describe('useCases.yml — resolved-practice characterization', () => {
  * .note = a practice-set parity guard below pins this fixture's usecase === the real
  *         `src/useCases.yml` usecase, so the smoke can never silently test a stale set.
  */
+/**
+ * .what = a clamp on the expo `deploy.yml` prod job's `if:` test-gate precedence — the prod
+ *         job must bind the `needs.test` gate to EVERY trigger branch, so a `v*` tag push
+ *         cannot deploy to prod on a FAILED test.
+ * .why  = github-actions `&&` binds tighter than `||`, so an `if:` written
+ *         `(tag) || (access==prod) && always() && (test ok)` parses as `tag || (access &&
+ *         always && test)` — the test gate binds ONLY to the access branch, so a `v*` TAG
+ *         PUSH deploys to prod even when `test` FAILED. the correct shape wraps both trigger
+ *         branches in one OUTER group the gate applies to:
+ *         `((tag) || access==prod) && always() && (test ok)`. this is the silent-break class
+ *         the wish fights — an untested build reaches prod, every gate green. the clamp reads
+ *         the raw prod `if:` and reddens on the un-grouped (bug) shape. it mirrors the
+ *         cicd-service prod-gate clamp so both service and app deploy callers hold the guard.
+ * .note = a filesystem walk → integration suite per rule.forbid.unit.remote-boundaries; no
+ *         credential, no network — the boundary alone classifies it. the clamp lives at the
+ *         practice root, never under best-practice/, so it is a declaration and not a template.
+ */
+/**
+ * .what = whether the prod job's collapsed `if:` wraps BOTH trigger branches in ONE outer group
+ *         that the ` && always()` test-gate binds over — the correct precedence.
+ * .why  = a pure transformer leaf, named so the assertion below reads intent rather than a raw
+ *         precedence regex a reader must simulate. the buggy single-group shape opens one paren
+ *         `(startsWith`; the correct shape opens a second, OUTER paren `((startsWith` that the
+ *         ` && always()` gate closes over, so the gate binds to the tag-push branch too, not the
+ *         access branch alone.
+ */
+const isProdGateGroupedCorrectly = (input: { collapsedIf: string }): boolean =>
+  /\(\(startsWith\(github\.ref, 'refs\/tags\/'\).*\|\| github\.event\.inputs\.access == 'prod'\) &&\s*always\(\)/.test(
+    input.collapsedIf,
+  );
+
+describe('cicd-app-react-native-expo — prod test-gate precedence (silent-break clamp)', () => {
+  const readProdIf = (): string => {
+    const text = readFileSync(
+      `${__dirname}/best-practice/.github/workflows/deploy.yml`,
+      'utf-8',
+    );
+    // yaml.parse already returns `any`; annotate (not cast) to read the untyped workflow doc, as
+    // the peer cicd-service clamp does with its `parsed: any` annotation (no rule.forbid.as-cast cast)
+    const parsed: any = yaml.parse(text);
+    return (parsed.jobs?.prod?.if ?? '').replace(/\s+/g, ' ').trim();
+  };
+
+  given('[case1] the expo deploy.yml prod job', () => {
+    when('[t0] the prod job gates on the test result across every trigger branch', () => {
+      then('the two trigger branches sit in one outer group the test-gate binds to', () => {
+        const collapsed = readProdIf();
+        // guard the shape: an absent `if` leaves collapsed empty, a clean red not a crash
+        expect(collapsed.length).toBeGreaterThan(0);
+        // teeth: revert the outer paren and isProdGateGroupedCorrectly reddens.
+        expect(isProdGateGroupedCorrectly({ collapsedIf: collapsed })).toEqual(
+          true,
+        );
+      });
+
+      then('the buggy per-branch group (access alone in parens after `||`) is absent', () => {
+        // teeth: the precedence bug wraps the access branch in its OWN parens after the `||`
+        // (`|| (github.event.inputs.access == 'prod') &&`), which lets the tag branch stand alone.
+        // the correct shape leaves the access branch bare inside the outer group.
+        expect(readProdIf()).not.toContain(
+          "|| (github.event.inputs.access == 'prod') &&",
+        );
+      });
+
+      then('the test-result gate itself is present (guards the above from vacuity)', () => {
+        expect(readProdIf()).toContain(
+          "always() && (needs.test.result == 'success' || needs.test.result == 'skipped')",
+        );
+      });
+    });
+
+    when('[t1] the emitted prod-job gate is snapshotted for review', () => {
+      // the regex + toContain clamps above prove the SHAPE; this snapshots the emitted
+      // `if:` gate itself so a reviewer vibechecks the actual precedence group, and any
+      // drift (a reword, an operand reshuffle, a lost outer paren) shows as a diff. per
+      // rule.require.contract-snapshot-exhaustiveness, and mirrors the peer cicd-service clamp.
+      then('the prod job `if:` gate matches snapshot', () => {
+        expect(readProdIf()).toMatchSnapshot(
+          'deploy.yml prod job if: (test-gate precedence)',
+        );
+      });
+    });
+  });
+});
+
 describe('app-react-native-expo — full-usecase evaluation smoke', () => {
   const repoRoot = path.join(__dirname, '../../..');
   const sorted = (input: string[]): string[] => [...input].sort();

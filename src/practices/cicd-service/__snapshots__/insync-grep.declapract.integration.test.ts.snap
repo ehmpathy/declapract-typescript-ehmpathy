@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`cicd-service apply-gate in-sync greps given: the shipped .sql-schema-control.yml when: the apply-gate grep is read then: the emitted apply-gate grep line matches snapshot: sql-schema-control apply-gate grep 1`] = `"if grep "connect ETIMEDOUT" ./plan.log"`;
+
+exports[`cicd-service apply-gate in-sync greps given: the shipped .terraform.yml when: the apply-gate grep is read then: the emitted apply-gate grep line matches snapshot: terraform apply-gate grep 1`] = `"if grep "infrastructure matches the configuration" ./plan.log"`;

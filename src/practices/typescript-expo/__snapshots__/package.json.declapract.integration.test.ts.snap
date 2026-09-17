@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`typescript-expo package.json the emitted build commands match snapshot: typescript-expo build commands 1`] = `
+{
+  "build": "npm run build:web",
+  "build:web": "npx expo export --platform web",
+}
+`;

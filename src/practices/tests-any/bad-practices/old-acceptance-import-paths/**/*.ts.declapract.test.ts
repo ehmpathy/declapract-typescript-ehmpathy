@@ -16,7 +16,7 @@ describe('old-acceptance-import-paths', () => {
     });
 
     it('should match files with deep relative acceptance/ imports', () => {
-      const contents = `import { stage } from '../../acceptance/utils/environment';`;
+      const contents = `import { access } from '../../acceptance/utils/environment';`;
       expect(() => check(contents, {} as any)).not.toThrow();
     });
 
@@ -49,10 +49,10 @@ describe('old-acceptance-import-paths', () => {
     });
 
     it('should replace acceptance/ with blackbox/ in deep relative imports', async () => {
-      const contents = `import { stage } from '../../acceptance/utils/env';`;
+      const contents = `import { access } from '../../acceptance/utils/env';`;
       const { contents: fixed } = await fix(contents, {} as any);
 
-      expect(fixed).toBe(`import { stage } from '../../blackbox/utils/env';`);
+      expect(fixed).toBe(`import { access } from '../../blackbox/utils/env';`);
     });
 
     it('should replace absolute acceptance/ imports', async () => {

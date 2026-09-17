@@ -1,0 +1,7 @@
+# a consumer's OWN boot curation — it predates the declapract fix and carries entries
+# the fix must preserve: a say pick of its own, and a ref pick of its own deep variant.
+briefs:
+  say:
+    - briefs/my-own-brief.md
+  ref:
+    - briefs/my-own-deep-variant.md

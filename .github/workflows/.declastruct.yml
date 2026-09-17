@@ -18,11 +18,11 @@ on:
         required: true
       scope:
         type: string
-        description: "the provider backend this wish targets (github | aws); scopes the plan artifact name"
+        description: "the provider backend this wish targets (github | aws)"
         required: true
       access:
         type: string
-        description: "the access tier this wish targets (test | prep | prod); read by the wish via sdk-environment as the ACCESS envar (aws wishes), and scopes the plan artifact name so parallel calls do not collide"
+        description: "the access to provision with (test | prep | prod)"
         required: true
       github-environment-plan:
         type: string

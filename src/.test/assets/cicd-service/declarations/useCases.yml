@@ -1,0 +1,13 @@
+# minimal use cases for the cicd-service provision.yml (D28) pipeline test.
+# .why = the provision.yml `contents` branch fires on
+#        `context.projectPractices.includes('persist-with-rds')`. these two lean use cases carry the
+#        one signal the branch reads (rds present vs absent) while each evaluates only 1-2 practices —
+#        not the ~40 of the real declarations tree, which blows the jest hook timeout.
+use-cases:
+  service-without-rds:
+    practices:
+      - cicd-service
+  service-with-rds:
+    practices:
+      - cicd-service
+      - persist-with-rds

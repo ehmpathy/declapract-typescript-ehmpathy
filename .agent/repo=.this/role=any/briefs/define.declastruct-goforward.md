@@ -26,7 +26,7 @@ a wish is a directory (e.g. `provision/aws/`) with two entrypoints:
 ```ts
 // resources.ts — providers + the resource set
 export const getProviders = async (): Promise<DeclastructProvider[]> => [ … ];
-export const getResources = async (): Promise<DomainEntity<any>[]> => getParameters();
+export const getResources = async (): Promise<DomainEntity<any>[]> => getAllParameters();
 ```
 
 - **providers** authenticate + target a backend (aws, github, …).
@@ -87,7 +87,7 @@ migration is the worked example — see:
 ## .see also
 
 - `rule.prefer.declastruct.[demo]` (mechanic) — the get+set idempotent wish pattern
-- `define.sdk-environment-shape` — how the aws wish reads its access tier
+- `define.sdk-environment-shape` — how the aws wish reads its access
 - `define.infrastructure-dev-vs-application-prep` — the dev↔prep name bridge for migrated infra
 - `howto.craft-practice-migrations` — automate a practice-to-practice migration
 - package: `declastruct`, `declastruct-aws` (ehmpathy)

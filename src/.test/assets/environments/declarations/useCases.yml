@@ -1,0 +1,5 @@
+# minimal use case for the environments practice integration test
+use-cases:
+  lambda-service:
+    practices:
+      - environments

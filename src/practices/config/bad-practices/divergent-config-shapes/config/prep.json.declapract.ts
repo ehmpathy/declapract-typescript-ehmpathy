@@ -7,9 +7,9 @@ export const check: FileCheckFunction = async (contents, context) => {
   if (!contents) throw new Error('its fine'); // ... yeah, i know, todo: eliminate this weird "throw an error if its fine" pattern
 
   // grab the desired keys
-  const testConfigJsonContents = await readFile(
-    `${context.getProjectRootDirectory()}/config/test.json`,
-  );
+  const testConfigJsonContents = await readFile({
+    filePath: `${context.getProjectRootDirectory()}/config/test.json`,
+  });
   if (!testConfigJsonContents)
     throw new Error('can only check if test file exists');
   const testConfigObject = JSON.parse(testConfigJsonContents);

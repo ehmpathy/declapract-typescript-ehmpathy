@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`serverless deployment bucket is account-scoped by stage (#596) given: [case2] the provider.deploymentBucket reference when: [t0] serverless.yml is read then: the emitted deploymentBucketByStage map matches snapshot: serverless deploymentBucketByStage map 1`] = `
+"  deploymentBucketByStage: # the deployment bucket is ACCOUNT-scoped: it must live in the account the deploy role assumes, so it is keyed by stage like accessByStage above
+    dev: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-dev # prep-account bucket
+    prep: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-dev # prep-account bucket, shared with the -dev fleet, so no separate -prep bucket need exist
+    prod: serverless-deployment-@declapract{variable.infrastructureNamespaceId}-prod # prod-account bucket — a prod deploy assumes the prod-account oidc role, which has no cross-account grant to the prep-account -dev bucket
+"
+`;

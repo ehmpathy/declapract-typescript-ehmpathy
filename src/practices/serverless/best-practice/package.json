@@ -5,11 +5,13 @@
     "if-env": "@declapract{check.minVersion('1.0.4')}"
   },
   "scripts": {
-    "deploy:prune": "export COMMIT=$(npx sdk-environment get commit) && export SLS_STAGE=$([ \"$ACCESS\" = 'prep' ] && echo 'dev' || echo \"$ACCESS\") && npx sls prune -n 7 --stage $SLS_STAGE",
-    "deploy:release": "export COMMIT=$(npx sdk-environment get commit) && export SLS_STAGE=$([ \"$ACCESS\" = 'prep' ] && echo 'dev' || echo \"$ACCESS\") && npm run build && sls deploy --verbose --stage $SLS_STAGE",
-    "deploy:send-notification": "curl -X POST -H 'Content-type: application/json' --data \"{\\\"text\\\":\\\"$([ -z $DEPLOYER_NAME ] && git config user.name || echo $DEPLOYER_NAME) has deployed $npm_package_name@v$npm_package_version:\nhttps://github.com/@declapract{variable.organizationName}/$npm_package_name/tree/v$npm_package_version\\\"}\" @declapract{variable.slackWebhookUrl}",
+    "deploy:prune": "if [ \"${ACCESS:-}\" != 'prep' ] && [ \"${ACCESS:-}\" != 'prod' ]; then echo '🛑 invalid ACCESS, must be prod or prep' && exit 2; fi && export COMMIT=$(npx sdk-environment get commit) && export SLS_STAGE=$([ \"${ACCESS:-}\" = 'prep' ] && echo 'dev' || echo \"${ACCESS:-}\") && npx sls prune -n 7 --stage \"${SLS_STAGE:-}\" && if [ \"${ACCESS:-}\" = 'prep' ]; then npx sls prune -n 7 --stage prep; fi",
+    "deploy:release:ancient": "if [ \"${ACCESS:-}\" != 'prep' ] && [ \"${ACCESS:-}\" != 'prod' ]; then echo '🛑 invalid ACCESS, must be prod or prep' && exit 2; fi && export COMMIT=$(npx sdk-environment get commit) && export SLS_STAGE=$([ \"${ACCESS:-}\" = 'prep' ] && echo 'dev' || echo \"${ACCESS:-}\") && npm run build && sls deploy --verbose --stage \"${SLS_STAGE:-}\"",
+    "deploy:release:contemp": "export COMMIT=$(npx sdk-environment get commit) && if [ \"${ACCESS:-}\" = 'prep' ]; then sls deploy --verbose --stage prep; else echo '🛑 skip contemp dual-publish: ACCESS is not prep (contemp publishes the -prep- fleet only)'; fi",
+    "deploy:release": "npm run deploy:release:ancient && npm run deploy:release:contemp",
+    "deploy:send-notification": "curl -X POST -H 'Content-type: application/json' --data \"{\\\"text\\\":\\\"$([ -z \"${DEPLOYER_NAME:-}\" ] && git config user.name || echo \"${DEPLOYER_NAME:-}\") has deployed $npm_package_name@v$npm_package_version:\nhttps://github.com/@declapract{variable.organizationName}/$npm_package_name/tree/v$npm_package_version\\\"}\" @declapract{variable.slackWebhookUrl}",
     "deploy:prep": "ACCESS=prep npm run deploy:release",
-    "deploy:prod": "ACCESS=prod npm run deploy:release && npm run deploy:send-notification",
-    "deploy": "if-env ACCESS=prod && npm run deploy:prod && exit 0 || if-env ACCESS=prep && npm run deploy:prep && exit 0 || echo '🛑 invalid ACCESS, must be prod or prep' && exit 1"
+    "deploy:prod": "ACCESS=prod npm run deploy:release:ancient && npm run deploy:send-notification",
+    "deploy": "if [ \"${ACCESS:-}\" = 'prod' ]; then npm run deploy:prod; elif [ \"${ACCESS:-}\" = 'prep' ]; then npm run deploy:prep; else echo '🛑 invalid ACCESS, must be prod or prep' && exit 2; fi"
   }
 }

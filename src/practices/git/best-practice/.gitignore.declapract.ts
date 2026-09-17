@@ -30,6 +30,14 @@ import { defineExpectedGitignoreContents } from '../../../utils/defineExpectedGi
  *         place. `readonly` forbids that mutation outright rather than merely discourages it
  *         (`rule.prefer.prevent-over-correct`), so the source may group lines by what they are
  *         for, with their comments beside them, and the one sort that matters stays in one place.
+ *
+ * .note = every line here governs an UNTRACKED path only. git consults `.gitignore` for a path
+ *         not yet in the index; a path a consumer ALREADY tracks stays tracked, and this
+ *         declaration cannot reach the index to reconcile it (the `fix` is a pure contents
+ *         transform, so it has no seam to the index). so a consumer that committed a match
+ *         BEFORE this practice declared the pattern keeps it committed, silently, behind a line
+ *         that reads as enforcement. to reconcile an extant match, run `git rm --cached <path>`
+ *         by hand. a loud in-consumer report of that case is a proposed follow-on (#582).
  */
 const ignoresSortable: readonly string[] = [
   '*.log',

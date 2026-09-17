@@ -1,0 +1,183 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`rds-jobs-in-non-rds-service — the retroactive strip, end to end given: [case1] a pre-stamped non-rds consumer (lambda-service) when: [t0] before the strip then: the pre-stamped superset matches snapshot (the before diff): provision.yml — pre-stamped superset (before strip) 1`] = `
+"name: provision
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - "main"
+      - "master"
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: \${{ github.workflow }}-\${{ github.ref }} # per [workflow] x [branch, tag]
+  cancel-in-progress: true #  cancel workflows for non-latest commits
+
+permissions:
+  id-token: write # required for oidc; a called workflow cannot exceed its caller's grant
+  contents: read
+
+jobs:
+  aws-test-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/test
+      github-environment-plan: test
+      github-environment-apply: test
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prep-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prep
+      github-environment-plan: prep
+      github-environment-apply: prep
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prod-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: production-on-main # tags cut from main; carries the tag v* deploy policy
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+
+  github:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/github.repo/resources.ts
+      scope: github
+      access: prod # github repo settings are inherently a prod resource
+      github-environment-plan: prod
+      github-environment-apply: prod
+      creds-github-app-owner: \${{ github.repository_owner }}
+      creds-github-app-id: \${{ vars.DECLASTRUCT_GITHUB_CONFORMER_APP_ID }}
+    secrets:
+      creds-github-app-private-key: \${{ secrets.DECLASTRUCT_GITHUB_CONFORMER_APP_PRIVATE_KEY }}
+
+  sql-schema-prep:
+    uses: ./.github/workflows/.sql-schema-control.yml
+    with:
+      access: prep
+      github-environment-plan: prep
+      github-environment-apply: prep
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  sql-schema-prod:
+    uses: ./.github/workflows/.sql-schema-control.yml
+    with:
+      access: prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: production-on-main # tags cut from main; carries the tag v* deploy policy
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+
+  aws-prep-declastruct:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/aws/resources.ts
+      scope: aws
+      access: prep
+      github-environment-plan: prep
+      github-environment-apply: prep
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prod-declastruct:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/aws/resources.ts
+      scope: aws
+      access: prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: production-on-main # tags cut from main; carries the tag v* deploy policy
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+"
+`;
+
+exports[`rds-jobs-in-non-rds-service — the retroactive strip, end to end given: [case1] a pre-stamped non-rds consumer (lambda-service) when: [t1] the bad-practice strip is applied then: the stripped workflow matches snapshot (the strip diff a reviewer eyeballs): provision.yml — non-rds usecase (after strip) 1`] = `
+"name: provision
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - "main"
+      - "master"
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: \${{ github.workflow }}-\${{ github.ref }} # per [workflow] x [branch, tag]
+  cancel-in-progress: true #  cancel workflows for non-latest commits
+
+permissions:
+  id-token: write # required for oidc; a called workflow cannot exceed its caller's grant
+  contents: read
+
+jobs:
+  aws-test-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/test
+      github-environment-plan: test
+      github-environment-apply: test
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prep-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prep
+      github-environment-plan: prep
+      github-environment-apply: prep
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  aws-prod-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: production-on-main # tags cut from main; carries the tag v* deploy policy
+      allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+      creds-aws-region: us-east-1
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
+      creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_APPLY_ROLE_ARN }}
+
+  github:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/github.repo/resources.ts
+      scope: github
+      access: prod # github repo settings are inherently a prod resource
+      github-environment-plan: prod
+      github-environment-apply: prod
+      creds-github-app-owner: \${{ github.repository_owner }}
+      creds-github-app-id: \${{ vars.DECLASTRUCT_GITHUB_CONFORMER_APP_ID }}
+    secrets:
+      creds-github-app-private-key: \${{ secrets.DECLASTRUCT_GITHUB_CONFORMER_APP_PRIVATE_KEY }}
+"
+`;

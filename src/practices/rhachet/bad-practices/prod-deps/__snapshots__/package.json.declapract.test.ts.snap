@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`rhachet prod-deps bad practice package.json check snaps the FULL skip message so the family detail cannot silently drift: check skip message — no rhachet dep 1`] = `"does not match bad practice: no rhachet(-<family>-*) package in dependencies"`;
+
+exports[`rhachet prod-deps bad practice package.json check states the practice + remediation when the manifest is malformed json: check malformed-json message (engine reason normalized) 1`] = `
+"✋ ConstraintError: [rhachet/prod-deps] could not parse package.json: <engine reason normalized>. fix: ensure the package.json holds valid json (a stray comma or character is the usual cause).
+
+{
+  "practice": "rhachet/prod-deps",
+  "reason": "<engine reason normalized>"
+}"
+`;
+
+exports[`rhachet prod-deps bad practice package.json fix should move all rhachet-* packages from dependencies to devDependencies: fixed package.json — all rhachet families relocated 1`] = `
+"{
+  "dependencies": {
+    "lodash": "4.17.21"
+  },
+  "devDependencies": {
+    "rhachet": "1.19.0",
+    "rhachet-roles-ehmpathy": "1.15.0",
+    "rhachet-roles-bhrain": "0.5.0"
+  }
+}"
+`;
