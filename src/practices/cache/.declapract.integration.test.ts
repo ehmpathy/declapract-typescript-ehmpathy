@@ -71,8 +71,8 @@ describe('cache practice with ifInstalled', () => {
         const packageJson = JSON.parse(
           await fs.readFile(path.join(tempDir, 'package.json'), 'utf-8'),
         );
-        // should have upgraded from 0.3.0 to 0.4.3
-        expect(packageJson.dependencies['simple-in-memory-cache']).toBe('0.4.3');
+        // should have upgraded from 0.3.0 to the 0.5.1 floor
+        expect(packageJson.dependencies['simple-in-memory-cache']).toBe('0.5.1');
       });
     });
   });
@@ -100,8 +100,8 @@ describe('cache practice with ifInstalled', () => {
         const packageJson = JSON.parse(
           await fs.readFile(path.join(tempDir, 'package.json'), 'utf-8'),
         );
-        // should still be 0.4.3 (unchanged, already valid)
-        expect(packageJson.dependencies['simple-in-memory-cache']).toBe('0.4.3');
+        // should still be 0.5.1 (unchanged, already at the floor)
+        expect(packageJson.dependencies['simple-in-memory-cache']).toBe('0.5.1');
       });
     });
   });
