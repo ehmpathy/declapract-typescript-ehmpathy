@@ -111,12 +111,6 @@
             "command": "./node_modules/.bin/rhachet roles boot --repo rhachet --role enroller",
             "timeout": 60,
             "author": "repo=rhachet/role=enroller"
-          },
-          {
-            "type": "command",
-            "command": "./node_modules/.bin/rhachet roles boot --role telepath",
-            "timeout": 30,
-            "author": "repo=bhrain/role=telepath"
           }
         ]
       },
@@ -284,12 +278,6 @@
             "command": "./node_modules/.bin/rhx route.drive --when hook.onStop",
             "timeout": 5,
             "author": "repo=bhrain/role=driver"
-          },
-          {
-            "type": "command",
-            "command": "./node_modules/.bin/rhx elucidate.summary --when hook.onStop",
-            "timeout": 5,
-            "author": "repo=bhrain/role=telepath"
           }
         ]
       }
@@ -582,18 +570,14 @@
       "Bash(rhx git.commit.uses set:*)",
       "Bash(sed:*)",
       "Bash(tee:*)",
-      "Edit(**/.route/**)",
       "Edit(*/**/.route/**)",
       "Edit(.branch/.bind/*)",
       "Edit(.meter/*)",
-      "Edit(.route/**)",
       "EnterPlanMode",
       "Read(.quarantine/*)",
-      "Write(**/.route/**)",
       "Write(*/**/.route/**)",
       "Write(.branch/.bind/*)",
-      "Write(.meter/*)",
-      "Write(.route/**)"
+      "Write(.meter/*)"
     ],
     "ask": [
       "Bash(bash:*)",
