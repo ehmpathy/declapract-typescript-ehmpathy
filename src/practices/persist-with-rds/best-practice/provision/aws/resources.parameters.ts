@@ -70,14 +70,19 @@ const secret = (input: { name: string }): DeclaredAwsSsmParameterSecure =>
  *        value-less-absent throw on apply cannot trigger in test. test sources its non-sensitive
  *        db creds straight from config/test.json and never reconciles these params.
  * .note = the two cicd credentials are pinned in the prod plan role's iam policy as SLASH paths
- *         with NO tier segment — `parameter/*/svc-*/database/role/cicd/for-plan/*` and
- *         `.../for-apply/*`. that pin's arn needs literal `/` separators after `parameter/`, so a
- *         dotted name cannot match it and the plan role gets ciphertext or a denial, forever. it
- *         omits a tier segment on purpose: the aws ACCOUNT separates prep from prod, never the
- *         name. so the for-plan name MUST stay byte-identical to the pin. the crud credential is
- *         pinned by NO policy, so it keeps the dotted `${org}.${project}.${accessSlug}` name that
- *         config/${env}.json matches — hence the three names differ in shape by design, not by
- *         accident.
+ *         with NO tier segment — `parameter/<star>/svc-<star>/database/role/cicd/for-plan/<star>`
+ *         and `.../for-apply/<star>`. that pin's arn needs literal `/` separators after
+ *         `parameter/`, so a dotted name cannot match it and the plan role gets ciphertext or a
+ *         denial, forever. it omits a tier segment on purpose: the aws ACCOUNT separates prep
+ *         from prod, never the name. so the for-plan name MUST stay byte-identical to the pin.
+ *         the crud credential is pinned by NO policy, so it keeps the dotted
+ *         `${org}.${project}.${accessSlug}` name that config/${env}.json matches — hence the
+ *         three names differ in shape by design, not by accident.
+ * .note = `<star>` stands in for the literal `*` wildcard of that arn, and must stay a stand-in.
+ *         a literal `*` written immediately before a `/` closes this comment mid-prose, so every
+ *         character after it is read as code and the file no longer parses — which breaks
+ *         `pnpm fix` in every repo that adopts this template, with no repair available to them
+ *         (declapract apply restores these bytes). see #613.
  */
 export const getAllParameters = (input: {
   accessSlug: string | null;

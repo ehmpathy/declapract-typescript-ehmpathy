@@ -2,7 +2,7 @@
 
 exports[`persist-with-rds ssm cicd param names are slash-path, tierless given: [case1] the two cicd credentials when: [t0] resources.parameters.ts is read then: the emitted cicd + crud param-name lines match snapshot: ssm cicd + crud param names 1`] = `
 [
-  "*         with NO tier segment — \`parameter/*/svc-*/database/role/cicd/for-plan/*\` and",
+  "*         with NO tier segment — \`parameter/<star>/svc-<star>/database/role/cicd/for-plan/<star>\`",
   "secret({ name: \`\${namespace}.database.role.crud.password\` }),",
   "name: \`/@declapract{variable.organizationName}/@declapract{variable.projectName}/database/role/cicd/for-plan/password\`,",
   "name: \`/@declapract{variable.organizationName}/@declapract{variable.projectName}/database/role/cicd/for-apply/password\`,",

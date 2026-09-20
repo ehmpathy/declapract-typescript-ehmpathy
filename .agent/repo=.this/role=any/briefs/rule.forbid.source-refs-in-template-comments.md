@@ -74,6 +74,9 @@ beside the DECLARATION (declaration-side, never emitted) if it needs a home.
 
 ## .see also
 
+- `rule.forbid.template-comment-self-close` — the syntactic twin: a template comment must also not
+  spell its own terminator (a `*` before a `/` in a glob or an arn), which stops the emitted file
+  from parsing at all
 - `rule.require.timeless-comments` (mechanic) — write for a reader who was never in the room
 - `rule.avoid.hazard-pitch-prose` — the adjacent rule against naming a specific neighbor practice
   when the general contract is the point
