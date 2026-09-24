@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "git-merge-packagejson": "@declapract{check.minVersion('0.0.1')}"
+  }
+}

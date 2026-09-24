@@ -1,0 +1,2 @@
+# auto-resolve package.json dependency conflicts via semver rules
+package.json merge=npm-packagejson-merge
