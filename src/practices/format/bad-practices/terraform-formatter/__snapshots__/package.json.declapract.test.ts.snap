@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`format/terraform-formatter package.json (#645) given: [case1] an adopter package.json with both terraform formatter commands when: [t1] fix runs then: both terraform keys are gone and every other key holds 1`] = `
+"{
+  "name": "svc-demo",
+  "scripts": {
+    "fix:format:biome": "biome check --write",
+    "fix:format": "npm run fix:format:biome && npm run fix:format:terraform",
+    "test:format:biome": "biome format",
+    "test:format": "npm run test:format:biome && npm run test:format:terraform"
+  }
+}"
+`;

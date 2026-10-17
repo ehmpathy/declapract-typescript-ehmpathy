@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`report-slow-tests given: [case1] a report with a slow (>30s), a medium (>10s), and a fast file when: [t0] the report runs then: the summary and annotations match snapshot: stdout annotations — ranked 1`] = `
+"::warning file=/repo/src/slow.test.ts::slow test: 40s
+::notice file=/repo/src/medium.test.ts::test duration: 15s
+"
+`;
+
+exports[`report-slow-tests given: [case1] a report with a slow (>30s), a medium (>10s), and a fast file when: [t0] the report runs then: the summary and annotations match snapshot: step summary — ranked 1`] = `
+"### slowest test files
+
+| duration | file |
+| --- | --- |
+| 40s | /repo/src/slow.test.ts |
+| 15s | /repo/src/medium.test.ts |
+| 2s | /repo/src/fast.test.ts |
+"
+`;
+
+exports[`report-slow-tests given: [case2] a non-empty report whose durations are all zero (schema drift) when: [t0] the report runs then: the error output matches snapshot: stdout — schema drift 1`] = `
+"::error::slow-test report parsed 0 durations from 2 test files — the jest --json duration schema likely changed; read endTime/startTime from one entry of [fixture]/jest-results.json to see what moved
+"
+`;
+
+exports[`report-slow-tests given: [case3] an empty shard (0 test files) when: [t0] the report runs then: the summary matches snapshot: step summary — empty shard 1`] = `
+"slow-test report: 0 test files in [fixture]/jest-results.json (empty shard)
+"
+`;

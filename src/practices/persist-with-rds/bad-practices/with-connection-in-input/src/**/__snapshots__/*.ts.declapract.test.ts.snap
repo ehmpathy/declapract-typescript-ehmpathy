@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds with-connection-in-input src files (#626) given: [case1] a caller with a multi-line import of withDatabaseConnection when: [t0] the fix runs then: one review line lands above the import and names withDatabaseContext + (input, context): caller — after 1`] = `
+"import { DatabaseConnection } from '../utils/database/getDatabaseConnection';
+import {
+  withDatabaseConnection,
+// @declapract:review: withDatabaseConnection (dbConnection in the input) is retired — move to withDatabaseContext (src/utils/database/withDatabaseContext.ts), the (input, context) shape: each op becomes \`(input, context) => …\`, a dependency (dbConnection, log) moves out of the input into the context arg, and each caller passes it as the 2nd arg. then delete this marker
+} from '../utils/database/withDatabaseConnection';
+
+export const findSurferById = withDatabaseConnection(
+  async ({ id, dbConnection }: { id: string; dbConnection: DatabaseConnection }) => {
+    return dbConnection.query({ sql: 'select * from surfer where id = :id', values: { id } });
+  },
+);
+"
+`;

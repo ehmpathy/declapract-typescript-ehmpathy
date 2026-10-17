@@ -67,6 +67,17 @@ interface PackageJSON {
   [key: string]: unknown;
 }
 
+/**
+ * .what = a dep map with its keys in alphabetical order, as npm and pnpm write them
+ * .why  = the fix adds deps; appended in place, they land after the sorted keys, so
+ *         package-json-order re-sorts them on the next apply and this fix re-appends them, and
+ *         the two practices never converge
+ */
+const asSortedDeps = (deps: Record<string, string>): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(deps).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
+  );
+
 const getAllDeps = (packageJSON: PackageJSON): Record<string, string> => ({
   ...(packageJSON.dependencies ?? {}),
   ...(packageJSON.devDependencies ?? {}),
@@ -184,8 +195,12 @@ export const fix: FileFixFunction = (contents) => {
 
   // preserve each section's presence: rewrite `dependencies` ONLY when the manifest already declared
   // one (so a repo with no prod deps never gains an empty `dependencies: {}` it did not have).
-  const result: PackageJSON = { ...packageJSON, devDependencies };
-  if (packageJSON.dependencies) result.dependencies = dependencies;
+  const result: PackageJSON = {
+    ...packageJSON,
+    devDependencies: asSortedDeps(devDependencies),
+  };
+  if (packageJSON.dependencies)
+    result.dependencies = asSortedDeps(dependencies);
 
   return {
     contents: JSON.stringify(result, null, 2),

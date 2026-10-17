@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`config — hand-written-config-type retires Config.ts (#661) given: [case1] a repo with a hand-written Config.ts and two importers when: [t0] the fix is applied, then applied again then: before and after match snapshot: src/logic/getSurfReport.ts — after 1`] = `
+"import type { Config } from '../utils/config/config.schema';
+
+export const getSurfReport = (input: { config: Config }) =>
+  input.config.environment.access;
+"
+`;
+
+exports[`config — hand-written-config-type retires Config.ts (#661) given: [case1] a repo with a hand-written Config.ts and two importers when: [t0] the fix is applied, then applied again then: before and after match snapshot: src/logic/getSurfReport.ts — before 1`] = `
+"import type { Config } from '../utils/config/Config';
+
+export const getSurfReport = (input: { config: Config }) =>
+  input.config.environment.access;
+"
+`;
+
+exports[`config — hand-written-config-type retires Config.ts (#661) given: [case1] a repo with a hand-written Config.ts and two importers when: [t0] the fix is applied, then applied again then: before and after match snapshot: src/utils/config/getAccessLabel.ts — after 1`] = `
+"import type { Config } from './config.schema';
+
+export const getAccessLabel = (input: { config: Config }) =>
+  \`access=\${input.config.environment.access}\`;
+"
+`;
+
+exports[`config — hand-written-config-type retires Config.ts (#661) given: [case1] a repo with a hand-written Config.ts and two importers when: [t0] the fix is applied, then applied again then: before and after match snapshot: src/utils/config/getAccessLabel.ts — before 1`] = `
+"import type { Config } from './Config';
+
+export const getAccessLabel = (input: { config: Config }) =>
+  \`access=\${input.config.environment.access}\`;
+"
+`;

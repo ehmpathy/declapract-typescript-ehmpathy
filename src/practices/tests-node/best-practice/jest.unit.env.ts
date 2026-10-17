@@ -34,6 +34,6 @@ if (!existsSync(join(process.cwd(), 'package.json')))
  */
 if (access !== 'test' && process.env.I_KNOW_THE_RISKS !== 'true')
   throw new ConstraintError(
-    `unit tests must target the 'test' tier — set I_KNOW_THE_RISKS=true to override`,
+    `unit tests must run with 'test' access — set I_KNOW_THE_RISKS=true to override`,
     { access },
   );

@@ -1,0 +1,8 @@
+# repo-own header comment
+ignores:
+  - "@src/*"
+  - date-fns
+  # repo-own reason for a repo-own ignore
+  - my-own-dep
+  - ts-node
+  - core-js

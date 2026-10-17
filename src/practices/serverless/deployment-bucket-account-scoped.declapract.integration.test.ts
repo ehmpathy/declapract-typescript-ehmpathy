@@ -62,7 +62,7 @@ describe('serverless deployment bucket is account-scoped by stage (#596)', () =>
 
       then('the emitted deploymentBucketByStage map matches snapshot', () => {
         // snapshot the governed map block itself, so a reshaped map that keeps the pinned
-        // per-tier tokens green (a reordered key, a rephrased bucket name) reddens a vibecheck
+        // per-key tokens green (a reordered key, a rephrased bucket name) reddens a vibecheck
         // in review (rule.require.contract-snapshot-exhaustiveness). match the header line plus
         // its indented dev/prep/prod entry lines — robust to a comment on any entry and to the
         // entry order.

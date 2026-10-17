@@ -1,0 +1,6 @@
+# the test symlinks `declarations/practices` -> src/practices and `declarations/useCases.yml` ->
+# src/useCases.yml at genTempDir time, so the temp repo's own `src/` (the hand-written Config.ts and
+# its importers) stays its own.
+declare:
+  practices: practices
+  use-cases: useCases.yml

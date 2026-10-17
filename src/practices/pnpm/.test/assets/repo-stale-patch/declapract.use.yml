@@ -1,0 +1,4 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/pnpm/declarations
+# .why  = a repo with one patch the lockfile moved past and one it still resolves (#680)
+declarations: 'declarations/declapract.declare.yml'
+useCase: pnpm-repo

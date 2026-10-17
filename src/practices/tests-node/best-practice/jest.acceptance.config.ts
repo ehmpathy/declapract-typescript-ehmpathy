@@ -29,7 +29,17 @@ const config: Config = {
     // here's an example of how to ignore esm module transformation, when needed
     // 'node_modules/(?!(@octokit|universal-user-agent|before-after-hook)/)',
   ],
-  testMatch: ['**/*.acceptance.test.ts', '!**/.agent/.cache/**', '!**/.yalc/**'],
+  testMatch: [
+    '**/*.acceptance.test.ts',
+    '**/*._.acpt.test.ts', // the `._.` kind seam; both suffix forms match
+    '!**/.agent/.actors/**', // rhachet host-local state; holds a scratch clone of this repo, whose suites are not ours
+    '!**/.agent/.cache/**',
+    '!**/.yalc/**',
+  ],
+  // skip all of `.agent/`: rhachet roles, host-local clones, and the rmsafe trash live there. a test
+  // there would run as ours, and a snapshot there would read as obsolete (the haste map scans it)
+  testPathIgnorePatterns: ['/node_modules/', '/.agent/'],
+  modulePathIgnorePatterns: ['<rootDir>/.agent/'],
   setupFilesAfterEnv: ['./jest.acceptance.env.ts'],
 
   // reclaim every temp dir genTempDir made this run (test-fns autoprune). jest needs BOTH keys;

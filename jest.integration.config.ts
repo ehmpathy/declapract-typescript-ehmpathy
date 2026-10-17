@@ -36,6 +36,7 @@ const config: Config = {
   ],
   testMatch: ['**/*.declapract.integration.test.ts', '!**/.yalc/**'],
   testPathIgnorePatterns: ['/node_modules/', '/dist/', '/.agent/'],
+  modulePathIgnorePatterns: ['<rootDir>/.agent/'],
   setupFilesAfterEnv: ['./jest.integration.env.ts'],
 
   // use 50% of threads to leave headroom for other processes

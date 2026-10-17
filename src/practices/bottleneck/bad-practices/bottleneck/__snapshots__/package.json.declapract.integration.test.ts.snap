@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`bottleneck bad-practice package.json given: [case1] bottleneck@2.x, no import of it anywhere (#663) when: [t0] the fix runs then: with-bottleneck is pinned at a published version, never the bottleneck copy: package.json — after 1`] = `
+"{
+  "dependencies": {
+    "domain-objects": "0.31.9",
+    "with-bottleneck": "0.1.2"
+  }
+}"
+`;
+
+exports[`bottleneck bad-practice package.json given: [case1] bottleneck@2.x, no import of it anywhere (#663) when: [t0] the fix runs then: with-bottleneck is pinned at a published version, never the bottleneck copy: package.json — before 1`] = `
+"{
+  "dependencies": {
+    "bottleneck": "2.19.5",
+    "domain-objects": "0.31.9"
+  }
+}"
+`;
+
+exports[`bottleneck bad-practice package.json given: [case4] bottleneck@2.x, imported only from a code dir outside src (F42) when: [t0] the fix runs then: bottleneck stays, since a live import remains, and the copied pin is repaired: package.json — after 1`] = `
+"{
+  "dependencies": {
+    "bottleneck": "2.19.5",
+    "with-bottleneck": "0.1.2"
+  }
+}"
+`;

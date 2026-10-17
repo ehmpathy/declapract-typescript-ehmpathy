@@ -1,20 +1,234 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`persist-with-dynamodb — jest.integration.env divergence repair (D39 clamp) given: [case1] a repo with a divergent jest.integration.env.ts when: [t0] the divergent input (before any fix) then: the env input carries the drifted port and matches snapshot: jest.integration.env.ts — before 1`] = `
-"import { access } from './src/utils/environment';
+exports[`persist-with-dynamodb — local dynamodb endpoint via the usecase-aware owners (#630) given: [case1] a dynamodb service with neither file yet when: [t0] the jest integration env is applied then: the env sets the local dynamodb endpoint, under the test access: jest.integration.env.ts — after 1`] = `
+"import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import util from 'node:util';
 
-if (access === 'test')
-  process.env.USE_CUSTOM_DYNAMODB_ENDPOINT = 'http://localhost:9999';
-"
-`;
+import { jest } from '@jest/globals';
+import { ConstraintError } from 'helpful-errors';
 
-exports[`persist-with-dynamodb — jest.integration.env divergence repair (D39 clamp) given: [case1] a repo with a divergent jest.integration.env.ts when: [t1] the EQUALS repair is applied then: the consumer file now byte-equals the canonical template and matches snapshot: jest.integration.env.ts — after 1`] = `
-"import { access } from './src/utils/environment';
+import { useTestdbPortOverride } from './src/.test/assets/database/useTestdbPortOverride';
+import { useWakeOfTestdb } from './src/.test/useWakeOfTestdb';
+import { access } from './src/utils/environment';
+
+jest.setTimeout(90000); // since we're calling downstream apis
+
+// set console.log to not truncate nested objects
+util.inspect.defaultOptions.depth = 5;
 
 /**
- * specify that dynamodb should use the local dynamodb database, under the test access
+ * .what = verify that we're running from a valid project directory; otherwise, fail fast
+ * .why = prevent confusion and hard-to-debug errors from running tests in the wrong directory
+ */
+if (!existsSync(join(process.cwd(), 'package.json')))
+  throw new ConstraintError(
+    'no package.json found in cwd — run the integration suite from the git root',
+    { cwd: process.cwd() },
+  );
+
+/**
+ * sanity check that unit tests are only run the 'test' environment
+ *
+ * usecases
+ * - prevent polluting prod state with test data
+ * - prevent executing financially impacting mutations
+ */
+if (
+  (process.env.NODE_ENV !== 'test' ||
+    (process.env.CONFIG && process.env.CONFIG !== 'test')) &&
+  process.env.I_KNOW_THE_RISKS !== 'true'
+)
+  throw new ConstraintError(
+    \`integration.test config must be 'test' — set NODE_ENV=test and CONFIG=test (or I_KNOW_THE_RISKS=true to override)\`,
+    { nodeEnv: process.env.NODE_ENV ?? null, config: process.env.CONFIG ?? null },
+  );
+
+/**
+ * .what = declare this checkout's testdb port as TESTDB_PORT, before any test opens a connection.
+ * .why = a worktree's testdb binds a port of its own; the app dials TESTDB_PORT under test access,
+ *        so a worktree's suite reaches its own db, never another checkout's.
+ */
+useTestdbPortOverride();
+
+/**
+ * .what = preflight the LOCAL testdb when this service declares its own db (databaseUserName).
+ * .why = prevent time wasted on a suite that fails deep in a query because the local testdb was never
+ *        provisioned, or was provisioned for a different repo; useWakeOfTestdb fails loud and names
+ *        the fix. it is the LOCAL own-db half; the shared prep cluster its peers query is woken by
+ *        useWakeOfLivedb in globalSetup, since both test and prep access reach the prep peers.
+ */
+useWakeOfTestdb();
+
+/**
+ * .what = point dynamodb at the local dynamodb container, under the test access
+ * .why = a dynamodb suite must never reach a live table
  */
 if (access === 'test')
   process.env.USE_CUSTOM_DYNAMODB_ENDPOINT = 'http://localhost:7337';
+"
+`;
+
+exports[`persist-with-dynamodb — local dynamodb endpoint via the usecase-aware owners (#630) given: [case1] a dynamodb service with neither file yet when: [t1] the test environment main.tf is applied then: the aws provider points dynamodb at the local container: test/main.tf — after 1`] = `
+"provider "aws" {
+  endpoints {
+    dynamodb = "http://localhost:7337/" # the test environment tables live in the local dynamodb
+  }
+
+  region              = "us-east-1"
+  allowed_account_ids = ["123456789012"] # \`test\` environment resources are provisioned in the \`prep\` aws account
+}
+
+terraform {
+  backend "s3" {
+    bucket  = "terraform-state-testns-test"
+    key     = "test-project-test"
+    region  = "us-east-1"
+    encrypt = true
+  }
+}
+
+module "product" {
+  source      = "../../product"
+  environment = "test"
+}
+"
+`;
+
+exports[`persist-with-dynamodb — local dynamodb endpoint via the usecase-aware owners (#630) given: [case4] a dynamodb service whose endpoint line drifted to another port when: [t0] the env is applied then: before + after match snapshot: jest.integration.env.ts — drifted, after 1`] = `
+"import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import util from 'node:util';
+
+import { jest } from '@jest/globals';
+import { ConstraintError } from 'helpful-errors';
+
+import { useTestdbPortOverride } from './src/.test/assets/database/useTestdbPortOverride';
+import { useWakeOfTestdb } from './src/.test/useWakeOfTestdb';
+import { access } from './src/utils/environment';
+
+jest.setTimeout(90000); // since we're calling downstream apis
+
+// set console.log to not truncate nested objects
+util.inspect.defaultOptions.depth = 5;
+
+/**
+ * .what = verify that we're running from a valid project directory; otherwise, fail fast
+ * .why = prevent confusion and hard-to-debug errors from running tests in the wrong directory
+ */
+if (!existsSync(join(process.cwd(), 'package.json')))
+  throw new ConstraintError(
+    'no package.json found in cwd — run the integration suite from the git root',
+    { cwd: process.cwd() },
+  );
+
+/**
+ * sanity check that unit tests are only run the 'test' environment
+ *
+ * usecases
+ * - prevent polluting prod state with test data
+ * - prevent executing financially impacting mutations
+ */
+if (
+  (process.env.NODE_ENV !== 'test' ||
+    (process.env.CONFIG && process.env.CONFIG !== 'test')) &&
+  process.env.I_KNOW_THE_RISKS !== 'true'
+)
+  throw new ConstraintError(
+    \`integration.test config must be 'test' — set NODE_ENV=test and CONFIG=test (or I_KNOW_THE_RISKS=true to override)\`,
+    { nodeEnv: process.env.NODE_ENV ?? null, config: process.env.CONFIG ?? null },
+  );
+
+/**
+ * .what = declare this checkout's testdb port as TESTDB_PORT, before any test opens a connection.
+ * .why = a worktree's testdb binds a port of its own; the app dials TESTDB_PORT under test access,
+ *        so a worktree's suite reaches its own db, never another checkout's.
+ */
+useTestdbPortOverride();
+
+/**
+ * .what = preflight the LOCAL testdb when this service declares its own db (databaseUserName).
+ * .why = prevent time wasted on a suite that fails deep in a query because the local testdb was never
+ *        provisioned, or was provisioned for a different repo; useWakeOfTestdb fails loud and names
+ *        the fix. it is the LOCAL own-db half; the shared prep cluster its peers query is woken by
+ *        useWakeOfLivedb in globalSetup, since both test and prep access reach the prep peers.
+ */
+useWakeOfTestdb();
+
+/**
+ * .what = point dynamodb at the local dynamodb container, under the test access
+ * .why = a dynamodb suite must never reach a live table
+ */
+if (access === 'test')
+  process.env.USE_CUSTOM_DYNAMODB_ENDPOINT = 'http://localhost:7337';
+"
+`;
+
+exports[`persist-with-dynamodb — local dynamodb endpoint via the usecase-aware owners (#630) given: [case4] a dynamodb service whose endpoint line drifted to another port when: [t0] the env is applied then: before + after match snapshot: jest.integration.env.ts — drifted, before 1`] = `
+"import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import util from 'node:util';
+
+import { jest } from '@jest/globals';
+import { ConstraintError } from 'helpful-errors';
+
+import { useTestdbPortOverride } from './src/.test/assets/database/useTestdbPortOverride';
+import { useWakeOfTestdb } from './src/.test/useWakeOfTestdb';
+import { access } from './src/utils/environment';
+
+jest.setTimeout(90000); // since we're calling downstream apis
+
+// set console.log to not truncate nested objects
+util.inspect.defaultOptions.depth = 5;
+
+/**
+ * .what = verify that we're running from a valid project directory; otherwise, fail fast
+ * .why = prevent confusion and hard-to-debug errors from running tests in the wrong directory
+ */
+if (!existsSync(join(process.cwd(), 'package.json')))
+  throw new ConstraintError(
+    'no package.json found in cwd — run the integration suite from the git root',
+    { cwd: process.cwd() },
+  );
+
+/**
+ * sanity check that unit tests are only run the 'test' environment
+ *
+ * usecases
+ * - prevent polluting prod state with test data
+ * - prevent executing financially impacting mutations
+ */
+if (
+  (process.env.NODE_ENV !== 'test' ||
+    (process.env.CONFIG && process.env.CONFIG !== 'test')) &&
+  process.env.I_KNOW_THE_RISKS !== 'true'
+)
+  throw new ConstraintError(
+    \`integration.test config must be 'test' — set NODE_ENV=test and CONFIG=test (or I_KNOW_THE_RISKS=true to override)\`,
+    { nodeEnv: process.env.NODE_ENV ?? null, config: process.env.CONFIG ?? null },
+  );
+
+/**
+ * .what = declare this checkout's testdb port as TESTDB_PORT, before any test opens a connection.
+ * .why = a worktree's testdb binds a port of its own; the app dials TESTDB_PORT under test access,
+ *        so a worktree's suite reaches its own db, never another checkout's.
+ */
+useTestdbPortOverride();
+
+/**
+ * .what = preflight the LOCAL testdb when this service declares its own db (databaseUserName).
+ * .why = prevent time wasted on a suite that fails deep in a query because the local testdb was never
+ *        provisioned, or was provisioned for a different repo; useWakeOfTestdb fails loud and names
+ *        the fix. it is the LOCAL own-db half; the shared prep cluster its peers query is woken by
+ *        useWakeOfLivedb in globalSetup, since both test and prep access reach the prep peers.
+ */
+useWakeOfTestdb();
+
+/**
+ * .what = point dynamodb at the local dynamodb container, under the test access
+ * .why = a dynamodb suite must never reach a live table
+ */
+if (access === 'test')
+  process.env.USE_CUSTOM_DYNAMODB_ENDPOINT = 'http://localhost:9999';
 "
 `;

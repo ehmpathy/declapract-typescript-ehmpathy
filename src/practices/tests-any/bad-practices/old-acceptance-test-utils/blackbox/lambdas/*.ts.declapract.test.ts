@@ -1,4 +1,5 @@
-import { fix } from './*.ts.declapract';
+import { isOnRetiredLambdaTestLib } from '../../../../../../utils/asSourceOnRunLambdaEndpoint';
+import { check, fix } from './*.ts.declapract';
 
 // .note (rule.forbid.as-cast, option a — documented): the declapract context arg passed to
 // fix in the tests below is a PARTIAL mock — the fix reads only what it needs (`contents`,
@@ -41,9 +42,24 @@ describe('consumeSESEmailEventFromSNS', () => {
   });
 });
     `.trim();
-    const fixedContents = await fix(exampleOldPatternContents, {
+    const context = {
       projectVariables: { projectName: 'svc-notifications' },
-    } as any);
+    } as any;
+    const fixedContents = await fix(exampleOldPatternContents, context);
     expect(fixedContents).toMatchSnapshot();
+
+    // the retired lib never lands, even for one apply (#650)
+    const fixed = fixedContents.contents!;
+    expect(fixed).not.toContain('simple-lambda-testing-methods');
+    expect(fixed).toContain('runLambdaEndpoint.onSerialized');
+    expect(fixed).toContain(
+      "which: { service: 'svc-notifications', function: 'consumeSESEmailEventFromSNS' }",
+    );
+    expect(fixed).toContain("at: locally ? 'local' : 'cloud'");
+
+    // a fixed point, and neither bad practice detects the output
+    expect((await fix(fixed, context)).contents).toEqual(fixed);
+    expect(() => check(fixed, context)).toThrow();
+    expect(isOnRetiredLambdaTestLib({ contents: fixed })).toBe(false);
   });
 });

@@ -6,7 +6,7 @@ import { migrateDevConfigToPrep } from '../../../../../utils/migrateDevConfigToP
 export const check = FileCheckType.EXISTS;
 
 export const fix: FileFixFunction = (contents, context) => {
-  // move config/dev.json → config/prep.json and migrate the tier tokens (dev → prep).
+  // move config/dev.json → config/prep.json and migrate the access tokens (dev → prep).
   // both halves are shared utils, one source for both declarers: migrateDevConfigToPrep
   // owns the content migration, asPrepConfigPath owns the relocate.
   const fixed = contents ? migrateDevConfigToPrep({ contents }) : contents;

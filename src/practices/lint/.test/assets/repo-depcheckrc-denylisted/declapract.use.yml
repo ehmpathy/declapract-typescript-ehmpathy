@@ -1,0 +1,6 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/lint/declarations
+# .why  = a node repo whose extant .depcheckrc.yml still ignores denylisted packages
+#         (date-fns, ts-node, core-js), so the depcheck-denylisted-ignores bad practice fires
+# .note = no `variables:` block — the lint practice references zero `@declapract{variable.*}`
+declarations: 'declarations/declapract.declare.yml'
+useCase: lint-node

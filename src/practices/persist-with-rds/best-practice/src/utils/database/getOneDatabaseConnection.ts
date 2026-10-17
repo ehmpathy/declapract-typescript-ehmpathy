@@ -1,8 +1,12 @@
 import { HelpfulError, UnexpectedCodePathError } from 'helpful-errors';
 import pg, { Client, type QueryResult, type QueryResultRow } from 'pg';
 
-import { getConfig } from '../config/getConfig';
-import { getEnvironment } from '../environment';
+import { getConfig } from '@src/utils/config/getConfig';
+import { getEnvironment } from '@src/utils/environment';
+
+import { asDatabaseClientSsl } from './asDatabaseClientSsl';
+import { databaseClientTimeouts } from './databaseClientTimeouts';
+import { getOneDatabasePort } from './getOneDatabasePort';
 
 // https://github.com/brianc/node-postgres/pull/353#issuecomment-283709264
 pg.types.setTypeParser(20, (value) => parseInt(value, 10)); // cast bigints to numbers; by default, pg returns bigints as strings, since max val of bigint is bigger than max safe value in js
@@ -39,11 +43,30 @@ values:
   }
 }
 
-export const getOneDatabaseConnection = async (): Promise<DatabaseConnection> => {
+/**
+ * .what = opens one pg client on the tunnel for this environment, encrypted and bounded
+ * .why = the one place the app builds a pg client, so every connection carries the same tls,
+ *        the same timeouts, and the same DatabaseQueryError
+ * .note = mode 'readonly' reads config under the plan grant and connects as the cicd for-plan
+ *         role, then marks the session read only. the session mode is a guard against a slip,
+ *         not a security boundary: a query can still flip it back. the boundary is the for-plan
+ *         role's own grants
+ */
+export const getOneDatabaseConnection = async (
+  input: { mode: 'readwrite' | 'readonly' } = { mode: 'readwrite' },
+): Promise<DatabaseConnection> => {
   const environment = await getEnvironment();
-  const config = await getConfig();
+
+  // read the config under the grant the mode needs; readonly never reads a write credential
+  const config =
+    input.mode === 'readonly'
+      ? await getConfig({ grant: 'plan' })
+      : await getConfig();
   const target = config.database.target;
-  const role = config.database.role.crud;
+  const role =
+    input.mode === 'readonly'
+      ? config.database.role.cicd['for-plan']
+      : config.database.role.crud;
 
   // determine which tunnel to use based on environment.server
   const tunnel =
@@ -59,32 +82,38 @@ export const getOneDatabaseConnection = async (): Promise<DatabaseConnection> =>
     );
   }
 
-  // instantiate the client
+  // instantiate the client, encrypted and verified wherever a cluster endpoint is declared
   const client = new Client({
     host: tunnel.host,
-    port: tunnel.port,
+    port: getOneDatabasePort({
+      access: environment.access,
+      portDeclared: tunnel.port,
+    }), // a worktree's testdb binds a port of its own; the test harness declares it via TESTDB_PORT
     user: role.username,
     password: role.password,
     database: target.database,
+    ssl: asDatabaseClientSsl({
+      clusterEndpoint: config.database.tunnel.lambda?.host ?? null,
+    }),
+    ...databaseClientTimeouts,
   });
   await client.connect();
   await client.query(`SET search_path TO ${target.schema}, public;`); // https://www.postgresql.org/docs/current/ddl-schemas.html#DDL-SCHEMAS-
-  const dbConnection = {
-    query: ({ sql, values }: { sql: string; values?: unknown[] }) =>
-      client.query(sql, values),
-    end: () => client.end(),
-  };
+
+  // mark a readonly session read only, so a write from it fails loud
+  if (input.mode === 'readonly')
+    await client.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY;');
 
   // declare our interface
   return {
     query: (args: { sql: string; values?: unknown[] }) =>
-      dbConnection.query(args).catch((error) => {
+      client.query(args.sql, args.values).catch((error) => {
         throw new DatabaseQueryError({
           sql: args.sql,
           values: args.values,
           caught: error,
         });
       }),
-    end: () => dbConnection.end(),
+    end: () => client.end(),
   };
 };

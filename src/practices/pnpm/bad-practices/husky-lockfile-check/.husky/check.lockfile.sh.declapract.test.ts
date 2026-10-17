@@ -49,6 +49,23 @@ describe('pnpm husky-lockfile-check bad-practice', () => {
     });
   });
 
+  given('[case4] the husky template shape, which watches both lockfiles', () => {
+    // the shape of husky/best-practice/.husky/check.lockfile.sh: an npm block, then a pnpm block
+    const huskyTemplate = `${npmHook}
+if changed 'pnpm-lock.yaml'; then
+  echo "📦 pnpm-lock.yaml changed. Run 'pnpm install' to update your locally installed dependencies."
+fi
+`;
+
+    when('[t0] checked', () => {
+      then('it is NOT detected, so pnpm and husky converge', () => {
+        expect(() => check(huskyTemplate, ctx)).toThrow(
+          'does not match bad practice',
+        );
+      });
+    });
+  });
+
   given('[case3] idempotency — the fixed output is a fixed point', () => {
     when('[t0] fix is applied twice', () => {
       then('the second pass equals the first', async () => {

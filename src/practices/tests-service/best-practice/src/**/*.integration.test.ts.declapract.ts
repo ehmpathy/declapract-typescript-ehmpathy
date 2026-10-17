@@ -1,3 +1,8 @@
-import { FileCheckType } from 'declapract';
+import { asTestKindPresenceCheck } from '../../../../../utils/asTestKindPresenceCheck';
 
-export const check = FileCheckType.EXISTS; // there should prolly be atleast one unit test per project
+// there should prolly be atleast one integration test per project, in either suffix form (#679)
+export const check = asTestKindPresenceCheck({
+  dir: 'src',
+  suffixOld: '.integration.test.ts',
+  suffixSeam: '._.intg.test.ts',
+});

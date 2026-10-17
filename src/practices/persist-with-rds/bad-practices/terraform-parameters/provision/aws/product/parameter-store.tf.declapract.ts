@@ -1,7 +1,7 @@
 import { type FileCheckFunction, type FileFixFunction } from 'declapract';
 
 /**
- * .what = terraform must not manage SSM parameters — they belong to declastruct-aws
+ * .what = terraform must not manage ssm parameters — they belong to declastruct-aws
  *   now (provision/aws/resources.parameters.ts).
  * .why = terraform managed these via the `__IGNORED__` + `ignore_changes = [value]`
  *   workaround, which hid drift and forced the secret through terraform state. the
@@ -25,8 +25,44 @@ export const check: FileCheckFunction = (contents) => {
   );
 };
 
-export const fix: FileFixFunction = (contents) => {
+/**
+ * .what = the derived ssm names a legacy role param's value seeds, or [] for any other param
+ * .why = the role rename (admin → cicd for-plan + for-apply, service → crud) moved the values to
+ *        new names; the forget erases the last terraform trace of the old one, so its comment
+ *        names where the value must be copied (#686). a fix holds no aws access, so the copy
+ *        itself is a human step (provision/aws/readme.md).
+ */
+const getAllCopyTargetsForLabel = (input: {
+  label: string;
+  namespace: string;
+}): string[] => {
+  if (/(^|_)admin(_|$)/.test(input.label))
+    return [
+      `${input.namespace}/database.role.cicd.for-plan.password`,
+      `${input.namespace}/database.role.cicd.for-apply.password`,
+    ];
+  if (/(^|_)service(_|$)/.test(input.label))
+    return [`${input.namespace}/database.role.crud.password`];
+  return [];
+};
+
+/**
+ * .what = cast copy targets into the comment line above a forget block ([] when none)
+ */
+const asCopyNoteLines = (input: { targets: string[] }): string[] =>
+  input.targets.length
+    ? [
+        `# copy this value before the first plan → ${input.targets.join(', ')} (see provision/aws/readme.md)`,
+      ]
+    : [];
+
+export const fix: FileFixFunction = (contents, context) => {
   if (!contents) return {};
+
+  // the derived namespace each copy target sits under; the config segment differs per env, so it stays `{config}`
+  const org = context?.projectVariables?.organizationName ?? '{org}';
+  const project = context?.projectVariables?.projectName ?? '{project}';
+  const namespace = `/${org}/${project}/{config}`;
 
   // drop the `data "aws_ssm_parameter"` reads — they existed only to seed values
   // that declastruct-aws now owns.
@@ -40,8 +76,11 @@ export const fix: FileFixFunction = (contents) => {
   // indented `  }` of a nested lifecycle block never matches, so the nest is safe.
   const withForgetBlocks = withoutDataReads.replace(
     /resource\s+"aws_ssm_parameter"\s+"(\w+)"\s*\{[\s\S]*?\n\}/g,
-    (_match, label) =>
+    (_match, label: string) =>
       [
+        ...asCopyNoteLines({
+          targets: getAllCopyTargetsForLabel({ label, namespace }),
+        }),
         `removed {`,
         `  from = aws_ssm_parameter.${label}`,
         `  lifecycle {`,

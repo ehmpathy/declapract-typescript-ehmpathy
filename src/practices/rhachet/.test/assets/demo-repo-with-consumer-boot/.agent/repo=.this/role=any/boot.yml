@@ -5,3 +5,5 @@ briefs:
     - briefs/my-own-brief.md
   ref:
     - briefs/my-own-deep-variant.md
+    # the old practice shape put this declared glob under ref; the fix moves it to not (#689)
+    - briefs/domain.terms/term=*._.choice.reason.md

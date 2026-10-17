@@ -1,4 +1,4 @@
-import { FileCheckType } from 'declapract';
+import { asPresenceCheck } from '../../../../../utils/asPresenceCheck';
 
 // a project should declare domain objects — otherwise, what does the service operate on?
 //
@@ -9,4 +9,7 @@ import { FileCheckType } from 'declapract';
 // its own kin — `domain-dir`'s fix moved the required file away, so a repo reached a terminal,
 // unrepairable state. keyed on the go-forward layout, the two practices agree: `domain-dir`'s fix
 // produces exactly this path.
-export const check = FileCheckType.EXISTS;
+export const check = asPresenceCheck({
+  expected: 'src/domain.objects/index.ts',
+  hint: 'create it as the entry for the domain objects this service declares',
+});

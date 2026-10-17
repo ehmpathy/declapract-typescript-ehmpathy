@@ -9,3 +9,5 @@ exports[`exportAwsCredentialsFromSsoProfile given: [case2] the aws cli returns a
   "AWS_SESSION_TOKEN": "sessionExampleToken",
 }
 `;
+
+exports[`getOneKeyrackEnvForAcceptance given: [case3] neither ACCESS nor LOCALLY, outside ci then: the message names the fix: acceptance access absent message 1`] = `"✋ ConstraintError: no ACCESS set for a cloud acceptance run. set ACCESS=prep|prod for a cloud acceptance run, or LOCALLY=true for an in-process run."`;

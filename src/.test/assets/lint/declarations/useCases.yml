@@ -1,0 +1,11 @@
+# minimal lint use cases for integration tests
+# .why = the .depcheckrc.yml contents fn adds the expo ignores on
+#        context.projectPractices.includes('tests-expo'), so the expo usecase lists it
+use-cases:
+  lint-node:
+    practices:
+      - lint
+  lint-expo:
+    practices:
+      - lint
+      - tests-expo

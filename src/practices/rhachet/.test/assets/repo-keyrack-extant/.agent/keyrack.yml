@@ -1,0 +1,9 @@
+org: ehmpathy
+extends:
+  - .agent/repo=ehmpathy/role=mechanic/keyrack.yml
+env.prod: null
+env.prep:
+  - OPENROUTER_API_KEY
+env.test:
+  # the local aws login, from before is-optional-if-has
+  - AWS_PROFILE

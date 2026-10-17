@@ -1,0 +1,9 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/tests-any-only/declarations
+#         the variables stay: the fix reads projectName from this file for the `which` it emits
+declarations: 'declarations/declapract.declare.yml'
+useCase: tests-any-only
+variables:
+  organizationName: 'test-org'
+  projectName: 'svc-notifications'
+  reviewers:
+    users: ['user1']

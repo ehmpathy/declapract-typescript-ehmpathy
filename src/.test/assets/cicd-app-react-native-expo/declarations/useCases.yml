@@ -1,0 +1,6 @@
+# a lean expo use case: the two practices that own provision.yml and metro.config.js
+use-cases:
+  app-react-native-expo-lean:
+    practices:
+      - cicd-app-react-native-expo
+      - typescript-expo

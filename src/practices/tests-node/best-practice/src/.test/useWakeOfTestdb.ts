@@ -6,6 +6,29 @@ import { ConstraintError } from 'helpful-errors';
 import { probeTestDb } from '../../jest.integration.env.db';
 
 /**
+ * .what = the port the local testdb binds, as the app dials it
+ * .why = a worktree's testdb binds a port of its own, which the harness declares as TESTDB_PORT
+ *        (useTestdbPortOverride) and the app dials under test access. the wake must probe that
+ *        same port, or in a worktree it probes the default port and finds no db, or finds another
+ *        worktree's db
+ * .note = absent TESTDB_PORT, the testdb binds the declared port
+ */
+const getTestdbPortForWake = (input: { portDeclared: number }): number => {
+  // no override declared; the testdb binds the declared port
+  const portOverride = process.env.TESTDB_PORT;
+  if (portOverride === undefined || portOverride === '')
+    return input.portDeclared;
+
+  // a malformed override fails loud, so the wake never probes a port no db binds
+  if (!/^[0-9]+$/.test(portOverride))
+    throw new ConstraintError('TESTDB_PORT is not a valid port', {
+      portOverride,
+      hint: 'set TESTDB_PORT to a positive integer port, or unset it to probe the declared port',
+    });
+  return Number(portOverride);
+};
+
+/**
  * .what = preflight the LOCAL testdb before a suite runs, when this service declares its own db.
  * .why =
  *   - prevent time wasted on a suite that fails deep in a query because the local testdb was never
@@ -23,8 +46,8 @@ import { probeTestDb } from '../../jest.integration.env.db';
  *         loud with the `start:testdb` fix rather than resume it. the name reads "wake" for symmetry
  *         with its pair; the act is a readiness preflight.
  * .note = the LIVEDB half of a suite's db needs — the shared prep cluster its peers query — is woken
- *         separately by `useWakeOfLivedb` in globalSetup, per
- *         `define.invariant.test-and-prep-reach-prep-peers` (both test and prep access reach prep).
+ *         separately by `useWakeOfLivedb` in globalSetup, since both test and prep access reach the
+ *         deployed prep peers.
  */
 export const useWakeOfTestdb = (): void => {
   // gate: does this service own a db? a declared databaseUserName in declapract.use.yml is the signal.
@@ -63,7 +86,9 @@ export const useWakeOfTestdb = (): void => {
   // error) and passes PGPASSWORD via env, never the command args
   probeTestDb({
     host: testConfig.database.tunnel.local.host,
-    port: testConfig.database.tunnel.local.port,
+    port: getTestdbPortForWake({
+      portDeclared: testConfig.database.tunnel.local.port,
+    }),
     username: testConfig.database.role.crud.username,
     password: testConfig.database.role.crud.password,
     database: testConfig.database.target.database,

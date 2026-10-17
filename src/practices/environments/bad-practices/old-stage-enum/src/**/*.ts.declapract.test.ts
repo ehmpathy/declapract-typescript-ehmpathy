@@ -69,7 +69,7 @@ if (stage === Stage.TEST) doAction();
     });
 
     it('should LEAVE Stage.DEVELOPMENT in place and mark it for review — never guess a value', async () => {
-      // D27 / guard #3: 'dev' was overloaded across the access-tier axis (→ 'prep') and the
+      // D27 / guard #3: 'dev' was overloaded across the access axis (→ 'prep') and the
       // deploy-stage axis (→ 'dev'); the regex cannot know which, so it must NOT emit a value.
       // it leaves the code reference exactly as found — no value splice — and adds only a `//`
       // COMMENT pointer above it (a comment is not a value, so no guess is emitted).

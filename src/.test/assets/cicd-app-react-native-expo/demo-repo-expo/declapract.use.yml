@@ -1,0 +1,15 @@
+# .note = the declarations dir is symlinked by the test to src/.test/assets/cicd-app-react-native-expo/declarations,
+#         so every variable the two lean practices reference is defined below
+declarations: 'declarations/declapract.declare.yml'
+useCase: app-react-native-expo-lean
+variables:
+  projectName: demo-expo
+  infrastructureNamespaceId: ccc222
+  app:
+    web:
+      domain:
+        prep: demo.prep.example.dev
+        prod: demo.example.dev
+      port:
+        hot: 3647
+        cold: 3649

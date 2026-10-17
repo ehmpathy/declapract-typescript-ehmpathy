@@ -1,0 +1,226 @@
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 5.3.verification
+   ├─ passage = allowed
+   ├─ guard
+   │  ├─ artifacts
+   │  │   ├─ $route/5.3.verification.yield.md
+   │  │   └─ src/**/*
+   │  ├─ reviews
+   │  │   ├─ r1: repo-rules-slice-am (l1, 1/3)
+   │  │   │   ├─ rejected, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ 1 blocker, 1 disputed → 0 tallied ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r001._.given.by_peer.repo-rules-slice-am.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r001._.taken.by_self.repo-rules-slice-am.md
+   │  │   ├─ r2: repo-rules-slice-nz (l1, 1/3)
+   │  │   │   ├─ approved, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 5 nitpicks, 5 disputed → 0 tallied ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r002._.given.by_peer.repo-rules-slice-nz.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r002._.taken.by_self.repo-rules-slice-nz.md
+   │  │   ├─ r3: repo-rules-slice-rds (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r003._.given.by_peer.repo-rules-slice-rds.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r003._.taken.by_self.repo-rules-slice-rds.md
+   │  │   ├─ r4: repo-rules-slice-rest (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 1 nitpick 🟠
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r004._.given.by_peer.repo-rules-slice-rest.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r004._.taken.by_self.repo-rules-slice-rest.md
+   │  │   ├─ r5: ergo-contract-snapshots-slice-am (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r005._.given.by_peer.ergo-contract-snapshots-slice-am.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r005._.taken.by_self.ergo-contract-snapshots-slice-am.md
+   │  │   ├─ r6: ergo-contract-snapshots-slice-nz (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r006._.given.by_peer.ergo-contract-snapshots-slice-nz.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r006._.taken.by_self.ergo-contract-snapshots-slice-nz.md
+   │  │   ├─ r7: ergo-contract-snapshots-slice-rds (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r007._.given.by_peer.ergo-contract-snapshots-slice-rds.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r007._.taken.by_self.ergo-contract-snapshots-slice-rds.md
+   │  │   ├─ r8: ergo-contract-snapshots-slice-rest (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r008._.given.by_peer.ergo-contract-snapshots-slice-rest.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r008._.taken.by_self.ergo-contract-snapshots-slice-rest.md
+   │  │   ├─ r9: mech-external-contracts-slice-am (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r009._.given.by_peer.mech-external-contracts-slice-am.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r009._.taken.by_self.mech-external-contracts-slice-am.md
+   │  │   ├─ r10: mech-external-contracts-slice-nz (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r010._.given.by_peer.mech-external-contracts-slice-nz.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r010._.taken.by_self.mech-external-contracts-slice-nz.md
+   │  │   ├─ r11: mech-external-contracts-slice-rds (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r011._.given.by_peer.mech-external-contracts-slice-rds.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r011._.taken.by_self.mech-external-contracts-slice-rds.md
+   │  │   ├─ r12: mech-external-contracts-slice-rest (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r012._.given.by_peer.mech-external-contracts-slice-rest.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r012._.taken.by_self.mech-external-contracts-slice-rest.md
+   │  │   ├─ r13: ergo-acceptance-journey-coverage-slice-am (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r013._.given.by_peer.ergo-acceptance-journey-coverage-slice-am.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r013._.taken.by_self.ergo-acceptance-journey-coverage-slice-am.md
+   │  │   ├─ r14: ergo-acceptance-journey-coverage-slice-nz (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r014._.given.by_peer.ergo-acceptance-journey-coverage-slice-nz.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r014._.taken.by_self.ergo-acceptance-journey-coverage-slice-nz.md
+   │  │   ├─ r15: ergo-acceptance-journey-coverage-slice-rds (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r015._.given.by_peer.ergo-acceptance-journey-coverage-slice-rds.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r015._.taken.by_self.ergo-acceptance-journey-coverage-slice-rds.md
+   │  │   ├─ r16: ergo-acceptance-journey-coverage-slice-rest (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r016._.given.by_peer.ergo-acceptance-journey-coverage-slice-rest.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r016._.taken.by_self.ergo-acceptance-journey-coverage-slice-rest.md
+   │  │   ├─ r17: behavior-experience-coverage-slice-am (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r017._.given.by_peer.behavior-experience-coverage-slice-am.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r017._.taken.by_self.behavior-experience-coverage-slice-am.md
+   │  │   ├─ r18: behavior-experience-coverage-slice-nz (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r018._.given.by_peer.behavior-experience-coverage-slice-nz.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r018._.taken.by_self.behavior-experience-coverage-slice-nz.md
+   │  │   ├─ r19: behavior-experience-coverage-slice-rds (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r019._.given.by_peer.behavior-experience-coverage-slice-rds.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r019._.taken.by_self.behavior-experience-coverage-slice-rds.md
+   │  │   ├─ r20: behavior-experience-coverage-slice-rest (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r020._.given.by_peer.behavior-experience-coverage-slice-rest.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r020._.taken.by_self.behavior-experience-coverage-slice-rest.md
+   │  │   ├─ r21: ergo-snapshot-visual-blemishes-slice-am (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r021._.given.by_peer.ergo-snapshot-visual-blemishes-slice-am.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r021._.taken.by_self.ergo-snapshot-visual-blemishes-slice-am.md
+   │  │   ├─ r22: ergo-snapshot-visual-blemishes-slice-nz (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r022._.given.by_peer.ergo-snapshot-visual-blemishes-slice-nz.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r022._.taken.by_self.ergo-snapshot-visual-blemishes-slice-nz.md
+   │  │   ├─ r23: ergo-snapshot-visual-blemishes-slice-rds (l1, 1/3)
+   │  │   │   ├─ rejected, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 9 nitpicks, 9 disputed → 0 tallied ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r023._.given.by_peer.ergo-snapshot-visual-blemishes-slice-rds.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r023._.taken.by_self.ergo-snapshot-visual-blemishes-slice-rds.md
+   │  │   ├─ r24: ergo-snapshot-visual-blemishes-slice-rest (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 2 nitpicks 🟠
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r024._.given.by_peer.ergo-snapshot-visual-blemishes-slice-rest.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r024._.taken.by_self.ergo-snapshot-visual-blemishes-slice-rest.md
+   │  │   ├─ r25: mech-given-when-then-slice-am (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r025._.given.by_peer.mech-given-when-then-slice-am.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r025._.taken.by_self.mech-given-when-then-slice-am.md
+   │  │   ├─ r26: mech-given-when-then-slice-nz (l1, 1/3)
+   │  │   │   ├─ rejected, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 9 nitpicks, 9 disputed → 0 tallied ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r026._.given.by_peer.mech-given-when-then-slice-nz.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r026._.taken.by_self.mech-given-when-then-slice-nz.md
+   │  │   ├─ r27: mech-given-when-then-slice-rds (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r027._.given.by_peer.mech-given-when-then-slice-rds.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r027._.taken.by_self.mech-given-when-then-slice-rds.md
+   │  │   ├─ r28: mech-given-when-then-slice-rest (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r028._.given.by_peer.mech-given-when-then-slice-rest.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r028._.taken.by_self.mech-given-when-then-slice-rest.md
+   │  │   ├─ r29: mech-test-intent-slice-am (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 1 nitpick 🟠
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r029._.given.by_peer.mech-test-intent-slice-am.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r029._.taken.by_self.mech-test-intent-slice-am.md
+   │  │   ├─ r30: mech-test-intent-slice-nz (l1, 1/3)
+   │  │   │   ├─ rejected, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ 4 blockers, 4 disputed → 0 tallied ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r030._.given.by_peer.mech-test-intent-slice-nz.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r030._.taken.by_self.mech-test-intent-slice-nz.md
+   │  │   ├─ r31: mech-test-intent-slice-rds (l1, 1/3)
+   │  │   │   ├─ rejected, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ 3 blockers, 3 disputed → 0 tallied ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r031._.given.by_peer.mech-test-intent-slice-rds.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r031._.taken.by_self.mech-test-intent-slice-rds.md
+   │  │   ├─ r32: mech-test-intent-slice-rest (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r032._.given.by_peer.mech-test-intent-slice-rest.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r032._.taken.by_self.mech-test-intent-slice-rest.md
+   │  │   ├─ r33: mech-test-scope-purity (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r033._.given.by_peer.mech-test-scope-purity.md
+   │  │   │   └─ taken: .behavior/v2026_09_29.fix-absorb-recent-upgrade-reports/.reviews/peer/5.3.verification._.review.i001.3c08c83fd9ab23a61e.r033._.taken.by_self.mech-test-scope-purity.md
+   │  │   ├─ r34: enroll-verif-snapshot-coverage (l3, 0/3)
+   │  │   │   └─ awaits l1 terminal
+   │  │   ├─ r35: enroll-verif-snapshot-blemishes (l3, 0/3)
+   │  │   │   └─ awaits l1 terminal
+   │  │   └─ r36: enroll-verif-test-intent (l3, 0/3)
+   │  │       └─ awaits l1 terminal
+   │  └─ judges
+   │      └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
+   │          └─ finished 1.4s ✓
+   │
+   └─ the way continues, run
+      └─ rhx route.drive

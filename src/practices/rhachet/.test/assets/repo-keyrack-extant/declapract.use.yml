@@ -1,0 +1,4 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/rhachet/declarations
+# .why  = an aws repo whose keyrack.yml holds a bare AWS_PROFILE (#491)
+declarations: 'declarations/declapract.declare.yml'
+useCase: rhachet-aws

@@ -18,32 +18,36 @@ export const check: FileCheckFunction = (contents) => {
  *         between the two frameworks and cannot be mechanically rewritten.
  * .why = the prior framework's schema described the WHOLE event and the handler received the whole
  *        event; the sdk's input schema describes the request BODY and the handler receives the
- *        parsed body plus a separate rawEvent. a rename-only rewrite leaves a handler that answers
- *        400 to every request, yet typechecks (#594). the marker flags the two manual edits rather
- *        than let a regex guess the contract.
+ *        parsed body as `payload`, the lowercased `headers`, and the reconciled wire `event`. a
+ *        rename-only rewrite leaves a handler that answers 400 to every request, yet typechecks
+ *        (#594). the marker flags the manual edits rather than let a regex guess the contract.
+ * .note = the shape named here is the one sdk-aws-lambda@0.7.1 publishes (#640); `rawEvent` and
+ *         a body read off `event` are gone from that release.
  */
 const apiGatewayReviewMarker = `/**
- * @declapract:review — auto-migrated to sdk-aws-lambda; the api-gateway handler CONTRACT differs
- * and MUST be restructured by hand (a rename-only migration answers 400 to every request):
+ * @declapract:review — auto-migrated to sdk-aws-lambda@0.7.1; the api-gateway handler CONTRACT
+ * differs and MUST be restructured by hand (a rename-only migration answers 400 to every request):
  *  - schema: the prior single schema described the WHOLE event; the sdk input schema describes the
  *    request BODY only. split into \`schema: { input, output }\` and unwrap the \`body\` key.
- *  - invoke: \`logic: (event) => O\` becomes \`invoke: async ({ event, rawEvent }) => O\`. \`event\` is
- *    the parsed body; thread headers through \`rawEvent.headers\`.
+ *  - invoke: \`logic: (event) => O\` becomes \`invoke: async ({ headers, payload, event }) => O\`.
+ *    \`payload\` is the parsed body; \`headers\` holds the lowercased request headers; \`event\` is
+ *    the reconciled wire event (method, params, codec).
  * delete this marker once restructured.
  */
 `;
 
 /**
  * .what = a loud marker for a standard handler call, whose schema+invoke shape also differs.
- * .why = the rename does not restructure the args; the sdk splits the schema and passes log in the
- *        invoke context. the marker flags the manual edits (#594).
+ * .why = the rename does not restructure the args; the sdk splits the schema, hands the validated
+ *        input as `payload`, and passes log in the invoke context. the marker flags the manual
+ *        edits (#594, #646).
  */
 const standardReviewMarker = `/**
- * @declapract:review — auto-migrated to sdk-aws-lambda; the handler CONTRACT differs and MUST be
- * restructured by hand:
+ * @declapract:review — auto-migrated to sdk-aws-lambda@0.7.1; the handler CONTRACT differs and
+ * MUST be restructured by hand:
  *  - schema: the prior single schema splits into \`schema: { input, output }\`.
- *  - invoke: \`logic: (event) => O\` becomes \`invoke: async ({ event }, { log }) => O\`; \`log\` is now
- *    received in the invoke context, not only at creation.
+ *  - invoke: \`logic: (event) => O\` becomes \`invoke: async ({ payload }, { log }) => O\`; the
+ *    validated input is \`payload\`, and \`log\` is now received in the invoke context.
  * delete this marker once restructured.
  */
 `;
@@ -84,9 +88,9 @@ const asDedupedImportNames = (input: { names: string[] }): string[] => [
  *
  * .note = basic transforms only; complex patterns require manual fix
  *
- * API map:
- * - createStandardHandler → genLambdaEndpoint
- * - createApiGatewayHandler → genLambdaEndpoint.for.apiGateway
+ * API map (sdk-aws-lambda@0.7.1, #646):
+ * - createStandardHandler → genLambdaEndpoint.forAsk
+ * - createApiGatewayHandler → genLambdaEndpoint.forApiGateway
  */
 export const fix: FileFixFunction = (contents) => {
   if (!contents) return {};
@@ -110,8 +114,8 @@ export const fix: FileFixFunction = (contents) => {
       },
     )
     // transform function calls
-    .replace(/createStandardHandler/g, 'genLambdaEndpoint')
-    .replace(/createApiGatewayHandler/g, 'genLambdaEndpoint.for.apiGateway');
+    .replace(/createStandardHandler/g, 'genLambdaEndpoint.forAsk')
+    .replace(/createApiGatewayHandler/g, 'genLambdaEndpoint.forApiGateway');
 
   // prepend the review marker for a handler CALL (api-gateway takes precedence), so the
   // un-rewritable schema+invoke contract is loud. idempotent: the check no longer fires

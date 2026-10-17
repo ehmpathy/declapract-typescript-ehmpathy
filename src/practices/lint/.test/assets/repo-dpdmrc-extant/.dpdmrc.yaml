@@ -1,0 +1,4 @@
+# this repo's own dpdm exclude list
+exclude:
+  # jest-circus requires itself through jest-each; upstream: jestjs/jest#00000 (fixture citation)
+  - jest-circus

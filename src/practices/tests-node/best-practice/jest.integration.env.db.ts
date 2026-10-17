@@ -58,6 +58,8 @@ export const probeTestDb = (
     );
   } catch (error) {
     // surface what psql actually said; a bare catch collapses every cause into one guess
+    // .note = a documented cast: node types a caught value as unknown, and execFileSync's error
+    //         carries `stderr` as a Buffer (piped above); the `'stderr' in error` guard proves the key
     const said =
       error && typeof error === 'object' && 'stderr' in error
         ? String((error as { stderr?: Buffer }).stderr ?? '').trim()
@@ -84,7 +86,9 @@ export const probeTestDb = (
         '',
         fix,
       ].join('\n'),
-      { cause: error },
+      // a catch binds `unknown` under strictest, and `cause` is typed `Error`; narrow, never cast,
+      // so a non-Error throw is re-homed into an Error rather than dropped
+      { cause: error instanceof Error ? error : new Error(String(error)) },
     );
   }
 };

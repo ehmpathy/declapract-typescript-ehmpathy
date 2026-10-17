@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 import { given, then, useBeforeAll, when } from 'test-fns';
-import ts from 'typescript';
+import { getModuleExportsFromTsSource } from '../../utils/getModuleExportsFromTsSource';
 
 /**
  * .what = executes the REAL shipped `useWakeOfTestdb` template through its deterministic
@@ -19,7 +19,9 @@ import ts from 'typescript';
  * .teeth = invert the own-db gate and the no-db case reddens (a probe fires where it must not).
  *          drop the absent-config throw and that case reddens. drop a key from the completeness
  *          check and the incomplete-config case reddens. mis-map a probe arg and the complete case
- *          reddens (the probe receives the wrong host/port/role).
+ *          reddens (the probe receives the wrong host/port/role). probe the declared port where
+ *          the harness declared TESTDB_PORT and the worktree case reddens (the wake would probe
+ *          the default port while a worktree's db binds its own — #674).
  * .note = INTEGRATION by `rule.forbid.unit.remote-boundaries`: it reads the shipped template off
  *         the filesystem. no network, no real subprocess — the probeTestDb boundary is stubbed. it
  *         sits at the PRACTICE ROOT (not under `best-practice/`), because declapract's compile
@@ -59,15 +61,8 @@ type ProbeArgs = {
 const runUseWakeOfTestdb = (input: {
   declapractUse: string | null; // null = the declapract.use.yml file is absent
   testConfig: string | null; // null = the config/test.json file is absent
+  testdbPortOverride: string | null; // null = the harness declared no TESTDB_PORT
 }): { probeCalls: ProbeArgs[] } => {
-  const source = readFileSync(SOURCE_PATH, 'utf8');
-  const transpiled = ts.transpileModule(source, {
-    compilerOptions: {
-      module: ts.ModuleKind.CommonJS,
-      target: ts.ScriptTarget.ES2020,
-    },
-  }).outputText;
-
   const probeCalls: ProbeArgs[] = [];
 
   class FakeConstraintError extends Error {
@@ -97,7 +92,7 @@ const runUseWakeOfTestdb = (input: {
         },
         readFileSync: (p: string): string => {
           const key = asFileKey(p);
-          return (key !== 'other' && contentFor(key)) || '';
+          return (key === 'use' || key === 'config' ? contentFor(key) : '') ?? '';
         },
       };
     if (id === 'node:path')
@@ -112,11 +107,22 @@ const runUseWakeOfTestdb = (input: {
     return {};
   };
 
-  const moduleExports: Record<string, () => void> = {};
+  const { useWakeOfTestdb } = getModuleExportsFromTsSource<{
+    useWakeOfTestdb: () => void;
+  }>({ source: readFileSync(SOURCE_PATH, 'utf8'), requireStub });
 
-  // eslint-disable-next-line no-new-func
-  new Function('exports', 'require', transpiled)(moduleExports, requireStub);
-  moduleExports.useWakeOfTestdb!();
+  // declare TESTDB_PORT as the harness would, for this call only; restore the prior value after
+  const portOverridePrior = process.env.TESTDB_PORT;
+  if (input.testdbPortOverride === null) delete process.env.TESTDB_PORT;
+  if (input.testdbPortOverride !== null)
+    process.env.TESTDB_PORT = input.testdbPortOverride;
+  try {
+    useWakeOfTestdb!();
+  } finally {
+    if (portOverridePrior === undefined) delete process.env.TESTDB_PORT;
+    if (portOverridePrior !== undefined)
+      process.env.TESTDB_PORT = portOverridePrior;
+  }
 
   return { probeCalls };
 };
@@ -128,6 +134,7 @@ describe('the useWakeOfTestdb decide-gate runs its real branches (executed, no l
         runUseWakeOfTestdb({
           declapractUse: 'useCase: lambda-service\n',
           testConfig: COMPLETE_CONFIG,
+          testdbPortOverride: null,
         }),
       );
       then('it is a no-op (the testdb is never preflighted)', () => {
@@ -139,14 +146,15 @@ describe('the useWakeOfTestdb decide-gate runs its real branches (executed, no l
   given('a service that owns a db (declapract.use.yml declares a databaseUserName)', () => {
     const OWN_DB_USE = 'databaseUserName: svc-x-crud\n';
 
-    when('its config/test.json is complete', () => {
+    when('its config/test.json is complete, and the harness declared no TESTDB_PORT', () => {
       const state = useBeforeAll(() =>
         runUseWakeOfTestdb({
           declapractUse: OWN_DB_USE,
           testConfig: COMPLETE_CONFIG,
+          testdbPortOverride: null,
         }),
       );
-      then('it preflights the testdb with the config tunnel + role', () => {
+      then('it preflights the testdb with the config tunnel + role, at the declared port', () => {
         expect(state.probeCalls).toEqual([
           {
             host: 'localhost',
@@ -159,11 +167,60 @@ describe('the useWakeOfTestdb decide-gate runs its real branches (executed, no l
       });
     });
 
+    when('its config/test.json is complete, and the harness declared TESTDB_PORT (a worktree)', () => {
+      const state = useBeforeAll(() =>
+        runUseWakeOfTestdb({
+          declapractUse: OWN_DB_USE,
+          testConfig: COMPLETE_CONFIG,
+          testdbPortOverride: String(5432 + 77),
+        }),
+      );
+      then('it probes the per-worktree port the db binds, not the declared one', () => {
+        expect(state.probeCalls).toEqual([
+          {
+            host: 'localhost',
+            port: 5432 + 77,
+            username: 'svc_x_crud',
+            password: 'pw',
+            database: 'svc_x_testdb',
+          },
+        ]);
+      });
+    });
+
+    when('the harness declared a malformed TESTDB_PORT', () => {
+      then('it throws a ConstraintError that names TESTDB_PORT, and never probes', () => {
+        const probeCallsSeen: ProbeArgs[][] = [];
+        const error = (() => {
+          try {
+            probeCallsSeen.push(
+              runUseWakeOfTestdb({
+                declapractUse: OWN_DB_USE,
+                testConfig: COMPLETE_CONFIG,
+                testdbPortOverride: 'not-a-port',
+              }).probeCalls,
+            );
+            return null;
+          } catch (caught) {
+            return caught;
+          }
+        })();
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).name).toBe('ConstraintError');
+        expect((error as Error).message).toContain('TESTDB_PORT');
+        expect(probeCallsSeen).toEqual([]);
+      });
+    });
+
     when('its config/test.json is absent', () => {
       then('it throws a ConstraintError that names config/test.json (never a silent skip)', () => {
         const error = (() => {
           try {
-            runUseWakeOfTestdb({ declapractUse: OWN_DB_USE, testConfig: null });
+            runUseWakeOfTestdb({
+              declapractUse: OWN_DB_USE,
+              testConfig: null,
+              testdbPortOverride: null,
+            });
             return null;
           } catch (caught) {
             return caught;
@@ -188,6 +245,7 @@ describe('the useWakeOfTestdb decide-gate runs its real branches (executed, no l
             runUseWakeOfTestdb({
               declapractUse: OWN_DB_USE,
               testConfig: incomplete,
+              testdbPortOverride: null,
             });
             return null;
           } catch (caught) {

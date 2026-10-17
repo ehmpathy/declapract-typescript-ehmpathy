@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`genRdsConfigDeclaration (#638, #683) a hand-set cluster name and the prep placeholder, with no bastion fix is a fixed point, and check passes on its output 1`] = `
+"{
+  "database": {
+    "role": {
+      "crud": {
+        "username": "service_user",
+        "password": "__CHANG3_ME__"
+      }
+    },
+    "tunnel": {
+      "cluster": {
+        "name": "hand-set-cluster"
+      },
+      "local": {
+        "host": "localhost",
+        "port": 15432
+      },
+      "bastion": {
+        "exid": "vpc-main-bastion"
+      }
+    }
+  }
+}
+"
+`;
+
+exports[`genRdsConfigDeclaration (#638, #683) a legacy string tunnel and a repo-own key fix is a fixed point, and check passes on its output 1`] = `
+"{
+  "featureFlags": {
+    "surfReport": true
+  },
+  "database": {
+    "role": {
+      "crud": {
+        "username": "service_user",
+        "password": "$.at(aws::param)"
+      }
+    },
+    "tunnel": {
+      "local": {
+        "host": "localhost",
+        "port": 15432
+      },
+      "bastion": {
+        "exid": "vpc-main-bastion"
+      },
+      "cluster": {
+        "name": "awesomesdb"
+      }
+    }
+  }
+}
+"
+`;

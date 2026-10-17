@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`.depcheckrc.yml ignorePatterns merge (#639, #512) seeds ignorePatterns onto an extant file that lacks it, and keeps its own ignores + comments 1`] = `
+"# repo-own comment
+ignores:
+  - rhachet
+  - my-own-dep # why: repo-own reason
+ignorePatterns:
+  - .agent/.actors
+  - .agent/repo=*
+  - "!.agent/repo=.this"
+"
+`;

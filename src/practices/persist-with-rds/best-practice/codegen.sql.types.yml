@@ -1,5 +1,5 @@
 language: postgres
-dialect: 10.7
+dialect: 17
 resources: # where to find your tables, functions, views, procedures
   - 'provision/schema/sql/tables/**/*.sql'
   - 'provision/schema/sql/views/**/*.sql'

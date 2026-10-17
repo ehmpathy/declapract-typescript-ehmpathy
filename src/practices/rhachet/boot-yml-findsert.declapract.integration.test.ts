@@ -27,7 +27,7 @@ describe('rhachet — boot.yml findsert (req 1: consumer entries survive)', () =
       slug: 'declapract-rhachet-boot-findsert',
       clone:
         './src/practices/rhachet/.test/assets/demo-repo-with-consumer-boot',
-      symlink: [{ at: 'src', to: 'src' }],
+      symlink: [{ at: 'declarations', to: 'src' }],
     });
 
     const bootPath = '.agent/repo=.this/role=any/boot.yml';
@@ -48,6 +48,8 @@ describe('rhachet — boot.yml findsert (req 1: consumer entries survive)', () =
         const before = await read(bootPath);
         expect(before).toContain('briefs/my-own-brief.md');
         expect(before).toContain('briefs/my-own-deep-variant.md');
+        // the consumer carries the old practice shape: a declared glob under ref (#689)
+        expect(yaml.parse(before).briefs.ref).toContain(REASON_REF);
         // the consumer predates the budget cap — it carries none (the findsert-add path)
         expect(yaml.parse(before).budget).toBeUndefined();
         expect(before).toMatchSnapshot('boot.yml — before');
@@ -65,11 +67,13 @@ describe('rhachet — boot.yml findsert (req 1: consumer entries survive)', () =
           const after = await read(bootPath);
           const parsed = yaml.parse(after);
 
-          // the two declared deep-variant globs were unioned into the consumer's ref list
-          expect(parsed.briefs.ref).toContain(REASON_REF);
-          expect(parsed.briefs.ref).toContain(EXAMPLE_REF);
-          // the consumer's OWN ref pick survives (the whole-overwrite failure would drop it)
-          expect(parsed.briefs.ref).toContain('briefs/my-own-deep-variant.md');
+          // the two declared deep-variant globs landed under not (#689) — the one the old
+          // practice shape put under ref was moved, never duplicated
+          expect(parsed.briefs.not).toEqual([REASON_REF, EXAMPLE_REF]);
+          expect(parsed.briefs.ref).not.toContain(REASON_REF);
+          expect(parsed.briefs.ref).not.toContain(EXAMPLE_REF);
+          // the consumer's OWN ref pick survives, and is all that ref holds now
+          expect(parsed.briefs.ref).toEqual(['briefs/my-own-deep-variant.md']);
           // the consumer's OWN say pick survives untouched
           expect(parsed.briefs.say).toContain('briefs/my-own-brief.md');
           // it stayed simple mode — the fix created no top-level always: key
@@ -106,7 +110,7 @@ describe('rhachet — boot.yml findsert (req 1: consumer entries survive)', () =
       slug: 'declapract-rhachet-boot-budget-preserved',
       clone:
         './src/practices/rhachet/.test/assets/demo-repo-with-consumer-boot',
-      symlink: [{ at: 'src', to: 'src' }],
+      symlink: [{ at: 'declarations', to: 'src' }],
     });
 
     const bootPath = '.agent/repo=.this/role=any/boot.yml';

@@ -1,17 +1,43 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`format practice — the usecase-aware package.json contents fn (r001.b3) given: [case1] a consumer on a terraform usecase when: [t0] the format package.json is applied then: the emitted commands block matches snapshot: with-terraform — commands 1`] = `
-{
-  "fix:format": "npm run fix:format:biome && npm run fix:format:terraform",
-  "fix:format:terraform": "terraform fmt -recursive provision",
-  "test:format": "npm run test:format:biome && npm run test:format:terraform",
-  "test:format:terraform": "terraform fmt -recursive -check provision",
+exports[`format practice — package.json is biome only (#645) given: [case1] an adopter one release behind, on a terraform usecase when: [t0] declapract apply then: before + after of package.json match snapshot: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "scripts": {
+    "fix:format:biome": "biome check --write",
+    "fix:format": "npm run fix:format:biome",
+    "test:format:biome": "biome format",
+    "test:format": "npm run test:format:biome"
+  }
 }
+"
 `;
 
-exports[`format practice — the usecase-aware package.json contents fn (r001.b3) given: [case2] a consumer on a non-terraform usecase when: [t0] the format package.json is applied then: the emitted commands block matches snapshot: without-terraform — commands 1`] = `
-{
-  "fix:format": "npm run fix:format:biome",
-  "test:format": "npm run test:format:biome",
+exports[`format practice — package.json is biome only (#645) given: [case1] an adopter one release behind, on a terraform usecase when: [t0] declapract apply then: before + after of package.json match snapshot: package.json — before 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "scripts": {
+    "fix:format:biome": "biome check --write",
+    "fix:format:terraform": "terraform fmt -recursive provision",
+    "fix:format": "npm run fix:format:biome && npm run fix:format:terraform",
+    "test:format:terraform": "terraform fmt -recursive -check provision",
+    "test:format:biome": "biome format",
+    "test:format": "npm run test:format:biome && npm run test:format:terraform"
+  }
 }
+"
+`;
+
+exports[`format practice — package.json is biome only (#645) given: [case2] a fresh consumer on a non-terraform usecase when: [t0] declapract apply then: package.json matches snapshot: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "scripts": {
+    "fix:format": "npm run fix:format:biome",
+    "test:format": "npm run test:format:biome"
+  }
+}
+"
 `;

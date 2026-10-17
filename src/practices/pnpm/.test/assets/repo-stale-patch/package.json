@@ -1,0 +1,14 @@
+{
+  "name": "repo-stale-patch",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.34.5",
+  "pnpm": {
+    "overrides": {
+      "react-refresh": "0.14.2"
+    },
+    "patchedDependencies": {
+      "rhachet-roles-ehmpathy@1.39.1": "patches/rhachet-roles-ehmpathy@1.39.1.patch",
+      "type-fns@1.21.3": "patches/type-fns@1.21.3.patch"
+    }
+  }
+}

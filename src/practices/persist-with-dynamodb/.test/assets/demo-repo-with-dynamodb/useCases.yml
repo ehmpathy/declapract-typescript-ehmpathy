@@ -1,0 +1,8 @@
+# a minimal usecase: the two owners of the dynamodb inserts, plus the practice that signals them.
+# the full lambda-service-with-dynamodb usecase evaluates dozens of practices per apply.
+use-cases:
+  dynamodb-owners:
+    practices:
+      - tests-node
+      - terraform-aws
+      - persist-with-dynamodb

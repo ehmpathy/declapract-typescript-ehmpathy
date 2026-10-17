@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`simple-lambda-testing-methods retirement given: [case1] a service repo whose blackbox test is on the retired lib when: [t0] the input, before any fix then: the test and package.json are on the retired lib: getWidget.acceptance.test.ts — before 1`] = `
+"import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+import { given, then, when } from 'test-fns';
+
+import { locally, stage } from '../environment';
+
+describe('getWidget', () => {
+  given('a widget', () => {
+    when('asked by uuid', () => {
+      then('it responds', async () => {
+        const response = await invokeLambdaForTesting({
+          service: 'svc-widgets',
+          function: 'getWidget',
+          stage,
+          locally,
+          event: { widgetUuid: 'w-1' },
+        });
+        expect(response.widget).toBeDefined();
+      });
+    });
+  });
+});
+"
+`;
+
+exports[`simple-lambda-testing-methods retirement given: [case1] a service repo whose blackbox test is on the retired lib when: [t0] the input, before any fix then: the test and package.json are on the retired lib: package.json — before 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "devDependencies": {
+    "simple-lambda-testing-methods": "0.5.1"
+  }
+}
+"
+`;
+
+exports[`simple-lambda-testing-methods retirement given: [case1] a service repo whose blackbox test is on the retired lib when: [t1] the usecase is applied then: the retired dep is gone, and sdk-aws-lambda is in at the floor: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "devDependencies": {
+    "sdk-aws-lambda": "0.7.2"
+  }
+}
+"
+`;
+
+exports[`simple-lambda-testing-methods retirement given: [case1] a service repo whose blackbox test is on the retired lib when: [t1] the usecase is applied then: the test runs the lambda via runLambdaEndpoint.onSerialized: getWidget.acceptance.test.ts — after 1`] = `
+"import { runLambdaEndpoint } from 'sdk-aws-lambda';
+import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@src/utils/logger';
+import { given, then, when } from 'test-fns';
+
+import { locally } from '../environment';
+
+describe('getWidget', () => {
+  given('a widget', () => {
+    when('asked by uuid', () => {
+      then('it responds', async () => {
+        const response = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+          {
+            which: { service: 'svc-widgets', function: 'getWidget' },
+            event: { widgetUuid: 'w-1' },
+            at: locally ? 'local' : 'cloud',
+          },
+          { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+        );
+        expect(response.widget).toBeDefined();
+      });
+    });
+  });
+});
+"
+`;

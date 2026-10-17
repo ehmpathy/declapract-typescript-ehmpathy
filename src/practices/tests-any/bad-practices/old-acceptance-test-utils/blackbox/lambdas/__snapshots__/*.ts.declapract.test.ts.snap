@@ -5,7 +5,9 @@ exports[`*.ts.declapract should be able to fix a test file using old acceptance 
   "contents": "import { SNSEventRecord, SNSMessage, SNSEvent } from 'aws-lambda';
 
 import { exampleEmailClickEvent } from '../../src/__test_assets__/exampleEmailClickEvent';
-import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+import { runLambdaEndpoint } from 'sdk-aws-lambda';
+import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@src/utils/logger';
 import { locally } from '../environment';
 
 describe('consumeSESEmailEventFromSNS', () => {
@@ -20,12 +22,14 @@ describe('consumeSESEmailEventFromSNS', () => {
       ],
     };
     try {
-      await invokeLambdaForTesting({
-        service: 'svc-notifications',
-        function: 'consumeSESEmailEventFromSNS',
-        locally,
-        event: exampleSnsEvent,
-      });
+      await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+        {
+          which: { service: 'svc-notifications', function: 'consumeSESEmailEventFromSNS' },
+          event: exampleSnsEvent,
+          at: locally ? 'local' : 'cloud',
+        },
+        { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+      );
       throw new Error('should not reach here');
     } catch (error) {
       expect(error.message).toContain(

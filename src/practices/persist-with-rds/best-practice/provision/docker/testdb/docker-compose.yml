@@ -1,18 +1,19 @@
 version: '3'
+name: @declapract{variable.databaseName}${TESTDB_SUFFIX:-} # one compose project per worktree; see compose.sh
 services:
   postgres:
     build:
       context: .
       dockerfile: build-image.dockerfile
-    container_name: @declapract{variable.databaseName}
+    container_name: @declapract{variable.databaseName}${TESTDB_SUFFIX:-}
     command: postgres -c 'max_connections=500'
     ports:
-      - 7821:5432
+      - ${TESTDB_PORT:-7821}:5432
     environment:
       POSTGRES_PASSWORD: a-secure-password # default user is `postgres`
       POSTGRES_DB: @declapract{variable.databaseName} # creates the database for us automatically
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d homeservicesdb']
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d @declapract{variable.databaseName}']
       interval: 5s
       timeout: 5s
       retries: 5

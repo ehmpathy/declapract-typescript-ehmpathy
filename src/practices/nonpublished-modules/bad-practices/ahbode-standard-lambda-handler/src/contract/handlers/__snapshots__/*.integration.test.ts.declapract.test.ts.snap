@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ahbode-standard-lambda-handler integration tests (#650) given: [case1] a handler test on promiseLambdaInvocation when: [t0] it is fixed then: it lands on runLambdaEndpoint.onReferenced in one apply 1`] = `
+"import { asLambdaEndpointOutput, runLambdaEndpoint } from 'sdk-aws-lambda';
+import { getError } from 'test-fns';
+
+import { handler } from './getWidget';
+
+describe('getWidget', () => {
+  it('responds', async () => {
+    const response = await runLambdaEndpoint.onReferenced({ event: { widgetUuid: 'w-1' }, handler }).then(asLambdaEndpointOutput);
+    expect(response).toBeDefined();
+  });
+});
+"
+`;

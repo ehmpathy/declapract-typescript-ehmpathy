@@ -1,0 +1,7 @@
+{
+  "name": "test-project",
+  "version": "1.0.0",
+  "devDependencies": {
+    "simple-lambda-testing-methods": "0.5.1"
+  }
+}

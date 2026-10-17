@@ -2,13 +2,16 @@
 
 exports[`joi-imports source files @declapract:review marker (#594) the marker names the three silent semantic changes: joi rewrite — review marker 1`] = `
 "/**
- * @declapract:review — auto-migrated to zod; VERIFY these three semantics by hand:
+ * @declapract:review — auto-migrated to zod; VERIFY these semantics by hand:
  *  - optionality: a source field with no explicit required marker was OPTIONAL, but the zod field
  *    is now REQUIRED by default. re-mark any truly-optional field \`.optional()\`.
  *  - unknown keys: the prior \`.object()\` rejected unknown keys; \`z.object()\` strips them silently.
  *    use \`z.looseObject()\` only where the shape must pass unknown keys through.
  *  - date coercion: the prior \`.date()\` coerced strings to Date; \`z.date()\` rejects a string.
  *    use \`z.coerce.date()\` where the input arrives as a string.
+ *  - number coercion: the prior \`.number()\` coerced numeric strings; \`z.number()\` rejects a
+ *    string. use \`z.coerce.number()\` where the input arrives as a string (e.g. a db-hydrated
+ *    numeric or bigint column).
  * delete this marker once each point is verified.
  */
 import { z } from 'zod';

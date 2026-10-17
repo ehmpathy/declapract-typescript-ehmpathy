@@ -1,5 +1,12 @@
 {
   "name": "test-project",
   "version": "1.0.0",
-  "scripts": {}
+  "scripts": {
+    "fix:format:biome": "biome check --write",
+    "fix:format:terraform": "terraform fmt -recursive provision",
+    "fix:format": "npm run fix:format:biome && npm run fix:format:terraform",
+    "test:format:terraform": "terraform fmt -recursive -check provision",
+    "test:format:biome": "biome format",
+    "test:format": "npm run test:format:biome && npm run test:format:terraform"
+  }
 }

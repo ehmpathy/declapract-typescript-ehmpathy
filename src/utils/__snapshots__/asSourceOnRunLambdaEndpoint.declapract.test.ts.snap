@@ -1,0 +1,299 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asSourceOnRunLambdaEndpoint given: [case1] a blackbox acceptance test on invokeLambdaForTesting when: [t0] it is moved then: the output matches snapshot 1`] = `
+"import { asLambdaEvent, runLambdaEndpoint } from 'sdk-aws-lambda';
+import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@src/utils/logger';
+import { given, then, when } from 'test-fns';
+
+import { locally } from '../environment';
+
+describe('getWidget', () => {
+  given('a widget', () => {
+    when('asked by uuid', () => {
+      then('it responds', async () => {
+        const response = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+          {
+            which: { service: 'svc-widgets', function: 'getWidget' },
+            event: { widgetUuid: 'w-1' },
+            at: locally ? 'local' : 'cloud',
+          },
+          { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+        );
+        expect(response.widget).toBeDefined();
+      });
+    });
+    when('asked over the gateway', () => {
+      then('it responds', async () => {
+        const response = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+          {
+            which: { service: 'svc-widgets', function: 'getWidgetPublic' },
+            event: asLambdaEvent.fromApiGateway({
+              httpMethod: 'POST',
+              body: JSON.stringify({ widgetUuid: 'w-1' }),
+            }),
+            at: 'cloud',
+          },
+          { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+        );
+        expect(response.statusCode).toEqual(200);
+      });
+    });
+  });
+});
+"
+`;
+
+exports[`asSourceOnRunLambdaEndpoint given: [case2] an integration test on invokeHandlerForTesting when: [t0] it is moved then: the output matches snapshot 1`] = `
+"import { asLambdaEndpointOutput, runLambdaEndpoint } from 'sdk-aws-lambda';
+import { getError } from 'test-fns';
+
+import { handler } from './getWidget';
+
+describe('getWidget', () => {
+  it('responds', async () => {
+    const response = await runLambdaEndpoint.onReferenced({ event: { widgetUuid: 'w-1' }, handler }).then(asLambdaEndpointOutput);
+    expect(response).toBeDefined();
+  });
+  it('rejects a blank uuid', async () => {
+    const error = await getError(runLambdaEndpoint.onReferenced({ event: { widgetUuid: '' }, handler }).then(asLambdaEndpointOutput));
+    expect(error).toBeDefined();
+  });
+});
+"
+`;
+
+exports[`asSourceOnRunLambdaEndpoint given: [case4] an inline api gateway event literal, in a file with no example-event call then: the output matches snapshot: after 1`] = `
+"import { runLambdaEndpoint } from 'sdk-aws-lambda';
+import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@src/utils/logger';
+
+import { locally } from '../environment';
+
+describe('getWidgetPublic', () => {
+  it('responds', async () => {
+    const response = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+      {
+        which: { service: 'svc-widgets', function: 'getWidgetPublic' },
+        event: {
+          httpMethod: 'POST',
+          requestContext: { requestId: 'r-1' },
+          body: JSON.stringify({ widgetUuid: 'w-1' }),
+        },
+        at: locally ? 'local' : 'cloud',
+      },
+      { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+    );
+    expect(response.statusCode).toEqual(200);
+  });
+  it('responds to a plain event', async () => {
+    const response = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+      {
+        which: { service: 'svc-widgets', function: 'getWidget' },
+        event: { widgetUuid: 'w-1' },
+        at: locally ? 'local' : 'cloud',
+      },
+      { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+    );
+    expect(response.widget).toBeDefined();
+  });
+});
+"
+`;
+
+exports[`asSourceOnRunLambdaEndpoint given: [case4] an inline api gateway event literal, in a file with no example-event call then: the output matches snapshot: before 1`] = `
+"import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+
+import { locally } from '../environment';
+
+describe('getWidgetPublic', () => {
+  it('responds', async () => {
+    const response = await invokeLambdaForTesting({
+      service: 'svc-widgets',
+      function: 'getWidgetPublic',
+      locally,
+      event: {
+        httpMethod: 'POST',
+        requestContext: { requestId: 'r-1' },
+        body: JSON.stringify({ widgetUuid: 'w-1' }),
+      },
+    });
+    expect(response.statusCode).toEqual(200);
+  });
+  it('responds to a plain event', async () => {
+    const response = await invokeLambdaForTesting({
+      service: 'svc-widgets',
+      function: 'getWidget',
+      locally,
+      event: { widgetUuid: 'w-1' },
+    });
+    expect(response.widget).toBeDefined();
+  });
+});
+"
+`;
+
+exports[`asSourceOnRunLambdaEndpoint given: [case5] a call whose argument is not an object literal then: the output matches snapshot: after 1`] = `
+"import { runLambdaEndpoint } from 'sdk-aws-lambda';
+import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@src/utils/logger';
+
+import { requestFor } from './requestFor';
+
+describe('getWidgetPublic', () => {
+  it('responds', async () => {
+    const response = await runLambdaEndpoint.onSerialized(requestFor('w-1'));
+    expect(response.statusCode).toEqual(200);
+  });
+});
+"
+`;
+
+exports[`asSourceOnRunLambdaEndpoint given: [case5] a call whose argument is not an object literal then: the output matches snapshot: before 1`] = `
+"import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+
+import { requestFor } from './requestFor';
+
+describe('getWidgetPublic', () => {
+  it('responds', async () => {
+    const response = await invokeLambdaForTesting(requestFor('w-1'));
+    expect(response.statusCode).toEqual(200);
+  });
+});
+"
+`;
+
+exports[`asSourceOnRunLambdaEndpoint given: [case6] a moved file that reads a 400 off the flat body, and makes no http call then: the output matches snapshot: after 1`] = `
+"import { asLambdaEvent, runLambdaEndpoint } from 'sdk-aws-lambda';
+import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@src/utils/logger';
+
+import { locally } from '../environment';
+
+describe('sendChatMessage', () => {
+  it('rejects an absent thread', async () => {
+    const result = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+      {
+        which: { service: 'svc-gateway', function: 'sendChatMessage' },
+        event: asLambdaEvent.fromApiGateway({ httpMethod: 'POST', body: '{}' }),
+        at: locally ? 'local' : 'cloud',
+      },
+      { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+    );
+    const body = JSON.parse(result.body);
+    // the caller sees \`errorMessage\` with the reason
+    expect(body).toHaveProperty('error.message');
+    expect(body).toHaveProperty("error.class");
+    expect(body.error.message).toContain('thread does not exist');
+    expect(body.error.class).toEqual('BadRequestError');
+  });
+  it('rejects a bad phone', async () => {
+    const result = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+      {
+        which: { service: 'svc-gateway', function: 'sendChatMessage' },
+        event: asLambdaEvent.fromApiGateway({ httpMethod: 'POST', body: '{"phone":"x"}' }),
+        at: locally ? 'local' : 'cloud',
+      },
+      { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+    );
+    const { error: { message: errorMessage } } = JSON.parse(result.body) as {
+      error: { class: string; message: string };
+    };
+    expect(errorMessage).toContain('not a valid phone number');
+  });
+});
+"
+`;
+
+exports[`asSourceOnRunLambdaEndpoint given: [case6] a moved file that reads a 400 off the flat body, and makes no http call then: the output matches snapshot: before 1`] = `
+"import {
+  createExampleAPIGatewayEvent,
+  invokeLambdaForTesting,
+} from 'simple-lambda-testing-methods';
+
+import { locally } from '../environment';
+
+describe('sendChatMessage', () => {
+  it('rejects an absent thread', async () => {
+    const result = await invokeLambdaForTesting({
+      service: 'svc-gateway',
+      function: 'sendChatMessage',
+      locally,
+      event: createExampleAPIGatewayEvent({ httpMethod: 'POST', body: '{}' }),
+    });
+    const body = JSON.parse(result.body);
+    // the caller sees \`errorMessage\` with the reason
+    expect(body).toHaveProperty('errorMessage');
+    expect(body).toHaveProperty("errorType");
+    expect(body.errorMessage).toContain('thread does not exist');
+    expect(body.errorType).toEqual('BadRequestError');
+  });
+  it('rejects a bad phone', async () => {
+    const result = await invokeLambdaForTesting({
+      service: 'svc-gateway',
+      function: 'sendChatMessage',
+      locally,
+      event: createExampleAPIGatewayEvent({ httpMethod: 'POST', body: '{"phone":"x"}' }),
+    });
+    const { errorMessage } = JSON.parse(result.body) as {
+      errorMessage: string;
+    };
+    expect(errorMessage).toContain('not a valid phone number');
+  });
+});
+"
+`;
+
+exports[`asSourceOnRunLambdaEndpoint given: [case8] a moved file that also makes a real http call then: the output matches snapshot: after 1`] = `
+"import axios from 'axios';
+import { runLambdaEndpoint } from 'sdk-aws-lambda';
+import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@src/utils/logger';
+
+import { locally } from '../environment';
+
+describe('sendChatMessage', () => {
+  it('rejects over the lambda', async () => {
+    const result = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+      {
+        which: { service: 'svc-gateway', function: 'sendChatMessage' },
+        event: { threadUuid: 'absent' },
+        at: locally ? 'local' : 'cloud',
+      },
+      { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+    );
+    // @declapract:review: declapract-typescript-ehmpathy#650 — if this reads a runLambdaEndpoint result, it is now \`error.message\` / \`error.class\` on sdk-aws-lambda >= 0.7.2; an http response stays flat
+    expect(JSON.parse(result.body).errorMessage).toContain('thread does not exist');
+  });
+  it('rejects over http', async () => {
+    const error = await axios.post(url, {}).catch((caught) => caught);
+    // @declapract:review: declapract-typescript-ehmpathy#650 — if this reads a runLambdaEndpoint result, it is now \`error.message\` / \`error.class\` on sdk-aws-lambda >= 0.7.2; an http response stays flat
+    expect((error as any).response.data.errorMessage).toContain('thread does not exist');
+  });
+});
+"
+`;
+
+exports[`asSourceOnRunLambdaEndpoint given: [case8] a moved file that also makes a real http call then: the output matches snapshot: before 1`] = `
+"import axios from 'axios';
+import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+
+import { locally } from '../environment';
+
+describe('sendChatMessage', () => {
+  it('rejects over the lambda', async () => {
+    const result = await invokeLambdaForTesting({
+      service: 'svc-gateway',
+      function: 'sendChatMessage',
+      locally,
+      event: { threadUuid: 'absent' },
+    });
+    expect(JSON.parse(result.body).errorMessage).toContain('thread does not exist');
+  });
+  it('rejects over http', async () => {
+    const error = await axios.post(url, {}).catch((caught) => caught);
+    expect((error as any).response.data.errorMessage).toContain('thread does not exist');
+  });
+});
+"
+`;

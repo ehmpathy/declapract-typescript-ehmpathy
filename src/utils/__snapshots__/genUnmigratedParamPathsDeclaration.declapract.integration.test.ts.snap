@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`genUnmigratedParamPathsDeclaration (#544) given: [case1] a repo whose prep.json holds an explicit param path when: [t1] the fix runs, then runs again then: the marker is stamped once, the explicit path kept, and the check passes 1`] = `
+"{
+  "@declapract:review": "explicit aws::param paths: copy each value to the derived name /{org}/{project}/{config}/{keyPath}, then swap the explicit path for the bare placeholder (declapract-typescript-ehmpathy#544, see provision/aws/readme.md)",
+  "database": {
+    "role": {
+      "crud": {
+        "password": "$.at(aws::param/test-org/test-project/prep/crud)"
+      }
+    }
+  }
+}
+"
+`;

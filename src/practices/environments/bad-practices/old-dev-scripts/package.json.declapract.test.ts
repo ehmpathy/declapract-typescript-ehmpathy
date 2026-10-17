@@ -130,4 +130,33 @@ describe('old-dev-scripts package.json', () => {
       expect(result).toEqual({});
     });
   });
+
+  describe('idempotency (rule.require.idempotent-fixes)', () => {
+    const contents = JSON.stringify(
+      {
+        name: 'test-package',
+        scripts: {
+          'build:dev': 'npm run build',
+          'build:dev:ios': 'npm run build:ios',
+          'deploy:dev': 'npm run deploy:release',
+          'test:unit': 'jest',
+        },
+      },
+      null,
+      2,
+    );
+
+    it('check throws on the fixed output — a second apply detects no :dev segment', async () => {
+      const { contents: once } = await fix(contents, {} as any);
+      expect(() => check(once, {} as any)).toThrow(
+        'no scripts with :dev segment',
+      );
+    });
+
+    it('fix(fix(x)) === fix(x) — the second pass renames zero', async () => {
+      const { contents: once } = await fix(contents, {} as any);
+      const { contents: twice } = await fix(once, {} as any);
+      expect(twice).toEqual(once);
+    });
+  });
 });

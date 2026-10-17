@@ -1,0 +1,6 @@
+# minimal declarations that hold the artifact practice alone
+# .why = a pipeline test of an artifact declaration evaluates only artifact against a tiny repo,
+#        rather than every practice against a symlink of this repo's whole src
+declare:
+  practices: practices
+  use-cases: useCases.yml

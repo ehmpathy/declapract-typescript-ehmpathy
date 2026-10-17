@@ -3,9 +3,10 @@
 exports[`joi->zod migration given: [case1] a repo with a joi schema in a src file when: [t0] the migration input (before any fix) then: the src file imports joi + declares a Joi schema + matches snapshot: widget.schema.ts — before 1`] = `
 "import Joi from 'joi';
 
-// a joi schema — the shape-for-shape rewrite to zod makes three silent semantic
+// a joi schema — the shape-for-shape rewrite to zod makes silent semantic
 // changes a regex cannot get right, so the fix prepends a loud review marker.
 export const widgetSchema = Joi.object({
+  id: Joi.string().uuid().required(),
   name: Joi.string().required(),
   count: Joi.number(),
   createdAt: Joi.date(),
@@ -15,23 +16,62 @@ export const widgetSchema = Joi.object({
 
 exports[`joi->zod migration given: [case1] a repo with a joi schema in a src file when: [t1] the joi fix is applied then: the import + schema are rewritten to zod, the review marker lands, and it matches snapshot: widget.schema.ts — after 1`] = `
 "/**
- * @declapract:review — auto-migrated to zod; VERIFY these three semantics by hand:
+ * @declapract:review — auto-migrated to zod; VERIFY these semantics by hand:
  *  - optionality: a source field with no explicit required marker was OPTIONAL, but the zod field
  *    is now REQUIRED by default. re-mark any truly-optional field \`.optional()\`.
  *  - unknown keys: the prior \`.object()\` rejected unknown keys; \`z.object()\` strips them silently.
  *    use \`z.looseObject()\` only where the shape must pass unknown keys through.
  *  - date coercion: the prior \`.date()\` coerced strings to Date; \`z.date()\` rejects a string.
  *    use \`z.coerce.date()\` where the input arrives as a string.
+ *  - number coercion: the prior \`.number()\` coerced numeric strings; \`z.number()\` rejects a
+ *    string. use \`z.coerce.number()\` where the input arrives as a string (e.g. a db-hydrated
+ *    numeric or bigint column).
  * delete this marker once each point is verified.
  */
 import { z } from 'zod';
 
-// a joi schema — the shape-for-shape rewrite to zod makes three silent semantic
+// a joi schema — the shape-for-shape rewrite to zod makes silent semantic
 // changes a regex cannot get right, so the fix prepends a loud review marker.
 export const widgetSchema = z.object({
+  id: z.guid(),
   name: z.string(),
   count: z.number(),
   createdAt: z.date(),
 });
+"
+`;
+
+exports[`joi->zod migration given: [case2] a joi repo on sdk-aws-lambda 0.7.1, with zod ^3 under a 3.23.8 override when: [t0] the input (before any fix) then: package.json matches snapshot: package.json — before 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "joi": "17.9.0",
+    "sdk-aws-lambda": "0.7.1",
+    "zod": "^3.24.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "zod": "3.23.8"
+    }
+  }
+}
+"
+`;
+
+exports[`joi->zod migration given: [case2] a joi repo on sdk-aws-lambda 0.7.1, with zod ^3 under a 3.23.8 override when: [t1] the runtime-schemas fixes are applied then: joi is gone, and zod + its override both name 4.4.3: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "sdk-aws-lambda": "0.7.1",
+    "zod": "4.4.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "zod": "4.4.3"
+    }
+  }
+}
 "
 `;

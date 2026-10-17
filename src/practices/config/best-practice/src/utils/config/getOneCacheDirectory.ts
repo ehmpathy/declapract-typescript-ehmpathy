@@ -16,9 +16,9 @@ const asCachePrefix = (input: { scope: string | null }): string =>
 /**
  * .what = gets the project's default cache directory, based on config
  */
-export const getOneCacheDirectory = async (
-  input: { scope: string | null },
-): Promise<DirectoryToPersistTo> => {
+export const getOneCacheDirectory = async (input: {
+  scope: string | null;
+}): Promise<DirectoryToPersistTo> => {
   // get the project bucket, then the scoped cache prefix
   const bucket = await getOneProjectBucket();
   const prefix = asCachePrefix({ scope: input.scope });

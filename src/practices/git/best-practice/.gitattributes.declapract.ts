@@ -39,134 +39,60 @@ const SECTIONS: {
 ];
 
 /**
- * all latest entries managed by this practice (for deduplication)
+ * .what = every line this practice manages: each section's header and entries, latest and prior
+ * .why  = the fix lifts each of these out of wherever it sits, so none can linger out of place,
+ *         out of order, or twice
  */
-const ALL_LATEST_ENTRIES = SECTIONS.flatMap((s) => s.entries.latest);
+const ALL_MANAGED_LINES = SECTIONS.flatMap((s) => [
+  s.header.latest,
+  ...s.header.priors,
+  ...s.entries.latest,
+  ...s.entries.priors,
+]);
 
 /**
- * all prior entries that should be removed
+ * .what = the canonical block: each section's latest header + latest entries, in declared order
+ * .why  = the check is CONTAINS — the file must hold the whole template as one contiguous run of
+ *         text — so the fix must emit this block verbatim. a section re-assembled in place (an
+ *         entry inserted after its header, or a stray entry left outside its section) is a fixed
+ *         point that never CONTAINS the template, so the plan would flag the file on every run
  */
-const ALL_PRIOR_ENTRIES = SECTIONS.flatMap((s) => s.entries.priors);
+const CANONICAL_BLOCK = SECTIONS.map((s) =>
+  [s.header.latest, ...s.entries.latest].join('\n'),
+).join('\n\n');
 
 /**
- * all prior headers that should be removed
+ * .what = the repo-own lines of a .gitattributes: every managed line dropped, runs of blank
+ *         lines collapsed to one, and the edges trimmed
+ * .why  = the repo keeps every line this practice does not manage, in its own order
  */
-const ALL_PRIOR_HEADERS = SECTIONS.flatMap((s) => s.header.priors);
+const asRepoOwnBlock = (input: { contents: string }): string => {
+  // drop every managed line, wherever it sits
+  const linesRepoOwn = input.contents
+    .split('\n')
+    .filter((line) => !ALL_MANAGED_LINES.includes(line.trim()));
 
-/**
- * .what = drops prior headers + prior entries, and dedupes latest entries (keep first)
- * .why = the fix must not re-emit a legacy line, nor a second copy of a managed entry;
- *        a named transform keeps cleanContent a narrative of what happens, not how
- */
-const asLinesWithLegacyDroppedAndDeduped = (input: {
-  lines: string[];
-}): string[] => {
-  const { lines } = input.lines.reduce<{
-    lines: string[];
-    seen: Set<string>;
-  }>(
-    (acc, line) => {
-      const trimmed = line.trim();
-
-      // skip prior headers + prior entries
-      if (ALL_PRIOR_HEADERS.includes(trimmed)) return acc;
-      if (ALL_PRIOR_ENTRIES.includes(trimmed)) return acc;
-
-      // skip duplicate latest entries (keep first occurrence)
-      if (ALL_LATEST_ENTRIES.includes(trimmed)) {
-        if (acc.seen.has(trimmed)) return acc;
-        return {
-          lines: [...acc.lines, line],
-          seen: new Set([...acc.seen, trimmed]),
-        };
-      }
-
-      return { lines: [...acc.lines, line], seen: acc.seen };
-    },
-    { lines: [], seen: new Set<string>() },
+  // collapse runs of blank lines into one (drop a blank that follows a blank)
+  const linesCollapsed = linesRepoOwn.filter(
+    (line, index) =>
+      !(
+        line.trim() === '' &&
+        index > 0 &&
+        linesRepoOwn[index - 1]!.trim() === ''
+      ),
   );
-  return lines;
+
+  return linesCollapsed.join('\n').trim();
 };
 
 /**
- * removes legacy headers, duplicate entries, and cleans up empty lines
- */
-const cleanContent = (content: string): string => {
-  // drop legacy headers, legacy entries, and duplicate latest entries (keep first)
-  const cleanedLines = asLinesWithLegacyDroppedAndDeduped({
-    lines: content.split('\n'),
-  });
-
-  // collapse multiple consecutive empty lines into one (drop an empty that follows an empty)
-  const collapsedLines = cleanedLines.filter((line, index) => {
-    const isEmpty = line.trim() === '';
-    const prevWasEmpty = index > 0 && cleanedLines[index - 1]!.trim() === '';
-    return !(isEmpty && prevWasEmpty);
-  });
-
-  return collapsedLines.join('\n').trim();
-};
-
-/**
- * ensures a section with header and entries exists in the content
- */
-const ensureSection = (
-  content: string,
-  section: (typeof SECTIONS)[number],
-): string => {
-  const lines = content.split('\n');
-
-  // find which entries are absent from the content
-  const entriesAbsent = section.entries.latest.filter(
-    (entry) => !content.includes(entry),
-  );
-
-  // find the header line index
-  const headerIndex = lines.findIndex(
-    (line) => line.trim() === section.header.latest,
-  );
-
-  // if header not found, append header and only absent entries
-  if (headerIndex === -1) {
-    return (
-      content.trimEnd() +
-      '\n\n' +
-      [section.header.latest, ...entriesAbsent].join('\n') +
-      '\n'
-    );
-  }
-
-  // if all entries present, no fix required
-  if (entriesAbsent.length === 0) return content;
-
-  // insert absent entries right after the header
-  const newLines = [
-    ...lines.slice(0, headerIndex + 1),
-    ...entriesAbsent,
-    ...lines.slice(headerIndex + 1),
-  ];
-
-  return newLines.join('\n');
-};
-
-/**
- * fix by cleanup of legacy content and ensure all sections are present
+ * .what = the repo-own lines first, then the canonical block, with exactly one final newline
+ * .why  = legacy headers and entries drop, duplicates collapse to one, and the output CONTAINS the
+ *         template — so the check passes on the fixed output and a second fix changes zero
  */
 export const fix: FileFixFunction = (contents) => {
-  // if no contents, create the file with all sections
-  if (!contents) {
-    const allSections = SECTIONS.map((s) =>
-      [s.header.latest, ...s.entries.latest].join('\n'),
-    ).join('\n\n');
-    return { contents: allSections + '\n' };
-  }
-
-  // clean up legacy headers and duplicates, then ensure each section exists
-  const result = SECTIONS.reduce(
-    (acc, section) => ensureSection(acc, section),
-    cleanContent(contents),
-  );
-
-  // trim to exactly one final newline
-  return { contents: result.trimEnd() + '\n' };
+  const repoOwnBlock = asRepoOwnBlock({ contents: contents ?? '' });
+  return {
+    contents: `${[repoOwnBlock, CANONICAL_BLOCK].filter((block) => block).join('\n\n')}\n`,
+  };
 };

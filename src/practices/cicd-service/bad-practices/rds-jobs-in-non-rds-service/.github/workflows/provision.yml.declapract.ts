@@ -78,11 +78,13 @@ export const check: FileCheckFunction = (contents, context) => {
 
 /**
  * .what = strip the 4 rds-coupled jobs, keeping every generic job intact.
- * .why  = reuse the best-practice truncation so the boundary is defined in one place; on an anchor
- *         miss `withoutRdsJobs` throws LOUD rather than truncating to the whole superset
- *         (`rule.forbid.failhide`).
+ * .why  = reuse the best-practice truncation so the boundary is defined in one place.
+ * .note = a consumer file with no anchor has no rds tail left — the same signal `check` reads as
+ *         "not detected" — so the fix returns it unchanged, and fix(fix(x)) === fix(x). the loud
+ *         anchor miss inside `withoutRdsJobs` stays where it guards: the best-practice template,
+ *         where a miss means the template drifted (`rule.forbid.failhide`).
  */
 export const fix: FileFixFunction = (contents) => {
-  if (!contents) return { contents };
+  if (!contents?.includes(RDS_JOBS_ANCHOR)) return { contents };
   return { contents: withoutRdsJobs({ contents }) };
 };

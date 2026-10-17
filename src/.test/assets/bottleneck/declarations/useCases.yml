@@ -1,0 +1,5 @@
+# minimal use case for the bottleneck practice integration test
+use-cases:
+  lambda-service:
+    practices:
+      - bottleneck

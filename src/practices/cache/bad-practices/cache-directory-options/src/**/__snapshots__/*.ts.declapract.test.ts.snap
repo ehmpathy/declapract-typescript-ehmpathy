@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`cache cache-directory-options src files (#644) given: [case1] a getCacheDirectory with directoryToPersistTo and s3 when: [t0] the fix runs then: a review line lands above each retired option and names \`directory\` and async get(): getCacheDirectory — after 1`] = `
+"import { createCache } from 'simple-on-disk-cache';
+
+export const getCacheDirectory = () => ({
+  // @declapract:review: with-simple-cache 0.17.3 retired \`s3\` and \`directoryToPersistTo\` — pass \`directory\` in their place, and \`await\` each cache \`get()\`, which now returns a Promise. then delete this marker
+  directoryToPersistTo: {
+    mounted: { path: '/tmp/cache' },
+    // @declapract:review: with-simple-cache 0.17.3 retired \`s3\` and \`directoryToPersistTo\` — pass \`directory\` in their place, and \`await\` each cache \`get()\`, which now returns a Promise. then delete this marker
+    s3: { bucket: 'svc-cache', prefix: 'surf' },
+  },
+});
+
+export const cache = createCache(getCacheDirectory());
+"
+`;

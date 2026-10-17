@@ -12,6 +12,13 @@ import { envStatic } from '@src/utils/environment';
 export type LambdaEnvSlug = EnvironmentAccessTier | 'dev';
 
 /**
+ * .what = the exact slugs an ancient peer publishes under: `prod`, or the legacy `dev`.
+ * .why  = the ancient helper never emits `test` or `prep`, so its return type says so — a caller
+ *         that narrows on it handles only the two values that can arrive.
+ */
+export type LambdaEnvSlugAncient = Extract<LambdaEnvSlug, 'prod' | 'dev'>;
+
+/**
  * .what = address an **ancient** peer — one that publishes `-dev-` only.
  * .why  = `askLambdaEndpoint` builds its target as `${service}-${access}-${function}`.
  *         an ancient peer publishes under a legacy `dev` slug that disagrees with
@@ -21,12 +28,13 @@ export type LambdaEnvSlug = EnvironmentAccessTier | 'dev';
  * .note = the helper choice IS the migration ledger: `grep AccessAncient` lists every
  *         peer still published under `-dev-` only. once zero remain, this ancient branch
  *         — and the divergent `dev` slug — retire together, alongside its contemp
- *         counterpart `sdkAwsLambdaEnvAccessContemp`. the return type is `LambdaEnvSlug`,
- *         so the `dev` slug flows with a compiler-tracked type — no cast, no lie.
+ *         counterpart `sdkAwsLambdaEnvAccessContemp`. the return type is the exact set
+ *         `LambdaEnvSlugAncient`, so the `dev` slug flows with a compiler-tracked type — no
+ *         cast, no lie.
  */
-export const sdkAwsLambdaEnvAccessAncient = (
-  input?: { access: EnvironmentAccessTier | null },
-): LambdaEnvSlug => {
+export const sdkAwsLambdaEnvAccessAncient = (input?: {
+  access: EnvironmentAccessTier | null;
+}): LambdaEnvSlugAncient => {
   const access = input?.access ?? envStatic.access;
   return access === 'prod' ? 'prod' : 'dev';
 };

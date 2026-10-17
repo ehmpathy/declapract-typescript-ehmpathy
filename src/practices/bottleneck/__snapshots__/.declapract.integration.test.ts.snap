@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`bottleneck bad-practice given: [case1] bottleneck@2.x and no src import of it when: [t0] the fix is applied then: with-bottleneck is pinned at 0.1.2 and bottleneck leaves: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "with-bottleneck": "0.1.2"
+  }
+}
+"
+`;
+
+exports[`bottleneck bad-practice given: [case1] bottleneck@2.x and no src import of it when: [t0] the fix is applied then: with-bottleneck is pinned at 0.1.2 and bottleneck leaves: package.json — before 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "bottleneck": "2.19.5"
+  }
+}"
+`;
+
+exports[`bottleneck bad-practice given: [case2] bottleneck@2.x and a src file that imports it when: [t0] the fix is applied then: with-bottleneck is added at 0.1.2 and bottleneck stays, so the import still builds: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "bottleneck": "2.19.5",
+    "with-bottleneck": "0.1.2"
+  }
+}
+"
+`;
+
+exports[`bottleneck bad-practice given: [case2] bottleneck@2.x and a src file that imports it when: [t0] the fix is applied then: with-bottleneck is added at 0.1.2 and bottleneck stays, so the import still builds: package.json — before 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "bottleneck": "2.19.5"
+  }
+}"
+`;

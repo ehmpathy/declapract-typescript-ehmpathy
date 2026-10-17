@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds with-connection-in-input given: [case1] a repo whose op imports withDatabaseConnection when: [t0] the input (before any fix) then: both src files match snapshot: op — before 1`] = `
+"import { DatabaseConnection } from '../utils/database/getDatabaseConnection';
+import {
+  withDatabaseConnection,
+} from '../utils/database/withDatabaseConnection';
+
+export const findSurferById = withDatabaseConnection(
+  async ({ id, dbConnection }: { id: string; dbConnection: DatabaseConnection }) =>
+    dbConnection.query({ sql: 'select * from surfer where id = :id', values: { id } }),
+);
+"
+`;
+
+exports[`persist-with-rds with-connection-in-input given: [case1] a repo whose op imports withDatabaseConnection when: [t0] the input (before any fix) then: both src files match snapshot: wrapper — before 1`] = `
+"import { DatabaseConnection, getDatabaseConnection } from './getDatabaseConnection';
+
+export const withDatabaseConnection =
+  <I extends { dbConnection: DatabaseConnection }, O>(
+    logic: (input: I) => Promise<O>,
+  ) =>
+  async (input: Omit<I, 'dbConnection'>): Promise<O> => {
+    const dbConnection = await getDatabaseConnection();
+    return logic({ ...input, dbConnection } as I);
+  };
+"
+`;
+
+exports[`persist-with-rds with-connection-in-input given: [case1] a repo whose op imports withDatabaseConnection when: [t1] the fix is applied then: the op gains one review line above its import, which names withDatabaseContext: op — after 1`] = `
+"import { DatabaseConnection } from '../utils/database/getDatabaseConnection';
+import {
+  withDatabaseConnection,
+// @declapract:review: withDatabaseConnection (dbConnection in the input) is retired — move to withDatabaseContext (src/utils/database/withDatabaseContext.ts), the (input, context) shape: each op becomes \`(input, context) => …\`, a dependency (dbConnection, log) moves out of the input into the context arg, and each caller passes it as the 2nd arg. then delete this marker
+} from '../utils/database/withDatabaseConnection';
+
+export const findSurferById = withDatabaseConnection(
+  async ({ id, dbConnection }: { id: string; dbConnection: DatabaseConnection }) =>
+    dbConnection.query({ sql: 'select * from surfer where id = :id', values: { id } }),
+);
+"
+`;
+
+exports[`persist-with-rds with-connection-in-input given: [case1] a repo whose op imports withDatabaseConnection when: [t1] the fix is applied then: the wrapper stays in place, marked, so the tree still builds: wrapper — after 1`] = `
+"import { DatabaseConnection, getDatabaseConnection } from './getDatabaseConnection';
+
+// @declapract:review: withDatabaseConnection (dbConnection in the input) is retired — move to withDatabaseContext (src/utils/database/withDatabaseContext.ts), the (input, context) shape: each op becomes \`(input, context) => …\`, a dependency (dbConnection, log) moves out of the input into the context arg, and each caller passes it as the 2nd arg. then delete this marker
+export const withDatabaseConnection =
+  <I extends { dbConnection: DatabaseConnection }, O>(
+    logic: (input: I) => Promise<O>,
+  ) =>
+  async (input: Omit<I, 'dbConnection'>): Promise<O> => {
+    const dbConnection = await getDatabaseConnection();
+    return logic({ ...input, dbConnection } as I);
+  };
+"
+`;

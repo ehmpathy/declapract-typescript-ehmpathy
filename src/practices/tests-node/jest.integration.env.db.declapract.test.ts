@@ -109,20 +109,20 @@ describe('probeTestDb', () => {
   given('[case3] psql succeeds', () => {
     when('[t0] the preflight runs against a reachable db', () => {
       then('the password rides in env, never in the command args', () => {
-        let capturedArgs: readonly string[] = [];
-        let capturedEnv: Record<string, string | undefined> = {};
-        const execThatSucceeds = asExec(
-          (_file: string, args: string[], opts: { env: Record<string, string> }) => {
-            capturedArgs = args;
-            capturedEnv = opts.env;
-            return '';
-          },
+        // a spy, not a mock: it records the one call so the test reads args + env back
+        const execSpy = jest.fn(
+          (
+            _file: string,
+            _args: string[],
+            _opts: { env: Record<string, string> },
+          ) => '',
         );
 
-        probeTestDb(input, { exec: execThatSucceeds });
+        probeTestDb(input, { exec: asExec(execSpy) });
 
-        expect(capturedEnv.PGPASSWORD).toEqual('__CHANG3_ME__');
-        expect(capturedArgs.join(' ')).not.toContain('__CHANG3_ME__');
+        const [, args, opts] = execSpy.mock.calls[0]!;
+        expect(opts.env.PGPASSWORD).toEqual('__CHANG3_ME__');
+        expect(args.join(' ')).not.toContain('__CHANG3_ME__');
       });
     });
   });

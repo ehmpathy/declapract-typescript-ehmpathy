@@ -10,8 +10,8 @@ import { given, then, when } from 'test-fns';
  *         Config` (Config.ts) and the grant-aware `z.infer` `Config` (config.schema.ts). the
  *         hand-written twin has no reader (getConfig imports Config from ./config.schema), so it can
  *         only drift from the live schema, never constrain it -- and it DID drift in a stamped repo
- *         to `access: 'test' | 'dev' | 'prod'` (`dev` is a legacy deploy-slug value, never an access
- *         tier; `prep` absent), read as a sanctioned contract and traced to a prod defect (#588). a dead type that
+ *         to `access: 'test' | 'dev' | 'prod'` (`dev` is a legacy deploy-slug value, never an access;
+ *         `prep` absent), read as a sanctioned contract and traced to a prod defect (#588). a dead type that
  *         contradicts the live one is worse than absent -- it reads as authoritative. this clamp keeps
  *         the twin gone.
  * .teeth = re-create either best-practice `src/utils/config/Config.ts` and its case reddens; a drop

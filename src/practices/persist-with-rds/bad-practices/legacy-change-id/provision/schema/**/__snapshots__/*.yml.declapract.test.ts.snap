@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`legacy-change-id (#530) given: [case1] a definitions yml whose change entries use \`id:\` when: [t1] fix runs then: every other byte is kept: init.yml — after 1`] = `
+"# the init changes
+- type: change
+  exid: init_default_txn_isolation
+  author: declapract
+  path: ./init/default_transaction_isolation.sql
+
+- type: change
+  exid: 'init_service_user' # quoted, with a comment
+  path: ./init/user.service.sql
+"
+`;

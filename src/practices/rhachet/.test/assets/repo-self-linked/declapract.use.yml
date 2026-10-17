@@ -1,0 +1,4 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/rhachet/declarations
+# .why  = a rhachet roles package that self-links its roles via `link:.` (#520)
+declarations: 'declarations/declapract.declare.yml'
+useCase: rhachet-node

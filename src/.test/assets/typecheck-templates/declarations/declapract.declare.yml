@@ -1,0 +1,9 @@
+# declarations for the best-practice template type-check clamp
+# .why  = the test clones this dir into its OWN temp dir and symlinks `practices` -> src/practices and
+#         `useCases.yml` -> src/useCases.yml there, so the REAL practices and REAL usecases are
+#         applied — never a curated copy. this dir sits OUTSIDE the applied repo: a whole-usecase
+#         apply walks every path of the repo it applies to, and a link from that repo into src/ would
+#         let a `**` fix write through it into this repo's own source.
+declare:
+  practices: practices
+  use-cases: useCases.yml

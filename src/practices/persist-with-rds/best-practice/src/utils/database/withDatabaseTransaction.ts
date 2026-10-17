@@ -7,10 +7,12 @@ import type { DatabaseConnection } from './getOneDatabaseConnection';
  * .why = gives any logic atomic semantics — every write commits together, or none
  *        does — without each op repeating the begin/commit/rollback dance. a partial
  *        write cannot survive a throw.
- * .note = the wrapper is ALWAYS async — it awaits the transaction — so its honest
- *         return type is `Promise<Awaited<R>>`, NOT `logic`'s `R | Promise<R>`. the
- *         return type is declared explicitly so no `as` cast is needed and no type
- *         lie is told: a caller of a sync `logic` correctly sees a Promise back.
+ * .note = the wrapper is ALWAYS async — it awaits the transaction — so its return
+ *         type is `Promise<R>`, NOT `logic`'s `R | Promise<R>`: a caller of a sync
+ *         `logic` sees a Promise back. `R` is already the resolved value, since ts
+ *         infers it from the `Promise<R>` arm of the union. `Promise<Awaited<R>>` is
+ *         wrong here: `await` of an unconstrained `R` types as `R`, which is not
+ *         assignable to `Awaited<R>`, so tsc fails inside this file.
  */
 export const withDatabaseTransaction = <
   P,
@@ -18,7 +20,7 @@ export const withDatabaseTransaction = <
   R,
 >(
   logic: (input: P, context: C) => R | Promise<R>,
-): ((input: P, context: C) => Promise<Awaited<R>>) => {
+): ((input: P, context: C) => Promise<R>) => {
   return async (input: P, context: C) => {
     await context.dbConnection.query({ sql: 'START TRANSACTION' }); // begin transaction
     try {

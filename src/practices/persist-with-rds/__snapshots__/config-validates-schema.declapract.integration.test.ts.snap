@@ -1,0 +1,500 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds config validates against config.schema.ts (#638, #683, #519) given: [case1] a fresh repo when: [t0] the configs and the schema are applied, then applied again then: the configs match snapshot: config/prep.json — after 1`] = `
+"{
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "prep"
+  },
+  "aws": {
+    "account": "111111111111",
+    "namespace": "testns"
+  },
+  "database": {
+    "target": {
+      "database": "testdb",
+      "schema": "testdb"
+    },
+    "role": {
+      "cicd": {
+        "for-plan": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param)"
+        },
+        "for-apply": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param)"
+        }
+      },
+      "crud": {
+        "username": "service_user",
+        "password": "$.at(aws::param)"
+      }
+    },
+    "tunnel": {
+      "bastion": {
+        "exid": "vpc-main-bastion"
+      },
+      "cluster": {
+        "name": "awesomesdb"
+      },
+      "local": {
+        "host": "localhost",
+        "port": 15432
+      },
+      "lambda": {
+        "host": "awesomesdb.cluster-abc123.us-east-1.rds.amazonaws.com",
+        "port": 5432
+      }
+    }
+  }
+}
+"
+`;
+
+exports[`persist-with-rds config validates against config.schema.ts (#638, #683, #519) given: [case1] a fresh repo when: [t0] the configs and the schema are applied, then applied again then: the configs match snapshot: config/prod.json — after 1`] = `
+"{
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "prod"
+  },
+  "aws": {
+    "account": "222222222222",
+    "namespace": "testns"
+  },
+  "database": {
+    "target": {
+      "database": "testdb",
+      "schema": "testdb"
+    },
+    "role": {
+      "cicd": {
+        "for-plan": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param)"
+        },
+        "for-apply": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param)"
+        }
+      },
+      "crud": {
+        "username": "service_user",
+        "password": "$.at(aws::param)"
+      }
+    },
+    "tunnel": {
+      "bastion": {
+        "exid": "vpc-main-bastion"
+      },
+      "cluster": {
+        "name": "awesomesdb"
+      },
+      "local": {
+        "host": "localhost",
+        "port": 15433
+      },
+      "lambda": {
+        "host": "awesomesdb.cluster-def456.us-east-1.rds.amazonaws.com",
+        "port": 5432
+      }
+    }
+  }
+}
+"
+`;
+
+exports[`persist-with-rds config validates against config.schema.ts (#638, #683, #519) given: [case1] a fresh repo when: [t0] the configs and the schema are applied, then applied again then: the configs match snapshot: config/test.json — after 1`] = `
+"{
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "test"
+  },
+  "aws": {
+    "account": "111111111111",
+    "namespace": "testns"
+  },
+  "database": {
+    "target": {
+      "database": "testdb",
+      "schema": "testdb"
+    },
+    "role": {
+      "cicd": {
+        "for-plan": {
+          "username": "cicd_user",
+          "password": "__CHANG3_ME__"
+        },
+        "for-apply": {
+          "username": "cicd_user",
+          "password": "__CHANG3_ME__"
+        }
+      },
+      "crud": {
+        "username": "service_user",
+        "password": "__CHANG3_ME__"
+      }
+    },
+    "tunnel": {
+      "bastion": {
+        "exid": "vpc-main-bastion"
+      },
+      "cluster": {
+        "name": "awesomesdb"
+      },
+      "local": {
+        "host": "localhost",
+        "port": 7821
+      },
+      "lambda": null
+    }
+  }
+}
+"
+`;
+
+exports[`persist-with-rds config validates against config.schema.ts (#638, #683, #519) given: [case2] a repo with hand-set values and legacy string tunnel fields when: [t0] the configs and the schema are applied, then applied again then: before and after match snapshot: config/prep.json — after 1`] = `
+"{
+  "@declapract:review": "explicit aws::param paths: copy each value to the derived name /{org}/{project}/{config}/{keyPath}, then swap the explicit path for the bare placeholder (declapract-typescript-ehmpathy#544, see provision/aws/readme.md)",
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "prep"
+  },
+  "aws": {
+    "account": "111111111111",
+    "namespace": "testns"
+  },
+  "featureFlags": {
+    "surfReport": true
+  },
+  "database": {
+    "target": {
+      "database": "testdb",
+      "schema": "testdb"
+    },
+    "pool": {
+      "max": 3
+    },
+    "role": {
+      "cicd": {
+        "for-plan": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param/test-org/test-project/prep/legacy.plan)"
+        },
+        "for-apply": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param)"
+        }
+      },
+      "crud": {
+        "username": "service_user",
+        "password": "__CHANG3_ME__"
+      }
+    },
+    "tunnel": {
+      "bastion": {
+        "exid": "vpc-main-bastion"
+      },
+      "cluster": {
+        "name": "hand-set-cluster"
+      },
+      "local": {
+        "host": "localhost",
+        "port": 15432
+      },
+      "lambda": {
+        "host": "awesomesdb.cluster-abc123.us-east-1.rds.amazonaws.com",
+        "port": 5432
+      }
+    }
+  }
+}
+"
+`;
+
+exports[`persist-with-rds config validates against config.schema.ts (#638, #683, #519) given: [case2] a repo with hand-set values and legacy string tunnel fields when: [t0] the configs and the schema are applied, then applied again then: before and after match snapshot: config/prep.json — before 1`] = `
+"{
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "prep"
+  },
+  "aws": {
+    "account": "111111111111",
+    "namespace": "testns"
+  },
+  "featureFlags": {
+    "surfReport": true
+  },
+  "database": {
+    "target": {
+      "database": "testdb",
+      "schema": "testdb"
+    },
+    "pool": {
+      "max": 3
+    },
+    "role": {
+      "cicd": {
+        "for-plan": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param/test-org/test-project/prep/legacy.plan)"
+        },
+        "for-apply": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param)"
+        }
+      },
+      "crud": {
+        "username": "service_user",
+        "password": "__CHANG3_ME__"
+      }
+    },
+    "tunnel": {
+      "bastion": {
+        "exid": "vpc-main-bastion"
+      },
+      "cluster": {
+        "name": "hand-set-cluster"
+      },
+      "local": {
+        "host": "localhost",
+        "port": 15432
+      },
+      "lambda": {
+        "host": "cluster.prep.example.com",
+        "port": 5432
+      }
+    }
+  }
+}
+"
+`;
+
+exports[`persist-with-rds config validates against config.schema.ts (#638, #683, #519) given: [case2] a repo with hand-set values and legacy string tunnel fields when: [t0] the configs and the schema are applied, then applied again then: before and after match snapshot: config/prod.json — after 1`] = `
+"{
+  "@declapract:review": "explicit aws::param paths: copy each value to the derived name /{org}/{project}/{config}/{keyPath}, then swap the explicit path for the bare placeholder (declapract-typescript-ehmpathy#544, see provision/aws/readme.md)",
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "prod"
+  },
+  "aws": {
+    "account": "222222222222",
+    "namespace": "testns"
+  },
+  "featureFlags": {
+    "surfReport": true
+  },
+  "database": {
+    "target": {
+      "database": "testdb",
+      "schema": "testdb"
+    },
+    "pool": {
+      "max": 3
+    },
+    "role": {
+      "cicd": {
+        "for-plan": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param)"
+        },
+        "for-apply": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param)"
+        }
+      },
+      "crud": {
+        "username": "service_user",
+        "password": "$.at(aws::param)"
+      }
+    },
+    "tunnel": {
+      "local": {
+        "host": "localhost",
+        "port": 15433
+      },
+      "lambda": {
+        "host": "awesomesdb.cluster-def456.us-east-1.rds.amazonaws.com",
+        "port": 5432
+      },
+      "bastion": {
+        "exid": "vpc-main-bastion"
+      },
+      "cluster": {
+        "name": "awesomesdb"
+      }
+    }
+  }
+}
+"
+`;
+
+exports[`persist-with-rds config validates against config.schema.ts (#638, #683, #519) given: [case2] a repo with hand-set values and legacy string tunnel fields when: [t0] the configs and the schema are applied, then applied again then: before and after match snapshot: config/prod.json — before 1`] = `
+"{
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "prod"
+  },
+  "aws": {
+    "account": "222222222222",
+    "namespace": "testns"
+  },
+  "featureFlags": {
+    "surfReport": true
+  },
+  "database": {
+    "target": {
+      "database": "testdb",
+      "schema": "testdb"
+    },
+    "pool": {
+      "max": 3
+    },
+    "role": {
+      "cicd": {
+        "for-plan": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param)"
+        },
+        "for-apply": {
+          "username": "cicd_user",
+          "password": "$.at(aws::param)"
+        }
+      },
+      "crud": {
+        "username": "service_user",
+        "password": "$.at(aws::param)"
+      }
+    },
+    "tunnel": {
+      "bastion": "vpc-main-bastion",
+      "cluster": "testdb",
+      "local": {
+        "host": "localhost",
+        "port": 15433
+      },
+      "lambda": {
+        "host": "cluster.prod.example.com",
+        "port": 5432
+      }
+    }
+  }
+}
+"
+`;
+
+exports[`persist-with-rds config validates against config.schema.ts (#638, #683, #519) given: [case2] a repo with hand-set values and legacy string tunnel fields when: [t0] the configs and the schema are applied, then applied again then: before and after match snapshot: config/test.json — after 1`] = `
+"{
+  "@declapract:review": "explicit aws::param paths: copy each value to the derived name /{org}/{project}/{config}/{keyPath}, then swap the explicit path for the bare placeholder (declapract-typescript-ehmpathy#544, see provision/aws/readme.md)",
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "test"
+  },
+  "aws": {
+    "account": "111111111111",
+    "namespace": "testns"
+  },
+  "featureFlags": {
+    "surfReport": true
+  },
+  "database": {
+    "target": {
+      "database": "testdb",
+      "schema": "testdb"
+    },
+    "pool": {
+      "max": 3
+    },
+    "role": {
+      "cicd": {
+        "for-plan": {
+          "username": "cicd_user",
+          "password": "__CHANG3_ME__"
+        },
+        "for-apply": {
+          "username": "cicd_user",
+          "password": "__CHANG3_ME__"
+        }
+      },
+      "crud": {
+        "username": "service_user",
+        "password": "__CHANG3_ME__"
+      }
+    },
+    "tunnel": {
+      "local": {
+        "host": "localhost",
+        "port": 7821
+      },
+      "lambda": null,
+      "bastion": {
+        "exid": "vpc-main-bastion"
+      },
+      "cluster": {
+        "name": "awesomesdb"
+      }
+    }
+  }
+}
+"
+`;
+
+exports[`persist-with-rds config validates against config.schema.ts (#638, #683, #519) given: [case2] a repo with hand-set values and legacy string tunnel fields when: [t0] the configs and the schema are applied, then applied again then: before and after match snapshot: config/test.json — before 1`] = `
+"{
+  "organization": "test-org",
+  "project": "test-project",
+  "environment": {
+    "access": "test"
+  },
+  "aws": {
+    "account": "111111111111",
+    "namespace": "testns"
+  },
+  "featureFlags": {
+    "surfReport": true
+  },
+  "database": {
+    "target": {
+      "database": "testdb",
+      "schema": "testdb"
+    },
+    "pool": {
+      "max": 3
+    },
+    "role": {
+      "cicd": {
+        "for-plan": {
+          "username": "cicd_user",
+          "password": "__CHANG3_ME__"
+        },
+        "for-apply": {
+          "username": "cicd_user",
+          "password": "__CHANG3_ME__"
+        }
+      },
+      "crud": {
+        "username": "service_user",
+        "password": "__CHANG3_ME__"
+      }
+    },
+    "tunnel": {
+      "bastion": "vpc-main-bastion",
+      "cluster": "testdb",
+      "local": {
+        "host": "localhost",
+        "port": 7821
+      },
+      "lambda": null
+    }
+  }
+}
+"
+`;

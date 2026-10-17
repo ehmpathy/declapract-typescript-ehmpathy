@@ -1,8 +1,7 @@
 # budget — the token cap for the resident `say` payload at each boot.
 # a boot whose say-content exceeds this halts, so the corpus cannot silently bloat
 # context. remedies: demote a say glob to ref, adopt a .min brief variant, or raise
-# this cap deliberately. enforced by rhachet once ehmpathy/rhachet#536 lands (with the
-# --manifest boot of #537); declared here now so the cap is in place on arrival.
+# this cap deliberately. rhachet enforces it on every stop (`roles cost --when hook.onStop`).
 # NOTE: plain `5000`, not `5_000` — yaml 1.2 (the yaml v2 default) reads an underscore
 # integer as a STRING, which would silently make the cap non-numeric.
 budget:
@@ -40,34 +39,34 @@ budget:
 # this file is FINDSERTED into a consumer, never overwritten — your own say/ref
 # entries survive an upgrade; the fix only unions the declared ref globs in.
 
-# budget — the token cap for the resident `say` payload at each boot.
-# a boot whose say-content exceeds this halts, so the corpus cannot silently bloat
-# context. remedies: demote a say glob to ref, adopt a .min brief variant, or raise
-# this cap deliberately. enforced by rhachet once ehmpathy/rhachet#536 lands (with the
-# --manifest boot of #537); declared here now so the cap is in place on arrival.
-# NOTE: plain `5000`, not `5_000` — yaml 1.2 (the yaml v2 default) reads an underscore
-# integer as a STRING, which would silently make the cap non-numeric.
-budget:
-  tokens: 5000
 
 briefs:
   # this repo OPTS IN: it is the practice library (30+ briefs + a glossary), so it says
   # only the core declapract-mechanics briefs + the load-carrying rules, and refs the rest.
   # the moment `say` is non-empty the default flips to ref-by-default, so the corpus no
   # longer loads whole. every other brief stays one fetch away by its ref path.
+  # the say set is held under the 5000-token budget: the heavy practice-author rules
+  # (integration-tests, idempotent-fixes, runtime-forks, stage-term, access) boot as ref
+  # — one fetch away by path — so the resident payload stays within the cap.
   say:
-    # the declapract mechanics — how a check/fix + template work
-    - briefs/declapract-*.md
-    # the practice-author invariants a session must not violate
+    # the declapract mechanics — how a check/fix + template work. the overview boots as ref:
+    # its check/fix example repeats check-semantics, and the say set must fit the cap
+    - briefs/declapract-check-semantics.md
+    - briefs/declapract-default-check-equals.md
+    # a request lands in the practice that owns it, never as a hand-edit here
     - briefs/rule.require.entool-requests-as-practices.md
-    - briefs/rule.require.declapract-integration-tests.md
-    - briefs/rule.require.idempotent-fixes.md
-    - briefs/rule.avoid.runtime-forks.md
-    # the domain axis invariants this repo turns on (access, never a divergent stage)
-    - briefs/rule.forbid.stage-term.md
-    - briefs/rule.forbid.access-permission-not-place.md
-  # inert while `say` is non-empty (kept only to satisfy the rhachet findsert, which
-  # enforces these two globs are present — see boot.yml.declapract.ts).
-  ref:
+    # the timestamp hook takes zero exemptions, ever (privacy)
+    - briefs/rule.forbid.timestamp-hook-exemptions.md
+  # the deep glossary variants never boot; each term's say file names its `.reason`
+  # path (the rhachet findsert declares these two globs — see boot.yml.declapract.ts).
+  not:
     - briefs/domain.terms/term=*._.choice.reason.md
     - briefs/domain.terms/term=*._.choice.example=*.md
+
+skills:
+  # every skill boots say, except these, which boot as ref (path only):
+  # - use.apikeys: keyrack (`rhx keyrack unlock`) supersedes it for test credentials
+  # - husky.lock.restamp: the timestamp brief names it at the one moment it is owed
+  ref:
+    - skills/use.apikeys.*
+    - skills/husky.lock.restamp.sh

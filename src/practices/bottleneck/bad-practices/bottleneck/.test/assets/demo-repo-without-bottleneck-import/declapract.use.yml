@@ -1,0 +1,2 @@
+declarations: 'declarations/declapract.declare.yml'
+useCase: lambda-service

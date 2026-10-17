@@ -8,7 +8,7 @@ import { isDeferredToDeprecatedDirMove } from '../../../../../../utils/isDeferre
  */
 
 // matches relative imports that go up directories (../)
-const RELATIVE_IMPORT_PATTERN = /from\s+['"](\.\.\/)+(.*?)['"]/g;
+const RELATIVE_IMPORT_PATTERN = /from\s+['"]((?:\.\.\/)+)(.*?)['"]/g;
 
 const isInPracticesDir = (relativeFilePath: string | undefined): boolean =>
   relativeFilePath?.includes('src/practices/') ?? false;
@@ -24,6 +24,26 @@ const isDeclapractFile = (relativeFilePath: string | undefined): boolean =>
  */
 const shouldSkip = (relativeFilePath: string | undefined): boolean =>
   isInPracticesDir(relativeFilePath) && !isDeclapractFile(relativeFilePath);
+
+/**
+ * .what = the dirs between src/ and the file, e.g. ['.test'] for src/.test/useWake.ts
+ */
+const asDirPartsWithinSrc = (input: { relativeFilePath: string }): string[] => {
+  const pathParts = input.relativeFilePath.split('/');
+  const srcIndex = pathParts.indexOf('src');
+  return pathParts.slice(srcIndex + 1, -1);
+};
+
+/**
+ * .what = whether a `../` run lands inside src/, where an @src alias can name its target
+ * .why  = an import that climbs out of src/ (e.g. `../../jest.integration.env.db`) has no @src
+ *         form; the fix leaves it, so the check must too, or it flags a file no one can fix
+ */
+const isUpCountWithinSrc = (input: {
+  dots: string;
+  dirPartsWithinSrc: string[];
+}): boolean =>
+  (input.dots.match(/\.\.\//g) || []).length <= input.dirPartsWithinSrc.length;
 
 export const check: FileCheckFunction = (contents, { relativeFilePath }) => {
   if (!contents) throw new Error('does not match bad practice');
@@ -44,11 +64,12 @@ export const check: FileCheckFunction = (contents, { relativeFilePath }) => {
   if (isDeferredToDeprecatedDirMove({ relativeFilePath }))
     throw new Error('deferred to peer dir-move this pass');
 
-  // check for relative imports that go up directories (../)
-  const matches = contents.match(RELATIVE_IMPORT_PATTERN);
-  if (matches && matches.length > 0) {
-    return; // matches bad practice
-  }
+  // check for relative imports that go up directories (../) and stay within src/
+  const dirPartsWithinSrc = asDirPartsWithinSrc({ relativeFilePath });
+  const isFixable = [...contents.matchAll(RELATIVE_IMPORT_PATTERN)].some(
+    (match) => isUpCountWithinSrc({ dots: match[1] ?? '', dirPartsWithinSrc }),
+  );
+  if (isFixable) return; // matches bad practice
 
   throw new Error('does not match bad practice');
 };
@@ -61,12 +82,8 @@ export const fix: FileFixFunction = (contents, { relativeFilePath }) => {
   // defer a file still under a deprecated dir to its peer dir-move (see check)
   if (isDeferredToDeprecatedDirMove({ relativeFilePath })) return {};
 
-  // calculate the path parts of the current file
-  const pathParts = relativeFilePath.split('/');
-  const srcIndex = pathParts.indexOf('src');
-
   // get the directories between src/ and the current file
-  const currentDirParts = pathParts.slice(srcIndex + 1, -1);
+  const currentDirParts = asDirPartsWithinSrc({ relativeFilePath });
 
   // replace relative imports with @src imports (only if they stay within src/)
   const fixed = contents.replace(

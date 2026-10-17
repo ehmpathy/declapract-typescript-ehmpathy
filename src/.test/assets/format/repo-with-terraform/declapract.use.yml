@@ -1,7 +1,7 @@
-# .note = declarations dir is symlinked by the test to src/practices/format/.test/assets/declarations
-# .why  = a consumer on a terraform usecase, used to prove the format practice's package.json
-#         `contents` fn chains the terraform formatter into fix:format / test:format when a
-#         terraform practice is in play.
+# .note = declarations dir is symlinked by the test to src/.test/assets/format/declarations
+# .why  = an adopter one release behind on a terraform usecase: its package.json still chains
+#         `terraform fmt` into fix:format / test:format (#645). used to prove the apply leaves
+#         biome as the one formatter, even with terraform-common in the usecase.
 declarations: 'declarations/declapract.declare.yml'
 useCase: with-terraform
 # .note = format + terraform-common reference NO @declapract{variable.*}, so no variables block

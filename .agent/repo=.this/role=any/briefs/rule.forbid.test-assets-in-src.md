@@ -5,7 +5,7 @@
 a **prod path** under `src/` — `src/utils/`, `src/logic/`, any non-dot path the build bundles — is
 reserved for **prod assets**: the code the built artifact ships and runs. a **test-only asset** —
 code imported solely by a jest env, a jest globalSetup, or a test file, and never by the artifact —
-must NOT live in a prod path under `src/`. it lives at `src/.test/` — a dot-dir **inside** `src/`,
+must NOT live in a prod path under `src/`. it lives at `src/.test/assets/` — a dot-dir **inside** `src/`,
 excluded from the tsconfig / jest src globs by its dot prefix.
 
 every test asset stays under `src/`. the one exception is `blackbox/` — the acceptance blackbox
@@ -21,7 +21,7 @@ livedb-wake setup, a testdb preflight probe — anything a `jest.*.env.ts` / `je
 - **a prod path under `src/` is the artifact's own tree.** what sits there is bundled, deployed, and
   executed in prod. a test-only asset there is dead weight the artifact ships and never calls — and
   it reads to every future maintainer as prod code, so they wire it into prod by mistake.
-- **`src/.test/` keeps the asset inside `src/`, so locality holds; the dot prefix keeps it out of
+- **`src/.test/assets/` keeps the asset inside `src/`, so locality holds; the dot prefix keeps it out of
   the build.** it is test-scoped by exclusion, not by exile to the repo root — so a reader finds the
   test asset beside the code it exercises, and the bundler never ships it.
 - **no test asset belongs outside `src/` except in `blackbox/`.** a repo-root `.test/`, or a test
@@ -37,12 +37,12 @@ livedb-wake setup, a testdb preflight probe — anything a `jest.*.env.ts` / `je
 > **who imports this — the artifact, or the test harness?**
 
 - the artifact (a handler, a domain.operation, a contract) → prod asset → a prod path under `src/`
-- only a `jest.*.env.ts` / `jest.*.prepare.ts` / `*.test.ts` → **test asset → `src/.test/`**
+- only a `jest.*.env.ts` / `jest.*.prepare.ts` / `*.test.ts` → **test asset → `src/.test/assets/`**
   (never a prod path, never outside `src/` — `blackbox/` excepted)
 
 ## .where a test asset goes instead
 
-- `src/.test/` — a dot-dir **inside** `src/`, excluded from the tsconfig / jest src globs
+- `src/.test/assets/` — a dot-dir **inside** `src/`, excluded from the tsconfig / jest src globs
 - **never** a prod path under `src/` (`src/utils/`, `src/logic/`, …)
 - **never** a repo-root `.test/` dir, and **never** a test asset outside `src/`
 - the one test surface that sits outside `src/`: `blackbox/`, the acceptance suite
@@ -65,33 +65,35 @@ each ships in the artifact, runs never, and reads as prod code.
 best-practice/.test/useKeyrack.ts            # outside src/ — the test surface splits in two
 ```
 
-### 👍 good — under `src/.test/`, beside the code it exercises
+### 👍 good — under `src/.test/assets/`, beside the code it exercises
 
 ```
 best-practice/jest.acceptance.env.ts
-best-practice/src/.test/useKeyrack.ts        # only the jest env imports it
-best-practice/src/.test/useWakeOfLivedb.ts
-best-practice/src/.test/probeTestDb.ts
+best-practice/src/.test/assets/useKeyrack.ts        # only the jest env imports it
+best-practice/src/.test/assets/useWakeOfLivedb.ts
+best-practice/src/.test/assets/probeTestDb.ts
 ```
 
 ### the precedent this rule refuses to follow
 
 a peer repo (`ahbode/svc-notifications`) places `useKeyrack` at `src/utils/useKeyrack.ts`. that is
 the exact mis-file this rule forbids — a precedent is a reason to look, never a reason to conform.
-ship the util at `src/.test/` instead.
+ship the util at `src/.test/assets/` instead.
 
 ## .enforcement
 
 - a prod path under `src/` (`src/utils/`, `src/logic/`, …) that holds a module imported solely by
-  test code (a jest env, a jest globalSetup, or a `*.test.ts`) = **blocker** (relocate to `src/.test/`)
+  test code (a jest env, a jest globalSetup, or a `*.test.ts`) = **blocker** (relocate to `src/.test/assets/`)
 - a repo-root `.test/` dir, or a test asset placed outside `src/` (blackbox excepted) = **blocker**
-  (relocate to `src/.test/`)
+  (relocate to `src/.test/assets/`)
 - a prod path (`src/**`, non-dot) that imports a test-only asset = **blocker** (the dependency the
   mis-file invites)
 
 ## .see also
 
-- `rule.forbid.test-assets-dunder` (ehmpathy/mechanic) — the `__test_assets__` naming twin
+- `rule.forbid.test-assets-dunder` (ehmpathy/mechanic) — the `.test/assets/` home, and the
+  `__test_assets__` name it forbids
+- `rule.forbid.copium` — a prod path that imports test machinery to cope with a test need
 - `rule.prefer.dot-dirs` (ehmpathy/mechanic) — why a `.test/` dot-dir is the test-scoped home
 - `rule.require.hermetic-tests` (ehmpathy/mechanic) — the broader test-isolation principle
 - `domain.terms/term=fixture._.choice._.md` — a fixture is a test input, free to hold what a

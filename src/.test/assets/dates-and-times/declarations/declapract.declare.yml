@@ -1,0 +1,4 @@
+# minimal declarations for the dates-and-times practice integration test
+declare:
+  practices: practices
+  use-cases: useCases.yml

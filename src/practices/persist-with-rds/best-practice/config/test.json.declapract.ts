@@ -1,15 +1,11 @@
-import { FileCheckType, type FileFixFunction } from 'declapract';
+import { genRdsConfigDeclaration } from '../../../../utils/genRdsConfigDeclaration';
 
-export const check = FileCheckType.CONTAINS;
-
-export const fix: FileFixFunction = (contents, context) => {
-  if (!contents) return { contents: context.declaredFileContents }; // init as declared if file dne
-
-  return {
-    contents: JSON.stringify(
-      { ...JSON.parse(contents), ...JSON.parse(context.declaredFileContents!) },
-      null,
-      2,
-    ),
-  };
-};
+/**
+ * .what = the contents, check, and fix that deep-merge the rds keys into config/test.json.
+ * .why  = a deep merge adds the absent rds keys and keeps the leaves a repo holds on purpose, so an
+ *         apply never clobbers a value a service tuned (#638); see genRdsConfigDeclaration.
+ */
+export const { contents, check, fix } = genRdsConfigDeclaration({
+  env: 'test',
+  templatePath: `${__dirname}/test.json`,
+});

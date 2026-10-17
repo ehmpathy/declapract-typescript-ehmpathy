@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`keyrack.yml findsert (rhachet) an aws repo with no AWS_PROFILE (#487) should match snapshot: aws repo — after 1`] = `
+"org: ehmpathy
+extends:
+  - .agent/repo=ehmpathy/role=mechanic/keyrack.yml
+env.prod: null
+env.prep:
+  - OPENROUTER_API_KEY
+env.test: null
+env.all:
+  - key: AWS_PROFILE
+    is-optional-if-has: AWS_ACCESS_KEY_ID
+"
+`;
+
+exports[`keyrack.yml findsert (rhachet) an aws repo with no AWS_PROFILE (#487) should match snapshot: aws repo — before 1`] = `
+"org: ehmpathy
+extends:
+  - .agent/repo=ehmpathy/role=mechanic/keyrack.yml
+env.prod: null
+env.prep:
+  - OPENROUTER_API_KEY
+env.test: null
+"
+`;

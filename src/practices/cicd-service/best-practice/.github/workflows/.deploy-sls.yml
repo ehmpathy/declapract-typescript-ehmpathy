@@ -9,7 +9,7 @@ on:
         required: true
       github-environment-apply:
         type: string
-        description: "github environment for the deploy jobs"
+        description: "the github environment for the deploy jobs; always declared, and one of the environments that provision/github.repo/resources.ts declares, e.g. preparation or production-on-main"
       creds-aws-region:
         description: "creds for aws, specifies the region"
         required: true
@@ -28,8 +28,8 @@ on:
         required: false
         description: enables sending pagerduty alarms on failure
 
+# .why = least privilege: only the jobs that assume the aws role grant id-token, at job scope
 permissions:
-  id-token: write # required for oidc
   contents: read
 
 jobs:
@@ -38,6 +38,9 @@ jobs:
 
   deploy:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write # required for oidc
     environment:
       # deployment: false keeps the built-in environment gate (required reviewers, tag/branch
       # policy) but suppresses the auto-Deployment, so no "deployed to <env>" status accretes on
@@ -72,6 +75,9 @@ jobs:
 
   assure:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write # required for oidc
     environment:
       # deployment: false keeps the built-in environment gate (required reviewers, tag/branch
       # policy) but suppresses the auto-Deployment, so no "deployed to <env>" status accretes on
@@ -110,12 +116,12 @@ jobs:
         if: inputs.needs-vpn-for-acceptance
         run: npx rhx use.vpc.tunnel --env ${{ inputs.access }}
 
-      # acceptance targets the contemp fleet — the service's own access-tier slug (-prep- at prep,
+      # acceptance targets the contemp fleet — the service's own access-keyed slug (-prep- at prep,
       # -prod- at prod). dual-publish ships the SAME artifact under the ancient (-dev-) slug too, so
       # a run against contemp proves the deployed code; the ancient slug is an alias for inbound
       # callers still on the old name, never a second target to test. contemp maps to the deployed
-      # access at both prep and prod, so one run covers every tier this job deploys — no
-      # per-fleet fan-out, no per-tier skip.
+      # access at both prep and prod, so one run covers every access this job deploys with — no
+      # per-fleet fan-out, no per-access skip.
       - name: test:acceptance
         run: ACCESS=${{ inputs.access }} npm run test:acceptance
 
@@ -130,6 +136,9 @@ jobs:
 
   prune:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write # required for oidc
     environment:
       # deployment: false keeps the built-in environment gate (required reviewers, tag/branch
       # policy) but suppresses the auto-Deployment, so no "deployed to <env>" status accretes on

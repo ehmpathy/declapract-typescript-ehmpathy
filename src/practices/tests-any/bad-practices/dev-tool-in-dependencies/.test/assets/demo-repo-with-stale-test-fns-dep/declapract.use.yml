@@ -1,0 +1,3 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/tests-any-only/declarations
+declarations: 'declarations/declapract.declare.yml'
+useCase: tests-any-only

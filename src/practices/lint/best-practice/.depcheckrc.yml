@@ -23,3 +23,17 @@ ignores:
   - yalc
   - test-fns
   - type-fns
+  # read by the test:lint:cycles command via `node -p "require('yaml')..."`; depcheck does not
+  # parse npm commands, so it cannot attribute the require
+  - yaml
+ignorePatterns:
+  # rhachet host-local runtime state (actor caches, plugin copies); gitignored,
+  # never source, and its files import packages this repo does not use
+  - .agent/.actors
+  # rhachet links `.claude` into the enrolled actor's dir, so depcheck reaches the same
+  # host-local cache through it; the link is not source either
+  - .claude
+  # role dirs vendored from other repos import their own origin's deps; only
+  # this repo's own role dir is source that depcheck should attribute
+  - .agent/repo=*
+  - "!.agent/repo=.this"

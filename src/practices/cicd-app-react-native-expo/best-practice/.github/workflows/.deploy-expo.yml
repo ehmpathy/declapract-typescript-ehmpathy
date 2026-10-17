@@ -13,7 +13,7 @@ on:
         required: true
       github-environment:
         type: string
-        description: "github environment for the deploy jobs"
+        description: "the github environment for the deploy jobs; always declared, and one of the environments that provision/github.repo/resources.ts declares, e.g. preparation or production-on-main"
         required: true
       creds-aws-region:
         type: string
@@ -33,8 +33,8 @@ on:
         required: true
         description: required credentials to authenticate with expo eas
 
+# .why = least privilege: only the jobs that assume the aws role grant id-token, at job scope
 permissions:
-  id-token: write # required for oidc
   contents: read
 
 jobs:
@@ -50,6 +50,9 @@ jobs:
           - android
     name: ${{ matrix.platform }}
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write # required for oidc
     environment:
       # deployment: false keeps the built-in gate but suppresses the auto-Deployment, so no
       # "deployed to <env>" status accretes on the PR timeline. the environment is ALWAYS
@@ -94,6 +97,9 @@ jobs:
   deploy-web:
     name: web
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write # required for oidc
     environment:
       # deployment: false keeps the built-in gate but suppresses the auto-Deployment, so no
       # "deployed to <env>" status accretes on the PR timeline. the environment is ALWAYS
@@ -132,6 +138,8 @@ jobs:
 
       - name: compile
         run: npm run build:web
+        env:
+          ACCESS: ${{ inputs.access }} # the bundle inlines the access it was built with; never a guess
 
       - name: deploy
-        run: aws s3 sync ./dist ${{ inputs.app-web-deployment-s3-bucket }} --delete --cache-control max-age=60,stale-while-revalidate=604800 # todo: fine tune the cache control; https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#stale-while-revalidate
+        run: aws s3 sync ./dist ${{ inputs.app-web-deployment-s3-bucket }} --delete --cache-control max-age=60,stale-while-revalidate=604800 # a deploy shows within 60s; stale-while-revalidate serves the prior build while it refreshes

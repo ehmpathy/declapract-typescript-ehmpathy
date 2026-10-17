@@ -11,7 +11,19 @@ import { check, fix } from './best-practice/.npmrc.declapract';
  *         removal path: drop the cast the day declapract exports a partial-context builder.
  */
 const asContext = (projectPractices: string[]): FileCheckContext =>
-  ({ projectPractices }) as unknown as FileCheckContext;
+  ({
+    projectPractices,
+    // a root with no lockfile: the hoist flip notice (#610) prints its no-lockfile form
+    getProjectRootDirectory: () => '/__absent__/npmrc-unit-root',
+  }) as unknown as FileCheckContext;
+
+// silence the hoist flip notice (#610) in unit runs; the pipeline test asserts on it
+beforeAll(() => {
+  jest.spyOn(process.stderr, 'write').mockImplementation(() => true);
+});
+afterAll(() => {
+  jest.restoreAllMocks();
+});
 
 /**
  * .what = a fix returns { contents }; unwrap to the string for assertions

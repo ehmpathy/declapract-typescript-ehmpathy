@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`directory-structure-src domain barrels and bare barrel imports given: [case1] a repo with two domain barrels and bare barrel imports when: [t0] the input (before any fix) then: the barrels and the importer match snapshot: importer — before 1`] = `
+"import type { Quote } from '@src/domain';
+import type { Quote as QuoteRelative } from '../domain';
+import type { Widget } from 'some-pkg/domain';
+
+export const getQuote = (input: { quote: Quote; peer: QuoteRelative; widget: Widget }) =>
+  input.quote;
+"
+`;
+
+exports[`directory-structure-src domain barrels and bare barrel imports given: [case1] a repo with two domain barrels and bare barrel imports when: [t0] the input (before any fix) then: the barrels and the importer match snapshot: inner barrel — before 1`] = `
+"export * from './Quote';
+"
+`;
+
+exports[`directory-structure-src domain barrels and bare barrel imports given: [case1] a repo with two domain barrels and bare barrel imports when: [t0] the input (before any fix) then: the barrels and the importer match snapshot: outer barrel — before 1`] = `
+"// export * from './constants';
+export * from './objects';
+"
+`;
+
+exports[`directory-structure-src domain barrels and bare barrel imports given: [case1] a repo with two domain barrels and bare barrel imports when: [t1] the moves and the import repoint are applied then: domain.objects/index.ts holds the inner barrel list, never the stripped outer one (#655): domain.objects/index.ts — after 1`] = `
+"export * from './Quote';
+"
+`;
+
+exports[`directory-structure-src domain barrels and bare barrel imports given: [case1] a repo with two domain barrels and bare barrel imports when: [t1] the moves and the import repoint are applied then: each bare barrel import is repointed, and a package subpath is left alone (#655, #671): importer — after 1`] = `
+"import type { Quote } from '@src/domain.objects';
+import type { Quote as QuoteRelative } from '../domain.objects';
+import type { Widget } from 'some-pkg/domain';
+
+export const getQuote = (input: { quote: Quote; peer: QuoteRelative; widget: Widget }) =>
+  input.quote;
+"
+`;

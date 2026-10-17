@@ -1,6 +1,6 @@
 import type { FileFixContext } from 'declapract';
 
-import { fix } from './package.json.declapract';
+import { check, fix } from './package.json.declapract';
 
 // .what = a stand-in declapract context for the unit clamps below.
 // .why  = `fix` here ignores the context entirely (it reads only `contents`), so the tests
@@ -127,6 +127,34 @@ describe('deprecated-test-deps package.json', () => {
       ];
       for (const dep of deprecated)
         expect(parsed.devDependencies?.[dep]).toBeUndefined();
+    });
+  });
+
+  describe('check (#660)', () => {
+    it('flags a repo that holds only core-js + ts-jest, beside the jest swap', () => {
+      const contents = JSON.stringify({
+        devDependencies: {
+          '@swc/jest': '0.2.39',
+          'core-js': '3.26.1',
+          'ts-jest': '29.1.3',
+        },
+      });
+      expect(() => check(contents, asContext())).not.toThrow();
+    });
+
+    it('flags a deprecated dep in dependencies too', () => {
+      const contents = JSON.stringify({ dependencies: { 'core-js': '3.26.1' } });
+      expect(() => check(contents, asContext())).not.toThrow();
+    });
+
+    it('skips the fixed output', async () => {
+      const contents = JSON.stringify({
+        devDependencies: { jest: '30.2.0', 'core-js': '3.26.1', 'ts-jest': '29.1.3' },
+      });
+      const { contents: fixed } = await fix(contents, asContext());
+      expect(() => check(fixed, asContext())).toThrow(
+        'does not match bad practice',
+      );
     });
   });
 });

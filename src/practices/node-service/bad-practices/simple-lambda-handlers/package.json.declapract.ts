@@ -16,8 +16,7 @@ export const fix: FileFixFunction = (contents) => {
     dependencies: {
       ...packageJSON.dependencies,
       'simple-lambda-handlers': undefined,
-      'sdk-aws-lambda':
-        packageJSON.dependencies?.['sdk-aws-lambda'] ?? '^0.1.0',
+      'sdk-aws-lambda': packageJSON.dependencies?.['sdk-aws-lambda'] ?? '0.7.2', // the node-service floor (#646), pinned
     },
   };
 

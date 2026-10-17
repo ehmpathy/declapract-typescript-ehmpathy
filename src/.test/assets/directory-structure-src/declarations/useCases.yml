@@ -1,0 +1,5 @@
+# minimal use case for the directory-structure-src integration test
+use-cases:
+  lambda-service:
+    practices:
+      - directory-structure-src

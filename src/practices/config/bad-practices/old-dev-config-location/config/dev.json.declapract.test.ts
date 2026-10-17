@@ -56,11 +56,11 @@ describe('old-dev-config-location', () => {
         project: 'svc-example',
         environment: { access: 'dev' },
         database: {
-          host: 'bastion.dev.example.com', // mid-dotted — could be a tier subdomain OR a foreign host's own label
-          tunnel: 'aws.ssmproxy.mydb.dev', // terminal — axis-ambiguous (tier host vs public gTLD)
+          host: 'bastion.dev.example.com', // mid-dotted — could be a per-access subdomain OR a foreign host's own label
+          tunnel: 'aws.ssmproxy.mydb.dev', // terminal — axis-ambiguous (per-access host vs public gTLD)
         },
         upstream: {
-          paypal: 'api.dev.paypal.com', // FOREIGN public host — the mid-dotted `dev` is paypal's own label, not our tier
+          paypal: 'api.dev.paypal.com', // FOREIGN public host — the mid-dotted `dev` is paypal's own label, not our access
         },
         auth: {
           callbackUrl: 'https://auth.myapp.dev', // a .dev url → preserved (not a bare host)
@@ -94,7 +94,7 @@ describe('old-dev-config-location', () => {
     expect(result.contents).toContain('api.dev.paypal.com');
     expect(result.contents).not.toContain('api.prep.paypal.com');
 
-    // no host was flipped to `.prep`, so no wrong-tier value ever enters the config.
+    // no host was flipped to `.prep`, so no wrong-access value ever enters the config.
     expect(result.contents).not.toContain('bastion.prep.example.com');
     expect(result.contents).not.toContain('aws.ssmproxy.mydb.prep');
 
@@ -103,9 +103,9 @@ describe('old-dev-config-location', () => {
     expect(result.contents).not.toContain('@declapract:review');
   });
 
-  it('should PRESERVE a bare-host terminal .dev verbatim (gTLD or ambiguous tier) — never guess, never mark', async () => {
+  it('should PRESERVE a bare-host terminal .dev verbatim (gTLD or ambiguous per-access host) — never guess, never mark', async () => {
     // the decisive ambiguous cell: a `.dev` stored as a BARE, TERMINAL host, no scheme.
-    // structurally identical whether it is a public gTLD or an internal tier host, so the fix
+    // structurally identical whether it is a public gTLD or an internal per-access host, so the fix
     // cannot know the axis — it leaves it exactly as found. a silent `.prep` here is the auth
     // outage the wish's row-4 fix exists to prevent; a marker here is the corrupt-value break.
     const contents = JSON.stringify({ oauth: 'auth.myapp.dev' }, null, 2);
@@ -120,7 +120,7 @@ describe('old-dev-config-location', () => {
     expect(result.contents).not.toContain('@declapract:review');
   });
 
-  it('should NOT touch a non-host .dev value (email or path) — those carry no tier axis', async () => {
+  it('should NOT touch a non-host .dev value (email or path) — those carry no access axis', async () => {
     // a value with an `@` (email) or a `/` (path) is structurally NOT a bare host, so the
     // host-shape match never matches it. the fix leaves it verbatim -- never rewritten, never
     // marked -- so a valid email or path cannot be corrupted.
@@ -175,7 +175,7 @@ describe('old-dev-config-location', () => {
 
   it('should migrate EVERY access:dev occurrence, not just the first (a per-section override)', async () => {
     // a config may carry more than one `"access": "dev"` — a per-section override beside the
-    // top-level tier. a first-only replace leaves the rest silently `dev`, and a re-run cannot
+    // top-level access. a first-only replace leaves the rest silently `dev`, and a re-run cannot
     // converge (its first match no-ops on the already-`prep` key).
     const contents = JSON.stringify(
       {

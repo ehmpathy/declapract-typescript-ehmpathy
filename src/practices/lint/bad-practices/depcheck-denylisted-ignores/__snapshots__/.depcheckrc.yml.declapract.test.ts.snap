@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`.depcheckrc.yml denylist idempotency the fixed output keeps every non-denylisted entry and comment: .depcheckrc.yml — after one fix 1`] = `
+"# keep this comment
+ignores:
+  - rhachet
+  - declapract # keep this
+"
+`;

@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`environments/old-dev-scripts rename given: [case1] a repo whose scripts carry a :dev segment when: [t0] the input (before any fix) then: the package.json input matches snapshot: package.json — before 1`] = `
+"{
+  "name": "svc-example",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "build:dev:ios": "npm run build:ios",
+    "start:livedb:dev": "npm run start:db",
+    "deploy:dev": "npm run deploy:release",
+    "test:unit": "jest"
+  }
+}
+"
+`;
+
+exports[`environments/old-dev-scripts rename given: [case1] a repo whose scripts carry a :dev segment when: [t1] the old-dev-scripts fix is applied then: the package.json matches snapshot: package.json — after 1`] = `
+"{
+  "name": "svc-example",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "test:unit": "jest",
+    "build:prep:ios": "npm run build:ios",
+    "start:livedb:prep": "npm run start:db",
+    "deploy:prep": "npm run deploy:release"
+  },
+  "dependencies": {
+    "@aws-sdk/client-account": "@declapract{check.minVersion('3.1042.0')}",
+    "@aws-sdk/client-iam": "@declapract{check.minVersion('3.1042.0')}",
+    "sdk-environment": "@declapract{check.minVersion('0.1.5')}"
+  }
+}
+"
+`;

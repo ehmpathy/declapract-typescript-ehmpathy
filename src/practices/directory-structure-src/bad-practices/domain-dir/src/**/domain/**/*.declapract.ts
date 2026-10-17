@@ -1,14 +1,62 @@
 import { FileCheckType, type FileFixFunction } from 'declapract';
 
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+
 // if files exist in any /domain/, this is a bad practice
 export const check = FileCheckType.EXISTS;
 
+/**
+ * .what = whether a file is an outer `domain/index.ts` barrel that only forwards `./objects`,
+ *         beside an inner `domain/objects/index.ts` barrel.
+ * .why  = both barrels move onto one path, `domain.objects/index.ts`. the outer one, once its
+ *         `./objects` forward is stripped, holds no export — and if it wins the path, every domain
+ *         export vanishes from the barrel with no error (#655). the inner barrel holds the real
+ *         list, so the outer one must yield the path to it.
+ */
+const isOuterBarrelBesideInner = (input: {
+  contents: string | null;
+  relativeFilePath: string;
+  projectRoot: string | null;
+}): boolean => {
+  if (!input.contents || !input.projectRoot) return false;
+  if (!/(?:^|\/)domain\/index\.ts$/.test(input.relativeFilePath)) return false;
+  const codeOnly = input.contents
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/^\s*\/\/.*$/gm, '')
+    .trim();
+  if (!/^export\s+\*\s+from\s+['"]\.\/objects['"];?$/.test(codeOnly))
+    return false;
+  // the inner barrel, before its move or after it (apply order is not guaranteed)
+  const domainDir = path.join(
+    input.projectRoot,
+    path.dirname(input.relativeFilePath),
+  );
+  return (
+    existsSync(path.join(domainDir, 'objects', 'index.ts')) ||
+    existsSync(path.join(path.dirname(domainDir), 'domain.objects', 'index.ts'))
+  );
+};
+
 export const fix: FileFixFunction = (contents, context) => {
+  // an outer barrel that only forwards ./objects yields the path to the inner barrel (#655)
+  if (
+    isOuterBarrelBesideInner({
+      contents,
+      relativeFilePath: context.relativeFilePath,
+      projectRoot: context.getProjectRootDirectory?.() ?? null,
+    })
+  )
+    return { contents: null };
+
   // move any /domain/objects/* to /domain.objects/*
   // move any /domain/* to /domain.objects/*
+  // .note = the lookahead leaves the slash after each segment unconsumed, so adjacent segments
+  //         (`/domain/domain/`) each move. a consumed slash left the second `domain` segment in
+  //         place, which the `src/**/domain/**/*` glob then matched again on the next apply.
   const newPath = context.relativeFilePath
-    .replace(/\/domain\/objects\//g, '/domain.objects/')
-    .replace(/\/domain\//g, '/domain.objects/');
+    .replace(/\/domain\/objects(?=\/)/g, '/domain.objects')
+    .replace(/\/domain(?=\/)/g, '/domain.objects');
 
   let fixedContents = contents;
 

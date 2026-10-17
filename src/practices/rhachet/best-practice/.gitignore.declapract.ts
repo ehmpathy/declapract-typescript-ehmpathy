@@ -8,14 +8,14 @@ import { defineExpectedGitignoreContents } from '../../../utils/defineExpectedGi
  *
  * .why = rhachet boots roles which write scratch state into `.agent/.cache/`, and the
  *        claude-code harness those roles run writes machine-local scheduler state into
- *        `.claude/scheduled_tasks*` (a lock + queue). the practice that creates a dir
+ *        `.claude/scheduled_tasks*` at any depth (a lock + queue). the practice that creates a dir
  *        declares the ignore for it, so a repo that takes `rhachet` is never left with
  *        cruft it did not ask for:
  *        - a worktree teardown is not snagged by untracked scratch
  *        - a hurried `git add .` cannot sweep a machine-local lock or a debug file that
  *          holds a secret
  *
- * .note = `.claude/scheduled_tasks*` is machine-local by nature -- a lock/queue for THIS
+ * .note = `.claude/scheduled_tasks*` at any depth is machine-local by nature -- a lock/queue for THIS
  *         host's scheduler, never shared across a team -- so it is ignored, never tracked.
  *         it belongs HERE, not in `git`: rhachet's role-boot harness is what creates it, and
  *         a practice declares the ignore for the dirs IT creates. (`*.local.json`, the other
@@ -33,8 +33,21 @@ import { defineExpectedGitignoreContents } from '../../../utils/defineExpectedGi
  */
 const ignoresSortable: readonly string[] = [
   '.agent/.cache/',
-  '.claude/scheduled_tasks*',
+  // role scratch notes (e.g. a draft issue comment); host-local, never source (#688)
+  '.agent/.notes/',
+  // `**/` so the actor brain's own `.agent/.actors/<actor>/brain/.claude/` lock is
+  // ignored too; a line with a slash anchors to the repo root otherwise (#667)
+  '**/.claude/scheduled_tasks*',
 ];
+
+/**
+ * .what = lines this practice once declared and now replaces
+ * .why  = the root-anchored `.claude/scheduled_tasks*` is superseded by the any-depth form;
+ *         a union alone would leave it in every extant file forever
+ * .note = a lock already tracked stays tracked until `git rm --cached` — an ignore never
+ *         untracks a file
+ */
+const ignoresRetired: readonly string[] = ['.claude/scheduled_tasks*'];
 
 /**
  * .what = emits the `.gitignore` this practice declares, given the repo's extant one
@@ -48,7 +61,11 @@ const ignoresSortable: readonly string[] = [
  *         the generic scratch. the shared part is shared; the owned part is owned.
  */
 const defineExpectedContents = (contents: string | null): string =>
-  defineExpectedGitignoreContents({ contents, ignoresSortable });
+  defineExpectedGitignoreContents({
+    contents,
+    ignoresSortable,
+    ignoresRetired,
+  });
 
 /**
  * .what = throws when the repo's `.gitignore` does not carry what this practice declares

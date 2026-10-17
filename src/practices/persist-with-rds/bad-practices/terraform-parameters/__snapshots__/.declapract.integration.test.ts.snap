@@ -6,6 +6,15 @@ exports[`terraform-parameters forget given: [case1] a repo with terraform-manage
   count           = var.environment == "prod" ? 1 : 0
   with_decryption = true
 }
+resource "aws_ssm_parameter" "secret_database_admin_password" {
+  name  = "\${local.parameter_store_namespace}.database.admin.password"
+  type  = "SecureString"
+  value = "__IGNORED__"
+  tags  = local.tags
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
 resource "aws_ssm_parameter" "secret_database_role_crud_password" {
   name  = "\${local.parameter_store_namespace}.database.role.crud.password"
   type  = "SecureString"
@@ -28,7 +37,14 @@ resource "aws_ssm_parameter" "secret_twilio_authToken" {
 `;
 
 exports[`terraform-parameters forget given: [case1] a repo with terraform-managed ssm params when: [t1] the bad-practice forget fix is applied then: the terraform file holds only removed{} forget blocks (no resource/data blocks) and matches snapshot: parameter-store.tf — after 1`] = `
-"removed {
+"# copy this value before the first plan → /test-org/test-project/{config}/database.role.cicd.for-plan.password, /test-org/test-project/{config}/database.role.cicd.for-apply.password (see provision/aws/readme.md)
+removed {
+  from = aws_ssm_parameter.secret_database_admin_password
+  lifecycle {
+    destroy = false # forget from state; keep the live param
+  }
+}
+removed {
   from = aws_ssm_parameter.secret_database_role_crud_password
   lifecycle {
     destroy = false # forget from state; keep the live param

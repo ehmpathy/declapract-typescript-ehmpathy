@@ -8,6 +8,8 @@ briefs:
     - briefs/my-own-brief.md
   ref:
     - briefs/my-own-deep-variant.md
+    # the old practice shape put this declared glob under ref; the fix moves it to not (#689)
+    - briefs/domain.terms/term=*._.choice.reason.md
 "
 `;
 
@@ -19,8 +21,12 @@ briefs:
     - briefs/my-own-brief.md
   ref:
     - briefs/my-own-deep-variant.md
+  not:
     - briefs/domain.terms/term=*._.choice.reason.md
     - briefs/domain.terms/term=*._.choice.example=*.md
+# budget = the token cap on the say payload; a boot over it halts.
+# to fix a halt: demote a say glob to ref, use a .min brief, or raise the cap.
+# plain \`5000\`, never \`5_000\`: yaml 1.2 reads an underscore integer as a string.
 budget:
   tokens: 5000
 "

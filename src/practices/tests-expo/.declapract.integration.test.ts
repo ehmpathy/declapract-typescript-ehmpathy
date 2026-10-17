@@ -2,7 +2,9 @@ import fs from 'fs/promises';
 import path from 'node:path';
 
 import { executeApply } from 'declapract';
-import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
+
+import { genTempRepoWithDeclarationsOutside } from '../../utils/genTempRepoWithDeclarationsOutside';
 
 // executeApply is slow (full usecase evaluation)
 jest.setTimeout(180_000);
@@ -19,13 +21,11 @@ jest.setTimeout(180_000);
  */
 describe('expo test-toolchain triad — pipeline', () => {
   given('[case1] a fresh expo repo on the app-react-native-expo usecase', () => {
-    const tempDir = genTempDir({
+    const tempDir = genTempRepoWithDeclarationsOutside({
       slug: 'expo-toolchain',
       clone: './src/practices/tests-expo/.test/assets/repo-expo-greenfield',
-      symlink: [
-        { at: 'declarations', to: './src/.test/assets/expo-toolchain/declarations' },
-        { at: 'node_modules', to: 'node_modules' },
-      ],
+      declarations: './src/.test/assets/expo-toolchain/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
     });
 
     const read = (rel: string) =>
@@ -47,11 +47,19 @@ describe('expo test-toolchain triad — pipeline', () => {
       const jestUnitAfter1 = await read('jest.unit.config.ts');
       const jestIntegrationAfter1 = await read('jest.integration.config.ts');
       const jestAcceptanceAfter1 = await read('jest.acceptance.config.ts');
+      const prepareIntegrationAfter1 = await read('jest.integration.prepare.ts');
+      const prepareAcceptanceAfter1 = await read('jest.acceptance.prepare.ts');
+      const wakeAfter1 = await read('src/.test/useWakeOfLivedb.ts');
+      const autopruneTypesAfter1 = await read(
+        'src/.test/assets/test-fns.autoprune.d.ts',
+      );
 
       await executeApply({ config });
       const pkgSettled = await read('package.json'); // resolved versions
       const tsconfigAfter2 = await read('tsconfig.json');
       const jestUnitAfter2 = await read('jest.unit.config.ts');
+      const prepareAcceptanceAfter2 = await read('jest.acceptance.prepare.ts');
+      const wakeAfter2 = await read('src/.test/useWakeOfLivedb.ts');
 
       await executeApply({ config });
       const pkgAfter3 = await read('package.json'); // must equal pkgSettled
@@ -65,6 +73,12 @@ describe('expo test-toolchain triad — pipeline', () => {
         jestAcceptanceAfter1,
         tsconfigAfter2,
         jestUnitAfter2,
+        prepareIntegrationAfter1,
+        prepareAcceptanceAfter1,
+        wakeAfter1,
+        autopruneTypesAfter1,
+        prepareAcceptanceAfter2,
+        wakeAfter2,
       };
     }, 170_000);
 
@@ -88,7 +102,10 @@ describe('expo test-toolchain triad — pipeline', () => {
         // `typescript-expo` is the SOLE declarer of `build:web` — `cicd-app-react-native-expo`
         // no longer re-declares it, so there is no second CONTAINS declarer to oscillate
         // with (the single-source shape this repo's convergence/oscillation lesson prefers).
-        expect(pkg.scripts['build:web']).toEqual('npx expo export --platform web');
+        // the export defaults ACCESS to prep, so an absent access never builds for prod (#619)
+        expect(pkg.scripts['build:web']).toEqual(
+          'ACCESS=${ACCESS:-prep} expo export --platform web',
+        );
         expect(pkg.scripts.build).toEqual('npm run build:web');
       });
 
@@ -119,6 +136,37 @@ describe('expo test-toolchain triad — pipeline', () => {
         expect(state.tsconfigAfter1).toMatchSnapshot('tsconfig.json — after fix');
         expect(state.jestUnitAfter1).toMatchSnapshot('jest.unit.config.ts — after fix');
       });
+
+      then('the integration + acceptance configs compose the livedb wake via-gateway (#621)', () => {
+        expect(state.jestIntegrationAfter1).toContain("globalSetup: './jest.integration.prepare.ts'");
+        expect(state.jestAcceptanceAfter1).toContain("globalSetup: './jest.acceptance.prepare.ts'");
+        expect(state.prepareIntegrationAfter1).toContain("reaches: 'via-gateway'");
+        expect(state.prepareAcceptanceAfter1).toContain("reaches: 'via-gateway'");
+        expect(state.wakeAfter1).toContain('export const getWakeDecision');
+      });
+
+      then('the autoprune subpath types are emitted, for expo sdk < 54 (moduleResolution node)', () => {
+        expect(state.autopruneTypesAfter1).toContain(
+          "declare module 'test-fns/autoprune.setup.jest'",
+        );
+        expect(state.prepareIntegrationAfter1).toContain(
+          '/// <reference path="./src/.test/assets/test-fns.autoprune.d.ts" />',
+        );
+        expect(state.prepareAcceptanceAfter1).toContain(
+          '/// <reference path="./src/.test/assets/test-fns.autoprune.d.ts" />',
+        );
+      });
+
+      then('the jest configs exclude .agent/.actors and match the `._.` kind seam (#647, #679)', () => {
+        expect(state.jestUnitAfter1).toContain("'!**/.agent/.actors/**'");
+        expect(state.jestIntegrationAfter1).toContain("'**/*._.intg.test.{ts,tsx}'");
+        expect(state.jestAcceptanceAfter1).toContain("'**/*._.acpt.test.{ts,tsx}'");
+      });
+
+      then('the emitted acceptance config + prepare match snapshot', () => {
+        expect(state.jestAcceptanceAfter1).toMatchSnapshot('jest.acceptance.config.ts — after fix');
+        expect(state.prepareAcceptanceAfter1).toMatchSnapshot('jest.acceptance.prepare.ts — after fix');
+      });
     });
 
     when('[t1] declapract fix is re-applied', () => {
@@ -132,6 +180,11 @@ describe('expo test-toolchain triad — pipeline', () => {
 
       then('jest.unit.config.ts is a fixed point', () => {
         expect(state.jestUnitAfter2).toEqual(state.jestUnitAfter1);
+      });
+
+      then('the acceptance prepare and the wake util are fixed points', () => {
+        expect(state.prepareAcceptanceAfter2).toEqual(state.prepareAcceptanceAfter1);
+        expect(state.wakeAfter2).toEqual(state.wakeAfter1);
       });
     });
   });

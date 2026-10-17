@@ -24,7 +24,7 @@ describe('rhachet/prod-deps relocation', () => {
     const tempDir = genTempDir({
       slug: 'declapract-rhachet-prod-deps',
       clone: './src/practices/rhachet/bad-practices/prod-deps/.test/assets/demo-repo-with-rhachet-prod-deps',
-      symlink: [{ at: 'src', to: 'src' }],
+      symlink: [{ at: 'declarations', to: 'src' }],
     });
 
     const pkgPath = 'package.json';
@@ -56,7 +56,7 @@ describe('rhachet/prod-deps relocation', () => {
           expect(pkg.dependencies?.['rhachet']).toBeUndefined();
           expect(pkg.dependencies?.['rhachet-brains-anthropic']).toBeUndefined();
           // and now sit in dev deps (the -brains- match is the D26 proof)
-          expect(pkg.devDependencies['rhachet']).toEqual('1.47.5');
+          expect(pkg.devDependencies['rhachet']).toEqual('1.49.2');
           expect(pkg.devDependencies['rhachet-brains-anthropic']).toEqual(
             '0.4.3',
           );
@@ -88,7 +88,7 @@ describe('rhachet/prod-deps relocation', () => {
       });
 
       then('the relocated + retained deps survive the re-apply', () => {
-        expect(pkg.devDependencies['rhachet']).toEqual('1.47.5');
+        expect(pkg.devDependencies['rhachet']).toEqual('1.49.2');
         expect(pkg.devDependencies['rhachet-brains-anthropic']).toEqual('0.4.3');
         expect(pkg.dependencies.uuid).toEqual('9.0.0');
         expect(pkg.devDependencies.jest).toEqual('29.3.1');

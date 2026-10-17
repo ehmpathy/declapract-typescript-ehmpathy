@@ -1,8 +1,10 @@
 import fs from 'fs/promises';
-import { readFileSync } from 'node:fs';
+import { execSync, spawnSync } from 'node:child_process';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { executeApply } from 'declapract';
+import { MalfunctionError } from 'helpful-errors';
 import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
 
 jest.setTimeout(180_000);
@@ -66,6 +68,148 @@ describe('serverless practice — the dual-publish deploy split (north-star clam
 
       then('deploy:prune also prunes the contemp -prep- fleet (the B1 leak clamp)', () => {
         expect(scene.scripts['deploy:prune']).toContain('--stage prep');
+      });
+
+      then('the ancient release refuses a dirty tree before it builds, so COMMIT names the shipped code (#668)', () => {
+        const ancient = scene.scripts['deploy:release:ancient']!;
+        expect(ancient).toContain('npm run deploy:assure:committed');
+        expect(ancient.indexOf('npm run deploy:assure:committed')).toBeLessThan(
+          ancient.indexOf('npm run build'),
+        );
+        expect(scene.scripts['deploy:assure:committed']).toContain(
+          'git status --porcelain',
+        );
+      });
+    });
+
+    when('[t1] the dirty-tree guard runs in a real git repo (#668)', () => {
+      const runGuard = (input: { dirty: boolean }) => {
+        const repo = genTempDir({ slug: `declapract-serverless-dirty-${input.dirty}` });
+        execSync('git init -q && git -c user.email=t@example.com -c user.name=t commit -q --allow-empty -m init', { cwd: repo });
+        if (input.dirty) writeFileSync(path.join(repo, 'edit.ts'), 'export {};\n');
+        const result = spawnSync('sh', ['-c', scene.scripts['deploy:assure:committed']!], {
+          cwd: repo,
+          encoding: 'utf-8',
+        });
+        return { status: result.status, output: `${result.stdout}${result.stderr}` };
+      };
+
+      then('a clean tree passes', () => {
+        expect(runGuard({ dirty: false }).status).toEqual(0);
+      });
+
+      then('a dirty tree exits 2 and says why', () => {
+        const result = runGuard({ dirty: true });
+        expect(result.status).toEqual(2);
+        expect(result.output).toContain('uncommitted');
+      });
+    });
+
+    when('[t2] the runtime gate is read (#553)', () => {
+      then('the ancient release loads the built artifact on the deploy runtime before it ships', () => {
+        const ancient = scene.scripts['deploy:release:ancient']!;
+        expect(ancient.indexOf('npm run build')).toBeLessThan(
+          ancient.indexOf('npm run test:runtime'),
+        );
+        expect(ancient.indexOf('npm run test:runtime')).toBeLessThan(
+          ancient.indexOf('sls deploy'),
+        );
+      });
+    });
+
+    when('[t3] the runtime gate runs against a fake docker (#553)', () => {
+      /**
+       * .what = run `test:runtime` in a temp repo with a fake `docker` first on PATH
+       * .why  = proves the preflight + the image the gate picks, with no daemon in this suite.
+       *         the fake prints its args on `run`, and answers `info` per `daemon`.
+       */
+      const runGate = (input: { daemon: boolean; runtime: string | null }) => {
+        const repo = genTempDir({
+          slug: `declapract-serverless-runtime-${input.daemon}-${input.runtime}`,
+        });
+        mkdirSync(path.join(repo, 'bin'));
+        writeFileSync(
+          path.join(repo, 'bin', 'docker'),
+          `#!/bin/sh\nif [ "$1" = info ]; then exit ${input.daemon ? 0 : 1}; fi\necho "docker $*"\n`,
+          { mode: 0o755 },
+        );
+        writeFileSync(
+          path.join(repo, 'serverless.yml'),
+          input.runtime ? `provider:\n  runtime: ${input.runtime}\n` : 'provider:\n',
+        );
+        const result = spawnSync('sh', ['-c', scene.scripts['test:runtime']!], {
+          cwd: repo,
+          encoding: 'utf-8',
+          env: { ...process.env, PATH: `${path.join(repo, 'bin')}:${process.env.PATH}` },
+        });
+        return { status: result.status, output: `${result.stdout}${result.stderr}` };
+      };
+
+      then('it runs the artifact in the lambda image of the serverless.yml major', () => {
+        const result = runGate({ daemon: true, runtime: 'nodejs20.x' });
+        expect(result.status).toEqual(0);
+        expect(result.output).toContain('public.ecr.aws/lambda/nodejs:20');
+        expect(result.output).toContain('/.artifact/contents:/var/task:ro');
+      });
+
+      then('no docker daemon exits 2 and names docker, never a fallback to the host node', () => {
+        const result = runGate({ daemon: false, runtime: 'nodejs20.x' });
+        expect(result.status).toEqual(2);
+        expect(result.output).toContain('docker');
+        expect(result.output).not.toContain('docker run');
+      });
+
+      then('a serverless.yml with no runtime fails before docker runs', () => {
+        const result = runGate({ daemon: true, runtime: null });
+        expect(result.status).not.toEqual(0);
+        expect(result.output).not.toContain('docker run');
+      });
+    });
+
+    when('[t4] the in-container load procedure runs over a built artifact (#553)', () => {
+      /**
+       * .what = run the in-container load procedure with the host node, over a temp artifact
+       * .why  = the image is a fake above; this proves the procedure itself loads every handler
+       *         and fails loud on one that cannot parse
+       */
+      const runLoad = (input: { handlers: Record<string, string> }) => {
+        const artifact = genTempDir({
+          slug: `declapract-serverless-load-${Object.keys(input.handlers).length}`,
+        });
+        mkdirSync(path.join(artifact, 'dist/contract/handlers/nested'), { recursive: true });
+        Object.entries(input.handlers).forEach(([name, source]) =>
+          writeFileSync(path.join(artifact, 'dist/contract/handlers', name), source),
+        );
+        // the load procedure is the single-quoted `node -e '<procedure>'` tail of `test:runtime`
+        const loadProcedure =
+          / -e '(?<procedure>.+)'$/.exec(scene.scripts['test:runtime'] ?? '')?.groups?.procedure ??
+          MalfunctionError.throw('test:runtime holds no `-e` load procedure', {
+            command: scene.scripts['test:runtime'] ?? null,
+          });
+        const result = spawnSync('node', ['-e', loadProcedure], {
+          cwd: artifact,
+          encoding: 'utf-8',
+        });
+        return { status: result.status, output: `${result.stdout}${result.stderr}` };
+      };
+
+      then('every handler, nested ones too, loads', () => {
+        const result = runLoad({
+          handlers: {
+            'getWidget.js': 'exports.handler = async () => ({});\n',
+            'nested/setWidget.js': 'exports.handler = async () => ({});\n',
+          },
+        });
+        expect(result.status).toEqual(0);
+        expect(result.output).toContain('2 handlers load on node');
+      });
+
+      then('a handler that cannot parse fails the gate', () => {
+        const result = runLoad({
+          handlers: { 'broken.js': 'exports.handler = ;\n' },
+        });
+        expect(result.status).not.toEqual(0);
+        expect(result.output).toContain('SyntaxError');
       });
     });
   });
@@ -147,8 +291,9 @@ describe('serverless practice — the dual-publish deploy split (north-star clam
  *         fixed point.
  * .note = INTEGRATION: reads the filesystem + runs executeApply against a temp clone. no credential,
  *         no network. the fixture lives under a `.test` dot-dir (excluded from tsconfig/jest globs),
- *         and mounts THIS repo's real `src` via the `src`→`src` symlink so declapract resolves the
- *         serverless practice from source.
+ *         and mounts THIS repo's real `src` at `declarations` (never at `src`) so declapract resolves
+ *         the serverless practice from source while the demo repo's own `src` stays empty — a `src`
+ *         mount would make every `src/**` wildcard declaration scan the whole library.
  * .teeth = the env-block trio proves the CHAIN ORDER: withConnectionReuse anchors the legacy
  *          NODE_ENV form and MUST run before withNodeEnvProduction rewrites that value to
  *          `production`. so the presence of the connection-reuse flag beside a `NODE_ENV: production`
@@ -161,7 +306,7 @@ describe('serverless practice — the real executeApply pipeline (r001.b1)', () 
     const tempDir = genTempDir({
       slug: 'declapract-serverless-fix',
       clone: './src/practices/serverless/.test/assets/demo-repo-with-serverless',
-      symlink: [{ at: 'src', to: 'src' }],
+      symlink: [{ at: 'declarations', to: 'src' }],
     });
 
     const ymlPath = 'serverless.yml';
@@ -224,6 +369,74 @@ describe('serverless practice — the real executeApply pipeline (r001.b1)', () 
 
       then('the second fix is a no-op', () => {
         expect(passes.after).toEqual(passes.before);
+      });
+    });
+  });
+
+  given('[case2] a consumer whose .nvmrc pins node 20 (#552)', () => {
+    const tempDir = genTempDir({
+      slug: 'declapract-serverless-nvmrc',
+      clone: './src/practices/serverless/.test/assets/demo-repo-with-serverless',
+      symlink: [{ at: 'declarations', to: 'src' }],
+    });
+    const read = () => fs.readFile(path.join(tempDir, 'serverless.yml'), 'utf-8');
+    const applyFix = () =>
+      executeApply({
+        config: path.join(tempDir, 'declapract.use.yml'),
+        practice: 'serverless',
+        file: 'serverless.yml',
+      });
+
+    when('[t1] the serverless fix is applied', () => {
+      useThen('pin .nvmrc, then apply', async () => {
+        await fs.writeFile(path.join(tempDir, '.nvmrc'), 'v20.11.1\n');
+        await applyFix();
+      });
+
+      then('the runtime follows .nvmrc, not the template major', async () => {
+        const yml = await read();
+        expect(yml).toContain('runtime: nodejs20.x');
+        expect(yml).not.toContain('nodejs22.x');
+        expect(yml).not.toContain('nodejs14.x');
+      });
+
+      then('a second apply is a no-op (the CONTAINS check passes on the derived runtime)', async () => {
+        const before = await read();
+        await applyFix();
+        expect(await read()).toEqual(before);
+      });
+    });
+  });
+
+  given('[case3] a consumer whose .nvmrc names an alias, not a major (#552)', () => {
+    const tempDir = genTempDir({
+      slug: 'declapract-serverless-nvmrc-alias',
+      clone: './src/practices/serverless/.test/assets/demo-repo-with-serverless',
+      symlink: [{ at: 'declarations', to: 'src' }],
+    });
+
+    when('[t1] the serverless fix is applied', () => {
+      const result = useThen('pin .nvmrc to an alias, then apply', async () => {
+        await fs.writeFile(path.join(tempDir, '.nvmrc'), 'lts/*\n');
+        const error = await executeApply({
+          config: path.join(tempDir, 'declapract.use.yml'),
+          practice: 'serverless',
+          file: 'serverless.yml',
+        }).then(
+          () => null,
+          (thrown: unknown) => thrown,
+        );
+        const yml = await fs.readFile(path.join(tempDir, 'serverless.yml'), 'utf-8');
+        return { error, yml };
+      });
+
+      then('the apply fails loud and names .nvmrc, rather than guess a major', () => {
+        expect(result.error).toBeInstanceOf(Error);
+        expect((result.error as Error).message).toContain('.nvmrc');
+      });
+
+      then('the runtime line is left as found', () => {
+        expect(result.yml).toContain('nodejs14.x');
       });
     });
   });

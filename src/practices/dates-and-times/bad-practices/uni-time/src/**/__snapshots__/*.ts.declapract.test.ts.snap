@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`uni-time bad practice source files should map each Uni* identifier onto its iso-time twin: uni-time identifiers — after 1`] = `
+"import {
+  IsoTimeStamp,
+  IsoDateStamp,
+  IsoTimeStampRange,
+  asIsoTimeStamp,
+  isIsoTimeStamp,
+  asIsoDateStamp,
+  isIsoDateStamp,
+} from 'iso-time';
+import type { IsoDuration, IsoMonthStamp, IsoDateStampRange, IsoTimeFloat } from 'iso-time';
+
+export const at: IsoTimeStamp = asIsoTimeStamp(new Date());
+export const on: IsoDateStamp = asIsoDateStamp(new Date());
+export const ok = isIsoTimeStamp(at) && isIsoDateStamp(on) && isIsoMonthStamp('2024-06');
+export type Window = IsoTimeStampRange | IsoDateStampRange;
+export type Gap = IsoDuration;
+export type Month = IsoMonthStamp;
+export type Clock = IsoTimeFloat;
+"
+`;

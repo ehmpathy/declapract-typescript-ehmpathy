@@ -1,0 +1,151 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case1] a repo on dialect 10.7 with its own testdb pin when: [t0] the input, before any fix then: each file matches snapshot: codegen.sql.dao.yml — before 1`] = `
+"language: postgres
+dialect: 10.7
+generates:
+  daos:
+    to: src/access/daos
+    using:
+      log: src/utils/logger#log
+      DatabaseConnection: src/utils/database/getOneDatabaseConnection#DatabaseConnection
+  schema:
+    config: codegen.sql.schema.yml
+  control:
+    config: provision/schema/control.yml
+  code:
+    config: codegen.sql.types.yml
+for:
+  objects:
+    search:
+      - 'src/domain.objects/*.ts'
+    exclude:
+      - 'SurfReportDraft'
+"
+`;
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case1] a repo on dialect 10.7 with its own testdb pin when: [t0] the input, before any fix then: each file matches snapshot: provision/docker/testdb/build-image.dockerfile — before 1`] = `
+"FROM postgres:17.9
+
+COPY init/ /docker-entrypoint-initdb.d/
+
+ADD wait-for-postgres.sh /root/
+RUN chmod +x /root/wait-for-postgres.sh
+"
+`;
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case1] a repo on dialect 10.7 with its own testdb pin when: [t1] apply runs then: the dao config moves to dialect 17, and keeps its own exclusions: codegen.sql.dao.yml — after 1`] = `
+"language: postgres
+dialect: 17
+generates:
+  daos:
+    to: src/access/daos
+    using:
+      log: src/utils/logger#log
+      DatabaseConnection: src/utils/database/getOneDatabaseConnection#DatabaseConnection
+  schema:
+    config: codegen.sql.schema.yml
+  control:
+    config: provision/schema/control.yml
+  code:
+    config: codegen.sql.types.yml
+for:
+  objects:
+    search:
+      - 'src/domain.objects/*.ts'
+    exclude:
+      - 'SurfReportDraft'
+"
+`;
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case1] a repo on dialect 10.7 with its own testdb pin when: [t1] apply runs then: the testdb keeps the pin the repo chose, and the check passes on it: provision/docker/testdb/build-image.dockerfile — after 1`] = `
+"FROM postgres:17.9
+
+COPY init/ /docker-entrypoint-initdb.d/
+
+ADD wait-for-postgres.sh /root/
+RUN chmod +x /root/wait-for-postgres.sh
+
+"
+`;
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case3] check-engine-skew.sh when: [t0] the testdb leads the livedb then: the check lines match the snapshot 1`] = `
+{
+  "status": 2,
+  "stderr": "✋ ConstraintError: the testdb (postgres 17) leads the livedb (postgres 13)
+   ├─ why: a green suite here can rest on a postgres 17 feature the livedb rejects
+   └─ fix: one of two, by how the skew arrived
+      ├─ the pin moved before the flip: merge after the livedb reads postgres 17
+      └─ the livedb fell back:          pin the testdb to postgres 13 until the flip holds",
+  "stdout": "🔭 engine skew
+   ├─ testdb: postgres 17 (<dockerfile>)
+   └─ livedb: postgres 13.23
+",
+}
+`;
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case3] check-engine-skew.sh when: [t1] the testdb leads a livedb below its declared target then: the check lines match the snapshot 1`] = `
+{
+  "status": 2,
+  "stderr": "✋ ConstraintError: the testdb (postgres 17) leads the livedb (postgres 13)
+   ├─ why: a green suite here can rest on a postgres 17 feature the livedb rejects
+   ├─ how: the livedb sits below its declared target 17 — a flip was reverted, or has not yet applied
+   └─ fix: pin the testdb to postgres 13 until the flip holds. do not re-flip a reverted livedb from here",
+  "stdout": "🔭 engine skew
+   ├─ testdb: postgres 17 (<dockerfile>)
+   └─ livedb: postgres 13.23
+",
+}
+`;
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case3] check-engine-skew.sh when: [t2] the testdb trails the livedb then: the check lines match the snapshot 1`] = `
+{
+  "status": 0,
+  "stderr": "",
+  "stdout": "🔭 engine skew
+   ├─ testdb: postgres 13 (<dockerfile>)
+   └─ livedb: postgres 17.11
+
+::warning title=engine skew::testdb postgres 13 trails the livedb's postgres 17. safe, but bump the pin on the next declapract upgrade
+",
+}
+`;
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case3] check-engine-skew.sh when: [t3] the majors match then: the check lines match the snapshot 1`] = `
+{
+  "status": 0,
+  "stderr": "",
+  "stdout": "🔭 engine skew
+   ├─ testdb: postgres 17 (<dockerfile>)
+   └─ livedb: postgres 17.7
+✨ majors match
+",
+}
+`;
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case3] check-engine-skew.sh when: [t4] the dockerfile has no postgres pin then: the check lines match the snapshot 1`] = `
+{
+  "status": 1,
+  "stderr": "💥 MalfunctionError: no 'FROM postgres:<major>' pin found in <dockerfile>
+   └─ fix: pin a major, like 'FROM postgres:17.11', or pass --dockerfile with the testdb image",
+  "stdout": "",
+}
+`;
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case3] check-engine-skew.sh when: [t5] a flag with no value then: the check lines match the snapshot 1`] = `
+{
+  "status": 2,
+  "stderr": "✋ ConstraintError: --livedb-version needs a value
+   └─ fix: see <check-engine-skew.sh> --help",
+  "stdout": "",
+}
+`;
+
+exports[`persist-with-rds engine upgrade surface (#664) given: [case3] check-engine-skew.sh when: [t6] the livedb read fails then: the check lines match the snapshot 1`] = `
+{
+  "status": 1,
+  "stderr": "💥 MalfunctionError: could not read the engine version of cluster '@declapract{variable.databaseClusterName}'
+   └─ fix: the caller needs aws auth with rds:DescribeDBClusters on the livedb's account",
+  "stdout": "",
+}
+`;

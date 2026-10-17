@@ -1,0 +1,19 @@
+{
+  "key": "0a9564190c8c2d77",
+  "kind": "create",
+  "repo": {
+    "owner": "ehmpathy",
+    "name": "domain-objects"
+  },
+  "exid": null,
+  "title": "feat(ref): flag .ref(by) where the class declares no static by",
+  "description": "## .what\n\na lint rule (or a type-level guard) that flags `X.contract().ref('<by>')` where the domain object\n`X` declares no `static <by>` (e.g. `.ref('primary')` on a class with no `public static primary`).\n\n## .why\n\n`.ref(by)` throws `ConstraintError … requires static <by>` when the dobj declares no such key. a\nhandler's schema is a module-level const, so the throw lands at import: a cold-start crash on\ndeploy, never a 400 and never a test failure until the module loads.\n\ndeclapract-typescript-ehmpathy carried this as a bad-practice check (#634, #565). it is a property\nof the domain-objects api, not of a repo's practice set, so it belongs with domain-objects:\n\n- a lint rule shipped beside the library reaches every consumer on install, with no declapract upgrade\n- better still, a type that makes `.ref(by)` reject a `by` the class does not declare turns the\n  cold-start crash into a compile error\n\n## .shape of the fix\n\n- preferred: type `.ref<B>(by: B)` so that `B` must be a declared static key of `X`\n- fallback: a lint rule that reads the class's statics and flags an undeclared `by`\n- in the error: name the class, the `by`, and the one-line fix\n  (`public static primary = ['uuid'] as const;` where the dobj has a uuid)\n\nsource: ehmpathy/declapract-typescript-ehmpathy#634, #565",
+  "status": null,
+  "via": "gh.issues",
+  "auth": null,
+  "idem": null,
+  "heldSeq": 2,
+  "recordStatus": "QUEUED",
+  "reason": "radio.uses:blocked — global",
+  "deliveredExid": null
+}

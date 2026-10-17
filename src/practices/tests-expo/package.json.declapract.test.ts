@@ -28,6 +28,25 @@ describe('tests-expo package.json — jest-expo/rtr major gated on the repo expo
     });
   });
 
+  given('[case5] a sorted expo repo that lacks the babel and fetch floors', () => {
+    const contents = pkg({
+      expo: '^54.0.0',
+      jest: '30.2.0',
+      react: '^19.0.0',
+      yaml: '2.9.1',
+    });
+
+    when('[t0] fixed', () => {
+      then('the added deps land in alphabetical order, as package-json-order sorts them', () => {
+        const fixed = JSON.parse(fix(contents, ctx).contents!);
+        const keys = Object.keys(fixed.devDependencies);
+        expect(keys).toEqual([...keys].sort());
+        expect(keys).toContain('jest-expo');
+        expect(keys).toContain('@babel/core');
+      });
+    });
+  });
+
   given('[case2] an expo-51 / react-18 repo seeded with a react-19-era jest-expo 54 the gate aligns down to the expo major (51)', () => {
     const contents = pkg({
       expo: '~51.0.0',

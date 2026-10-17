@@ -1,0 +1,4 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/lint/declarations
+# .why  = the same extant repo under the expo usecase, so tests-expo is in projectPractices (#609)
+declarations: 'declarations/declapract.declare.yml'
+useCase: lint-expo

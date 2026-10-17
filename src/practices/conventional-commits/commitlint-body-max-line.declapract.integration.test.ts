@@ -46,4 +46,23 @@ describe('conventional-commits commitlint body-max-line-length', () => {
       });
     });
   });
+
+  /**
+   * .what = clamps #516: the footer gets the same warn-level 140 as the body
+   * .why  = config-conventional's footer-max-line-length is error-level 100, so a long
+   *         `Co-Authored-By:` or `Refs:` trailer failed test:commits though the body rule allowed it
+   */
+  given('the shipped commitlint.config.js, loaded as commitlint loads it (#516)', () => {
+    // the template is a commonjs config, so require it as commitlint does
+    const config = require(join(__dirname, 'best-practice/commitlint.config.js')) as {
+      rules: Record<string, unknown>;
+    };
+
+    when('the footer-max-line-length rule is read', () => {
+      then('it is warn-level 140, beside the body rule', () => {
+        expect(config.rules['footer-max-line-length']).toEqual([1, 'always', 140]);
+        expect(config.rules['body-max-line-length']).toEqual([1, 'always', 140]);
+      });
+    });
+  });
 });

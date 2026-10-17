@@ -45,7 +45,9 @@ describe('simple-lambda-handlers source files', () => {
       expect(fixed).not.toContain('createApiGatewayHandler');
     });
 
-    it('should transform createStandardHandler call to genLambdaEndpoint', async () => {
+    // #646 — sdk-aws-lambda 0.7 has no bare `genLambdaEndpoint(` and no `.for.apiGateway(`; a
+    // fix that emits either hands the adopter a call that does not exist
+    it('should transform createStandardHandler call to genLambdaEndpoint.forAsk', async () => {
       const contents = `
 import { createStandardHandler } from 'simple-lambda-handlers';
 
@@ -53,11 +55,12 @@ export const handler = createStandardHandler({ log, schema, logic });`;
 
       const { contents: fixed } = await fix(contents, {} as any);
 
-      expect(fixed).toContain('genLambdaEndpoint({ log, schema, logic })');
+      expect(fixed).toContain('genLambdaEndpoint.forAsk({ log, schema, logic })');
       expect(fixed).not.toContain('createStandardHandler');
+      expect(fixed).not.toMatch(/genLambdaEndpoint\s*\(/);
     });
 
-    it('should transform createApiGatewayHandler call to genLambdaEndpoint.for.apiGateway', async () => {
+    it('should transform createApiGatewayHandler call to genLambdaEndpoint.forApiGateway', async () => {
       const contents = `
 import { createApiGatewayHandler } from 'simple-lambda-handlers';
 
@@ -66,8 +69,9 @@ export const handler = createApiGatewayHandler({ log, schema, logic, cors });`;
       const { contents: fixed } = await fix(contents, {} as any);
 
       expect(fixed).toContain(
-        'genLambdaEndpoint.for.apiGateway({ log, schema, logic, cors })',
+        'genLambdaEndpoint.forApiGateway({ log, schema, logic, cors })',
       );
+      expect(fixed).not.toContain('.for.apiGateway');
       expect(fixed).not.toContain('createApiGatewayHandler');
     });
 
@@ -95,7 +99,7 @@ export const handler = createApiGatewayHandler({ log, schema, logic, cors });`;
   //         upstream (ehmpathy/declapract#107); until it lands, this clamp verifies the marker text
   //         so a reword cannot silently drop the diagnostic.
   describe('@declapract:review marker (#594)', () => {
-    it('flags an api-gateway handler call with the body + rawEvent contract', async () => {
+    it('flags an api-gateway handler call with the { headers, payload, event } contract', async () => {
       const contents = `
 import { createApiGatewayHandler } from 'simple-lambda-handlers';
 
@@ -104,7 +108,9 @@ export const handler = createApiGatewayHandler({ log, schema, logic, cors });`;
 
       expect(fixed).toContain('@declapract:review');
       expect(fixed).toContain('request BODY');
-      expect(fixed).toContain('rawEvent');
+      // #640 — 0.7 carries `{ headers, payload, event }`; `rawEvent` names a shape no release has
+      expect(fixed).toContain('{ headers, payload, event }');
+      expect(fixed).not.toContain('rawEvent');
       // snapshot the marker verbatim — user-faced output; a reword must redden a vibecheck
       expect(fixed).toMatchSnapshot('api-gateway handler call — review marker');
     });
@@ -118,7 +124,8 @@ export const handler = createStandardHandler({ log, schema, logic });`;
 
       expect(fixed).toContain('@declapract:review');
       expect(fixed).toContain('invoke context');
-      expect(fixed).not.toContain('rawEvent'); // rawEvent is api-gateway-specific
+      expect(fixed).toContain('({ payload }, { log })');
+      expect(fixed).not.toContain('rawEvent');
       // snapshot the marker verbatim — user-faced output; a reword must redden a vibecheck
       expect(fixed).toMatchSnapshot('standard handler call — review marker');
     });
@@ -129,5 +136,47 @@ export const handler = createStandardHandler({ log, schema, logic });`;
 
       expect(fixed).not.toContain('@declapract:review');
     });
+  });
+
+  // rule.require.idempotent-fixes — the fix's own output must be a fixed point, and the check must
+  // stop to detect it, so a rerun of `declapract fix` neither loops nor double-prepends the marker
+  describe('idempotency', () => {
+    const cases = [
+      {
+        description: 'an api-gateway handler call',
+        contents: `
+import { createApiGatewayHandler } from 'simple-lambda-handlers';
+
+export const handler = createApiGatewayHandler({ log, schema, logic, cors });`,
+      },
+      {
+        description: 'a standard handler call',
+        contents: `
+import { createStandardHandler } from 'simple-lambda-handlers';
+
+export const handler = createStandardHandler({ log, schema, logic });`,
+      },
+      {
+        description: 'an import of both factories, with no call',
+        contents: `import { createStandardHandler, createApiGatewayHandler } from 'simple-lambda-handlers';`,
+      },
+    ];
+
+    cases.map((thisCase) =>
+      describe(thisCase.description, () => {
+        it('fix(fix(x)) === fix(x) — the second pass changes zero bytes', async () => {
+          const { contents: once } = await fix(thisCase.contents, {} as any);
+          const { contents: twice } = await fix(once!, {} as any);
+          expect(twice).toEqual(once);
+        });
+
+        it('check throws on fix(x) — the bad practice is no longer detected', async () => {
+          const { contents: once } = await fix(thisCase.contents, {} as any);
+          expect(() => check(once!, {} as any)).toThrow(
+            'does not import from simple-lambda-handlers',
+          );
+        });
+      }),
+    );
   });
 });

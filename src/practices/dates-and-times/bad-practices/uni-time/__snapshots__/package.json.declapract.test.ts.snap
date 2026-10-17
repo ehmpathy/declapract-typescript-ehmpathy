@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`uni-time bad practice package.json should add iso-time to dependencies where @ehmpathy/uni-time sat: fixed package.json — dependencies 1`] = `
+"{
+  "dependencies": {
+    "lodash": "4.0.0",
+    "iso-time": "1.11.7"
+  }
+}"
+`;

@@ -1,0 +1,7 @@
+# minimal use case for the tool-swap removal integration test
+use-cases:
+  lambda-service:
+    practices:
+      - typescript-any
+      - typescript-node
+      - tests-node

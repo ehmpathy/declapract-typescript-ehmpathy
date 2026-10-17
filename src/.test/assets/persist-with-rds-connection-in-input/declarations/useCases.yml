@@ -1,0 +1,5 @@
+# minimal use case for the with-connection-in-input integration test
+use-cases:
+  lambda-service:
+    practices:
+      - persist-with-rds

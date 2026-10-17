@@ -1,5 +1,8 @@
 import { check, fix } from './.depcheckrc.yml.declapract';
 
+// each `as any` context below is a documented cast (rule.forbid.as-cast): the declaration reads at
+// most `declaredFileContents` off its context, which carries many other fields. removal path: a
+// declapract partial-context builder.
 describe('.depcheckrc.yml denylist', () => {
   describe('check', () => {
     it('should throw if no denylisted ignores present (not bad practice)', () => {
@@ -96,6 +99,45 @@ ignores:
       expect(fixed).not.toContain('- ts-jest');
       expect(fixed).not.toContain('- core-js');
       expect(fixed).not.toContain('- babel-jest');
+    });
+  });
+
+  /**
+   * .what = the twice-applied clamp (rule.require.idempotent-fixes)
+   * .why  = a fix that drops only part of the denylist per pass would converge only over
+   *         several `declapract fix` runs; and a check that still detects its own output
+   *         would reflag the file forever. both are asserted on a file with several entries.
+   */
+  describe('idempotency', () => {
+    const contents = `
+# keep this comment
+ignores:
+  - rhachet
+  - date-fns
+  - declapract # keep this
+  - ts-node
+  - core-js
+    `.trim();
+
+    it('fix(fix(x)) === fix(x) — the second pass changes zero', async () => {
+      const { contents: once } = await fix(contents, {} as any);
+      const { contents: twice } = await fix(once, {} as any);
+      expect(twice).toEqual(once);
+    });
+
+    it('check throws on the fixed output — the bad practice is no longer detected', async () => {
+      const { contents: once } = await fix(contents, {} as any);
+      expect(() => check(once, {} as any)).toThrow(
+        'no denylisted packages found in ignores',
+      );
+    });
+
+    it('the fixed output keeps every non-denylisted entry and comment', async () => {
+      const { contents: once } = await fix(contents, {} as any);
+      expect(once).toContain('- rhachet');
+      expect(once).toContain('- declapract # keep this');
+      expect(once).toContain('# keep this comment');
+      expect(once).toMatchSnapshot('.depcheckrc.yml — after one fix');
     });
   });
 });

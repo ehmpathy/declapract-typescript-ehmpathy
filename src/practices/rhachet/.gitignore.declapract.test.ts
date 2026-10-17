@@ -175,6 +175,40 @@ node_modules
   });
 
   /**
+   * .what = rhachet ignores the scratch it creates at any depth (#667), and its notes dir (#688)
+   * .why  = a gitignore line with a slash anchors to the repo root, so `.claude/scheduled_tasks*`
+   *         missed the actor brain's `.agent/.actors/<actor>/brain/.claude/scheduled_tasks.lock`;
+   *         and rhachet roles write `.agent/.notes/` scratch a blanket stage would sweep in
+   */
+  describe('the scratch rhachet creates (#667, #688)', () => {
+    it('should declare **/.claude/scheduled_tasks* and .agent/.notes/', async () => {
+      const lines = (await fix(null, {} as any)).contents!.split('\n');
+
+      expect(lines).toContain('**/.claude/scheduled_tasks*');
+      expect(lines).toContain('.agent/.notes/');
+    });
+
+    it('should retire the root-anchored .claude/scheduled_tasks* line', async () => {
+      const lines = (
+        await fix('.claude/scheduled_tasks*\ndist\n', {} as any)
+      ).contents!.split('\n');
+
+      expect(lines).not.toContain('.claude/scheduled_tasks*');
+      expect(lines).toContain('**/.claude/scheduled_tasks*');
+      expect(lines).toContain('dist');
+    });
+
+    it('should flag a file that still holds only the root-anchored line', () => {
+      expect(() =>
+        check(
+          '.agent/.cache/\n.agent/.notes/\n.claude/scheduled_tasks*\nnode_modules\n!.test*/**/node_modules\n!.test*/**/node_modules/**\n',
+          {} as any,
+        ),
+      ).toThrow();
+    });
+  });
+
+  /**
    * .what = idempotency has two clauses, and each one carries its own load
    * .why  = a fix that is not a fixed point churns the file on every upgrade; a check
    *         that still throws on the fix's own output makes `declapract fix` re-flag
@@ -187,6 +221,10 @@ node_modules
       {
         slug: 'a file that already carries the cache line, unsorted',
         contents: 'node_modules\n.agent/.cache/\n*.log\n',
+      },
+      {
+        slug: 'a file with the retired root-anchored scheduled_tasks line',
+        contents: '.claude/scheduled_tasks*\n*.log\n',
       },
     ];
 
@@ -225,9 +263,9 @@ node_modules
    *         detail that carries the load. its own suite has the mirror of this clamp.
    * .note = the two declared sets here are NOT symmetric, and the assertions reflect
    *         that. rhachet declares TWO lines: `.agent/.cache/`, which git ALSO declares
-   *         (so that line git covers), and `.claude/scheduled_tasks*`, which git does
+   *         (so that line git covers), and `.claude/scheduled_tasks*` at any depth, which git does
    *         NOT -- so rhachet is no longer a subset of git. git's output alone therefore
-   *         LACKS `.claude/scheduled_tasks*`, and rhachet's check rightly rejects it,
+   *         LACKS `.claude/scheduled_tasks*` at any depth, and rhachet's check rightly rejects it,
    *         exactly as expo's disjoint set does. both declarers must run before either
    *         check passes; convergence claims the file SETTLES once both have run, in
    *         either order -- not that one alone suffices. do not copy an assertion between
@@ -245,7 +283,7 @@ node_modules
 
     casesToFix.forEach((thisCase) => {
       it(`both checks should pass once both have run, given ${thisCase.slug}`, async () => {
-        // rhachet owns `.claude/scheduled_tasks*`, which git does not declare, so git's
+        // rhachet owns `.claude/scheduled_tasks*` at any depth, which git does not declare, so git's
         // output alone lacks it and rhachet's check rejects it. once rhachet also runs,
         // both checks pass -- and stay green (the fixed-point cases below prove settle).
         const fixedByGit = (await fixOfGit(thisCase.contents, {} as any))

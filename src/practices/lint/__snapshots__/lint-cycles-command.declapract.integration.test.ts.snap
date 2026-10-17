@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`lint test:lint:cycles reads .dpdmrc.yaml via node + yaml (#601, #616) given: [case1] the shipped command when: [t0] its text is read then: the command matches snapshot: test:lint:cycles 1`] = `"EXCL=$(node -p "(require('yaml').parse(require('fs').readFileSync('.dpdmrc.yaml','utf8'))?.exclude ?? []).join('|')") && dpdm --no-warning --no-tree --transform --exit-code circular:1 --exclude "$EXCL" 'src/**/!(*.test).ts'"`;

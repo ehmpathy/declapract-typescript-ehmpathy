@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "iso-time": "@declapract{check.minVersion('1.11.7')}",
     "pg": "@declapract{check.minVersion('8.3.0')}",
     "yesql": "@declapract{check.minVersion('3.2.2')}"
   },
@@ -12,17 +13,17 @@
     "@types/pg": "@declapract{check.minVersion('8.6.1')}"
   },
   "scripts": {
-    "generate:dao:postgres": "npx sql-dao-generator generate && npm run fix:format",
-    "generate:schema": "npx sql-schema-generator generate -c codegen.sql.schema.yml && npm run fix:format",
-    "generate:types-from-sql": "npx sql-code-generator generate -c codegen.sql.types.yml && npm run fix:format",
-    "provision:schema:plan": "npx sql-schema-control plan -c provision/schema/control.yml",
-    "provision:schema:apply": "npx sql-schema-control apply -c provision/schema/control.yml",
-    "provision:schema:sync": "npx sql-schema-control sync -c provision/schema/control.yml",
-    "provision:testdb:docker:clear": "for port in $(docker compose -f ./provision/docker/testdb/docker-compose.yml config --format json | jq -r '.services[].ports[]?.published'); do docker rm -f $(docker ps -a -f \"publish=$port\" -q) 2>/dev/null || true; done && echo 'ensured ports are available 👍'",
+    "generate:dao:postgres": "sql-dao-generator generate && npm run fix:format",
+    "generate:schema": "sql-schema-generator generate -c codegen.sql.schema.yml && npm run fix:format",
+    "generate:types-from-sql": "sql-code-generator generate -c codegen.sql.types.yml && npm run fix:format",
+    "provision:schema:plan": "sql-schema-control plan -c provision/schema/control.yml",
+    "provision:schema:apply": "sql-schema-control apply -c provision/schema/control.yml",
+    "provision:schema:sync": "sql-schema-control sync -c provision/schema/control.yml",
+    "provision:testdb:docker:clear": "for port in $(bash provision/docker/testdb/compose.sh config --format json | jq -r '.services[].ports[]?.published'); do docker rm -f $(docker ps -a -f \"publish=$port\" -q) 2>/dev/null || true; done && echo 'ensured ports are available 👍'",
     "provision:testdb:docker:prepare": "cp provision/schema/sql/init/.extensions.sql provision/docker/testdb/init/extensions.sql && cp provision/schema/sql/init/.schema.sql provision/docker/testdb/init/schema.sql && cp provision/schema/sql/init/.user.cicd.sql provision/docker/testdb/init/user.cicd.sql",
-    "provision:testdb:docker:up": "docker compose -f ./provision/docker/testdb/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
-    "provision:testdb:docker:await": "docker compose -f ./provision/docker/testdb/docker-compose.yml exec -T postgres /root/wait-for-postgres.sh",
-    "provision:testdb:docker:down": "docker compose -f ./provision/docker/testdb/docker-compose.yml down",
+    "provision:testdb:docker:up": "bash provision/docker/testdb/compose.sh up -d --force-recreate --build --renew-anon-volumes",
+    "provision:testdb:docker:await": "bash provision/docker/testdb/compose.sh exec -T postgres /root/wait-for-postgres.sh",
+    "provision:testdb:docker:down": "bash provision/docker/testdb/compose.sh down",
     "provision:testdb": "npm run provision:testdb:docker:clear && npm run provision:testdb:docker:prepare && npm run provision:testdb:docker:up && npm run provision:testdb:docker:await && ACCESS=test npm run provision:schema:plan && ACCESS=test npm run provision:schema:apply && ACCESS=test npm run provision:schema:plan",
     "start:testdb": "npm run provision:testdb",
     "start:livedb:prep": "rhx use.rds.capacity --env prep"

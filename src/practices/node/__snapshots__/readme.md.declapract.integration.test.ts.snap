@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`node readme.md title prepend (#607) given: [case1] a repo whose readme.md lacks the declared title when: [t0] the input (before any fix) then: the readme.md input matches snapshot: readme.md — before 1`] = `
+"surf lessons, booked.
+
+## usage
+
+book a lesson with \`npm run book\`.
+"
+`;
+
+exports[`node readme.md title prepend (#607) given: [case1] a repo whose readme.md lacks the declared title when: [t1] the readme.md fix is applied then: the readme.md matches snapshot: readme.md — after 1`] = `
+"# svc-example
+
+surf lessons, booked.
+
+## usage
+
+book a lesson with \`npm run book\`.
+"
+`;

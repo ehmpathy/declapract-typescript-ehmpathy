@@ -1,7 +1,4 @@
 {
-  "devDependencies": {
-    "simple-lambda-testing-methods": "@declapract{check.minVersion('0.5.1')}"
-  },
   "scripts": {
     "start:livedb:prep": "rhx use.rds.capacity --env prep"
   }

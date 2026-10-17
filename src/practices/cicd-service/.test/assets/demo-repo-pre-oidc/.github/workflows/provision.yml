@@ -1,0 +1,107 @@
+name: provision
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - "main"
+      - "master"
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *" # the repo's own nightly drift plan, which the practice never declares
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }} # per [workflow] x [branch, tag]
+  cancel-in-progress: true #  cancel workflows for non-latest commits
+
+jobs:
+  aws-test-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/test
+      github-environment: test
+      aws-account-id: "123456789012"
+    secrets:
+      aws-access-key-id: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
+
+  aws-prep-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prep
+      github-environment: prep
+      aws-account-id: "123456789012"
+    secrets:
+      aws-access-key-id: ${{ secrets.PREP_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PREP_AWS_SECRET_ACCESS_KEY }}
+
+  aws-prod-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prod
+      github-environment: prod
+      aws-account-id: "123456789012"
+      allow-apply: ${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+    secrets:
+      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+
+  github:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/github.repo/resources.ts
+      scope: github
+      access: prod # github repo settings are inherently a prod resource
+      creds-github-app-owner: ${{ github.repository_owner }}
+      creds-github-app-id: ${{ vars.DECLASTRUCT_GITHUB_CONFORMER_APP_ID }}
+    secrets:
+      creds-github-app-private-key: ${{ secrets.DECLASTRUCT_GITHUB_CONFORMER_APP_PRIVATE_KEY }}
+
+  sql-schema-prep:
+    uses: ./.github/workflows/.sql-schema-control.yml
+    with:
+      github-environment: prep
+      aws-account-id: "123456789012"
+    secrets:
+      aws-access-key-id: ${{ secrets.PREP_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PREP_AWS_SECRET_ACCESS_KEY }}
+
+  sql-schema-prod:
+    uses: ./.github/workflows/.sql-schema-control.yml
+    with:
+      github-environment: prod
+      aws-account-id: "123456789012"
+      allow-apply: ${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
+    secrets:
+      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+
+  aws-prep-declastruct:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/aws/resources.ts
+      scope: aws
+      access: prep
+      github-environment: prep
+    secrets:
+      aws-access-key-id: ${{ secrets.PREP_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PREP_AWS_SECRET_ACCESS_KEY }}
+
+  aws-prod-declastruct:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/aws/resources.ts
+      scope: aws
+      access: prod
+      github-environment: prod
+    secrets:
+      aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+
+  # the repo's own job, which the practice never declares
+  seed-prep-fixtures:
+    uses: ./.github/workflows/.seed.yml
+    with:
+      target: prep

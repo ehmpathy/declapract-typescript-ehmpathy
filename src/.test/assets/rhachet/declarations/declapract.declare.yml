@@ -1,0 +1,4 @@
+# minimal declarations for rhachet integration tests
+declare:
+  practices: practices
+  use-cases: useCases.yml

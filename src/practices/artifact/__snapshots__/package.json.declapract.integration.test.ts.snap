@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`artifact package.json — an extant npx command converges (#672) given: [case1] an adopter whose build:artifact calls the bin through npx when: [t0] declapract apply runs then: before + after match snapshot: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "devDependencies": {
+    "simple-artifact-builder": "1.1.15"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json && npm run build:artifact",
+    "build:artifact": "simple-artifact-builder zip"
+  }
+}
+"
+`;
+
+exports[`artifact package.json — an extant npx command converges (#672) given: [case1] an adopter whose build:artifact calls the bin through npx when: [t0] declapract apply runs then: before + after match snapshot: package.json — before 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "devDependencies": {
+    "simple-artifact-builder": "1.1.15"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json && npm run build:artifact",
+    "build:artifact": "npx simple-artifact-builder zip"
+  }
+}
+"
+`;

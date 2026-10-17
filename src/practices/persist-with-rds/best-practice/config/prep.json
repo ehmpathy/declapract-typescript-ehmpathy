@@ -21,8 +21,12 @@
       }
     },
     "tunnel": {
-      "bastion": "vpc-main-bastion",
-      "cluster": "@declapract{variable.databaseName}",
+      "bastion": {
+        "exid": "vpc-main-bastion"
+      },
+      "cluster": {
+        "name": "@declapract{variable.databaseClusterName}"
+      },
       "local": {
         "host": "@declapract{variable.databaseTunnelHost.prep}",
         "port": 15432

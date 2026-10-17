@@ -20,7 +20,8 @@ export interface DatabaseContext {
  *     // do logic with dbConnection
  *   });
  *   // ...
- *   await findById({ id: 821 }); // note how we don't have to pass in the dbConnection
+ *   await findById({ id: '821' }, {}); // the context is required, but the dbConnection within it is not
+ *   await findById({ id: '821' }, { dbConnection }); // pass one in to reuse it, e.g. inside a transaction
  * ```
  */
 export const withDatabaseContext = <P1, P2 extends DatabaseContext, R>(

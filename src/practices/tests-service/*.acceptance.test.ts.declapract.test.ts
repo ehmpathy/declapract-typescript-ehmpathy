@@ -24,17 +24,28 @@ const genContext = (relativeFilePath: string) =>
 // `import { stage }` line the D52 fix retired.
 const genWellFormedContents = (functionName: string): string =>
   `
-import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+import { runLambdaEndpoint } from 'sdk-aws-lambda';
 
 import { locally } from '../environment';
 
 describe('${functionName}', () => {
   it('responds', async () => {
-    const response = await invokeLambdaForTesting({ locally });
+    const response = await runLambdaEndpoint.onSerialized(
+      { which, event, at: locally ? 'local' : 'cloud' },
+      context,
+    );
     expect(response).toBeDefined();
   });
 });
 `.trim();
+
+// the same test on the retired lib (#650), which the check must still pass, so the
+// simple-lambda-testing-methods bad-practice is never blocked by a fixless throw (#607)
+const genRetiredLibContents = (functionName: string): string =>
+  genWellFormedContents(functionName).replace(
+    "import { runLambdaEndpoint } from 'sdk-aws-lambda';",
+    "import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';",
+  );
 
 describe('tests-service — blackbox acceptance-test check (D52 clamp)', () => {
   describe('[case1] a file without `import { stage }` (the D52 point)', () => {
@@ -61,17 +72,13 @@ describe('tests-service — blackbox acceptance-test check (D52 clamp)', () => {
   });
 
   describe('[case3] a file that lacks a still-required import', () => {
-    it('[t0] throws when `invokeLambdaForTesting` is absent', () => {
-      const withoutInvoke = genWellFormedContents('getSurfReport').replace(
-        "import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';\n\n",
-        '',
-      );
+    it('[t0] passes on the retired lib too — #650 dropped that mandate, so its bad-practice is never blocked', () => {
       const context = genContext(
         'blackbox/lambdas/getSurfReport.acceptance.test.ts',
       );
-      const error = getError(() => check(withoutInvoke, context));
-      expect(error.message).toContain('Expected imports');
-      expect(error.message).toMatchSnapshot();
+      expect(() =>
+        check(genRetiredLibContents('getSurfReport'), context),
+      ).not.toThrow();
     });
 
     it('[t1] throws when `locally` is absent', () => {
@@ -102,14 +109,6 @@ describe('tests-service — blackbox acceptance-test check (D52 clamp)', () => {
     });
   });
 
-  describe('[case5] an empty file', () => {
-    it('[t0] throws — at least one lambda acceptance test is expected', () => {
-      const context = genContext(
-        'blackbox/lambdas/getSurfReport.acceptance.test.ts',
-      );
-      const error = getError(() => check(null, context));
-      expect(error.message).toContain('expected at least one lambda acceptance test');
-      expect(error.message).toMatchSnapshot();
-    });
-  });
+  // .note = the absent-file case reads the repo tree (a `._.acpt.test.ts` seam counts as present,
+  //         #679), so it lives in tests-any/test-kind-seam.declapract.integration.test.ts
 });

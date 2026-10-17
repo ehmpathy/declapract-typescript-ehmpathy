@@ -20,7 +20,7 @@ jest.setTimeout(180_000);
  * .note = the target file is snapshotted in full (before AND after), so a reviewer can eyeball the
  *   exact end-state, per rule.require.declapract-integration-tests.
  * .teeth = the input imports + CALLS `createApiGatewayHandler`. the after-state proves the import is
- *   rewritten to `sdk-aws-lambda`, the call is rewritten to `genLambdaEndpoint.for.apiGateway`, and
+ *   rewritten to `sdk-aws-lambda`, the call is rewritten to `genLambdaEndpoint.forApiGateway`, and
  *   the @declapract:review marker lands on disk — the glue a mocked-context unit test cannot show.
  */
 describe('simple-lambda-handlers migration', () => {
@@ -69,14 +69,17 @@ describe('simple-lambda-handlers migration', () => {
           expect(after).toContain("from 'sdk-aws-lambda'");
           expect(after).not.toContain("from 'simple-lambda-handlers'");
 
-          // the api-gateway factory call is rewritten to its sdk equivalent
-          expect(after).toContain('genLambdaEndpoint.for.apiGateway(');
+          // the api-gateway factory call is rewritten to its sdk@0.7.1 equivalent (#646)
+          expect(after).toContain('genLambdaEndpoint.forApiGateway(');
+          expect(after).not.toContain('.for.apiGateway(');
           expect(after).not.toContain('createApiGatewayHandler(');
 
           // the value-rewrite marker lands on disk — the un-rewritable schema+invoke contract
-          // is loud, so a consumer cannot ship a handler that answers 400 to every request
+          // is loud, so a consumer cannot ship a handler that answers 400 to every request.
+          // it teaches the 0.7.1 shape, never the retired `rawEvent` (#640)
           expect(after).toContain('@declapract:review');
-          expect(after).toContain('rawEvent');
+          expect(after).toContain('{ headers, payload, event }');
+          expect(after).not.toContain('rawEvent');
 
           // full content, for the reviewer's eye
           expect(after).toMatchSnapshot('getWidget.ts — after');

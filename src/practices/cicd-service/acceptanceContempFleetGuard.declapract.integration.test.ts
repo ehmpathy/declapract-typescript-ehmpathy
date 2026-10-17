@@ -8,7 +8,7 @@ import { given, then, useBeforeAll, when } from 'test-fns';
  *         future edit cannot re-introduce the D31 dual-fleet acceptance fan-out. two invariants:
  *         (1) the acceptance step is a single ACCESS-keyed `npm run test:acceptance` run; (2) no
  *         `ACCEPTANCE_FLEET` selector (ancient or contemp) survives in the acceptance block.
- * .why  = the assure job deploys the contemp fleet (the service's own access-tier slug, -prep- at
+ * .why  = the assure job deploys the contemp fleet (the service's own access-keyed slug, -prep- at
  *         prep, -prod- at prod). dual-publish ships the SAME artifact under the ancient (-dev-) slug
  *         too, so a run against contemp proves the deployed code — the ancient slug is an inbound
  *         alias, never a second target for the self-acceptance gate. a fan-out that also runs an

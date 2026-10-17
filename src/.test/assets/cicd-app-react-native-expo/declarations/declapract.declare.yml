@@ -1,0 +1,7 @@
+# minimal declarations for the expo provision.yml (#608) + metro.config.js (#618, #676) pipeline tests.
+# .why = a `file`-only apply compiles EVERY practice under `practices:`; pointed at the real
+#        `src/practices` (~40 practices) that blows the jest hook timeout, so this mirror holds
+#        symlinks to only the two practices these tests apply.
+declare:
+  practices: practices
+  use-cases: useCases.yml

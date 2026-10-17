@@ -27,4 +27,4 @@ export const getProviders = async (): Promise<DeclastructProvider[]> => [
 ];
 
 export const getResources = async (): Promise<DomainEntity<any>[]> =>
-  getAllParameters({ accessSlug: null });
+  getAllParameters({ choice: null });

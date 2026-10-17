@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`metro.config.js — access-keyed cache findsert (#618, #676) given: [case2] the repo's own metro.config.js, with no block when: [t1] fix runs then: the repo's own lines stay, and the block lands after them: repo own + block 1`] = `
+"const { getDefaultConfig } = require('expo/metro-config');
+const config = getDefaultConfig(__dirname);
+config.resolver.blockList = [/\\.play\\.test\\.tsx?$/]; // the repo own line
+module.exports = config;
+
+// >>> declapract: metro cache keyed on ACCESS + app config
+{ module.exports.cacheVersion = \`access=\${process.env.ACCESS}\`; }
+// <<< declapract: metro cache keyed on ACCESS + app config
+"
+`;

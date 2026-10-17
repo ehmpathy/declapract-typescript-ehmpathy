@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`git .gitattributes given: [case1] a repo whose .gitattributes holds a legacy header, a legacy entry, and an out-of-section entry when: [t0] before any apply then: the input file matches snapshot: .gitattributes — before 1`] = `
+"*.png binary
+
+# exclude package-lock from git diff; https://stackoverflow.com/a/72834452/3068233
+package-lock.json -diff
+pnpm-lock.json -diff
+pnpm-lock.yaml merge=theirs
+"
+`;
+
+exports[`git .gitattributes given: [case1] a repo whose .gitattributes holds a legacy header, a legacy entry, and an out-of-section entry when: [t1] apply runs then: the output matches snapshot: .gitattributes — after 1`] = `
+"*.png binary
+
+# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+"
+`;

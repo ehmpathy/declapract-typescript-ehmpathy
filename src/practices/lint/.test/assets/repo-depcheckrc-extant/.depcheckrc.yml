@@ -1,0 +1,5 @@
+# repo-own header comment
+ignores:
+  - "@src/*"
+  # repo-own reason for a repo-own ignore
+  - my-own-dep

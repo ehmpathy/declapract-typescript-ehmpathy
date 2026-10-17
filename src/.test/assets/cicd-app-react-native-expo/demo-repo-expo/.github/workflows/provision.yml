@@ -1,0 +1,27 @@
+name: provision
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+
+jobs:
+  # the pre-migration github job: terraform over the provision/github/ dir the migration deletes
+  github:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/github/product
+      github-environment: prod
+
+  # a second terraform job on the deleted dir, under another name
+  github-environment:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/github/environment
+
+  # the repo's own aws job, which the practice never declares
+  aws:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prod

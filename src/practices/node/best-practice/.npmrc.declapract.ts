@@ -2,6 +2,8 @@ import type { FileCheckFunction, FileFixFunction } from 'declapract';
 import { ConstraintError } from 'helpful-errors';
 
 import { defineExpectedNpmrcContents } from '../../../utils/defineExpectedNpmrcContents';
+import { getFileTextOrNull } from '../../../utils/getFileTextOrNull';
+import { getOneContentionSetFromLockfile } from '../../../utils/getOneContentionSetFromLockfile';
 
 /**
  * .what = the `.npmrc` the node practice declares, usecase-aware for the expo runtime
@@ -58,7 +60,87 @@ export const check: FileCheckFunction = (contents, context) => {
  *         test's narrow-scope `[case2]`.
  */
 export const fix: FileFixFunction = (contents, context) => {
-  return {
-    contents: defineExpectedContents(contents, context.projectPractices),
-  };
+  // emit the declared contents
+  const contentsFixed = defineExpectedContents(
+    contents,
+    context.projectPractices,
+  );
+
+  // if this fix flips the linker to hoisted, name the version contention it makes decisive
+  if (isHoistFlip({ before: contents, after: contentsFixed }))
+    emitHoistFlipNoticeOnce({ root: context.getProjectRootDirectory() });
+
+  return { contents: contentsFixed };
+};
+
+/**
+ * .what = whether a fix adds `node-linker=hoisted` to a file that lacked it
+ */
+const isHoistFlip = (input: { before: string | null; after: string }) =>
+  !(input.before ?? '').split('\n').includes('node-linker=hoisted') &&
+  input.after.split('\n').includes('node-linker=hoisted');
+
+/**
+ * .what = the roots whose hoist flip notice was already printed in this process
+ * .why  = declapract may evaluate a fix more than once per apply; the notice prints once
+ * .note = deliberate module-scope state: a print-once guard, never read for a decision
+ */
+const rootsNoticed = new Set<string>();
+
+/**
+ * .what = prints the version contention set + the pnpm.overrides remedy to stderr, once per root
+ * .why  = the hoist flip makes one copy of each package win the root slot (#610). the runtime
+ *         symptoms (a crashed commit-msg hook, a blank page) name no package, so the set is
+ *         printed at the one moment the practice can enumerate it. no version pin is shipped:
+ *         the consumer chooses the pins
+ * .note = writes to stderr only, so the fix's output contents stay pure
+ */
+const emitHoistFlipNoticeOnce = (input: { root: string }): void => {
+  // print once per root
+  if (rootsNoticed.has(input.root)) return;
+  rootsNoticed.add(input.root); // .note = deliberate mutation: the print-once guard records this root
+
+  // read the lockfile, if one is present
+  const lockfile = getFileTextOrNull({
+    root: input.root,
+    relativePath: 'pnpm-lock.yaml',
+  });
+  const contention = lockfile
+    ? getOneContentionSetFromLockfile({ lockfile })
+    : null;
+
+  process.stderr.write(asHoistFlipNotice({ contention }));
+};
+
+/**
+ * .what = the treestruct notice for a hoist flip
+ */
+const asHoistFlipNotice = (input: {
+  contention: { name: string; versions: string[] }[] | null;
+}): string => {
+  const header =
+    '🟡 node-linker=hoisted added — one copy of each package now wins the root slot\n';
+  const remedy = [
+    '   └─ remedy',
+    '      ├─ any package above may now load a different copy at runtime',
+    '      ├─ pin the copy you want via `pnpm.overrides` in package.json, then `pnpm install`',
+    '      └─ see howto.pnpm-expo-hoisted-linker.md (declapract-typescript-ehmpathy)',
+  ].join('\n');
+
+  // no lockfile: say how to see the set
+  if (input.contention === null)
+    return `${header}   ├─ no pnpm-lock.yaml found; after \`pnpm install\`, run \`pnpm why <pkg>\` to see the versions\n${remedy}\n\n`;
+
+  // no contention: say so
+  if (input.contention.length === 0)
+    return `${header}   ├─ no package has more than one version in your graph\n${remedy}\n\n`;
+
+  // list the contention set
+  const contention = input.contention;
+  const width = Math.max(...contention.map((pkg) => pkg.name.length));
+  const rows = contention.map(
+    (pkg, index) =>
+      `   │  ${index === contention.length - 1 ? '└─' : '├─'} ${pkg.name.padEnd(width)}  ${pkg.versions.join(', ')}`,
+  );
+  return `${header}   ├─ packages with more than one version in your graph\n${rows.join('\n')}\n   │\n${remedy}\n\n`;
 };

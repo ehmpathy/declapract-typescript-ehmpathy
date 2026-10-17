@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`logs vendored-log-trail src files (#635) given: [case1] a vendored fork of visualogic withLogTrail when: [t1] the fix runs then: a review line above the fork export names the input→context move to withLogTrail: fork — after 1`] = `
+"import { log } from '@src/utils/logger';
+
+/**
+ * enables input output logs for a function
+ *
+ * todo: - add tracing identifier w/ async-context
+ * todo: - hookup visual tracing w/ external lib (vi...lo...)
+ * todo: - bundle this with its own logging library which supports scoped logs
+ */
+// @declapract:review: this vendored copy of withLogTrail (it logs no error on a throw) is retired — move to visualogic's withLogTrail, the (input, context) shape: each op becomes \`(input, context) => …\`, a dependency (dbConnection, log) moves out of the input into the context arg, and each caller passes it as the 2nd arg. then delete this marker
+export const withInputOutputTracing = <T extends (...args: any[]) => any>(
+  logic: T,
+  options: { name: string; durationReportingThresholdInSeconds: number },
+): T => {
+  return (async (...args: any[]) => {
+    log.debug(\`\${options.name}.input\`, { args });
+    const result = await logic(...args);
+    log.debug(\`\${options.name}.output\`, { result });
+    return result;
+  }) as T;
+};
+"
+`;

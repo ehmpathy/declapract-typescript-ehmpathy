@@ -1,3 +1,5 @@
+import { getError } from 'test-fns';
+
 import { check, fix } from './package.json.declapract';
 
 describe('rhachet prod-deps bad practice package.json', () => {
@@ -99,12 +101,7 @@ describe('rhachet prod-deps bad practice package.json', () => {
       // r009.n3: the enriched '...no rhachet(-<family>-*) package in dependencies' string is
       // the consumer-visible signal; a partial-prefix assert would survive its regression.
       const contents = JSON.stringify({ dependencies: { lodash: '4.0.0' } });
-      let message = '';
-      try {
-        check(contents, {} as any);
-      } catch (error) {
-        message = error instanceof Error ? error.message : String(error);
-      }
+      const { message } = getError(() => check(contents, {} as any));
       expect(message).toMatchSnapshot('check skip message — no rhachet dep');
     });
 
@@ -112,12 +109,7 @@ describe('rhachet prod-deps bad practice package.json', () => {
       // r009.b1: asPackageJSON turns the raw engine SyntaxError into an actionable,
       // context-rich message; snapshot the exact consumer-visible output.
       const contents = '{ "dependencies": { "rhachet": "1.0.0", } }'; // stray comma
-      let message = '';
-      try {
-        check(contents, {} as any);
-      } catch (error) {
-        message = error instanceof Error ? error.message : String(error);
-      }
+      const { message } = getError(() => check(contents, {} as any));
       expect(message).toContain(
         '[rhachet/prod-deps] could not parse package.json',
       );

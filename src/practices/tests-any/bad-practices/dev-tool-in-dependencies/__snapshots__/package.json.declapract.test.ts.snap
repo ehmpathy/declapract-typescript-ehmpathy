@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`tests-any dev-tool-in-dependencies given: [case1] test-fns in both sections, the dependencies one below the floor when: [t0] fix runs then: the output matches snapshot 1`] = `
+"{
+  "dependencies": {
+    "domain-objects": "0.31.0"
+  },
+  "devDependencies": {
+    "test-fns": "1.17.0"
+  }
+}"
+`;

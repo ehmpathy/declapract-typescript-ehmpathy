@@ -20,7 +20,7 @@ const asCredentialsRecordFromExportLines = (input: {
       .split('\n')
       .map((line) => line.match(/^export\s+(\w+)=(.*)$/))
       .filter((match): match is RegExpMatchArray => match !== null)
-      .map((match) => [match[1]!, match[2]!] as const),
+      .map(([, key, value]) => [key!, value!] as const),
   );
 
 // an sso refresh is network-bound (identity-provider round-trip); a slow-but-valid refresh must not
@@ -30,9 +30,9 @@ const SSO_EXPORT_TIMEOUT_MS = 30000;
 /**
  * .what = export the aws credentials of an sso profile into a `{ KEY: VALUE }` record, via
  *         `aws configure export-credentials --format env`.
- * .why  = aws sdk v2 (used by simple-lambda-testing-methods, the blackbox lambda caller) cannot
- *         derive an sso profile from AWS_PROFILE alone — it needs static creds in env. this is the
- *         pure, injectable core of that export. it is a pure fn with the `exec` boundary injected,
+ * .why  = static creds in env pin every aws caller in the suite (sdk-aws-lambda's v3 LambdaClient,
+ *         and any v2 client a consumer still holds) to the keyrack profile's access, whether or not
+ *         the sdk can derive sso from a profile. this is the pure, injectable core of that export. it is a pure fn with the `exec` boundary injected,
  *         so the failure path AND the all-clear path are both clamped + snapped.
  * .note = a failed export is CALLER-must-fix (a stale/absent sso login), so it throws a
  *         `ConstraintError` (exit 2) that NAMES the fix and PRESERVES the real cause on the chain —
@@ -72,7 +72,9 @@ export const exportAwsCredentialsFromSsoProfile = (
     } catch (error) {
       throw new ConstraintError(
         `failed to export aws credentials from sso profile '${input.profile}'. run: aws sso login --profile ${input.profile}`,
-        { cause: error },
+        // a catch binds `unknown` under strictest, and `cause` is typed `Error`; narrow, never
+        // cast, so a non-Error throw is re-homed into an Error rather than dropped
+        { cause: error instanceof Error ? error : new Error(String(error)) },
       );
     }
   })();
@@ -82,15 +84,15 @@ export const exportAwsCredentialsFromSsoProfile = (
 };
 
 /**
- * .what = splice the sso profile's static creds into `env` and REMOVE AWS_PROFILE, so an aws-sdk v2
- *         caller authenticates against the target.
- * .why  = aws-sdk v2 (simple-lambda-testing-methods, the blackbox lambda caller) prefers AWS_PROFILE
- *         over static env creds when both are present, and cannot derive an sso profile from
- *         AWS_PROFILE alone. keyrack.source sets only AWS_PROFILE, so v2 auths against no target.
- *         a splice of static creds AND a removal of AWS_PROFILE makes both v2 and v3 use them. this
- *         is the single practice-owned guard for that v2 boundary, so every repo that invokes lambdas
- *         in tests inherits it rather than rediscovers it after an opaque credential failure. it is
- *         shared by BOTH jest envs (acceptance + integration) via useKeyrack -- the v2 gap is guarded once.
+ * .what = splice the sso profile's static creds into `env` and REMOVE AWS_PROFILE, so every aws
+ *         caller in the suite authenticates with those creds.
+ * .why  = both aws sdks prefer AWS_PROFILE over static env creds when both are present: v3's
+ *         default provider skips `fromEnv` once AWS_PROFILE is set (sdk-aws-lambda's LambdaClient is
+ *         v3), and v2 cannot derive an sso profile from AWS_PROFILE at all. a splice of static creds
+ *         AND a removal of AWS_PROFILE makes both use them. this is the single practice-owned guard,
+ *         so every repo that invokes lambdas in tests inherits it rather than rediscovers it after
+ *         an opaque credential failure. it is shared by BOTH jest envs (acceptance + integration)
+ *         via useKeyrack, so the gap is guarded once.
  * .note = `env` is injected so the splice + the AWS_PROFILE removal are clamped without a real
  *         process.env mutation; the caller passes process.env. `exportCreds` is injected too, so the
  *         whole path is a pure fn with both boundaries mockable.
@@ -98,7 +100,7 @@ export const exportAwsCredentialsFromSsoProfile = (
  *         configure export-credentials --format env` emits only `AWS_*` creds today; the allowlist
  *         keeps a future cli line, a proxy banner, or a nested-util var out of the shared process
  *         env (no hidden side effect on an unrelated key). the AWS_PROFILE removal is DELIBERATE and must
- *         persist for the suite lifetime — v2 prefers AWS_PROFILE over static creds, so a "restore"
+ *         persist for the suite lifetime — the sdk prefers AWS_PROFILE over static creds, so a "restore"
  *         would reintroduce the exact auth-against-no-target bug this guard exists to close; it is
  *         scoped to the injected `env`, so a test clamps it without a real process.env edit.
  */
@@ -117,7 +119,7 @@ export const spliceAwsStaticCredsIntoEnv = (
   for (const [key, value] of Object.entries(creds))
     if (key.startsWith(AWS_CRED_KEY_PREFIX)) context.env[key] = value;
 
-  // v2 prefers AWS_PROFILE over static creds when both are set, so remove it now that creds are spliced
+  // the sdk prefers AWS_PROFILE over static creds when both are set, so remove it now that creds are spliced
   delete context.env.AWS_PROFILE;
 };
 
@@ -126,7 +128,7 @@ export const spliceAwsStaticCredsIntoEnv = (
  * .why  = both aws jest envs need an sso profile, which keyrack.source sets from the consumer's
  *         `.agent/keyrack.yml`. when that manifest never declares AWS_PROFILE, keyrack sets no key
  *         and this guard fires — so the error must name the exact key to add, not blame
- *         keyrack.source (which did its job). the #564 gap: the practice cannot ship the consumer's
+ *         keyrack.source (which did its job). the gap: the practice cannot ship the consumer's
  *         keyrack.yml (it is a gitignored, consumer-local file), so it instead tells the consumer
  *         precisely what to declare, and every aws consumer inherits that one coherent guard+message
  *         (an error that names the fix) rather than re-derive it from an opaque credential miss.
@@ -141,15 +143,15 @@ export const getOneAwsSsoProfileFromEnv = (
   const profile = context.env.AWS_PROFILE;
   if (!profile)
     throw new ConstraintError(
-      'AWS_PROFILE not set. declare it in .agent/keyrack.yml (under env.test, and env.all so every tier sources it), so keyrack.source() can set it.',
+      'AWS_PROFILE not set. declare it in .agent/keyrack.yml (under env.test, and env.all so every access sources it), so keyrack.source() can set it.',
     );
   return profile;
 };
 
 /**
- * .what = source aws credentials from keyrack for the target tier and export them to `process.env`
+ * .what = source aws credentials from keyrack for the run's access and export them to `process.env`
  *         in ONE call — the single entrypoint both jest envs use for credential setup.
- * .why  = a jest env must not hand-roll the keyrack.source -> set ACCESS -> aws-sdk-v2 export
+ * .why  = a jest env must not hand-roll the keyrack.source -> set ACCESS -> static-cred export
  *         sequence inline; that spreads one concern across every env and drifts between them. this is
  *         the org `useKeyrack` convention (svc-jobs / svc-notifications), so a consumer reads one
  *         line rather than re-derives the sequence. it composes the injectable leaves above, so this
@@ -158,54 +160,185 @@ export const getOneAwsSsoProfileFromEnv = (
  * .how  =
  *   1. skip in CI (credentials arrive from secrets, not keyrack)
  *   2. skip if the consumer declares no `.agent/keyrack.yml`
- *   3. keyrack.source for the tier (sets AWS_PROFILE)
- *   4. set ACCESS for sdk-environment when the tier is not `test`
+ *   3. keyrack.source for the access (sets AWS_PROFILE)
+ *   4. set ACCESS for sdk-environment when the access is not `test`
  *   5. if static creds are already present, clear AWS_PROFILE so the sdk prefers them, and return
  *   6. else, when the consumer requires aws auth, export the sso profile's static creds via the
- *      shared v2 guard
- * .note = `mode` defaults to `lenient` (the org useKeyrack default); the acceptance env passes
- *         `strict` to keep its fail-fast-on-locked-key behavior.
+ *      shared static-cred guard
+ * .note = `mode` defaults to `lenient` (the org useKeyrack default). when the repo declares aws
+ *         auth, keyrack is sourced `strict` regardless, so an absent aws key fails loud.
+ * .note = when the repo declares aws auth, the ec2 metadata service is barred
+ *         (`AWS_EC2_METADATA_DISABLED=true`), so the sdk credential chain can never fall through to a
+ *         dev box's instance role and pass against resources the test never meant to touch.
+ *         the bar lands AFTER keyrack.source, so keyrack's own vault read is untouched; it lands
+ *         BEFORE the static-creds return, so every aws path carries it.
+ * .note = called once per run from the `jest.*.prepare.ts` globalSetup; jest workers fork
+ *         after globalSetup, so they inherit the env it sets.
+ * .note = every boundary (env, cwd, keyrack, file reads, the cred export) is injectable via
+ *         `context`, so each gate is clamped without a real process.env edit or fs read.
  */
-export const useKeyrack = (input?: {
-  env?: 'test' | 'prep' | 'prod';
-  owner?: string;
-  mode?: 'strict' | 'lenient';
-}): void => {
+export const useKeyrack = (
+  input?: {
+    env?: 'test' | 'prep' | 'prod';
+    owner?: string;
+    mode?: 'strict' | 'lenient';
+  },
+  context: {
+    env?: NodeJS.ProcessEnv;
+    cwd?: string;
+    keyrack?: {
+      source: (input: {
+        env: string;
+        owner: string;
+        mode?: 'strict' | 'lenient';
+      }) => void;
+    };
+    readText?: (input: { path: string }) => string | null;
+    exportCreds?: typeof exportAwsCredentialsFromSsoProfile;
+  } = {},
+): void => {
+  const processEnv = context.env ?? process.env;
+  const cwd = context.cwd ?? process.cwd();
+  const keyrackSdk = context.keyrack ?? keyrack;
+  const readText = context.readText ?? readTextOrNull;
   const env =
-    input?.env ?? ((process.env.ACCESS ?? 'test') as 'test' | 'prep' | 'prod');
+    input?.env ?? ((processEnv.ACCESS ?? 'test') as 'test' | 'prep' | 'prod');
   const owner = input?.owner ?? 'ehmpath';
-  const mode = input?.mode ?? 'lenient';
 
   // skip in CI — credentials arrive from secrets, not from a local keyrack
-  if (process.env.CI) return;
+  if (processEnv.CI) return;
 
   // skip if the consumer declares no keyrack manifest
-  const keyrackYmlPath = join(process.cwd(), '.agent/keyrack.yml');
-  if (!existsSync(keyrackYmlPath)) return;
+  if (readText({ path: join(cwd, '.agent/keyrack.yml') }) === null) return;
 
-  // source the tier's aws profile from keyrack (sets AWS_PROFILE)
-  keyrack.source({ env, owner, mode });
+  // only aws consumers need the metadata bar, strict mode, and the static-cred export
+  const requiresAwsAuth = isAwsAuthDeclared({
+    useYmlText: readText({ path: join(cwd, 'declapract.use.yml') }),
+  });
 
-  // set ACCESS for sdk-environment when the tier is not the default `test`
-  if (env !== 'test') process.env.ACCESS = env;
+  // source the access's aws profile from keyrack (sets AWS_PROFILE); strict under aws auth
+  const mode = requiresAwsAuth ? 'strict' : (input?.mode ?? 'lenient');
+  keyrackSdk.source({ env, owner, mode });
 
-  // only aws consumers need the v2 static-cred export
-  const declapractUsePath = join(process.cwd(), 'declapract.use.yml');
-  const requiresAwsAuth =
-    existsSync(declapractUsePath) &&
-    readFileSync(declapractUsePath, 'utf8').includes('awsAccountId');
+  // set ACCESS for sdk-environment when the access is not the default `test`
+  if (env !== 'test') processEnv.ACCESS = env;
   if (!requiresAwsAuth) return;
 
+  // bar the ec2 metadata service, so the instance role can never stand in for keyrack creds
+  processEnv.AWS_EC2_METADATA_DISABLED = 'true';
+
   // static creds already present (e.g. exported in the shell) — clear AWS_PROFILE so the sdk prefers
-  // the static creds (v2 prefers AWS_PROFILE over static creds when both are set), then return
-  if (process.env.AWS_ACCESS_KEY_ID) {
-    delete process.env.AWS_PROFILE;
-    delete process.env.AWS_DEFAULT_PROFILE;
+  // the static creds (v2 and v3 both prefer AWS_PROFILE over static creds when both are set), then return
+  if (processEnv.AWS_ACCESS_KEY_ID) {
+    delete processEnv.AWS_PROFILE;
+    delete processEnv.AWS_DEFAULT_PROFILE;
     return;
   }
 
-  // read the sso profile keyrack.source set (throws an error that NAMES the keyrack fix if absent, #564),
-  // then splice its static creds into process.env for the aws-sdk-v2 lambda caller
-  const awsSsoProfile = getOneAwsSsoProfileFromEnv({}, { env: process.env });
-  spliceAwsStaticCredsIntoEnv({ profile: awsSsoProfile }, { env: process.env });
+  // read the sso profile keyrack.source set (throws an error that NAMES the keyrack fix if absent),
+  // then splice its static creds into the env for every aws caller in the suite
+  const awsSsoProfile = getOneAwsSsoProfileFromEnv({}, { env: processEnv });
+  spliceAwsStaticCredsIntoEnv(
+    { profile: awsSsoProfile },
+    { env: processEnv, exportCreds: context.exportCreds },
+  );
+};
+
+// the `awsAccountId:` key at the head of its own line: group 1 = its indent, group 2 = the text after
+// the colon. the `\s*:` right after the name keeps a longer key (`awsAccountIdLegacy:`) out
+const AWS_ACCOUNT_ID_KEY_LINE = /^(\s*)awsAccountId\s*:(.*)$/;
+
+// the yaml scalars that declare a key with no value
+const YAML_EMPTY_SCALARS = new Set(['', "''", '""', '~', 'null']);
+
+/**
+ * .what = decide whether a key line carries a value on the line itself, after the colon.
+ * .why  = `awsAccountId: '123'` declares an account inline; `awsAccountId:` or `awsAccountId: ''`
+ *         does not. a ` # note` at the end of the line is a comment, never a value.
+ */
+const hasInlineYamlValue = (input: { textAfterColon: string }): boolean =>
+  !YAML_EMPTY_SCALARS.has(
+    input.textAfterColon.replace(/(^|\s)#.*$/, '').trim(),
+  );
+
+/**
+ * .what = decide whether a key line opens a nested block: the next content line sits deeper.
+ * .why  = `awsAccountId:` followed by indented `prep:` / `prod:` lines declares an account per
+ *         access. blank lines and comment lines between the key and its block are skipped.
+ */
+const hasNestedYamlValueBelow = (input: {
+  lines: string[];
+  index: number;
+  indent: string;
+}): boolean => {
+  const lineNext = input.lines
+    .slice(input.index + 1)
+    .find((line) => line.trim() !== '' && !line.trim().startsWith('#'));
+  if (lineNext === undefined) return false;
+  return lineNext.length - lineNext.trimStart().length > input.indent.length;
+};
+
+/**
+ * .what = decide whether a repo's `declapract.use.yml` declares an aws account: an
+ *         `awsAccountId:` KEY with a value, inline or a nested map.
+ * .why  = this gates the ec2 metadata bar and strict keyrack mode, so a wrong answer is a security
+ *         defect. a bare text match answered yes for a comment or a longer key that held the text,
+ *         and so forced strict mode onto a repo with no aws account. this reads the key, not the text.
+ * .note = absent file (`null`) declares no aws account. block-style yaml only (the shape
+ *         `declapract.use.yml` takes); a flow-style map (`{ awsAccountId: 1 }`) reads as no account.
+ */
+export const isAwsAuthDeclared = (input: {
+  useYmlText: string | null;
+}): boolean => {
+  if (input.useYmlText === null) return false;
+  const lines = input.useYmlText.split('\n');
+  return lines.some((line, index) => {
+    const keyLine = line.match(AWS_ACCOUNT_ID_KEY_LINE);
+    if (!keyLine) return false;
+    const [, indent = '', textAfterColon = ''] = keyLine;
+    return (
+      hasInlineYamlValue({ textAfterColon }) ||
+      hasNestedYamlValueBelow({ lines, index, indent })
+    );
+  });
+};
+
+/**
+ * .what = read a file's text, or null when it is absent.
+ * .why  = the sole fs read of useKeyrack, named so the orchestrator composes it and a test injects
+ *         an in-memory view in its place.
+ */
+const readTextOrNull = (input: { path: string }): string | null => {
+  if (!existsSync(input.path)) return null;
+  return readFileSync(input.path, 'utf8');
+};
+
+/**
+ * .what = decide which keyrack env an acceptance run sources: ACCESS when set, `test` for an
+ *         in-process run (LOCALLY=true) or a ci runner, else throw.
+ * .why  = a cloud acceptance run acts with prep or prod access. a silent `ACCESS ?? 'test'` fallback
+ *         sourced the TEST keyrack over a prep target, and the run hung rather than failed.
+ *         the run must name its target, so the error names the fix.
+ * .note = pure: the env is injected, so every branch is clamped with no process.env read.
+ */
+export const getOneKeyrackEnvForAcceptance = (input: {
+  env: NodeJS.ProcessEnv;
+}): 'test' | 'prep' | 'prod' => {
+  const access = input.env.ACCESS;
+
+  // an explicit access wins, once it names a real access
+  if (access === 'test' || access === 'prep' || access === 'prod') return access;
+  if (access)
+    throw new ConstraintError(
+      `ACCESS=${access} is not a known access. set ACCESS=test|prep|prod.`,
+      { access },
+    );
+
+  // an in-process run, or a ci runner (keyrack skips there), holds the test access
+  if (input.env.LOCALLY === 'true' || input.env.CI) return 'test';
+
+  // a cloud run with no named target must not guess
+  throw new ConstraintError(
+    'no ACCESS set for a cloud acceptance run. set ACCESS=prep|prod for a cloud acceptance run, or LOCALLY=true for an in-process run.',
+  );
 };

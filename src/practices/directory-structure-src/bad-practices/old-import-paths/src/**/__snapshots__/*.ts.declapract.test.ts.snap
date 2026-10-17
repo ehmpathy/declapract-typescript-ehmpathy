@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`old-import-paths bad practice bare barrel imports (#655, #671) the fix repoints each bare barrel import and leaves the rest: bare barrels — after 1`] = `
+"import { Quote } from '@src/domain.objects';
+import { Lead } from '../../domain.objects';
+import { leadDao } from '../../access';
+import { genQuote } from '@src/domain.operations';
+import { Widget } from 'some-pkg/domain';
+import { Other } from '../domain';
+"
+`;
+
 exports[`old-import-paths bad practice check should match files with @/domain/ imports 1`] = `undefined`;
 
 exports[`old-import-paths bad practice check should match files with @/logic/ imports 1`] = `undefined`;

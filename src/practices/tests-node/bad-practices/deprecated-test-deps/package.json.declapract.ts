@@ -1,6 +1,4 @@
-import { FileCheckType, type FileFixFunction } from 'declapract';
-
-export const check = FileCheckType.CONTAINS;
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
 const deprecatedDeps = [
   'babel-jest',
@@ -9,6 +7,18 @@ const deprecatedDeps = [
   'core-js',
   'ts-jest',
 ];
+
+/**
+ * .what = flags a package.json that holds ANY deprecated test dep, in either section.
+ * .why  = the prior `CONTAINS` check matched only a repo that held ALL five, in devDependencies;
+ *         a repo with just `core-js` + `ts-jest` was never flagged, so the fix never ran (#660).
+ */
+export const check: FileCheckFunction = (contents) => {
+  const pkg = JSON.parse(contents ?? '{}');
+  const declared = { ...pkg.dependencies, ...pkg.devDependencies };
+  if (deprecatedDeps.some((dep) => dep in declared)) return; // bad practice detected
+  throw new Error('does not match bad practice: no deprecated test dep');
+};
 
 /**
  * .what = returns a deps map with every deprecated key removed, without any mutation

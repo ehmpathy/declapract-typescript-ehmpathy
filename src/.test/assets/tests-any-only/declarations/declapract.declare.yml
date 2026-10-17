@@ -1,0 +1,6 @@
+# minimal declarations that hold the tests-any practice alone
+# .why = a pipeline test of a tests-any declaration evaluates only tests-any against a tiny repo,
+#        rather than every practice against a symlink of this repo's whole src
+declare:
+  practices: practices
+  use-cases: useCases.yml

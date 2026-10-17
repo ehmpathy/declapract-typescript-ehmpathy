@@ -1,5 +1,7 @@
 import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
+import { asSourceOnRunLambdaEndpoint } from '../../../../../../utils/asSourceOnRunLambdaEndpoint';
+
 export const check: FileCheckFunction = (contents) => {
   if (
     contents?.includes(
@@ -12,11 +14,14 @@ export const check: FileCheckFunction = (contents) => {
 
 export const fix: FileFixFunction = async (contents) => {
   if (!contents) return {}; // do nothing if no contents. really, this shouldn't have been called
+  // move the environment import, and off the retired test lib in the same apply (#650)
   return {
-    contents: contents.replace(
-      // replace the bad import
-      `import { locally } from '../__test_utils__/environment';`,
-      `import { locally } from '../environment';`,
-    ),
+    contents: asSourceOnRunLambdaEndpoint({
+      contents: contents.replace(
+        // replace the bad import
+        `import { locally } from '../__test_utils__/environment';`,
+        `import { locally } from '../environment';`,
+      ),
+    }),
   };
 };

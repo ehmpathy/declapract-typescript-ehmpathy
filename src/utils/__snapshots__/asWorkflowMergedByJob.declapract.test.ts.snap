@@ -1,0 +1,136 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asWorkflowMergedByJob given: [case1] a pre-oidc caller with a repo-own job (#685) when: [t0] the merge runs then: before + after match snapshot: provision.yml — after merge 1`] = `
+"name: provision
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    paths:
+      - provision/**
+  workflow_dispatch:
+
+permissions:
+  id-token: write # required for oidc
+  contents: read
+
+jobs:
+  aws-prep-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prep
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  github:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/github.repo/resources.ts
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main
+
+  # the repo's own job, which the practice never declares
+  repo-own-seed:
+    uses: ./.github/workflows/.seed.yml
+    with:
+      target: prep
+"
+`;
+
+exports[`asWorkflowMergedByJob given: [case1] a pre-oidc caller with a repo-own job (#685) when: [t0] the merge runs then: before + after match snapshot: provision.yml — before 1`] = `
+"name: provision
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  id-token: write # required for oidc
+  contents: read
+
+jobs:
+  aws-prep-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prep
+      github-environment: prep # the retired input
+      aws-account-id: "123"
+    secrets:
+      aws-access-key-id: \${{ secrets.AWS_ACCESS_KEY_ID }}
+
+  # the repo's own job, which the practice never declares
+  repo-own-seed:
+    uses: ./.github/workflows/.seed.yml
+    with:
+      target: prep
+"
+`;
+
+exports[`asWorkflowMergedByJob given: [case4] an adopter's own triggers beside the declared ones (#685) when: [t0] the merge runs then: before + after match snapshot: adopter triggers — after merge 1`] = `
+"name: provision
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    paths:
+      - provision/**
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: why this run
+  schedule:
+    - cron: "0 6 * * *" # the adopter's nightly drift plan
+
+permissions:
+  id-token: write # required for oidc
+  contents: read
+
+jobs:
+  aws-prep-terraform:
+    uses: ./.github/workflows/.terraform.yml
+    with:
+      working-directory: provision/aws/environments/prep
+      creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
+
+  github:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/github.repo/resources.ts
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main
+"
+`;
+
+exports[`asWorkflowMergedByJob given: [case4] an adopter's own triggers beside the declared ones (#685) when: [t0] the merge runs then: before + after match snapshot: adopter triggers — before 1`] = `
+"name: provision
+
+on:
+  push:
+    branches:
+      - "main"
+    tags:
+      - v* # the adopter's own tag filter
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: why this run
+  schedule:
+    - cron: "0 6 * * *" # the adopter's nightly drift plan
+
+permissions:
+  id-token: write # required for oidc
+  contents: read
+
+jobs:
+  github:
+    uses: ./.github/workflows/.declastruct.yml
+    with:
+      wish-path: provision/github.repo/resources.ts
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main
+"
+`;

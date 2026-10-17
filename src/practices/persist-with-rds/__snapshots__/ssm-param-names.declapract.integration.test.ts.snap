@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds ssm param names are the sdk-config derived names (#637) given: [case1] the wish run with ACCESS=prep CONFIG=prep when: [t0] getAllParameters is called with no choice override then: the declared names match snapshot 1`] = `
+[
+  "/@declapract{variable.organizationName}/@declapract{variable.projectName}/prep/database.role.crud.password",
+  "/@declapract{variable.organizationName}/@declapract{variable.projectName}/prep/database.role.cicd.for-plan.password",
+  "/@declapract{variable.organizationName}/@declapract{variable.projectName}/prep/database.role.cicd.for-apply.password",
+]
+`;

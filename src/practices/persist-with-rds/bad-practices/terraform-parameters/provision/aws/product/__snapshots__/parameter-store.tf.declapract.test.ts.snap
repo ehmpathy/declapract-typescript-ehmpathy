@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`terraform-parameters parameter-store.tf.declapract fix should name the copy target of each admin/service forget (#686) 1`] = `
+"# copy this value before the first plan → /ahbode/svc-chat/{config}/database.role.cicd.for-plan.password, /ahbode/svc-chat/{config}/database.role.cicd.for-apply.password (see provision/aws/readme.md)
+removed {
+  from = aws_ssm_parameter.secret_database_admin_password
+  lifecycle {
+    destroy = false # forget from state; keep the live param
+  }
+}
+removed {
+  from = aws_ssm_parameter.secret_database_role_crud_password
+  lifecycle {
+    destroy = false # forget from state; keep the live param
+  }
+}
+# copy this value before the first plan → /ahbode/svc-chat/{config}/database.role.crud.password (see provision/aws/readme.md)
+removed {
+  from = aws_ssm_parameter.secret_database_service_password
+  lifecycle {
+    destroy = false # forget from state; keep the live param
+  }
+}
+"
+`;

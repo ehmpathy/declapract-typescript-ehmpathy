@@ -1,0 +1,4 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/rhachet/declarations
+# .why  = the same repo with no aws practice: the keyrack.yml is left alone
+declarations: 'declarations/declapract.declare.yml'
+useCase: rhachet-node

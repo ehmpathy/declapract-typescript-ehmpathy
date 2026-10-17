@@ -1,3 +1,5 @@
+import { getError } from 'test-fns';
+
 import { check, fix } from './package.json.declapract';
 
 describe('logs leveled-term bad practice package.json', () => {
@@ -22,12 +24,7 @@ describe('logs leveled-term bad practice package.json', () => {
       const contents = JSON.stringify({ dependencies: { lodash: '4.0.0' } });
       // snapshot the FULL throw message so the dep-labeled detail cannot silently
       // drift back to a bare 'does not match bad practice' string (r009.n3)
-      let message = '';
-      try {
-        check(contents, {} as any);
-      } catch (error) {
-        message = error instanceof Error ? error.message : String(error);
-      }
+      const { message } = getError(() => check(contents, {} as any));
       expect(message).toMatchSnapshot('check skip message — dep absent');
     });
 
@@ -36,12 +33,7 @@ describe('logs leveled-term bad practice package.json', () => {
       // context-rich message; snapshot the exact consumer-visible output a repo with a
       // stray comma actually sees, so it cannot regress to a bare parse error (r009.b1)
       const contents = '{ "dependencies": { "lodash": "4.0.0", } }'; // stray comma
-      let message = '';
-      try {
-        check(contents, {} as any);
-      } catch (error) {
-        message = error instanceof Error ? error.message : String(error);
-      }
+      const { message } = getError(() => check(contents, {} as any));
       expect(message).toContain(
         '[logs/leveled-term] could not parse package.json',
       );

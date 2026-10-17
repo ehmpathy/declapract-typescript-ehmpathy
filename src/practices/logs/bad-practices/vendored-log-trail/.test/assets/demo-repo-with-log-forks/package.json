@@ -1,0 +1,7 @@
+{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "simple-leveled-log-methods": "0.5.0"
+  }
+}

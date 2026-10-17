@@ -1,0 +1,86 @@
+name: bump-action-pins
+
+# .what = moves every sha-pinned action ref, in the templates and in this repo's own workflows, to
+#         the newest commit inside its pinned major, and opens a pr for a human to read (#556)
+# .why  = the templates are delivered by EQUALS, so a consumer cannot bump a pin — the next apply
+#         reverts it. the bump happens here, at the source, or the pins rot in place
+on:
+  schedule:
+    - cron: "0 14 * * 1" # weekly, on mondays
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    uses: ./.github/workflows/.install.yml
+
+  bump:
+    runs-on: ubuntu-24.04
+    needs: [install]
+    steps:
+      # .why = an app token, so the pr it opens triggers the test workflow (a GITHUB_TOKEN pr does not)
+      - name: get github token
+        id: github-token
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          owner: ehmpathy
+          repositories: ${{ github.event.repository.name }}
+          app-id: ${{ vars.RHELEASE_APP_ID }}
+          private-key: ${{ secrets.RHELEASE_APP_PRIVATE_KEY }}
+
+      - name: checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          token: ${{ steps.github-token.outputs.token }} # enables git push with app token
+
+      - name: set node-version
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: get node-modules from cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ./node_modules
+          key: ${{ needs.install.outputs.node-modules-cache-key }}
+
+      - name: bump action pins
+        run: node -r esbuild-register src/utils/actionPins/bumpActionPins.ts --mode apply
+        env:
+          GH_TOKEN: ${{ steps.github-token.outputs.token }}
+
+      # .why = the pin table snapshot moves with every bump; re-record it, and let the clamp's other
+      #        assertions (40-hex sha, tag tail, one sha per repo) gate the pr
+      - name: re-record the pin table and hold the actionPins clamp
+        run: |
+          set -eu
+          RESNAP=true THOROUGH=true npm run test:integration -- --testPathPatterns=actionPins
+
+      - name: open a pr, if a pin moved
+        env:
+          GH_TOKEN: ${{ steps.github-token.outputs.token }}
+        run: |
+          set -eu
+          if git diff --quiet; then
+            echo "👌 every pin is current"
+            exit 0
+          fi
+          branch="fix/bump-action-pins-$(date -u +%Y-%m-%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -am "fix(cicd): bump the sha-pinned actions"
+          git push --force origin "$branch"
+          if gh pr view "$branch" --json number --jq .number; then
+            echo "👌 a pr for $branch is already open"
+            exit 0
+          fi
+          gh pr create --base main --head "$branch" \
+            --title "fix(cicd): bump the sha-pinned actions" \
+            --body "moves each sha-pinned action to the newest commit inside its pinned major (#556). read the pin table diff in \`src/__snapshots__/actionPins.declapract.integration.test.ts.snap\` before merge."

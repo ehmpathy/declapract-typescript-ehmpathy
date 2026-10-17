@@ -1,0 +1,7 @@
+# .note = declarations dir is symlinked by the test to .test/assets/git/declarations
+# .why  = a repo whose .gitattributes predates the current template: a legacy header, a legacy
+#         entry, and a managed entry outside any section — so the CONTAINS check fails and the
+#         git practice's fix runs
+# .note = NO `variables:` block — `git` and `rhachet` reference zero `@declapract{variable.*}`
+declarations: 'declarations/declapract.declare.yml'
+useCase: typescript-project

@@ -9,6 +9,6 @@ import { envStatic } from '@src/utils/environment';
  *         `sdkAwsLambdaEnvAccessAncient`: as peers migrate, a caller flips
  *         `Ancient → Contemp` per peer, and `grep AccessAncient` at zero is the exit.
  */
-export const sdkAwsLambdaEnvAccessContemp = (
-  input?: { access: EnvironmentAccessTier | null },
-): EnvironmentAccessTier => input?.access ?? envStatic.access;
+export const sdkAwsLambdaEnvAccessContemp = (input?: {
+  access: EnvironmentAccessTier | null;
+}): EnvironmentAccessTier => input?.access ?? envStatic.access;

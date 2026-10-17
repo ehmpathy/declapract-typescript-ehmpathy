@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 import { given, then, useBeforeAll, when } from 'test-fns';
-import ts from 'typescript';
+import { getModuleExportsFromTsSource } from '../../utils/getModuleExportsFromTsSource';
 
 /**
  * .what = holds the `sdkAwsLambdaEnvAccess{Ancient,Contemp}` helper templates — the
@@ -40,19 +40,13 @@ const runHelperFile = (input: {
   name: string;
   access: 'test' | 'prep' | 'prod';
 }): (() => string) => {
-  const source = readFileSync(input.path, 'utf8');
-  const transpiled = ts.transpileModule(source, {
-    compilerOptions: {
-      module: ts.ModuleKind.CommonJS,
-      target: ts.ScriptTarget.ES2020,
-    },
-  }).outputText;
-  const moduleExports: Record<string, () => string> = {};
   const requireStub = (id: string): unknown =>
     id.includes('environment') ? { envStatic: { access: input.access } } : {};
-  // eslint-disable-next-line no-new-func
-  new Function('exports', 'require', transpiled)(moduleExports, requireStub);
-  return moduleExports[input.name];
+  const moduleExports = getModuleExportsFromTsSource<Record<string, () => string>>({
+    source: readFileSync(input.path, 'utf8'),
+    requireStub,
+  });
+  return moduleExports[input.name]!;
 };
 
 describe('environments practice — the EnvAccess helper primitive (north-star clamp)', () => {
@@ -85,6 +79,15 @@ describe('environments practice — the EnvAccess helper primitive (north-star c
       then('the ancient target has the honest LambdaEnvSlug return type, not an as-cast', () => {
         expect(scene.ancient).toContain('LambdaEnvSlug');
         expect(scene.ancient).not.toContain('as EnvironmentAccessTier');
+      });
+
+      then('the ancient target returns the exact set it can emit — prod | dev, never the family (#636)', () => {
+        // the family `LambdaEnvSlug` admits `test` and `prep`, which this helper never returns; a
+        // caller that narrows on the result would then handle two values that cannot arrive
+        expect(scene.ancient).toContain(
+          "export type LambdaEnvSlugAncient = Extract<LambdaEnvSlug, 'prod' | 'dev'>;",
+        );
+        expect(scene.ancient).toMatch(/\): LambdaEnvSlugAncient => \{/);
       });
 
       then('the ancient file source matches snapshot (a structural edit vibechecks in a review)', () => {
