@@ -1,0 +1,7 @@
+{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "sdk-aws-lambda": "0.7.1"
+  }
+}

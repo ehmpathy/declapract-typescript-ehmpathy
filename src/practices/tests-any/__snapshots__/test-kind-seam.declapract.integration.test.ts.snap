@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`#679 test-kind presence accepts the \`._.\` seam given: [case] the tests-any integration declaration, on a repo with no test of either form then: the check still fails 1`] = `"expected at least one test file under src/ named *.integration.test.ts or *._.intg.test.ts"`;
+
+exports[`#679 test-kind presence accepts the \`._.\` seam given: [case] the tests-service blackbox acceptance declaration, on a repo with no test of either form then: the check still fails 1`] = `"expected at least one test file under blackbox/ named *.acceptance.test.ts or *._.acpt.test.ts"`;
+
+exports[`#679 test-kind presence accepts the \`._.\` seam given: [case] the tests-service integration declaration, on a repo with no test of either form then: the check still fails 1`] = `"expected at least one test file under src/ named *.integration.test.ts or *._.intg.test.ts"`;
+
+exports[`#679 test-kind presence accepts the \`._.\` seam given: [case] the tests-service lambda acceptance declaration, on a repo with no test of either form then: the check still fails 1`] = `"expected at least one test file under blackbox/lambdas/ named *.acceptance.test.ts or *._.acpt.test.ts"`;

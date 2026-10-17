@@ -1,0 +1,20 @@
+declarations: 'declarations/declapract.declare.yml'
+useCase: lambda-service-with-rds
+variables:
+  organizationName: 'test-org'
+  projectName: 'test-project'
+  infrastructureNamespaceId: 'testns'
+  databaseName: 'testdb'
+  databaseUserName:
+    cicdUser: 'cicd_user'
+    serviceUser: 'service_user'
+  databaseTunnelHost:
+    prep: 'localhost'
+    prod: 'localhost'
+  databaseClusterHost:
+    prep: 'awesomesdb.cluster-abc123.us-east-1.rds.amazonaws.com'
+    prod: 'awesomesdb.cluster-def456.us-east-1.rds.amazonaws.com'
+  slackWebhookUrl: 'https://hooks.slack.test/webhook'
+  awsAccountId:
+    prep: '111111111111'
+    prod: '222222222222'

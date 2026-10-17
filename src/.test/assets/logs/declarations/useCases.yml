@@ -1,0 +1,5 @@
+# minimal use case for the logs practice src integration test
+use-cases:
+  lambda-service:
+    practices:
+      - logs

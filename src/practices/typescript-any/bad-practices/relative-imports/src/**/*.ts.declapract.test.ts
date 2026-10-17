@@ -70,6 +70,28 @@ describe('relative-imports bad practice', () => {
       ).toThrow('does not match bad practice');
     });
 
+    // the tests-node template src/.test/useWakeOfTestdb.ts imports the repo-root
+    // jest.integration.env.db, which has no @src form. the fix leaves it, so the check must too,
+    // or it flags a file no fix and no human can clear
+    it('should not match an import that climbs out of src/, which the fix cannot rewrite', () => {
+      const contents = `import { probeTestDb } from '../../jest.integration.env.db';`;
+      expect(() =>
+        check(contents, {
+          relativeFilePath: 'src/.test/useWakeOfTestdb.ts',
+        } as any),
+      ).toThrow('does not match bad practice');
+    });
+
+    it('should match when one import stays within src/ beside one that climbs out', () => {
+      const contents = `import { probeTestDb } from '../../jest.integration.env.db';
+import { helper } from '../utils/helper';`;
+      expect(() =>
+        check(contents, {
+          relativeFilePath: 'src/.test/useWakeOfTestdb.ts',
+        } as any),
+      ).not.toThrow();
+    });
+
     it('should not match empty files', () => {
       expect(() =>
         check('', { relativeFilePath: 'src/contract/index.ts' } as any),
@@ -276,6 +298,14 @@ import pkg from '../../package.json';`;
     it('check throws on the fixed output — the @src/ import no longer matches, so declapract fix cannot loop', async () => {
       const contents = `import { helper } from '../utils/helper';`;
       const fixed = (await fix(contents, ctx)).contents as string;
+      expect(() => check(fixed, ctx)).toThrow('does not match bad practice');
+    });
+
+    it('check throws on the fixed output of a file that keeps an import out of src/', async () => {
+      const contents = `import { helper } from '../utils/helper';
+import pkg from '../../package.json';`;
+      const fixed = (await fix(contents, ctx)).contents as string;
+      expect(fixed).toContain(`from '../../package.json'`);
       expect(() => check(fixed, ctx)).toThrow('does not match bad practice');
     });
   });

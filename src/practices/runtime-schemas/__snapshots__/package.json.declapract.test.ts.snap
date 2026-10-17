@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`runtime-schemas best-practice package.json given: [case2] a lambda-service on zod 4.3.6 with sdk-aws-lambda 0.7.1 (#545) when: [t1] the fix runs then: pnpm.overrides.zod and the direct zod are both 4.4.3; a rerun is a no-op: package.json — after (#545) 1`] = `
+"{
+  "dependencies": {
+    "sdk-aws-lambda": "0.7.1",
+    "zod": "4.4.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "zod": "4.4.3"
+    }
+  }
+}"
+`;

@@ -4,7 +4,7 @@
 #
 # .why  = jest 30 dropped the perfStats key that the prior report filtered on
 #         (`perfStats.runtime`), so the filter matched zero rows and the report
-#         went silent-green for its whole life (radio #602). endTime-startTime
+#         went silent-green for its whole life. endTime-startTime
 #         (epoch ms) is the only per-file duration jest 30 still emits, so read
 #         the wall-clock span instead — and fail LOUD if a future schema change
 #         zeroes it again, never silent-green.
@@ -33,10 +33,10 @@ if [[ "$total" -eq 0 ]]; then
 fi
 
 # a non-empty testResults that yields zero real durations means the jest --json duration
-# schema changed again — the exact silent-death #602 fixed. fail loud, never silent-green.
+# schema changed again — the silent death this check exists to catch. fail loud, never silent-green.
 nonzero=$(printf '%s\n' "$durations" | awk -F: '$1 > 0' | wc -l | tr -d ' ')
 if [[ "$nonzero" -eq 0 ]]; then
-  echo "::error::slow-test report parsed 0 durations from $total test files — the jest --json duration schema likely changed (see radio #602)"
+  echo "::error::slow-test report parsed 0 durations from $total test files — the jest --json duration schema likely changed; read endTime/startTime from one entry of $results to see what moved"
   exit 1
 fi
 

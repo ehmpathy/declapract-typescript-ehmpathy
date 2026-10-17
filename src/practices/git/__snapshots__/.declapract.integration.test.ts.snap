@@ -9,14 +9,15 @@ node_modules
 `;
 
 exports[`gitignore practices given: [case1] a repo whose .gitignore lacks both cache dirs when: [t3] both practices are applied a second time then: the settled file matches snapshot: .gitignore -- settled 1`] = `
-"*.bak.*
+"**/.claude/scheduled_tasks*
+*.bak.*
 *.local.json
 *.log
 *.tsbuildinfo
 .agent/.cache/
+.agent/.notes/
 .artifact
 .cache/
-.claude/scheduled_tasks*
 .env
 .idea
 .log/slowtest/
@@ -42,8 +43,9 @@ node_modules
 `;
 
 exports[`gitignore practices given: [case2] a repo whose use case has rhachet but NOT git when: [t1] the rhachet practice is applied then: the settled file matches snapshot: .gitignore -- rhachet only 1`] = `
-".agent/.cache/
-.claude/scheduled_tasks*
+"**/.claude/scheduled_tasks*
+.agent/.cache/
+.agent/.notes/
 .idea
 dist
 node_modules

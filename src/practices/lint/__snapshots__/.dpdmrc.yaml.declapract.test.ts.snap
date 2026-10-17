@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`lint .dpdmrc.yaml check + fix (#628) given: a .dpdmrc.yaml with a node_modules entry among comments then: fix drops only that entry and keeps the comments 1`] = `
+"# repo list
+exclude:
+  # cited
+  - jest-circus
+"
+`;

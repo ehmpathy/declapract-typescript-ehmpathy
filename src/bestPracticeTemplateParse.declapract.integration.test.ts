@@ -79,7 +79,40 @@ const asParseErrorLabel = (input: {
  *         literals in every ts template, so they parse as ordinary string content.
  */
 const getAllParseErrors = (input: { path: string; source: string }): string[] =>
-  (
+  getAllSyntacticDiagnostics(input)
+    .filter((diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error)
+    .map((diagnostic) => asParseErrorLabel({ path: input.path, diagnostic }));
+
+/**
+ * .what = the parser's diagnostics for one template, by the route its kind allows.
+ * .why  = `transpileModule` cannot emit a declaration file, so a `.d.ts` template (an ambient
+ *         module, e.g. tests-expo `src/.test/assets/test-fns.autoprune.d.ts`) throws "Output generation failed"
+ *         rather than report. a one-file program's `getSyntacticDiagnostics` reads the same parser
+ *         and accepts a `.d.ts`; it still resolves no module and checks no type.
+ */
+const getAllSyntacticDiagnostics = (input: {
+  path: string;
+  source: string;
+}): readonly ts.Diagnostic[] => {
+  // a declaration file: parse via a one-file program, since it has no emit
+  if (input.path.endsWith('.d.ts')) {
+    const host = ts.createCompilerHost({});
+    const program = ts.createProgram({
+      rootNames: [input.path],
+      options: { noResolve: true, noLib: true },
+      host: {
+        ...host,
+        getSourceFile: (fileName, languageVersion) =>
+          fileName === input.path
+            ? ts.createSourceFile(fileName, input.source, languageVersion)
+            : undefined,
+      },
+    });
+    return program.getSyntacticDiagnostics();
+  }
+
+  // every other template: parse via transpile, which runs the parser only
+  return (
     ts.transpileModule(input.source, {
       fileName: input.path,
       reportDiagnostics: true,
@@ -88,9 +121,8 @@ const getAllParseErrors = (input: { path: string; source: string }): string[] =>
         jsx: ts.JsxEmit.Preserve,
       },
     }).diagnostics ?? []
-  )
-    .filter((diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error)
-    .map((diagnostic) => asParseErrorLabel({ path: input.path, diagnostic }));
+  );
+};
 
 const asLineNumber = (input: { source: string; at: number }): number =>
   input.source.slice(0, input.at).split('\n').length;
@@ -154,6 +186,28 @@ describe('every shipped ts template parses as valid typescript (#613)', () => {
       then('none reports a syntactic error', () => {
         const offenders = sources.flatMap(getAllParseErrors);
         expect(offenders).toEqual([]);
+      });
+    });
+  });
+
+  given('[case3] a declaration-file template (no emit, so no transpile)', () => {
+    when('[t0] a valid ambient module is parsed', () => {
+      then('it reports no error, rather than throw "Output generation failed"', () => {
+        const offenders = getAllParseErrors({
+          path: '/virtual/ok.d.ts',
+          source: "declare module 'x' {\n  export const y: number;\n}\n",
+        });
+        expect(offenders).toEqual([]);
+      });
+    });
+    when('[t1] a broken ambient module is parsed', () => {
+      then('the parser still reports its syntactic error', () => {
+        const offenders = getAllParseErrors({
+          path: '/virtual/broken.d.ts',
+          source: "declare module 'x' {\n  export const y: number\n",
+        });
+        expect(offenders.length).toBeGreaterThan(0);
+        expect(offenders.join('\n')).toContain("'}' expected");
       });
     });
   });

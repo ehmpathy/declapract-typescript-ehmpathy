@@ -1,0 +1,6 @@
+# minimal usecase for tests-any pipeline tests
+# .note = no variables — tests-any references only @declapract{check.minVersion}
+use-cases:
+  tests-any-only:
+    practices:
+      - tests-any

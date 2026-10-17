@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`tests-any dev-tool-in-dependencies — pipeline given: [case1] a repo with test-fns 1.4.0 in dependencies and 1.15.0 in devDependencies when: [t0] declapract fix is applied then: before + after match snapshot: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "domain-objects": "0.31.0"
+  },
+  "devDependencies": {
+    "test-fns": "1.17.0",
+    "@jest/globals": "30.2.0",
+    "@types/jest": "30.0.0",
+    "jest": "30.2.0",
+    "esbuild-register": "3.6.0",
+    "tsx": "4.20.6"
+  },
+  "scripts": {
+    "build:ifstale": "set -eu && if [ -f dist/.build.stamp ] && [ -z \\"$(find src assets package.json pnpm-lock.yaml tsconfig.json tsconfig.build.json app.json app.config.ts -newer dist/.build.stamp -type f ! -name '*.test.ts' ! -name '*.test.tsx' ! -name '*.snap' -print -quit 2>/dev/null)\\" ]; then echo '👌 dist is fresh, build skipped'; else npm run build && touch dist/.build.stamp; fi",
+    "test:unit": "set -eu && jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${THOROUGH:-}\\" != \\"true\\" ] && echo '--changedSince=origin/main') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
+    "test:integration": "set -eu && jest -c ./jest.integration.config.ts --forceExit --verbose --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${THOROUGH:-}\\" != \\"true\\" ] && echo '--changedSince=origin/main') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
+    "test:acceptance:locally": "set -eu && npm run build:ifstale && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
+    "test": "set -eu && npm run test:commits && npm run test:types && npm run test:format && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally",
+    "test:acceptance": "set -eu && npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')"
+  }
+}
+"
+`;
+
+exports[`tests-any dev-tool-in-dependencies — pipeline given: [case1] a repo with test-fns 1.4.0 in dependencies and 1.15.0 in devDependencies when: [t0] declapract fix is applied then: before + after match snapshot: package.json — before 1`] = `
+"{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "domain-objects": "0.31.0",
+    "test-fns": "1.4.0"
+  },
+  "devDependencies": {
+    "test-fns": "1.15.0"
+  }
+}
+"
+`;

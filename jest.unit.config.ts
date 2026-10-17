@@ -35,6 +35,8 @@ const config: Config = {
     '!**/*.integration.test.ts',
     '!**/.yalc/**',
   ],
+  testPathIgnorePatterns: ['/node_modules/', '/.agent/'],
+  modulePathIgnorePatterns: ['<rootDir>/.agent/'],
   setupFilesAfterEnv: ['./jest.unit.env.ts'],
 
   // use 50% of threads to leave headroom for other processes

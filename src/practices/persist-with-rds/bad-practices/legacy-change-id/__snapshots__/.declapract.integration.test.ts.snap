@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`legacy-change-id (#530) given: [case1] a repo whose schema definitions use the legacy \`id:\` key when: [t0] the input, before any fix then: init.yml holds \`id:\` on each change, and matches snapshot: init.yml — before 1`] = `
+"- type: change
+  id: init_default_txn_isolation
+  author: declapract
+  path: ./init/default_transaction_isolation.sql
+
+- type: change
+  id: init_service_user
+  author: declapract
+  path: ./init/user.service.sql
+
+# a change the repo added on its own
+- type: change
+  id: init_analyst_user
+  author: surfschool
+  path: ./init/user.analyst.sql
+"
+`;
+
+exports[`legacy-change-id (#530) given: [case1] a repo whose schema definitions use the legacy \`id:\` key when: [t1] apply runs then: each change entry declares \`exid:\`, the repo extra kept, and matches snapshot: init.yml — after 1`] = `
+"- type: change
+  exid: init_default_txn_isolation
+  author: declapract
+  path: ./init/default_transaction_isolation.sql
+
+- type: change
+  exid: init_service_user
+  author: declapract
+  path: ./init/user.service.sql
+
+# a change the repo added on its own
+- type: change
+  exid: init_analyst_user
+  author: surfschool
+  path: ./init/user.analyst.sql
+"
+`;

@@ -70,7 +70,9 @@ package-lock.json merge=theirs
       );
     });
 
-    it('should insert missing package-lock.json -diff entry after header', async () => {
+    it('should insert missing package-lock.json -diff entry, in canonical order', async () => {
+      // .note = canonical order, never "after the header": the check is CONTAINS of the whole
+      //         template, so an entry inserted ahead of its sibling would never pass it
       const contents = `# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
 pnpm-lock.yaml -diff
 
@@ -81,16 +83,7 @@ package-lock.json merge=theirs
 
       const result = await fix(contents, {} as any);
 
-      expect(result.contents).toBe(
-        `# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
-package-lock.json -diff
-pnpm-lock.yaml -diff
-
-# auto-resolve lock file conflicts by taking theirs; run install after merge
-pnpm-lock.yaml merge=theirs
-package-lock.json merge=theirs
-`,
-      );
+      expect(result.contents).toBe(EXPECTED_FULL_CONTENT);
     });
 
     it('should add merge section when only diff section exists', async () => {
@@ -104,7 +97,8 @@ package-lock.json -diff
       expect(result.contents).toBe(EXPECTED_FULL_CONTENT);
     });
 
-    it('should insert missing merge=theirs entries after header', async () => {
+    it('should insert missing merge=theirs entries, in canonical order', async () => {
+      // .note = canonical order, so the output CONTAINS the template (see the -diff case above)
       const contents = `# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
 pnpm-lock.yaml -diff
 package-lock.json -diff
@@ -115,16 +109,7 @@ pnpm-lock.yaml merge=theirs
 
       const result = await fix(contents, {} as any);
 
-      expect(result.contents).toBe(
-        `# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
-pnpm-lock.yaml -diff
-package-lock.json -diff
-
-# auto-resolve lock file conflicts by taking theirs; run install after merge
-package-lock.json merge=theirs
-pnpm-lock.yaml merge=theirs
-`,
-      );
+      expect(result.contents).toBe(EXPECTED_FULL_CONTENT);
     });
 
     it('should return contents unchanged when all entries are present', async () => {
@@ -322,6 +307,94 @@ package-lock.json -diff
       // should have the merge section
       expect(result.contents).toContain('pnpm-lock.yaml merge=theirs');
       expect(result.contents).toContain('package-lock.json merge=theirs');
+    });
+  });
+
+  /**
+   * .what = the twice-applied clamp (rule.require.idempotent-fixes), over non-canonical inputs
+   * .why  = the check is CONTAINS, a substring match of the whole template. so the fixed output
+   *         must be a fixed point AND must contain the template verbatim — else the plan flags
+   *         the file forever, even though each fix leaves its bytes alone
+   */
+  describe('idempotency', () => {
+    const TEMPLATE = EXPECTED_FULL_CONTENT.trim();
+    const [HEADER_DIFF, , , , HEADER_MERGE] = EXPECTED_FULL_CONTENT.split('\n');
+
+    const NON_CANONICAL_INPUTS: { description: string; contents: string }[] = [
+      {
+        description: 'a legacy header and a legacy entry',
+        contents: `# exclude package-lock from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.json -diff
+package-lock.json -diff
+`,
+      },
+      {
+        description: 'a managed entry outside its section, before any header',
+        contents: `*.png binary
+package-lock.json -diff
+pnpm-lock.yaml merge=theirs
+`,
+      },
+      {
+        description: 'the managed entries of a section out of order',
+        contents: `${HEADER_DIFF}
+package-lock.json -diff
+pnpm-lock.yaml -diff
+
+${HEADER_MERGE}
+package-lock.json merge=theirs
+pnpm-lock.yaml merge=theirs
+`,
+      },
+      {
+        description: 'a section header with only one of its entries',
+        contents: `${HEADER_DIFF}
+pnpm-lock.yaml -diff
+
+${HEADER_MERGE}
+pnpm-lock.yaml merge=theirs
+`,
+      },
+    ];
+
+    NON_CANONICAL_INPUTS.forEach((thisCase) =>
+      describe(thisCase.description, () => {
+        it('fix(fix(x)) === fix(x) — the second pass changes zero', async () => {
+          const { contents: once } = await fix(thisCase.contents, {} as any);
+          const { contents: twice } = await fix(once, {} as any);
+          expect(twice).toEqual(once);
+        });
+
+        it('the fixed output contains the template verbatim — the CONTAINS check passes', async () => {
+          const { contents: once } = await fix(thisCase.contents, {} as any);
+          expect(once).toContain(TEMPLATE);
+        });
+
+        it('each managed entry appears exactly once', async () => {
+          const { contents: once } = await fix(thisCase.contents, {} as any);
+          [
+            'pnpm-lock.yaml -diff',
+            'package-lock.json -diff',
+            'pnpm-lock.yaml merge=theirs',
+            'package-lock.json merge=theirs',
+          ].forEach((entry) =>
+            expect(
+              once!.split('\n').filter((line) => line.trim() === entry),
+            ).toHaveLength(1),
+          );
+        });
+      }),
+    );
+
+    it('keeps the repo-own lines of a non-canonical input', async () => {
+      const { contents: once } = await fix(
+        NON_CANONICAL_INPUTS[1]!.contents,
+        {} as any,
+      );
+      expect(once).toContain('*.png binary');
+      expect(once).toMatchSnapshot(
+        '.gitattributes — out-of-section input, after one fix',
+      );
     });
   });
 });

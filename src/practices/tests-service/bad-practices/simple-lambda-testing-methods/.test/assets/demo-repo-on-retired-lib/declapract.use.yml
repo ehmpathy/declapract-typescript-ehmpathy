@@ -1,0 +1,5 @@
+declarations: 'declarations/declapract.declare.yml'
+useCase: service-tests
+variables:
+  organizationName: 'test-org'
+  projectName: 'test-project'

@@ -1,0 +1,5 @@
+# minimal use case for the nonpublished-modules practice integration test
+use-cases:
+  lambda-service:
+    practices:
+      - nonpublished-modules

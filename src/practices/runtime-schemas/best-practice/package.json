@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "zod": "@declapract{check.minVersion('3.24.0')}"
+    "zod": "@declapract{check.minVersion('4.0.0')}"
   }
 }

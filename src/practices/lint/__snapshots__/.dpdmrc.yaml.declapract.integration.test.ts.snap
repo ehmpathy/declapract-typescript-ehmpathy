@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`lint practice .dpdmrc.yaml given: [case2] an adopter .dpdmrc.yaml that excludes node_modules when: [t0] declapract apply then: before + after match snapshot: .dpdmrc.yaml — after 1`] = `
+"# this repo dpdm exclude list
+exclude:
+  # cited: jest-circus require cycle
+  - jest-circus
+"
+`;
+
+exports[`lint practice .dpdmrc.yaml given: [case2] an adopter .dpdmrc.yaml that excludes node_modules when: [t0] declapract apply then: before + after match snapshot: .dpdmrc.yaml — before 1`] = `
+"# this repo dpdm exclude list
+exclude:
+  # cited: jest-circus require cycle
+  - jest-circus
+  - ^node_modules
+"
+`;

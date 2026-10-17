@@ -140,8 +140,8 @@ jobs:
     uses: ./.github/workflows/.terraform.yml
     with:
       working-directory: provision/aws/environments/test
-      github-environment-plan: test
-      github-environment-apply: test
+      github-environment-plan: preparation
+      github-environment-apply: preparation
       creds-aws-region: us-east-1
       creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
       creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
@@ -150,8 +150,8 @@ jobs:
     uses: ./.github/workflows/.terraform.yml
     with:
       working-directory: provision/aws/environments/prep
-      github-environment-plan: prep
-      github-environment-apply: prep
+      github-environment-plan: preparation
+      github-environment-apply: preparation
       creds-aws-region: us-east-1
       creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
       creds-aws-role-arn-apply: \${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }}
@@ -161,7 +161,7 @@ jobs:
     with:
       working-directory: provision/aws/environments/prod
       github-environment-plan: production-on-else-plan
-      github-environment-apply: production-on-main # tags cut from main; carries the tag v* deploy policy
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply (actor_id-gated writer)
       allow-apply: \${{ startsWith(github.ref, 'refs/tags/') }} # only apply to prod on tags
       creds-aws-region: us-east-1
       creds-aws-role-arn-plan: \${{ vars.CREDS_CICD_AWS_PROD_OIDC_PLAN_ROLE_ARN }}
@@ -173,8 +173,8 @@ jobs:
       wish-path: provision/github.repo/resources.ts
       scope: github
       access: prod # github repo settings are inherently a prod resource
-      github-environment-plan: prod
-      github-environment-apply: prod
+      github-environment-plan: production-on-else-plan
+      github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply
       creds-github-app-owner: \${{ github.repository_owner }}
       creds-github-app-id: \${{ vars.DECLASTRUCT_GITHUB_CONFORMER_APP_ID }}
     secrets:

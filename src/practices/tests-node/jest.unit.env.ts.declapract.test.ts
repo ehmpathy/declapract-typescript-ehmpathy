@@ -26,4 +26,32 @@ describe('jest.unit.env.ts', () => {
       "jest.mock('./src/utils/config/getConfig', ",
     );
   });
+  it('should import access from the environments module when project uses environments practice', async () => {
+    const declaredBestPracticeContents = await contents(
+      asContext(['environments']),
+    );
+    expect(declaredBestPracticeContents).toContain(
+      "import { access } from './src/utils/environment';",
+    );
+    expect(declaredBestPracticeContents).not.toContain('process.env.ACCESS');
+  });
+  it('should derive access from the envars when project does not use environments practice', async () => {
+    // .why = the environments practice alone emits src/utils/environment; without it the import is TS2307 (F88)
+    const declaredBestPracticeContents = await contents(asContext([]));
+    expect(declaredBestPracticeContents).not.toContain(
+      './src/utils/environment',
+    );
+    expect(declaredBestPracticeContents).toContain(
+      'const access = process.env.ACCESS ?? process.env.NODE_ENV;',
+    );
+    expect(declaredBestPracticeContents).toContain("if (access !== 'test'");
+  });
+  it('should match snapshot per usecase shape', async () => {
+    expect(await contents(asContext([]))).toMatchSnapshot(
+      'jest.unit.env.ts — no config, no environments',
+    );
+    expect(
+      await contents(asContext(['config', 'environments'])),
+    ).toMatchSnapshot('jest.unit.env.ts — config + environments');
+  });
 });

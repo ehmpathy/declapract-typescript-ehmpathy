@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`lint depcheck-denylisted-ignores given: [case1] a node repo whose .depcheckrc.yml ignores denylisted packages when: [t0] before any apply then: the input file matches snapshot: .depcheckrc.yml — before 1`] = `
+"# repo-own header comment
+ignores:
+  - "@src/*"
+  - date-fns
+  # repo-own reason for a repo-own ignore
+  - my-own-dep
+  - ts-node
+  - core-js
+"
+`;
+
+exports[`lint depcheck-denylisted-ignores given: [case1] a node repo whose .depcheckrc.yml ignores denylisted packages when: [t1] apply runs then: the output matches snapshot: .depcheckrc.yml — after 1`] = `
+"# repo-own header comment
+ignores:
+  - "@src/*"
+  # repo-own reason for a repo-own ignore
+  - my-own-dep
+  - "@src/.*"
+  - rhachet*
+  - declastruct-aws
+  - declastruct-unix-network
+  - declapract
+  - declapract-typescript-ehmpathy
+  - "@commitlint/config-conventional"
+  - "@tsconfig/node20"
+  - "@tsconfig/strictest"
+  - "@biomejs/biome"
+  - esbuild-register
+  - "@swc/core"
+  - "@swc/jest"
+  - husky
+  - tsx
+  - tsc-alias
+  - yalc
+  - test-fns
+  - type-fns
+  - yaml
+ignorePatterns:
+  - .agent/.actors
+  - .claude
+  - .agent/repo=*
+  - "!.agent/repo=.this"
+"
+`;

@@ -1,6 +1,12 @@
-import { FileCheckType, type FileContentsFunction } from 'declapract';
+import type {
+  FileCheckFunction,
+  FileContentsFunction,
+  FileFixFunction,
+} from 'declapract';
 import { MalfunctionError } from 'helpful-errors';
 
+import { asWorkflowMergedByJob } from '../../../../../utils/asWorkflowMergedByJob';
+import { getAllWorkflowJobDrifts } from '../../../../../utils/getAllWorkflowJobDrifts';
 import { readFile } from '../../../../../utils/readFile';
 
 /**
@@ -13,9 +19,9 @@ import { readFile } from '../../../../../utils/readFile';
  *         `lambda-service-with-dynamodb`) ships none of them, so those jobs fail its own
  *         provision workflow — D28/#573, live on 2 of 3 service usecases. a branch on
  *         `context.projectPractices` lets one practice serve all three usecases
- *         (`rule.avoid.runtime-forks`), and CONTAINS (not EQUALS) keeps a narrow
- *         `--practice cicd-service` apply from a strip of an rds repo's own jobs — the additive
- *         usecase-delta EQUALS hazard named in that rule's caveat table.
+ *         (`rule.avoid.runtime-forks`), and a merge-by-job check + fix (not EQUALS) keeps a
+ *         narrow `--practice cicd-service` apply from a strip of an rds repo's own jobs — the
+ *         additive usecase-delta EQUALS hazard named in that rule's caveat table.
  * .note = the 4 rds jobs are the contiguous tail after the generic `github` job, so a split on
  *         the first rds job header (`sql-schema-prep:`) truncates the whole rds block cleanly.
  */
@@ -71,4 +77,60 @@ export const contents: FileContentsFunction = async (context) => {
     : withoutRdsJobs({ contents: contentsSuperset });
 };
 
-export const check = FileCheckType.CONTAINS;
+/**
+ * .what = the declared contents this check and fix read, or a loud failure where none arrived
+ * .why  = the `contents` fn above always emits a body, so an absent one is a malfunction of the
+ *         pipeline, never a consumer input
+ */
+const asDeclaredContents = (input: {
+  declaredFileContents: string | null;
+  relativeFilePath: string;
+}): string => {
+  if (input.declaredFileContents === null)
+    throw new MalfunctionError(
+      'the cicd-service practice emitted no declared provision.yml',
+      { practice: 'cicd-service', relativeFilePath: input.relativeFilePath },
+    );
+  return input.declaredFileContents;
+};
+
+/**
+ * .what = pass when every declared top-level key and every declared job holds its declared shape;
+ *         the repo's own jobs never count as drift
+ * .why  = a text-contains check with no fix left a pre-oidc caller in place after its callees went
+ *         oidc-only, and github then rejected the workflow with `startup_failure` (#685). a
+ *         merge-by-job check reads each declared job, so a stale one is flagged and repaired,
+ *         while a repo may still add jobs of its own (the reason this was never EQUALS).
+ * .note = scope-safe: under a narrow `--practice cicd-service` the `contents` fn emits the
+ *         non-rds body, so the rds jobs go undeclared — and an undeclared job is kept, never
+ *         stripped. `rds-jobs-in-non-rds-service` alone owns that strip, behind its callee guard.
+ */
+export const check: FileCheckFunction = (contents, context) => {
+  if (!contents) throw new Error('provision.yml is absent');
+  const drift = getAllWorkflowJobDrifts({
+    found: contents,
+    declared: asDeclaredContents(context),
+    dropJobWhen: null,
+  });
+  if (drift.length > 0)
+    throw new Error(
+      `provision.yml drifts from its declaration:\n- ${drift.join('\n- ')}`,
+    );
+};
+
+/**
+ * .what = create the file where absent; else merge each declared job and top-level key into it
+ * .why  = see `check`. the merge keeps the repo's own jobs and comments, and returns the found
+ *         text untouched where no drift remains, so a second apply changes zero bytes.
+ */
+export const fix: FileFixFunction = (contents, context) => {
+  const declared = asDeclaredContents(context);
+  if (!contents) return { contents: declared };
+  return {
+    contents: asWorkflowMergedByJob({
+      found: contents,
+      declared,
+      dropJobWhen: null,
+    }),
+  };
+};

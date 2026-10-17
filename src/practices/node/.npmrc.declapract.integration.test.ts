@@ -2,7 +2,9 @@ import fs from 'fs/promises';
 import path from 'node:path';
 
 import { executeApply } from 'declapract';
-import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
+
+import { genTempRepoWithDeclarationsOutside } from '../../utils/genTempRepoWithDeclarationsOutside';
 
 // executeApply is slow (full practice evaluation), so widen the jest budget
 jest.setTimeout(180_000); // 3 minutes
@@ -21,13 +23,11 @@ jest.setTimeout(180_000); // 3 minutes
  */
 describe('node practice .npmrc — expo hoisted linker', () => {
   given('[case1] an expo consumer repo with a base node .npmrc', () => {
-    const tempDir = genTempDir({
+    const tempDir = genTempRepoWithDeclarationsOutside({
       slug: 'node-npmrc-expo',
       clone: './src/practices/node/.test/assets/repo-expo-npmrc',
-      symlink: [
-        { at: 'declarations', to: './src/.test/assets/expo/declarations' },
-        { at: 'node_modules', to: 'node_modules' },
-      ],
+      declarations: './src/.test/assets/expo/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
     });
 
     const npmrcPath = () => path.join(tempDir, '.npmrc');
@@ -109,13 +109,11 @@ describe('node practice .npmrc — expo hoisted linker', () => {
    *         and rewrite the file to base).
    */
   given('[case2] a narrow --practice node apply on an expo repo keeps the hoist', () => {
-    const tempDir = genTempDir({
+    const tempDir = genTempRepoWithDeclarationsOutside({
       slug: 'node-npmrc-expo-narrow',
       clone: './src/practices/node/.test/assets/repo-expo-npmrc',
-      symlink: [
-        { at: 'declarations', to: './src/.test/assets/expo/declarations' },
-        { at: 'node_modules', to: 'node_modules' },
-      ],
+      declarations: './src/.test/assets/expo/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
     });
 
     const npmrcPath = () => path.join(tempDir, '.npmrc');
@@ -159,6 +157,106 @@ describe('node practice .npmrc — expo hoisted linker', () => {
 
       then('the narrow-scope apply is a no-op — afterNarrow equals withHoist', () => {
         expect(readState.afterNarrow).toEqual(readState.withHoist);
+      });
+    });
+  });
+
+  /**
+   * .what = the hoist flip prints the version contention set + the pnpm.overrides remedy (#610)
+   * .why  = under the hoisted linker one copy of each package wins the root slot; the runtime
+   *         symptoms name no package, so the set is printed at the one moment the practice can
+   *         enumerate it. once per root, on stderr, and the written .npmrc is unchanged by it
+   */
+  given('[case3] an expo repo whose lockfile holds two versions of a package', () => {
+    const tempDir = genTempRepoWithDeclarationsOutside({
+      slug: 'node-npmrc-expo-contention',
+      clone: './src/practices/node/.test/assets/repo-expo-npmrc',
+      declarations: './src/.test/assets/expo/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
+    });
+
+    const readState = useBeforeAll(async () => {
+      const config = path.join(tempDir, 'declapract.use.yml');
+
+      // a lockfile with two contended packages and one sole package
+      await fs.writeFile(
+        path.join(tempDir, 'pnpm-lock.yaml'),
+        [
+          "lockfileVersion: '9.0'",
+          '',
+          'packages:',
+          '',
+          "  '@commitlint/cli@17.8.1':",
+          '    resolution: {integrity: sha512-a}',
+          '',
+          "  '@commitlint/cli@19.5.0':",
+          '    resolution: {integrity: sha512-b}',
+          '',
+          '  type-fns@0.8.1:',
+          '    resolution: {integrity: sha512-c}',
+          '',
+          '  type-fns@1.21.3:',
+          '    resolution: {integrity: sha512-d}',
+          '',
+          '  yaml@2.8.2:',
+          '    resolution: {integrity: sha512-e}',
+          '',
+        ].join('\n'),
+      );
+
+      // capture stderr across two applies
+      const writes: string[] = [];
+      const spy = jest
+        .spyOn(process.stderr, 'write')
+        .mockImplementation((chunk: string | Uint8Array) => {
+          writes.push(String(chunk));
+          return true;
+        });
+      try {
+        await executeApply({ config, file: '.npmrc' });
+        const afterFirst = writes.join('');
+        const npmrc = await fs.readFile(path.join(tempDir, '.npmrc'), 'utf-8');
+        await executeApply({ config, file: '.npmrc' });
+        const afterSecond = writes.join('');
+        return { afterFirst, afterSecond, npmrc };
+      } finally {
+        spy.mockRestore();
+      }
+    }, 170_000);
+
+    when('[t0] the first apply flips the linker to hoisted', () => {
+      then('stderr names each contended package with its versions', () => {
+        expect(readState.afterFirst).toContain(
+          '🟡 node-linker=hoisted added — one copy of each package now wins the root slot',
+        );
+        expect(readState.afterFirst).toContain('@commitlint/cli  17.8.1, 19.5.0');
+        expect(readState.afterFirst).toContain('type-fns         0.8.1, 1.21.3');
+        expect(readState.afterFirst).not.toContain('yaml');
+      });
+
+      then('stderr cites the pnpm.overrides remedy and the brief', () => {
+        expect(readState.afterFirst).toContain('pnpm.overrides');
+        expect(readState.afterFirst).toContain('howto.pnpm-expo-hoisted-linker.md');
+      });
+
+      then('the notice prints once', () => {
+        expect(readState.afterFirst.split('node-linker=hoisted added').length - 1).toEqual(1);
+      });
+
+      then('the notice and the .npmrc match snapshot', () => {
+        const notice = readState.afterFirst.slice(
+          readState.afterFirst.indexOf('🟡 node-linker=hoisted added'),
+        );
+        expect(notice.slice(0, notice.indexOf('\n\n') + 1)).toMatchSnapshot(
+          'hoist flip notice',
+        );
+        expect(readState.npmrc).toMatchSnapshot('.npmrc — after the flip');
+      });
+    });
+
+    when('[t1] a second apply runs on the hoisted repo', () => {
+      then('no second notice prints', () => {
+        expect(readState.afterSecond.split('node-linker=hoisted added').length - 1).toEqual(1);
       });
     });
   });

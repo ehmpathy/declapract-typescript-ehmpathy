@@ -6,7 +6,7 @@
     "dynamodb-dao-generator": "@declapract{check.minVersion('1.1.0')}"
   },
   "scripts": {
-    "generate:dao:dynamodb": "npx dynamodb-dao-generator generate && npm run fix:format",
+    "generate:dao:dynamodb": "dynamodb-dao-generator generate && npm run fix:format",
     "provision:testdb:docker:up": "docker compose -f ./provision/docker/integration-test-db/docker-compose.yml up -d --force-recreate --build --renew-anon-volumes",
     "provision:testdb:docker:down": "docker compose -f ./provision/docker/integration-test-db/docker-compose.yml down",
     "provision:testdb:dynamodb:schema": "terraform -chdir=provision/aws/environments/test apply -auto-approve",

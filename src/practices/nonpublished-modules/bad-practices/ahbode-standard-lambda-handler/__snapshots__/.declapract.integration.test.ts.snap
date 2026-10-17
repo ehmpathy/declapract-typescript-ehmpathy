@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ahbode-standard-lambda-handler test-file migration given: [case1] a repo whose handler test calls promiseLambdaInvocation when: [t0] the migration input (before any fix) then: the handler test imports + calls promiseLambdaInvocation + matches snapshot: getWidget.integration.test.ts — before 1`] = `
+"import { promiseLambdaInvocation } from '../../__nonpublished_modules__/ahbode-standard-lambda-handler';
+import { given, then, when } from 'test-fns';
+
+import { handler } from './getWidget';
+
+describe('getWidget', () => {
+  given('[case1] a widget uuid', () => {
+    when('[t0] the handler is invoked', () => {
+      then('it responds', async () => {
+        const response = await promiseLambdaInvocation({
+          event: { widgetUuid: 'w-1' },
+          handler,
+        });
+        expect(response).toBeDefined();
+      });
+    });
+  });
+});
+"
+`;
+
+exports[`ahbode-standard-lambda-handler test-file migration given: [case1] a repo whose handler test calls promiseLambdaInvocation when: [t1] the ahbode-standard-lambda-handler fix is applied then: the test lands on runLambdaEndpoint.onReferenced in one apply, and it matches snapshot: getWidget.integration.test.ts — after 1`] = `
+"import { asLambdaEndpointOutput, runLambdaEndpoint } from 'sdk-aws-lambda';
+import { given, then, when } from 'test-fns';
+
+import { handler } from './getWidget';
+
+describe('getWidget', () => {
+  given('[case1] a widget uuid', () => {
+    when('[t0] the handler is invoked', () => {
+      then('it responds', async () => {
+        const response = await runLambdaEndpoint.onReferenced({
+          event: { widgetUuid: 'w-1' },
+          handler,
+        }).then(asLambdaEndpointOutput);
+        expect(response).toBeDefined();
+      });
+    });
+  });
+});
+"
+`;

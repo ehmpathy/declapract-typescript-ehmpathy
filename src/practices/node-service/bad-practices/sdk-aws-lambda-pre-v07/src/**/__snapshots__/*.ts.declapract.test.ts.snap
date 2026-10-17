@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`sdk-aws-lambda-pre-v07 src given: [case1] an ask handler on the bare genLambdaEndpoint call when: [t1] fix then: the output matches snapshot 1`] = `
+"import { genLambdaEndpoint } from 'sdk-aws-lambda';
+import { z } from 'zod';
+
+import { log } from '@src/utils/logger';
+
+export const handler = genLambdaEndpoint.forAsk(
+  {
+    schema: { input: z.object({ widgetId: z.string() }), output: z.object({ ok: z.boolean() }) },
+    invoke: async ({ payload }, context) => {
+      const found = await getWidget({ widgetId: payload.widgetId }, context);
+      return { ok: !!found, echo: { event: payload } };
+    },
+  },
+  { log },
+);
+"
+`;
+
+exports[`sdk-aws-lambda-pre-v07 src given: [case5] an api-gateway handler that reads the raw event beside the input (#646) when: [t0] fix then: the output matches snapshot 1`] = `
+"import { genLambdaEndpoint } from 'sdk-aws-lambda';
+
+export const handler = genLambdaEndpoint.forApiGateway({
+  schema,
+  invoke: async ({ event, payload }) => {
+    log.info('called', { path: event.path, rawEvent: event });
+    return { body: await doStuff(payload) };
+  },
+});
+
+export const handlerAliased = genLambdaEndpoint.forApiGateway({
+  schema,
+  invoke: async ({ payload: input, event }) => ({ body: await doStuff(input, event.headers) }),
+});
+"
+`;

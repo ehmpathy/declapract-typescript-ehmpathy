@@ -53,9 +53,11 @@ describe('rhachet boot.yml defaults to say, refs only deep glossary variants', (
         expect(contents).not.toMatch(/^\s*say:/m);
       });
 
-      then('it refs the deep glossary variants via globs', () => {
+      then('it drops the deep glossary variants via globs under not, never ref (#689)', () => {
         expect(contents).toContain(REASON_REF);
         expect(contents).toContain(EXAMPLE_REF);
+        expect(contents).toMatch(/^ {2}not:\n {4}- briefs\/domain\.terms\/term=\*\._\.choice\.reason\.md$/m);
+        expect(contents).not.toMatch(/^ {2}ref:/m);
       });
 
       then('it does not ref the choice root (it stays say-level)', () => {

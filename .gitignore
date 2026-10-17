@@ -1,11 +1,12 @@
+**/.claude/scheduled_tasks*
 *.bak.*
 *.local.json
 *.log
 *.tsbuildinfo
 .agent/.cache/
+.agent/.notes/
 .artifact
 .cache/
-.claude/scheduled_tasks*
 .env
 .log/slowtest/
 .serverless
@@ -19,3 +20,4 @@ dist
 node_modules
 !.test*/**/node_modules
 !.test*/**/node_modules/**
+!.agent/.actors/actor.via.repo=ambient/

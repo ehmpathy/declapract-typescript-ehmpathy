@@ -321,10 +321,16 @@ describe('cicd-common workflow templates', () => {
        *        silently dropped the other 23 — and `?? ''` proves this fix has a path that
        *        returns less than the whole file
        */
-      then('all 25 ref sites arrived -- if red, the fix delivered a partial file', () => {
+      then('every ref site of the template arrived -- if red, the fix delivered a partial file', async () => {
+        // .note = the count is read off the template, not hand-kept, so a job added to or dropped
+        //         from `.test.yml` does not stale this assertion; the snapshot below shows the count
+        const sitesExpected = getAllActionRefLines({
+          contents: await fs.readFile(PATH_OF_TEST_TEMPLATE, 'utf-8'),
+        });
         const sites = getAllActionRefLines({ contents: fileAfter.contents });
 
-        expect(sites.length).toEqual(25);
+        expect(sitesExpected.length).toBeGreaterThan(20);
+        expect(sites.length).toEqual(sitesExpected.length);
       });
 
       then('no declapract template syntax leaked into the output', () => {

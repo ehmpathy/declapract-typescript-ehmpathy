@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`package-json-order sort given: [case1] a repo whose package.json keys are out of order when: [t0] the input (before any fix) then: the package.json input matches snapshot: package.json — before 1`] = `
+"{
+  "version": "1.0.0",
+  "devDependencies": {
+    "typescript": "5.4.5",
+    "jest": "29.3.1"
+  },
+  "scripts": {
+    "test": "npm run test:unit",
+    "custom:task": "echo custom",
+    "build": "tsc",
+    "test:unit": "jest"
+  },
+  "name": "svc-example",
+  "dependencies": {
+    "uuid": "9.0.0",
+    "domain-objects": "0.31.0"
+  },
+  "author": "ehmpathy"
+}
+"
+`;
+
+exports[`package-json-order sort given: [case1] a repo whose package.json keys are out of order when: [t1] the package-json-order fix is applied then: the package.json matches snapshot: package.json — after 1`] = `
+"{
+  "name": "svc-example",
+  "author": "ehmpathy",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "test:unit": "jest",
+    "test": "npm run test:unit",
+    "custom:task": "echo custom"
+  },
+  "dependencies": {
+    "domain-objects": "0.31.0",
+    "uuid": "9.0.0"
+  },
+  "devDependencies": {
+    "jest": "29.3.1",
+    "typescript": "5.4.5"
+  }
+}
+"
+`;

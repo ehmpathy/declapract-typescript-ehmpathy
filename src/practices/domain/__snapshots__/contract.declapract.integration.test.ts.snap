@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`domain X.contract() migration given: [case1] a repo whose handler refers to dobjs via .schema and a bare .contract when: [t0] the fix is applied, then applied again then: the handler refers to each dobj via X.contract(), and keeps internal .schema.safeParse: getChatThread.ts — after 1`] = `
+"import { z } from 'zod';
+
+import { ChatThread } from '@src/domain.objects/ChatThread';
+import { Transmission } from '@src/domain.objects/Transmission';
+
+const schemaInput = z.object({
+  thread: ChatThread.contract().ref('primary'),
+  transmission: Transmission.contract().ref('primary'),
+});
+
+const schemaOutput = z.object({
+  thread: ChatThread.contract().nullable(),
+  transmissions: z.array(Transmission.contract()),
+});
+
+export const isThreadShaped = (input: unknown) =>
+  ChatThread.schema.safeParse(input).success;
+
+export const schema = { input: schemaInput, output: schemaOutput };
+"
+`;
+
+exports[`domain X.contract() migration given: [case1] a repo whose handler refers to dobjs via .schema and a bare .contract when: [t0] the fix is applied, then applied again then: the handler refers to each dobj via X.contract(), and keeps internal .schema.safeParse: getChatThread.ts — before 1`] = `
+"import { z } from 'zod';
+
+import { ChatThread } from '@src/domain.objects/ChatThread';
+import { Transmission } from '@src/domain.objects/Transmission';
+
+const schemaInput = z.object({
+  thread: ChatThread.contract.ref('primary'),
+  transmission: Transmission.contract().ref('primary'),
+});
+
+const schemaOutput = z.object({
+  thread: ChatThread.schema.nullable(),
+  transmissions: z.array(Transmission.schema),
+});
+
+export const isThreadShaped = (input: unknown) =>
+  ChatThread.schema.safeParse(input).success;
+
+export const schema = { input: schemaInput, output: schemaOutput };
+"
+`;

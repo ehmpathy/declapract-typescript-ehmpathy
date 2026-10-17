@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`declastruct old-module-name given: [case1] a package.json that depends on best-practices-typescript when: [t1] the fix runs then: the retired dependency is gone and the rest is kept 1`] = `
+"{
+  "name": "svc-x",
+  "devDependencies": {
+    "declapract": "0.13.26"
+  }
+}"
+`;

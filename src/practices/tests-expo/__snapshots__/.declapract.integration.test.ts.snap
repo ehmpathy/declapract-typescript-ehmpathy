@@ -1,5 +1,103 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`expo test-toolchain triad — pipeline given: [case1] a fresh expo repo on the app-react-native-expo usecase when: [t0] declapract fix emits the toolchain then: the emitted acceptance config + prepare match snapshot: jest.acceptance.config.ts — after fix 1`] = `
+"/**
+ * @jest-config-loader esbuild-register
+ */
+import type { Config } from 'jest';
+
+// ensure tests run in utc, like they will on cicd and on server; https://stackoverflow.com/a/56277249/15593329
+process.env.TZ = 'UTC';
+
+// ensure tests run like on local machines, so snapshots are equal on local && cicd
+process.env.FORCE_COLOR = 'true';
+
+// https://jestjs.io/docs/configuration
+const config: Config = {
+  // jest-expo/web = jsdom + react-native-web, so acceptance tests exercise the web build
+  // surface. (a repo that prefers a device/simulator acceptance harness, e.g. playwright
+  // against the exported web app, swaps this out — the cicd-common shard runner reads the
+  // jest config named here.)
+  preset: 'jest-expo/web',
+
+  verbose: true,
+  reporters: [
+    ['default', { summaryThreshold: 0 }], // ensure we always get a failure summary at the bottom, to avoid the hunt
+    ['test-fns/slowtest.reporter.jest', { slow: '10s', output: '.log/slowtest/acceptance.report.json' }],
+  ],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1',
+    '^@src/(.*)$': '<rootDir>/src/$1',
+    '^@assets/(.*)$': '<rootDir>/assets/$1',
+  },
+  // pnpm-nested react-native/expo ESM must still transform (see jest.unit.config.ts).
+  transformIgnorePatterns: [
+    'node_modules/.pnpm/(?!.*(react-native|@react-native|expo|@expo|@unimodules|unimodules|@react-navigation|react-navigation|sentry-expo|native-base|@sentry))',
+    'node_modules/(?!.pnpm)(?!(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?|react-navigation|@react-navigation|@unimodules|unimodules|sentry-expo|native-base|@sentry)',
+  ],
+  testMatch: [
+    '**/*.acceptance.test.{ts,tsx}',
+    '**/*._.acpt.test.{ts,tsx}', // the \`._.\` kind seam; both suffix forms match
+    '!**/.agent/.actors/**', // rhachet host-local state; holds a scratch clone of this repo, whose suites are not ours
+    '!**/.agent/.cache/**',
+    '!**/.yalc/**',
+  ],
+  // skip all of \`.agent/\`: rhachet roles, host-local clones, and the rmsafe trash live there. a test
+  // there would run as ours, and a snapshot there would read as obsolete (the haste map scans it)
+  testPathIgnorePatterns: ['/node_modules/', '/.agent/'],
+  modulePathIgnorePatterns: ['<rootDir>/.agent/'],
+  setupFilesAfterEnv: ['./jest.acceptance.env.ts'],
+
+  // reclaim every temp dir genTempDir made this run (test-fns autoprune). jest needs BOTH keys;
+  // one without the other stamps and never reclaims. the globalSetup COMPOSES the livedb wake
+  // (an expo app reaches the shared cluster via its gateway) with autoprune's setup.
+  globalSetup: './jest.acceptance.prepare.ts',
+  globalTeardown: 'test-fns/autoprune.teardown.jest',
+
+  // use 50% of threads to leave headroom for other processes
+  maxWorkers: '50%', // https://stackoverflow.com/questions/71287710/why-does-jest-run-faster-with-maxworkers-50
+};
+
+// eslint-disable-next-line import/no-default-export
+export default config;
+"
+`;
+
+exports[`expo test-toolchain triad — pipeline given: [case1] a fresh expo repo on the app-react-native-expo usecase when: [t0] declapract fix emits the toolchain then: the emitted acceptance config + prepare match snapshot: jest.acceptance.prepare.ts — after fix 1`] = `
+"/// <reference path="./src/.test/assets/test-fns.autoprune.d.ts" />
+import autopruneSetup from 'test-fns/autoprune.setup.jest';
+
+import { useWakeOfLivedb } from './src/.test/useWakeOfLivedb';
+
+/**
+ * .what = jest globalSetup for the expo acceptance suite — runs once, in the main process, before
+ *         jest forks its workers.
+ * .why =
+ *   - an expo app owns no database, but it reaches one THROUGH its gateway, whose peers query the
+ *     shared aurora-serverless cluster. at min-capacity 0 that cluster auto-pauses, so the first
+ *     query after a pause cold-starts past the timeout and flakes the suite.
+ *   - the wake is \`via-gateway\`: an expo app has no \`config/\` dir with a db tunnel to gate on, so
+ *     the test kind itself is the signal — an acceptance run reaches a deployment by construction.
+ *   - an expo acceptance run may declare ACCESS=prod; the wake refuses prod, so a test run never
+ *     writes capacity against production.
+ *   - COMPOSES the wake with test-fns autoprune in jest's ONE globalSetup: wake FIRST (best-effort),
+ *     THEN autoprune mints the run id. \`globalConfig\` is FORWARDED to autoprune unchanged, so its
+ *     half-wired-state check reads the real \`globalTeardown\` slot.
+ * .note = \`useWakeOfLivedb\` is imported by RELATIVE path, never the \`@src\` alias — a globalSetup is
+ *         loaded BEFORE jest's moduleNameMapper exists, so \`@src\` here fails at startup.
+ */
+// biome-ignore lint/style/noDefaultExport: jest globalSetup api requires default export
+export default async (globalConfig: { globalTeardown?: string | null }): Promise<void> => {
+  // the wake refuses prod (prod never scales to 0); every other access wakes the prep cluster
+  await useWakeOfLivedb({
+    env: process.env.ACCESS === 'prod' ? 'prod' : null,
+    reaches: 'via-gateway',
+  });
+  await autopruneSetup(globalConfig);
+};
+"
+`;
+
 exports[`expo test-toolchain triad — pipeline given: [case1] a fresh expo repo on the app-react-native-expo usecase when: [t0] declapract fix emits the toolchain then: the emitted package.json + tsconfig + jest.unit match snapshot: jest.unit.config.ts — after fix 1`] = `
 "/**
  * @jest-config-loader esbuild-register
@@ -40,12 +138,21 @@ const config: Config = {
   ],
   testMatch: [
     // note: order matters
-    '**/*.test.{ts,tsx}',
+    '**/*.test.{ts,tsx}', // also matches the \`._.unit.test\` kind seam
     '!**/*.acceptance.test.{ts,tsx}',
     '!**/*.integration.test.{ts,tsx}',
+    '!**/*.evaluation.test.{ts,tsx}',
+    '!**/*._.acpt.test.{ts,tsx}',
+    '!**/*._.intg.test.{ts,tsx}',
+    '!**/*._.eval.test.{ts,tsx}',
+    '!**/.agent/.actors/**', // rhachet host-local state; holds a scratch clone of this repo, whose suites are not ours
     '!**/.agent/.cache/**',
     '!**/.yalc/**',
   ],
+  // skip all of \`.agent/\`: rhachet roles, host-local clones, and the rmsafe trash live there. a test
+  // there would run as ours, and a snapshot there would read as obsolete (the haste map scans it)
+  testPathIgnorePatterns: ['/node_modules/', '/.agent/'],
+  modulePathIgnorePatterns: ['<rootDir>/.agent/'],
   setupFilesAfterEnv: ['./jest.unit.env.ts'],
 
   // reclaim every temp dir genTempDir made this run (test-fns autoprune). jest needs BOTH keys;
@@ -71,28 +178,29 @@ exports[`expo test-toolchain triad — pipeline given: [case1] a fresh expo repo
     "react": "^19.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.0",
     "@jest/globals": "30.2.0",
     "@types/jest": "30.0.0",
-    "jest": "30.2.0",
+    "babel-preset-expo": "^12.0.0",
     "esbuild-register": "3.6.0",
-    "test-fns": "1.17.0",
-    "tsx": "4.20.6",
+    "isomorphic-fetch": "^3.0.0",
+    "jest": "30.2.0",
     "jest-expo": "^54.0.0",
     "react-test-renderer": "^19.0.0",
-    "@babel/core": "^7.24.0",
-    "babel-preset-expo": "^12.0.0",
-    "isomorphic-fetch": "^3.0.0",
+    "test-fns": "1.17.0",
+    "tsx": "4.20.6",
     "typescript": "5.4.5"
   },
   "scripts": {
+    "build:ifstale": "set -eu && if [ -f dist/.build.stamp ] && [ -z \\"$(find src assets package.json pnpm-lock.yaml tsconfig.json tsconfig.build.json app.json app.config.ts -newer dist/.build.stamp -type f ! -name '*.test.ts' ! -name '*.test.tsx' ! -name '*.snap' -print -quit 2>/dev/null)\\" ]; then echo '👌 dist is fresh, build skipped'; else npm run build && touch dist/.build.stamp; fi",
     "test:unit": "set -eu && jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${THOROUGH:-}\\" != \\"true\\" ] && echo '--changedSince=origin/main') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
     "test:integration": "set -eu && jest -c ./jest.integration.config.ts --forceExit --verbose --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${THOROUGH:-}\\" != \\"true\\" ] && echo '--changedSince=origin/main') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
-    "test:acceptance:locally": "set -eu && npm run build && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
+    "test:acceptance:locally": "set -eu && npm run build:ifstale && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
     "test": "set -eu && npm run test:commits && npm run test:types && npm run test:format && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally",
     "test:acceptance": "set -eu && npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n \\"\${CI:-}\\" ] && echo '--ci') $([ \\"\${RESNAP:-}\\" = \\"true\\" ] && echo '--updateSnapshot')",
     "test:types": "tsc -p ./tsconfig.json --noEmit",
     "build": "npm run build:web",
-    "build:web": "npx expo export --platform web"
+    "build:web": "ACCESS=\${ACCESS:-prep} expo export --platform web"
   }
 }
 "

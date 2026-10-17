@@ -6,8 +6,15 @@ import type { FileCheckFunction, FileFixFunction } from 'declapract';
  *         left on the npm name never fires, so a stale-lockfile reminder silently dies.
  */
 export const check: FileCheckFunction = (contents) => {
-  // detected (bad practice) when the hook still references the npm lockfile name
-  if (contents?.includes('package-lock.json')) return;
+  // detected (bad practice) when the hook watches the npm lockfile and not the pnpm one.
+  // the husky template watches both, so a hook that already watches pnpm-lock.yaml is the
+  // husky shape; a swap of its npm block would duplicate the pnpm block, and husky's check
+  // would restore it on the next apply, so the two practices would never converge
+  if (
+    contents?.includes('package-lock.json') &&
+    !contents.includes('pnpm-lock.yaml')
+  )
+    return;
 
   // not detected — already on pnpm-lock.yaml (or absent)
   throw new Error('does not match bad practice');

@@ -72,6 +72,52 @@ describe('terraform-parameters parameter-store.tf.declapract', () => {
       expect(contents).not.toContain('ignore_changes');
     });
 
+    it('should name the copy target of each admin/service forget (#686)', async () => {
+      const withService = `${legacyContents}resource "aws_ssm_parameter" "secret_database_service_password" {
+  name  = "\${local.parameter_store_namespace}.database.service.password"
+  type  = "SecureString"
+  value = "__IGNORED__"
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+`;
+      // a documented cast: the fix reads only `projectVariables` off its context, which carries
+      // many other fields. removal path: a declapract partial-context builder.
+      const context = {
+        projectVariables: { organizationName: 'ahbode', projectName: 'svc-chat' },
+      } as any;
+      const { contents } = await fix(withService, context);
+
+      // the admin forget names both cicd targets, on the line above its block
+      expect(contents).toContain(
+        [
+          '# copy this value before the first plan → /ahbode/svc-chat/{config}/database.role.cicd.for-plan.password, /ahbode/svc-chat/{config}/database.role.cicd.for-apply.password (see provision/aws/readme.md)',
+          'removed {',
+          '  from = aws_ssm_parameter.secret_database_admin_password',
+        ].join('\n'),
+      );
+
+      // the service forget names the crud target
+      expect(contents).toContain(
+        [
+          '# copy this value before the first plan → /ahbode/svc-chat/{config}/database.role.crud.password (see provision/aws/readme.md)',
+          'removed {',
+          '  from = aws_ssm_parameter.secret_database_service_password',
+        ].join('\n'),
+      );
+
+      // a param of neither role carries no copy note
+      expect(contents).not.toContain(
+        'copy this value before the first plan → /ahbode/svc-chat/{config}/database.role.crud.password (see provision/aws/readme.md)\nremoved {\n  from = aws_ssm_parameter.secret_database_role_crud_password',
+      );
+      expect(contents).toMatchSnapshot();
+
+      // idempotent: the fix over its own output changes zero
+      const { contents: twice } = await fix(contents, context);
+      expect(twice).toEqual(contents);
+    });
+
     it('should be idempotent — a second fix over its own output changes zero', async () => {
       // apply once, then feed the output back through the fix. the forget-rewrite
       // regex must not re-match its own removed{} blocks (per rule.require.idempotent-fixes).

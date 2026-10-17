@@ -67,7 +67,6 @@ const ALLOWED_UNCONVERTED = [
   'node-service/bad-practices/license/package.json.declapract.ts',
   'node-service/bad-practices/simple-lambda-client/package.json.declapract.ts',
   'node-service/bad-practices/simple-lambda-handlers/package.json.declapract.ts',
-  'node/bad-practices/self-deps-not-link/package.json.declapract.ts',
   'package-json-order/best-practice/package.json.declapract.ts',
   'persist-with-rds/bad-practices/old-packagejson-script-names/package.json.declapract.ts',
   'pnpm/bad-practices/npm-overrides/package.json.declapract.ts',

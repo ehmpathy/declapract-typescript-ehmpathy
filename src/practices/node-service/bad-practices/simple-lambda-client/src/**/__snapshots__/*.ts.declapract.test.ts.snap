@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`simple-lambda-client source files fix should move an invokeLambdaFunction call onto sdkAwsLambdaAskAncient, address + payload bound together (#631) 1`] = `
+"
+import { sdkAwsLambdaAskAncient } from '@src/access/sdks/sdkAwsLambdaAskAncient';
+import { log } from '@src/utils/logger';
+
+const result = await sdkAwsLambdaAskAncient(
+  {
+    which: { service: service, function: fn },
+    event: event,
+  },
+  { log },
+);"
+`;

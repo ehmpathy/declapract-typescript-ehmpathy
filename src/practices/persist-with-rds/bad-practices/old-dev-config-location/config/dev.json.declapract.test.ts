@@ -55,7 +55,7 @@ describe('old-dev-config-location', () => {
     expect(result.contents).not.toContain('@declapract:review');
   });
 
-  it('should replace __CHANG3_ME__ with $.at(aws::param)', async () => {
+  it('should keep __CHANG3_ME__, the password prep users are created with (#683)', async () => {
     const contents = JSON.stringify(
       {
         database: {
@@ -74,8 +74,8 @@ describe('old-dev-config-location', () => {
 
     const result = await fix(contents, context);
 
-    expect(result.contents).toContain('$.at(aws::param)');
-    expect(result.contents).not.toContain('__CHANG3_ME__');
+    expect(result.contents).toContain('__CHANG3_ME__');
+    expect(result.contents).not.toContain('$.at(aws::param)');
   });
 
   it('should replace access: dev with access: prep', async () => {
@@ -106,8 +106,8 @@ describe('old-dev-config-location', () => {
       {
         database: {
           tunnel: {
-            local: { host: 'bastion.dev.example.com' }, // mid-dotted — could be tier OR a foreign label
-            ssmproxy: 'aws.ssmproxy.mydb.dev', // terminal — ambiguous (tier host vs public gTLD)
+            local: { host: 'bastion.dev.example.com' }, // mid-dotted — could be the access OR a foreign label
+            ssmproxy: 'aws.ssmproxy.mydb.dev', // terminal — ambiguous (access host vs public gTLD)
           },
         },
         upstream: { paypal: 'api.dev.paypal.com' }, // FOREIGN public host — mid-dotted `dev` is paypal's own label

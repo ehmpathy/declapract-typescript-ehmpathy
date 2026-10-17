@@ -1,5 +1,6 @@
 import { join } from 'node:path';
 
+import { RDS_JOBS_ANCHOR } from '../../../../best-practice/.github/workflows/provision.yml.declapract';
 import { check, fix } from './provision.yml.declapract';
 
 // .note (rule.forbid.as-cast, documented): the declapract context arg is a PARTIAL mock. check
@@ -157,11 +158,11 @@ describe('rds-jobs-in-non-rds-service', () => {
       ).toThrow('does not match bad practice');
     });
 
-    it('fix(fix(x)) throws loud on the second strip — the anchor is gone', async () => {
+    it('fix(fix(x)) === fix(x) — the second pass finds no tail and changes zero', async () => {
       const { contents: once } = await fix(supersetContents, {} as any);
-      expect(() => fix(once as string, {} as any)).toThrow(
-        'could not find the rds-jobs anchor',
-      );
+      const { contents: twice } = await fix(once as string, {} as any);
+      expect(once).not.toContain(RDS_JOBS_ANCHOR);
+      expect(twice).toEqual(once);
     });
   });
 });

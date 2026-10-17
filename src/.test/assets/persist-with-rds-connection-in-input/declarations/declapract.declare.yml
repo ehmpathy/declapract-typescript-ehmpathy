@@ -1,0 +1,4 @@
+# declarations that isolate the with-connection-in-input bad-practice, so the test needs no persist-with-rds variables
+declare:
+  practices: practices
+  use-cases: useCases.yml

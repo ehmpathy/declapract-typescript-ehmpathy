@@ -1,0 +1,162 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`tests-any old-acceptance-test-utils given: [case1] a repo on the old-acceptance-test-utils shape when: [t0] the input (before any fix) then: the file holds the old import, and matches snapshot: old-acceptance-test-utils — before 1`] = `
+"import { SNSEventRecord, SNSMessage, SNSEvent } from 'aws-lambda';
+
+import { exampleEmailClickEvent } from '../../src/.test/assets/exampleEmailClickEvent';
+import { invokeLambda } from '../_utils/invokeLambda';
+
+describe('consumeSESEmailEventFromSNS', () => {
+  it('should be possible to invoke the lambda', async () => {
+    const exampleSnsEvent: SNSEvent = {
+      Records: [
+        {
+          Sns: {
+            Message: JSON.stringify(exampleEmailClickEvent),
+          } as SNSMessage,
+        } as SNSEventRecord,
+      ],
+    };
+    const response = await invokeLambda({
+      name: 'consumeSESEmailEventFromSNS',
+      data: exampleSnsEvent,
+    });
+    expect(response).toBeDefined();
+  });
+});
+"
+`;
+
+exports[`tests-any old-acceptance-test-utils given: [case1] a repo on the old-acceptance-test-utils shape when: [t1] the fix is applied then: no template token leaks, and the file matches snapshot: old-acceptance-test-utils — after 1`] = `
+"import { SNSEventRecord, SNSMessage, SNSEvent } from 'aws-lambda';
+
+import { exampleEmailClickEvent } from '../../src/.test/assets/exampleEmailClickEvent';
+import { runLambdaEndpoint } from 'sdk-aws-lambda';
+import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@src/utils/logger';
+import { locally } from '../environment';
+
+describe('consumeSESEmailEventFromSNS', () => {
+  it('should be possible to invoke the lambda', async () => {
+    const exampleSnsEvent: SNSEvent = {
+      Records: [
+        {
+          Sns: {
+            Message: JSON.stringify(exampleEmailClickEvent),
+          } as SNSMessage,
+        } as SNSEventRecord,
+      ],
+    };
+    const response = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+      {
+        which: { service: 'svc-notifications', function: 'consumeSESEmailEventFromSNS' },
+        event: exampleSnsEvent,
+        at: locally ? 'local' : 'cloud',
+      },
+      { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+    );
+    expect(response).toBeDefined();
+  });
+});
+"
+`;
+
+exports[`tests-any old-acceptance-test-utils given: [case2] a repo on the old-acceptance-test-utils-2 shape when: [t0] the input (before any fix) then: the file holds the old import, and matches snapshot: old-acceptance-test-utils-2 — before 1`] = `
+"import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+
+import { locally } from '../__test_utils__/environment';
+
+describe('addDecoratedImage', () => {
+  it('it should be possible to add a decorated image', async () => {
+    const response = await invokeLambdaForTesting({
+      service: 'svc-images',
+      function: 'addDecoratedImage',
+      locally,
+      event: {
+        url: 'https://some.url',
+        description: 'bo vine at his gig, moooooin the lawn',
+        focalArea: null,
+      },
+    });
+    expect(response.image).toHaveProperty('uuid');
+  });
+});
+"
+`;
+
+exports[`tests-any old-acceptance-test-utils given: [case2] a repo on the old-acceptance-test-utils-2 shape when: [t1] the fix is applied then: no template token leaks, and the file matches snapshot: old-acceptance-test-utils-2 — after 1`] = `
+"import { runLambdaEndpoint } from 'sdk-aws-lambda';
+import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@src/utils/logger';
+
+import { locally } from '../environment';
+
+describe('addDecoratedImage', () => {
+  it('it should be possible to add a decorated image', async () => {
+    const response = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+      {
+        which: { service: 'svc-images', function: 'addDecoratedImage' },
+        event: {
+          url: 'https://some.url',
+          description: 'bo vine at his gig, moooooin the lawn',
+          focalArea: null,
+        },
+        at: locally ? 'local' : 'cloud',
+      },
+      { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+    );
+    expect(response.image).toHaveProperty('uuid');
+  });
+});
+"
+`;
+
+exports[`tests-any old-acceptance-test-utils given: [case3] a repo on the old-acceptance-test-utils-3 shape when: [t0] the input (before any fix) then: the file holds the old import, and matches snapshot: old-acceptance-test-utils-3 — before 1`] = `
+"import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';
+
+import { locally } from '../_utils/environment';
+
+describe('addDecoratedImage', () => {
+  it('it should be possible to add a decorated image', async () => {
+    const response = await invokeLambdaForTesting({
+      service: 'svc-images',
+      function: 'addDecoratedImage',
+      locally,
+      event: {
+        url: 'https://some.url',
+        description: 'bo vine at his gig, moooooin the lawn',
+        focalArea: null,
+      },
+    });
+    expect(response.image).toHaveProperty('uuid');
+  });
+});
+"
+`;
+
+exports[`tests-any old-acceptance-test-utils given: [case3] a repo on the old-acceptance-test-utils-3 shape when: [t1] the fix is applied then: no template token leaks, and the file matches snapshot: old-acceptance-test-utils-3 — after 1`] = `
+"import { runLambdaEndpoint } from 'sdk-aws-lambda';
+import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@src/utils/logger';
+
+import { locally } from '../environment';
+
+describe('addDecoratedImage', () => {
+  it('it should be possible to add a decorated image', async () => {
+    const response = await runLambdaEndpoint.onSerialized<unknown, Record<string, any>>(
+      {
+        which: { service: 'svc-images', function: 'addDecoratedImage' },
+        event: {
+          url: 'https://some.url',
+          description: 'bo vine at his gig, moooooin the lawn',
+          focalArea: null,
+        },
+        at: locally ? 'local' : 'cloud',
+      },
+      { log, env: { access: sdkAwsLambdaEnvAccessContemp() } },
+    );
+    expect(response.image).toHaveProperty('uuid');
+  });
+});
+"
+`;

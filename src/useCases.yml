@@ -47,6 +47,17 @@ use-cases:
       - cicd-package
       - node-package
       - provision-github
+  # a rhachet roles package (rhachet-roles-*): publishes roles (briefs, skills, boot.yml,
+  # keyrack.yml) to npm, so it IS an npm package first (#558). the role-repo delta rides on
+  # the rhachet practice: a repo that self-links its roles via `link:.` builds `dist/` before
+  # `rhachet init` (#520), since the linked roles load their hooks from the build.
+  rhachet-roles-package:
+    extends:
+      - typescript-project-core # non-transitive: must extend core directly (declapract#17)
+      - typescript-project
+      - npm-package
+    practices:
+      - rhachet # restated: the practice that carries the role-repo delta (deduped by name)
   lambda-service:
     extends:
       - typescript-project-core # non-transitive: must extend core directly (declapract#17)

@@ -1,19 +1,16 @@
-import type { FileFixFunction } from 'declapract';
+import type { FileContentsFunction, FileFixFunction } from 'declapract';
 import { FileCheckType } from 'declapract';
+
+import { readFile } from '../../../utils/readFile';
+import { getOneLambdaNodeRuntime } from '../getOneLambdaNodeRuntime';
 
 export const check = FileCheckType.CONTAINS; // i.e., check that the contents of the file contains what's declared (default is equals)
 
-// .note = ON A MISS, EVERY TRANSFORM SOFT-SKIPS (returns the contents unchanged); none throws.
-//   a soft-skip is NOT a silent break: the overall check is CONTAINS, so any declared line a
-//   transform could not land is absent from the output, which leaves `declapract plan` RED — that
-//   red IS the signal. a throw was the wrong mechanism for a miss: `fix` folds 14 transforms, so
-//   one throw aborts the whole chain and a very common arrival shape (a var before NODE_ENV, a
-//   pre-extant custom: block, an underscore in the service name) then blocks every unrelated repair
-//   — the runtime bump, the plugin removal, the IAM grants — from landing at all. CONTAINS already
-//   supplies the visibility a throw reached for, without that abort. the one true silent break a
-//   throw once guarded — a SECOND top-level key of a section the file already holds, a yaml
-//   last-wins clobber that PASSES CONTAINS — is prevented by NOT inserting when the section already
-//   exists (a soft-skip that declines the duplicate), which needs no throw either.
+// .note = on a miss, each transform returns the contents unchanged; none throws. the check is
+//   CONTAINS, so a declared line a transform could not land stays absent and `declapract plan`
+//   stays red, which names the miss. a throw would abort the whole 14-transform fold, so one odd
+//   arrival shape would block every unrelated repair in it. a transform never inserts a section the
+//   file already holds, since a second top-level key would clobber the first and still pass CONTAINS.
 
 /**
  * .what = convert crlf newlines to unix lf, as the first transform in the fold.
@@ -53,11 +50,28 @@ const accessByStageCustom = `custom:
 `;
 
 /**
- * .what = bump the lambda runtime to the current node major.
- * .why  = an old runtime string silently deploys onto an unsupported node version.
+ * .what = set the lambda runtime to the node major the repo's `.nvmrc` pins.
+ * .why  = the major that builds the artifact and the major that serves it must match, or a
+ *         dependency ships syntax the lambda cannot parse while every gate stays green (#552).
  */
-const withNodeRuntime = (input: { contents: string }): string =>
-  input.contents.replace(/runtime: nodejs\d\d.x/, 'runtime: nodejs22.x');
+const withNodeRuntime = (input: {
+  contents: string;
+  runtime: string;
+}): string =>
+  input.contents.replace(/runtime: nodejs\d+\.x/, `runtime: ${input.runtime}`);
+
+/**
+ * .what = declare the template, with its runtime line derived from the project's `.nvmrc`.
+ * .why  = the check is CONTAINS, so a template that pinned one major would demand it of a repo on
+ *         another — the fix and the check must name the same runtime, from the same one source.
+ */
+export const contents: FileContentsFunction = async (context) =>
+  withNodeRuntime({
+    contents: await readFile({ filePath: `${__dirname}/serverless.yml` }),
+    runtime: getOneLambdaNodeRuntime({
+      projectRoot: context.getProjectRootDirectory(),
+    }),
+  });
 
 /**
  * .what = drop the plugins serverless no longer needs.
@@ -608,7 +622,6 @@ const withSsmGetParameter = (input: { contents: string }): string => {
 // withNodeEnvProduction runs after withConnectionReuse, which anchors on the legacy NODE_ENV form.
 const transforms: Array<(input: { contents: string }) => string> = [
   withUnixNewlines,
-  withNodeRuntime,
   withoutDeprecatedPlugins,
   withNativeVariables,
   withSingleHashCommentHeaders,
@@ -646,7 +659,20 @@ const withTransformsApplied = (input: {
     input.contents,
   );
 
-export const fix: FileFixFunction = (contents) => {
+export const fix: FileFixFunction = (contents, context) => {
   if (!contents) return { contents }; // skip an absent file
-  return { contents: withTransformsApplied({ contents, transforms }) };
+
+  // the runtime comes from the project's `.nvmrc` (#552); a bare unit call has no project root
+  const runtime = getOneLambdaNodeRuntime({
+    projectRoot: context?.getProjectRootDirectory?.() ?? null,
+  });
+  return {
+    contents: withTransformsApplied({
+      contents,
+      transforms: [
+        (step) => withNodeRuntime({ contents: step.contents, runtime }),
+        ...transforms,
+      ],
+    }),
+  };
 };

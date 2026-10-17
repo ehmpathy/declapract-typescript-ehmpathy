@@ -1,14 +1,22 @@
 import type { FileCheckFunction } from 'declapract';
 import { ConstraintError } from 'helpful-errors';
 
+import { asTestKindPresenceCheck } from '../../../../../utils/asTestKindPresenceCheck';
 import { asFunctionNameFromTestFileName } from '../../../asFunctionNameFromTestFileName';
 
+/**
+ * .what = the presence check for a repo with no old-suffix lambda acceptance test
+ * .why  = a repo that names its tests with the `._.acpt` kind seam (#679) holds lambda acceptance
+ *         tests the declared glob cannot see; only where neither form is found is the kind absent
+ */
+const checkLambdaAcceptancePresence = asTestKindPresenceCheck({
+  dir: 'blackbox/lambdas',
+  suffixOld: '.acceptance.test.ts',
+  suffixSeam: '._.acpt.test.ts',
+});
+
 export const check: FileCheckFunction = (contents, context) => {
-  if (!contents)
-    throw new ConstraintError(
-      'expected at least one lambda acceptance test; add a `describe` block that invokes the lambda',
-      { relativeFilePath: context.relativeFilePath },
-    );
+  if (!contents) return checkLambdaAcceptancePresence(contents, context);
 
   // check that each import was found.
   // D52: this check no longer MANDATES `import { stage } from '.../environment'`. that line was
@@ -24,10 +32,12 @@ export const check: FileCheckFunction = (contents, context) => {
   // a typical print-width wrap), and a lenient regex/ast match is a tracked follow-on; this comment
   // is the durable disclosure, so the brittleness is legible in-code, not only in the route yield
   // (i015 r10 §3).
-  const expectedImports = [
-    "import { invokeLambdaForTesting } from 'simple-lambda-testing-methods';",
-    "import { locally } from '../environment';",
-  ];
+  //
+  // #650: the check no longer MANDATES the retired simple-lambda-testing-methods import. this
+  // check has no fix, so a throw here marks the file manual and blocks the
+  // `simple-lambda-testing-methods` bad-practice from its move onto runLambdaEndpoint (#607). the
+  // successor import is not mandated either — a test may reach the lambda through a seam.
+  const expectedImports = ["import { locally } from '../environment';"];
   const missedImports = expectedImports.filter(
     (expectedImport) => !contents.includes(expectedImport),
   );

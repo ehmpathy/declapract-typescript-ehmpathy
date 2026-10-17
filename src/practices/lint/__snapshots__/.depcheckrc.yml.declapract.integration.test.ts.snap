@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`lint practice .depcheckrc.yml given: [case1] a node repo with an extant .depcheckrc.yml that predates ignorePatterns when: [t0] declapract apply then: the before + after contents match snapshot: .depcheckrc.yml — after apply 1`] = `
+"# repo-own header comment
+ignores:
+  - "@src/*"
+  # repo-own reason for a repo-own ignore
+  - my-own-dep
+  - "@src/.*"
+  - rhachet*
+  - declastruct-aws
+  - declastruct-unix-network
+  - declapract
+  - declapract-typescript-ehmpathy
+  - "@commitlint/config-conventional"
+  - "@tsconfig/node20"
+  - "@tsconfig/strictest"
+  - "@biomejs/biome"
+  - esbuild-register
+  - "@swc/core"
+  - "@swc/jest"
+  - husky
+  - tsx
+  - tsc-alias
+  - yalc
+  - test-fns
+  - type-fns
+  - yaml
+ignorePatterns:
+  - .agent/.actors
+  - .claude
+  - .agent/repo=*
+  - "!.agent/repo=.this"
+"
+`;
+
+exports[`lint practice .depcheckrc.yml given: [case1] a node repo with an extant .depcheckrc.yml that predates ignorePatterns when: [t0] declapract apply then: the before + after contents match snapshot: .depcheckrc.yml — before 1`] = `
+"# repo-own header comment
+ignores:
+  - "@src/*"
+  # repo-own reason for a repo-own ignore
+  - my-own-dep
+"
+`;
+
+exports[`lint practice .depcheckrc.yml given: [case2] the same extant repo under the expo usecase (#609) when: [t0] declapract apply then: the after contents match snapshot: .depcheckrc.yml — expo after apply 1`] = `
+"# repo-own header comment
+ignores:
+  - "@src/*"
+  # repo-own reason for a repo-own ignore
+  - my-own-dep
+  - "@src/.*"
+  - rhachet*
+  - declastruct-aws
+  - declastruct-unix-network
+  - declapract
+  - declapract-typescript-ehmpathy
+  - "@commitlint/config-conventional"
+  - "@tsconfig/node20"
+  - "@tsconfig/strictest"
+  - "@biomejs/biome"
+  - esbuild-register
+  - "@swc/core"
+  - "@swc/jest"
+  - husky
+  - tsx
+  - tsc-alias
+  - yalc
+  - test-fns
+  - type-fns
+  - yaml
+  - metro-config
+ignorePatterns:
+  - .agent/.actors
+  - .claude
+  - .agent/repo=*
+  - "!.agent/repo=.this"
+"
+`;

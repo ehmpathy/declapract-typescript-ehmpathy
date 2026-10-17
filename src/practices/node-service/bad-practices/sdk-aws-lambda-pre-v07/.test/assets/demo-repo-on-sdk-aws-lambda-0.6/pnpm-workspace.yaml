@@ -1,0 +1,5 @@
+# pnpm 10 reads patchedDependencies from here as well as from package.json
+onlyBuiltDependencies:
+  - esbuild
+patchedDependencies:
+  sdk-aws-lambda@0.6.2: patches/sdk-aws-lambda@0.6.2.patch

@@ -27,7 +27,7 @@ provider:
   stage: ${opt:stage}
   stackTags:
     app: @declapract{variable.organizationName}
-    environment: ${self:custom.access} # the ACCESS tier (test|prep|prod), NOT the deploy stage slug — a -dev-fleet stack is still access=prep, so a `stage`-valued tag would read as the two-word lie the access axis retired; matches the ACCESS env var below
+    environment: ${self:custom.access} # the access (test|prep|prod), NOT the deploy stage slug — a -dev-fleet stack is still access=prep, so a `stage`-valued tag would read as the two-word lie the access axis retired; matches the ACCESS env var below
     product: ${self:service}
   environment:
     TZ: UTC # guarantee that utc timezone will be used explicitly, to facilitate a pit of success

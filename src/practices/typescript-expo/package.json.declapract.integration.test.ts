@@ -28,6 +28,23 @@ describe('typescript-expo package.json', () => {
     expect(template.scripts.build).not.toContain('tsc');
   });
 
+  it('build:web defaults ACCESS to prep, so an absent access never builds for prod (#619)', () => {
+    // expo export inlines NODE_ENV=production into every bundle; an app that infers its access
+    // from NODE_ENV then reaches prod. a declared default makes the absent case the safe one,
+    // and an ACCESS the caller sets (the deploy compile step, start:cold:prod) still wins
+    const template = JSON.parse(
+      readFileSync(path.join(__dirname, 'best-practice/package.json'), 'utf-8'),
+    );
+    expect(template.scripts['build:web']).toMatch(/^ACCESS=\$\{ACCESS:-prep\} /);
+  });
+
+  it('build:web keeps the metro cache warm (no --clear), since metro.config.js keys it on ACCESS + app config (#618, #676)', () => {
+    const template = JSON.parse(
+      readFileSync(path.join(__dirname, 'best-practice/package.json'), 'utf-8'),
+    );
+    expect(template.scripts['build:web']).not.toContain('--clear');
+  });
+
   it('the emitted build commands match snapshot', () => {
     // snapshot the governed build commands themselves, so a reshaped command that keeps the
     // pinned tokens green (a reordered flag, a rephrased alias) reddens a vibecheck in review

@@ -3,7 +3,11 @@
  * .why = reuses app's getConfig for consistent config resolution
  */
 require('esbuild-register');
+const { getEnvironment } = require('sdk-environment');
 const { getConfig } = require('../../src/utils/config/getConfig');
+const {
+  getTestdbPort,
+} = require('../../src/.test/assets/database/getTestdbPort');
 
 const promiseSchemaControlCredentials = async () => {
   const config = await getConfig();
@@ -15,7 +19,10 @@ const promiseSchemaControlCredentials = async () => {
 
   const credentials = {
     host: config.database.tunnel.local.host,
-    port: config.database.tunnel.local.port,
+    port: getTestdbPort({
+      access: getEnvironment.static().access,
+      portDeclared: config.database.tunnel.local.port,
+    }), // a worktree's testdb binds a port of its own; see getTestdbIdentity
     database: config.database.target.database,
     schema: config.database.target.schema,
     username: role.username,

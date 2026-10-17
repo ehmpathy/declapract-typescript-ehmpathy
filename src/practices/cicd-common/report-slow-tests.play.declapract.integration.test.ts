@@ -47,10 +47,13 @@ const runReport = (
     encoding: 'utf-8',
     env: { ...process.env, GITHUB_STEP_SUMMARY: summaryPath },
   });
+  // mask the random fixture dir, so a snapshot neither churns per run nor holds a host path
+  const asMaskedFixtureDir = (text: string): string =>
+    text.split(path.dirname(resultsPath)).join('[fixture]');
   return {
     code: res.status,
-    stdout: res.stdout,
-    summary: fs.readFileSync(summaryPath, 'utf-8'),
+    stdout: asMaskedFixtureDir(res.stdout),
+    summary: asMaskedFixtureDir(fs.readFileSync(summaryPath, 'utf-8')),
   };
 };
 
@@ -100,6 +103,11 @@ describe('report-slow-tests', () => {
       then('it emits no annotation for the fast file', () => {
         expect(result.stdout).not.toContain('/repo/src/fast.test.ts::');
       });
+
+      then('the summary and annotations match snapshot', () => {
+        expect(result.summary).toMatchSnapshot('step summary — ranked');
+        expect(result.stdout).toMatchSnapshot('stdout annotations — ranked');
+      });
     });
   });
 
@@ -122,7 +130,12 @@ describe('report-slow-tests', () => {
       then('it prints an error annotation that names the schema drift', () => {
         expect(result.stdout).toContain('::error::');
         expect(result.stdout).toContain('jest --json duration schema');
-        expect(result.stdout).toContain('#602');
+        expect(result.stdout).toContain('read endTime/startTime'); // names the next move
+        expect(result.stdout).not.toMatch(/#\d+/); // a bare issue ref dangles in a consumer repo
+      });
+
+      then('the error output matches snapshot', () => {
+        expect(result.stdout).toMatchSnapshot('stdout — schema drift');
       });
     });
   });
@@ -138,6 +151,10 @@ describe('report-slow-tests', () => {
       then('the summary states the empty-shard state explicitly', () => {
         expect(result.summary).toContain('0 test files');
         expect(result.summary).toContain('empty shard');
+      });
+
+      then('the summary matches snapshot', () => {
+        expect(result.summary).toMatchSnapshot('step summary — empty shard');
       });
     });
   });

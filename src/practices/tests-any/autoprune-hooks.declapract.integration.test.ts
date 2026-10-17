@@ -57,8 +57,15 @@ const configs: { relPath: string; composite: string | null }[] = [
     composite: 'src/practices/tests-node/best-practice/jest.acceptance.prepare.ts',
   },
   { relPath: 'src/practices/tests-expo/best-practice/jest.unit.config.ts', composite: null },
-  { relPath: 'src/practices/tests-expo/best-practice/jest.integration.config.ts', composite: null },
-  { relPath: 'src/practices/tests-expo/best-practice/jest.acceptance.config.ts', composite: null },
+  // #621: the expo integration + acceptance configs compose the livedb wake (via-gateway) too
+  {
+    relPath: 'src/practices/tests-expo/best-practice/jest.integration.config.ts',
+    composite: 'src/practices/tests-expo/best-practice/jest.integration.prepare.ts',
+  },
+  {
+    relPath: 'src/practices/tests-expo/best-practice/jest.acceptance.config.ts',
+    composite: 'src/practices/tests-expo/best-practice/jest.acceptance.prepare.ts',
+  },
 ];
 
 /**

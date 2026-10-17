@@ -22,3 +22,32 @@ save-exact=true
 message=%s 🎉
 "
 `;
+
+exports[`node practice .npmrc — expo hoisted linker given: [case3] an expo repo whose lockfile holds two versions of a package when: [t0] the first apply flips the linker to hoisted then: the notice and the .npmrc match snapshot: .npmrc — after the flip 1`] = `
+"engine-strict=true
+save-exact=true
+message=%s 🎉
+
+# hoisted linker flattens node_modules — create-expo-app default for pnpm,
+# the documented fallback when isolated installs break metro native lookup
+node-linker=hoisted
+public-hoist-pattern[]=*expo*
+public-hoist-pattern[]=*react-native*
+public-hoist-pattern[]=@react-native/*
+public-hoist-pattern[]=metro*
+public-hoist-pattern[]=*metro-*
+"
+`;
+
+exports[`node practice .npmrc — expo hoisted linker given: [case3] an expo repo whose lockfile holds two versions of a package when: [t0] the first apply flips the linker to hoisted then: the notice and the .npmrc match snapshot: hoist flip notice 1`] = `
+"🟡 node-linker=hoisted added — one copy of each package now wins the root slot
+   ├─ packages with more than one version in your graph
+   │  ├─ @commitlint/cli  17.8.1, 19.5.0
+   │  └─ type-fns         0.8.1, 1.21.3
+   │
+   └─ remedy
+      ├─ any package above may now load a different copy at runtime
+      ├─ pin the copy you want via \`pnpm.overrides\` in package.json, then \`pnpm install\`
+      └─ see howto.pnpm-expo-hoisted-linker.md (declapract-typescript-ehmpathy)
+"
+`;

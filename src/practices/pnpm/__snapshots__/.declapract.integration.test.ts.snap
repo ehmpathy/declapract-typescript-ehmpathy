@@ -13,7 +13,9 @@ exports[`pnpm npm→pnpm migration — pipeline given: [case1] a repo mid-migrat
   "pnpm": {
     "overrides": {
       "react-refresh": "~0.14.0"
-    }
+    },
+    "allowUnusedPatches": true,
+    "ignorePatchFailures": true
   }
 }
 "

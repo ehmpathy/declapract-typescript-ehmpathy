@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`logs leveled-term src files (#643) given: [case1] a wrapper that still imports simple-leveled-log-methods when: [t1] the fix runs then: a review line lands directly above the import and names sdk-logs genLogMethods: wrapper — after 1`] = `
+"import { LogMethods } from 'domain-objects';
+// @declapract:review: simple-leveled-log-methods is retired — import the logs practice's \`log\` (src/utils/logger.ts, built by sdk-logs \`genLogMethods\`) in its place, then delete this marker
+import { generateLogMethods } from 'simple-leveled-log-methods';
+
+export const log = generateLogMethods();
+"
+`;

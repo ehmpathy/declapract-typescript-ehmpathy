@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { executeApply } from 'declapract';
 import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
+import yaml from 'yaml';
 
 // executeApply is slow (full usecase evaluation), so widen the jest budget
 jest.setTimeout(180_000); // 3 minutes
@@ -145,8 +146,13 @@ describe('rds-jobs-in-non-rds-service — the retroactive strip, end to end', ()
         for (const job of RDS_JOBS) expect(state.after1).toContain(job);
       });
 
-      then('the file is unchanged (an rds superset is already conformant)', () => {
-        expect(state.after1).toEqual(state.before);
+      then('no job is dropped (the best-practice merge only repairs declared job shapes, #685)', () => {
+        // the pre-stamped fixture predates the oidc environments, so the
+        // best-practice merge-by-job fix rewrites the declared jobs in place; the strip must
+        // still keep every job, so the job NAMES before and after are one set
+        const jobNamesOf = (contents: string): string[] =>
+          Object.keys(yaml.parse(contents).jobs).sort();
+        expect(jobNamesOf(state.after1)).toEqual(jobNamesOf(state.before));
       });
     });
   });

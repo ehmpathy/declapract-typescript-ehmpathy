@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`defineExpectedGitignoreContents given: [case1] a CRLF file with the ordered tail when: [t0] the expected contents are defined then: the output matches snapshot 1`] = `
+".agent/.cache/
+.cache/
+coverage
+node_modules
+!.test*/**/node_modules
+!.test*/**/node_modules/**
+"
+`;
+
+exports[`defineExpectedGitignoreContents given: [case2] a file whose comments explain the rule below them when: [t0] the expected contents are defined then: the output matches snapshot 1`] = `
+".agent/.cache/
+.cache/
+# editor state
+.idea
+coverage
+# build output
+dist
+node_modules
+!.test*/**/node_modules
+!.test*/**/node_modules/**
+"
+`;
+
+exports[`defineExpectedGitignoreContents given: [case3] a file grouped by blank lines when: [t0] the expected contents are defined then: the output matches snapshot 1`] = `
+"# deps
+vendor
+
+.agent/.cache/
+.cache/
+build
+# build
+dist
+node_modules
+!.test*/**/node_modules
+!.test*/**/node_modules/**
+"
+`;

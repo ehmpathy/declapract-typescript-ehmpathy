@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`pnpm — a stale patch never blocks an install given: [case1] a repo with one patch the lockfile moved past and one it still resolves when: [t0] the pnpm practice is applied then: the before + after contents match snapshot: package.json — after 1`] = `
+"{
+  "name": "repo-stale-patch",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.34.5",
+  "pnpm": {
+    "overrides": {
+      "react-refresh": "0.14.2"
+    },
+    "patchedDependencies": {
+      "type-fns@1.21.3": "patches/type-fns@1.21.3.patch"
+    },
+    "allowUnusedPatches": true,
+    "ignorePatchFailures": true
+  }
+}
+"
+`;
+
+exports[`pnpm — a stale patch never blocks an install given: [case1] a repo with one patch the lockfile moved past and one it still resolves when: [t0] the pnpm practice is applied then: the before + after contents match snapshot: package.json — before 1`] = `
+"{
+  "name": "repo-stale-patch",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.34.5",
+  "pnpm": {
+    "overrides": {
+      "react-refresh": "0.14.2"
+    },
+    "patchedDependencies": {
+      "rhachet-roles-ehmpathy@1.39.1": "patches/rhachet-roles-ehmpathy@1.39.1.patch",
+      "type-fns@1.21.3": "patches/type-fns@1.21.3.patch"
+    }
+  }
+}
+"
+`;

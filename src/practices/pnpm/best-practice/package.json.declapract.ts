@@ -13,5 +13,12 @@ import { FileCheckType } from 'declapract';
  * .note = a consumer ahead of the pin (e.g. on 10.32.1) is pinned BACK to the blessed version on
  *         `declapract fix` — that convergence-to-one-version is the intent, not a regression. when
  *         the org bumps the blessed version, this pin bumps and every consumer follows.
+ * .what = also declares `pnpm.allowUnusedPatches` + `pnpm.ignorePatchFailures` (#680).
+ * .why  = a patch pins one exact version; the next upgrade orphans it, and pnpm then refuses the
+ *         whole install (`ERR_PNPM_UNUSED_PATCH`, `ERR_PNPM_PATCH_FAILED`). both keys turn that
+ *         refusal into a warn, so patch-then-upgrade never halts an install. a repo with no patch
+ *         gets them too, so its first patch is already safe to upgrade past. the CONTAINS fix
+ *         deep-merges, so a repo's other `pnpm.*` keys (overrides, patchedDependencies, the build
+ *         allowlist) are kept.
  */
 export const check = FileCheckType.CONTAINS;

@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`useCases.yml — rhachet-roles-package given: [case1] the declared usecases when: [t0] rhachet-roles-package is resolved then: its resolved set matches snapshot: rhachet-roles-package practices 1`] = `
+[
+  "bottleneck",
+  "cache",
+  "cicd-common",
+  "cicd-package",
+  "conventional-commits",
+  "directory-structure-src",
+  "domain",
+  "errors",
+  "format",
+  "git",
+  "husky",
+  "lint",
+  "node",
+  "node-package",
+  "nonpublished-modules",
+  "package-json-order",
+  "pnpm",
+  "provision-github",
+  "rhachet",
+  "tests-any",
+  "tests-node",
+  "typescript-any",
+  "typescript-node",
+]
+`;

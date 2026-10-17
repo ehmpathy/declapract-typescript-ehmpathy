@@ -1,3 +1,8 @@
-import { FileCheckType } from 'declapract';
+import { asTestKindPresenceCheck } from '../../../../../utils/asTestKindPresenceCheck';
 
-export const check = FileCheckType.EXISTS; // there should be atleast one acceptance test
+// there should be at least one acceptance test, in either suffix form (#679)
+export const check = asTestKindPresenceCheck({
+  dir: 'blackbox',
+  suffixOld: '.acceptance.test.ts',
+  suffixSeam: '._.acpt.test.ts',
+});

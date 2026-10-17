@@ -1,0 +1,11 @@
+# minimal rhachet use cases for integration tests
+# .why = the keyrack.yml findsert adds AWS_PROFILE on an aws practice in
+#        context.projectPractices (#487), so the aws usecase lists one
+use-cases:
+  rhachet-node:
+    practices:
+      - rhachet
+  rhachet-aws:
+    practices:
+      - rhachet
+      - environments-aws

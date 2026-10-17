@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`provision-github implicit-package-privacy given: [case1] a repo whose package.json omits private when: [t0] the input, before any fix then: package.json has no private key: package.json — before 1`] = `
+"{
+  "name": "test-project",
+  "description": "a demo repo whose visibility is implicit",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "declastruct": "1.9.2",
+    "declastruct-github": "1.8.0",
+    "sdk-logs": "0.9.2"
+  }
+}
+"
+`;
+
+exports[`provision-github implicit-package-privacy given: [case1] a repo whose package.json omits private when: [t1] apply runs then: package.json declares private: true, before version: package.json — after 1`] = `
+"{
+  "name": "test-project",
+  "description": "a demo repo whose visibility is implicit",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "declastruct": "1.9.2",
+    "declastruct-github": "1.8.0",
+    "sdk-logs": "0.9.2"
+  }
+}
+"
+`;

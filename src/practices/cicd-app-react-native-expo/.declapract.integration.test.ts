@@ -6,6 +6,7 @@ import { executeApply } from 'declapract';
 import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
 import yaml from 'yaml';
 
+import { genTempRepoWithDeclarationsOutside } from '../../utils/genTempRepoWithDeclarationsOutside';
 import { getAllPracticesForUsecase } from '../../utils/getAllPracticesForUsecase';
 
 // executeApply is slow (whole-usecase evaluation across ten practices)
@@ -27,13 +28,11 @@ jest.setTimeout(240_000);
  */
 describe('app-react-native-expo — graceful migration of an app-protools-shaped repo', () => {
   given('[case1] a customized npm expo repo on the deprecated src layers', () => {
-    const tempDir = genTempDir({
+    const tempDir = genTempRepoWithDeclarationsOutside({
       slug: 'expo-migration',
       clone: './src/.test/assets/expo-migration/repo-app-protools-shaped',
-      symlink: [
-        { at: 'declarations', to: './src/.test/assets/expo-migration/declarations' },
-        { at: 'node_modules', to: 'node_modules' },
-      ],
+      declarations: './src/.test/assets/expo-migration/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
     });
 
     const read = (rel: string) =>
@@ -166,7 +165,12 @@ describe('app-react-native-expo — graceful migration of an app-protools-shaped
         const pkg = JSON.parse(state.after2.pkg!);
         expect(pkg.overrides).toBeUndefined();
         expect(pkg.resolutions).toBeUndefined();
-        expect(pkg.pnpm.overrides['type-fns']).toEqual('1.9.9');
+        // the relocated type-fns override (1.9.9) undercuts the declared type-fns, so
+        // pnpm/override-undercuts-dependency raises it to the declared version (#624)
+        expect(pkg.pnpm.overrides['type-fns']).toEqual(
+          pkg.dependencies?.['type-fns'] ?? pkg.devDependencies?.['type-fns'],
+        );
+        expect(pkg.pnpm.overrides['type-fns']).not.toEqual('1.9.9');
         expect(pkg.pnpm.overrides['@commitlint/format']).toEqual('19.9.9');
       });
 
@@ -800,16 +804,11 @@ describe('app-react-native-expo — full-usecase evaluation smoke', () => {
   });
 
   given('[case1] the app-protools-shaped repo on the full usecase', () => {
-    const tempDir = genTempDir({
+    const tempDir = genTempRepoWithDeclarationsOutside({
       slug: 'expo-fullusecase',
       clone: './src/.test/assets/expo-migration/repo-app-protools-shaped',
-      symlink: [
-        {
-          at: 'declarations',
-          to: './src/.test/assets/expo-fullusecase/declarations',
-        },
-        { at: 'node_modules', to: 'node_modules' },
-      ],
+      declarations: './src/.test/assets/expo-fullusecase/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
     });
 
     const read = (rel: string) =>
@@ -857,16 +856,11 @@ describe('app-react-native-expo — full-usecase evaluation smoke', () => {
   });
 
   given('[case2] a bare create-expo-app scaffold with no src/ at all', () => {
-    const tempDir = genTempDir({
+    const tempDir = genTempRepoWithDeclarationsOutside({
       slug: 'expo-fullusecase-greenfield',
       clone: './src/.test/assets/expo-fullusecase/repo-greenfield',
-      symlink: [
-        {
-          at: 'declarations',
-          to: './src/.test/assets/expo-fullusecase/declarations',
-        },
-        { at: 'node_modules', to: 'node_modules' },
-      ],
+      declarations: './src/.test/assets/expo-fullusecase/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
     });
 
     const read = (rel: string) =>

@@ -6,7 +6,7 @@ import { given, then, when } from 'test-fns';
 /**
  * .what = clamps the empty-template invariant the case=7 (stateful-store-alias-not-copy) safety
  *         rests on: the persist-with-rds declastruct wish declares ZERO rds clusters — `getResources`
- *         returns only SSM params, and the provision tree imports no cluster/rds/aurora/database
+ *         returns only ssm params, and the provision tree imports no cluster/rds/aurora/database
  *         resource-declaration type.
  * .why  = case=7's fail-safe is "a lambda under two names is two copies of code; a database under two
  *         names must be one store with two pointers" — and its load-bearer is that the template holds
@@ -17,10 +17,10 @@ import { given, then, when } from 'test-fns';
  *         "zero clusters to duplicate" premise silently breaks, and this reddens.
  * .teeth = a cluster resource cannot enter `getResources` without an import of a `DeclaredAws*Cluster`
  *          / `*Rds` / `*Aurora` / `*Database` type plus its addition to the returned array — so the
- *          "declares only SSM params" + "imports no cluster type" cases redden the moment one lands.
+ *          "declares only ssm params" + "imports no cluster type" cases redden the moment one lands.
  * .note = `.integration.test.ts` because it reads the filesystem (a remote boundary); at the practice
  *         ROOT (not under best-practice/), so it is neither loaded as a declaration nor copied to a
- *         consumer. mirrors the source-text clamp in `ssm-cicd-param-names.declapract.integration.test.ts`.
+ *         consumer. peer of the param-name clamp in `ssm-param-names.declapract.integration.test.ts`.
  */
 
 // anchor on __dirname, not process.cwd(): a nested `jest src/practices/...` run has a different cwd.
@@ -41,7 +41,7 @@ describe('persist-with-rds wish declares zero rds clusters (empty-template invar
   given('[case1] the wish entrypoint resources.ts', () => {
     when('[t0] resources.ts is read', () => {
       then('getResources yields only the ssm parameters', () => {
-        expect(resources).toContain('getAllParameters({ accessSlug: null })');
+        expect(resources).toContain('getAllParameters({ choice: null })');
       });
 
       then('the wish imports no cluster/rds/aurora/database resource type', () => {

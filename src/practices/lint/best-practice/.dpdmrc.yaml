@@ -4,10 +4,14 @@
 # the org policy `rule.forbid.dpdm-exclude-change`: we check dependencies too, because a prod-dep
 # cycle ships to consumers.
 #
-# with --transform, type imports are erased before analysis and test files drop via the
-# '!(*.test).ts' glob, so an exclude is rarely needed even for a devDep. a devDep may be added as
-# an escape hatch; a prod dep must not, since that ships cycles.
+# when an entry is allowed:
+# - a type-only cycle: never. --transform erases type imports before analysis, so none is owed
+# - a test file: never. the '!(*.test).ts' glob already drops test files
+# - a require cycle inside a third-party devDependency: allowed, one entry per package, each with
+#   a comment that cites the cycle and the upstream issue
+# - a require cycle inside a prod dependency: never. it ships to consumers — dispatch the fix
+#   upstream or replace the dependency
 #
-# the empty list is the policy — an entry of `node_modules` (or dpdm's own `/node_modules/`
-# default) disables the check across every consumer repo.
+# an entry of `node_modules` (or dpdm's own `/node_modules/` default) disables the check across
+# every consumer repo, and the declapract check rejects it.
 exclude: []

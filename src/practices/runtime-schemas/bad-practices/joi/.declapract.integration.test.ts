@@ -77,6 +77,14 @@ describe('joi->zod migration', () => {
           expect(after).toContain('@declapract:review');
           expect(after).toContain('optionality');
 
+          // a bare joi `.uuid()` keeps its layout-only semantics as `z.guid()` (#629)
+          expect(after).toContain('id: z.guid(),');
+          expect(after).not.toContain('.uuid()');
+
+          // the marker names number coercion beside date coercion (#548)
+          expect(after).toContain('z.coerce.number()');
+          expect(after).toContain('z.coerce.date()');
+
           // full content, for the reviewer's eye
           expect(after).toMatchSnapshot('widget.schema.ts — after');
         },
@@ -91,6 +99,66 @@ describe('joi->zod migration', () => {
         const before = await read(targetPath); // post-first-migrate
         await applyMigrate(); // second apply
         const after = await read(targetPath);
+        return { before, after };
+      });
+
+      then('the second apply is a no-op', () => {
+        expect(passes.after).toEqual(passes.before);
+      });
+    });
+  });
+
+  // #654 + #545 + #624: the joi fixer, the zod floor, and the single-identity override all write
+  // package.json in one apply. the end state must name ONE zod version, read from the key pnpm reads.
+  given('[case2] a joi repo on sdk-aws-lambda 0.7.1, with zod ^3 under a 3.23.8 override', () => {
+    const tempDir = genTempDir({
+      slug: 'declapract-joi-deps',
+      clone:
+        './src/practices/runtime-schemas/bad-practices/joi/.test/assets/demo-repo-with-joi-deps',
+      symlink: [
+        {
+          at: 'declarations',
+          to: './src/.test/assets/runtime-schemas/declarations',
+        },
+        { at: 'node_modules', to: 'node_modules' },
+      ],
+    });
+
+    const pkgPath = 'package.json';
+    const read = () => fs.readFile(path.join(tempDir, pkgPath), 'utf-8');
+    const applyFix = () =>
+      executeApply({
+        config: path.join(tempDir, 'declapract.use.yml'),
+        practice: 'runtime-schemas',
+        file: pkgPath,
+      });
+
+    when('[t0] the input (before any fix)', () => {
+      then('package.json matches snapshot', async () => {
+        expect(await read()).toMatchSnapshot('package.json — before');
+      });
+    });
+
+    when('[t1] the runtime-schemas fixes are applied', () => {
+      useThen('apply the package.json fixes', async () => applyFix());
+
+      then('joi is gone, and zod + its override both name 4.4.3', async () => {
+        const after = await read();
+        const pkg = JSON.parse(after);
+        expect(pkg.dependencies.joi).toBeUndefined();
+        expect(pkg.dependencies.zod).toEqual('4.4.3');
+        expect(pkg.pnpm.overrides.zod).toEqual('4.4.3');
+        expect(pkg.dependencies['sdk-aws-lambda']).toEqual('0.7.1');
+        expect(after).not.toContain('@declapract{');
+        expect(after).toMatchSnapshot('package.json — after');
+      });
+    });
+
+    when('[t2] the fixes are applied a second time (idempotency)', () => {
+      const passes = useThen('a second apply over its own output', async () => {
+        const before = await read();
+        await applyFix();
+        const after = await read();
         return { before, after };
       });
 

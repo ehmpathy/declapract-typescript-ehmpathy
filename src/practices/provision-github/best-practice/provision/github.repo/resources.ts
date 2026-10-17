@@ -45,11 +45,8 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     owner: '@declapract{variable.organizationName}',
     name: '@declapract{variable.projectName}',
     description: pkg.description ?? null,
-    visibility: pkg.private === true ? 'private' : 'public',
-    private: pkg.private ?? false, // todo: why do we have to specify this twice?
+    visibility: pkg.private === false ? 'public' : 'private', // fail closed: public only via an explicit `"private": false`
     homepage: pkg.homepage ?? null,
-
-    // things we haven't changed from the defaults
     archived: false,
   });
 
@@ -96,13 +93,13 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
   const branchMainProtection = DeclaredGithubBranchProtection.as({
     branch: branchMain,
 
-    enforceAdmins: true, // yes, even admins need to follow this (note: they can still take the time to go and change the settings temporarily for the exceptions)
-    allowsDeletions: false, // dont allow the `main` branch to be deleted
-    allowsForcePushes: false, // dont allow `main` branch to be force pushed to
-    requireLinearHistory: false, //  # no ugly merge commits, woo! 🎉
+    enforceAdmins: true, // admins too; an exception means a deliberate settings change
+    allowsDeletions: false,
+    allowsForcePushes: false,
+    requireLinearHistory: false, // squash-only merges (repoConfig) already keep history linear
 
     requiredStatusChecks: {
-      strict: true, // branch must be up to date. otherwise, we dont know if it will really pass once it is merged
+      strict: true, // the branch must be up to date, so a green check holds after the merge
       contexts: [
         'suite / install / pnpm',
         'suite / enshard',
@@ -113,11 +110,11 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
         'suite / test-unit',
         'suite / test-integration',
         'suite / test-acceptance-locally',
-        'pullreq-title', // "review / pullreq-title",
+        'pullreq-title',
       ],
     },
 
-    // things we haven't changed from the defaults
+    // github's defaults, declared so drift shows in a plan
     allowForkSyncing: false,
     blockCreations: false,
     lockBranch: false,
@@ -129,7 +126,9 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
 
   // ref the releasers team
   const teamReleasers = RefByUnique.as<typeof DeclaredGithubTeam>({
-    org: RefByUnique.as<typeof DeclaredGithubOrg>({ login: '@declapract{variable.organizationName}' }),
+    org: RefByUnique.as<typeof DeclaredGithubOrg>({
+      login: '@declapract{variable.organizationName}',
+    }),
     slug: 'releasers',
   });
 
@@ -157,11 +156,7 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
     reviewers: null, // no approval required — PR merge is the gate
     waitTimer: null, // no delay
     deploymentBranchPolicy: {
-      // accept both the main branch and `v*` release tags: prod deploys are
-      // triggered by a release tag cut from main (see protect-release-tags
-      // ruleset below), so the ref gate must admit that tag. a branch-only
-      // policy would have the environment reject the tag-triggered deploy.
-      // (requires declastruct-github >=1.7.2 for tag-target customPatterns.)
+      // admit `v*` tags beside main: a prod deploy is triggered by a release tag cut from main
       customPatterns: [
         { name: 'main', target: 'branch' },
         { name: 'v*', target: 'tag' },
@@ -171,26 +166,19 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
   });
 
   // declare environment for adhoc production apply from a non-main branch
-  // .why = github env "required reviewers" is Enterprise-only; on a private repo
-  //        under the Free/Pro/Team plan the api returns 422 for BOTH team and user
-  //        reviewers. so this env carries NO protection rule — the human gate lives
-  //        in aws via an `actor_id` allowlist on this env's sts trust statement
-  //        (declared org-wide in aws.auth). do NOT add `reviewers` here (it will 422 on apply).
-  //        this is a SEPARATE env from production-on-else-plan on purpose: its name is the oidc
-  //        `sub` anchor for the actor_id-gated WRITER role, so a readonly plan job (anchored to
-  //        -plan) cannot assume the writer role. do NOT collapse the two.
+  // .why = its name is the oidc `sub` anchor of the WRITER role, gated in aws by an `actor_id`
+  //        allowlist. do NOT merge it with production-on-else-plan, or a plan job could write
   const envProductionOnElseApply = DeclaredGithubEnvironment.as({
     repo,
     name: 'production-on-else-apply',
-    reviewers: null, // gate is the aws actor_id allowlist, not a github reviewer
+    reviewers: null, // do NOT add reviewers: off enterprise plans, a private repo's api returns 422
     waitTimer: null,
     deploymentBranchPolicy: null, // any branch
     preventSelfReview: false,
   });
 
   // declare environment for production plan from any branch (readonly, no approval)
-  // .why = a SEPARATE env from production-on-else-apply on purpose: its name is the oidc `sub`
-  //        anchor for the READONLY plan role, so a plan job cannot assume the writer role.
+  // .why = its name is the oidc `sub` anchor of the READONLY plan role
   const envProductionOnElsePlan = DeclaredGithubEnvironment.as({
     repo,
     name: 'production-on-else-plan',
@@ -201,9 +189,7 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
   });
 
   // restrict who may cut `v*` release tags to the rhelease app only
-  // .why = prod apply is gated on a release tag cut from main; if anyone could push a
-  //        `v*` tag, that gate is bypassable. this ruleset blocks create/move/delete of
-  //        `v*` tags for everyone except the rhelease app (the github half of the oidc guarantee)
+  // .why = prod apply is gated on a release tag; a tag anyone could push is no gate
   const rulesetReleaseTags = DeclaredGithubRepoRuleset.as({
     repo,
     name: 'protect-release-tags',
@@ -225,8 +211,7 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
       refNameExclude: [],
     },
 
-    // enforce release-tag immutability: only the bypass actor may create, move, or delete
-    // matched tags. a released `v1.2.3` must never be re-pointed or removed once cut
+    // a cut release tag is immutable: only the bypass actor may create, move, or delete it
     rules: [{ type: 'creation' }, { type: 'update' }, { type: 'deletion' }],
   });
 

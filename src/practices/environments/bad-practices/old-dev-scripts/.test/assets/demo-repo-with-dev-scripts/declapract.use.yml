@@ -1,0 +1,9 @@
+declarations: './'
+useCase: lambda-service
+# executeApply({ practice: 'environments' }) evaluates the WHOLE environments practice before the
+# `file` filter narrows it (rule.require.declapract-integration-tests gotcha). no environments file
+# references a @declapract{variable.*} today; the two below are the usecase's baseline, set so a
+# future template that adds one does not break this apply with `Variable … was not defined`.
+variables:
+  projectName: svc-example
+  organizationName: ehmpathy

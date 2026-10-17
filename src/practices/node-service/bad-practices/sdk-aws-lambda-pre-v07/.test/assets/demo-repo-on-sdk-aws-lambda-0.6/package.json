@@ -1,0 +1,12 @@
+{
+  "name": "test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "sdk-aws-lambda": "0.6.2"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "sdk-aws-lambda@0.6.2": "patches/sdk-aws-lambda@0.6.2.patch"
+    }
+  }
+}

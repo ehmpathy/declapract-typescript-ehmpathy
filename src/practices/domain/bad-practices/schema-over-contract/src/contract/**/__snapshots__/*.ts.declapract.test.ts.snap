@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`domain schema-over-contract (#565, #634) given: [case1] a handler whose published output refers to dobjs via .schema and a bare .contract when: [t0] the fix runs then: each published dobj reads X.contract(), with the paren: handler — after 1`] = `
+"import { z } from 'zod';
+
+import { HomeService } from '@src/domain.objects/HomeService';
+import { LeadCaptureForm as Form } from '../../domain.objects/LeadCaptureForm';
+import type { Surfer } from '@src/domain.objects/Surfer';
+import { WaveReport } from 'sdk-wave-reports';
+
+const schemaOutput = z.object({
+  service: HomeService.contract().nullable(),
+  forms: z.array(Form.contract()),
+  ref: HomeService.contract().ref('primary'),
+  report: WaveReport.schema,
+});
+
+export const isServiceShaped = (input: unknown) => HomeService.schema.safeParse(input).success;
+export type ServiceShape = z.infer<typeof HomeService.schema>;
+"
+`;

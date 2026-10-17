@@ -1,5 +1,5 @@
 language: postgres
-dialect: 10.7
+dialect: 17
 declarations: provision/schema/domain/index.ts
 generates:
   sql:

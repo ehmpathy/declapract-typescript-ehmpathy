@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`boot.yml findsert (rhachet) a consumer on the old ref shape, with its own ref entries should match snapshot: old ref shape — after 1`] = `
+"budget:
+  tokens: 5000
+briefs:
+  ref:
+    # my own on-demand briefs
+    - briefs/own.md
+  not:
+    - briefs/domain.terms/term=*._.choice.reason.md
+    - briefs/domain.terms/term=*._.choice.example=*.md
+"
+`;
+
+exports[`boot.yml findsert (rhachet) a consumer on the old ref shape, with its own ref entries should match snapshot: old ref shape — before 1`] = `
+"budget:
+  tokens: 5000
+briefs:
+  ref:
+    # my own on-demand briefs
+    - briefs/own.md
+    - briefs/domain.terms/term=*._.choice.reason.md
+    - briefs/domain.terms/term=*._.choice.example=*.md
+"
+`;

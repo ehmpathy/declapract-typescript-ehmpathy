@@ -1,7 +1,10 @@
 {
   "dependencies": {
     "simple-in-memory-cache": "@declapract{check.minVersion('0.5.1').ifInstalled()}",
+    "simple-localstorage-cache": "@declapract{check.minVersion('1.0.1').ifInstalled()}",
     "simple-on-disk-cache": "@declapract{check.minVersion('1.8.1').ifInstalled()}",
+    "with-domain-driven-cache": "@declapract{check.minVersion('1.1.5').ifInstalled()}",
+    "with-domain-driven-caching": "@declapract{check.minVersion('1.1.4').ifInstalled()}",
     "with-simple-cache": "@declapract{check.minVersion('0.17.3').ifInstalled()}"
   }
 }

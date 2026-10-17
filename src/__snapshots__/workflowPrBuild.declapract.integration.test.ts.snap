@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`the pr gate runs the production build (#678) and the evaluation suite (#669) given: [case1] every workflow template under src/practices when: [t2] the jobs of .test.yml are read then: the jobs that build, in order, read as declared 1`] = `
+[
+  "test-types",
+  "test-shards-integration",
+  "test-shards-acceptance",
+  "test-evaluation",
+]
+`;

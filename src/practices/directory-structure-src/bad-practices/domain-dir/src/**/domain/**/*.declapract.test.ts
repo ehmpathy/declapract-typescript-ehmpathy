@@ -312,4 +312,63 @@ import { constants } from '../../constants';`);
       expect(result).toMatchSnapshot();
     });
   });
+
+  /**
+   * .what = the twice-applied clamp (rule.require.idempotent-fixes): feed fix its own output — the
+   *         relocated path AND the rewritten contents — and assert zero change.
+   * .why  = the declared glob is `src/**\/domain/**\/*`: it needs a path segment equal to `domain`.
+   *         a relocated path with no such segment is never matched again, so declapract never
+   *         re-runs this fix on it — that IS the convergence. and if the fix were re-run anyway,
+   *         the path and the contents must hold still, so the two proofs agree.
+   */
+  describe('idempotency (twice applied)', () => {
+    const TWICE_CASES = [
+      {
+        description: 'a direct child of domain/objects/, with a relative import',
+        relativeFilePath: 'src/domain/objects/Invoice.ts',
+        contents: `import { constants } from '../constants';
+import { calculate } from '../../logic/calculate';`,
+      },
+      {
+        description: 'an outer domain/index.ts barrel with ./objects/ exports',
+        relativeFilePath: 'src/domain/index.ts',
+        contents: `export * from './objects/User';
+export * from './constants';`,
+      },
+      {
+        description: 'a nested file under domain/objects/nested/',
+        relativeFilePath: 'src/domain/objects/nested/Deep.ts',
+        contents: `import { User } from '../User';`,
+      },
+      {
+        description: 'a _topublish package domain dir',
+        relativeFilePath:
+          'src/_topublish/domain-glossary-price/src/domain/objects/Price.ts',
+        contents: `export class Price {}`,
+      },
+      {
+        description: 'a path with two adjacent domain segments',
+        relativeFilePath: 'src/domain/domain/Wave.ts',
+        contents: `export class Wave {}`,
+      },
+    ];
+
+    TWICE_CASES.map((thisCase) =>
+      it(`converges after one pass: ${thisCase.description}`, async () => {
+        const once = await fix(thisCase.contents, {
+          relativeFilePath: thisCase.relativeFilePath,
+        } as any);
+
+        // the relocated path holds no `domain` segment, so the glob cannot match it again
+        expect(once.relativeFilePath!.split('/')).not.toContain('domain');
+
+        // and a re-run over its own output changes zero — path and contents alike
+        const twice = await fix(once.contents ?? null, {
+          relativeFilePath: once.relativeFilePath,
+        } as any);
+        expect(twice.relativeFilePath).toEqual(once.relativeFilePath);
+        expect(twice.contents).toEqual(once.contents);
+      }),
+    );
+  });
 });

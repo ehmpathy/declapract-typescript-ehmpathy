@@ -1,0 +1,4 @@
+# minimal declarations for the bottleneck practice integration test
+declare:
+  practices: practices
+  use-cases: useCases.yml

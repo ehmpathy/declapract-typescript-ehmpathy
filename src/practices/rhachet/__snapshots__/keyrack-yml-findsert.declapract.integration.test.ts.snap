@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`rhachet — keyrack.yml AWS_PROFILE findsert given: [case1] an aws repo whose keyrack.yml holds a bare AWS_PROFILE when: [t0] the rhachet practice is applied then: the before + after contents match snapshot: keyrack.yml — after 1`] = `
+"org: ehmpathy
+extends:
+  - .agent/repo=ehmpathy/role=mechanic/keyrack.yml
+env.prod: null
+env.prep:
+  - OPENROUTER_API_KEY
+env.test:
+  # the local aws login, from before is-optional-if-has
+  - key: AWS_PROFILE
+    is-optional-if-has: AWS_ACCESS_KEY_ID
+"
+`;
+
+exports[`rhachet — keyrack.yml AWS_PROFILE findsert given: [case1] an aws repo whose keyrack.yml holds a bare AWS_PROFILE when: [t0] the rhachet practice is applied then: the before + after contents match snapshot: keyrack.yml — before 1`] = `
+"org: ehmpathy
+extends:
+  - .agent/repo=ehmpathy/role=mechanic/keyrack.yml
+env.prod: null
+env.prep:
+  - OPENROUTER_API_KEY
+env.test:
+  # the local aws login, from before is-optional-if-has
+  - AWS_PROFILE
+"
+`;

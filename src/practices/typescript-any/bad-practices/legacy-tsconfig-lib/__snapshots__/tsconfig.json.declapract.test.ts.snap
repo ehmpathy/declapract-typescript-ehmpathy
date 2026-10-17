@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`typescript-any legacy-tsconfig-lib (#517) given: [case1] a single-line legacy lib override when: [t0] the fix runs then: ES2023 is appended, DOM and the comment stay: single-line — after 1`] = `
+"{
+  "compilerOptions": {
+    "lib": ["DOM", "ES2023"], // the browser types this repo needs
+    "target": "es2020"
+  }
+}
+"
+`;
+
+exports[`typescript-any legacy-tsconfig-lib (#517) given: [case2] a multi-line lib override with a final comma then: ES2023 lands on its own line at the entry indent: multi-line — after 1`] = `
+"{
+  "compilerOptions": {
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2023",
+    ],
+  },
+}
+"
+`;

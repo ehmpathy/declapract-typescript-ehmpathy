@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`config.schema.ts — a superset check (#658) given: [case3] a schema that dropped a base name when: [t1] fix runs, then check, then fix again then: fix stamps one marker that names the key; check passes; a rerun is a no-op: config.schema.ts — marker line 1`] = `"// @declapract:review: config.schema.ts lacks the base name(s) namespace that getConfig and the config files expect — add them, as the config practice's base template declares them; then delete this marker"`;

@@ -3,6 +3,6 @@
 exports[`typescript-expo package.json the emitted build commands match snapshot: typescript-expo build commands 1`] = `
 {
   "build": "npm run build:web",
-  "build:web": "npx expo export --platform web",
+  "build:web": "ACCESS=\${ACCESS:-prep} expo export --platform web",
 }
 `;

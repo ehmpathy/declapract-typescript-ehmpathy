@@ -34,7 +34,8 @@ describe('simple-lambda-handlers package.json', () => {
     const { contents: fixed } = await fix(contents, {} as any);
     const parsed = JSON.parse(fixed!);
 
-    expect(parsed.dependencies['sdk-aws-lambda']).toBe('^0.1.0');
+    // #646 — an exact pin at the 0.7.2 floor, never a range below it
+    expect(parsed.dependencies['sdk-aws-lambda']).toBe('0.7.2');
   });
 
   it('should preserve extant sdk-aws-lambda version if present', async () => {

@@ -1,0 +1,11 @@
+{
+  "name": "svc-example",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "build:dev:ios": "npm run build:ios",
+    "start:livedb:dev": "npm run start:db",
+    "deploy:dev": "npm run deploy:release",
+    "test:unit": "jest"
+  }
+}

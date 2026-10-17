@@ -1,3 +1,7 @@
-import { FileCheckType } from 'declapract';
+import { asPresenceCheck } from '../../../../../utils/asPresenceCheck';
 
-export const check = FileCheckType.EXISTS; // there should prolly be atleast one unit test per project
+// there should prolly be atleast one unit test per project
+export const check = asPresenceCheck({
+  expected: 'at least one test file under src/ named *.test.ts',
+  hint: 'add a unit test beside the code it covers (e.g. *._.unit.test.ts)',
+});

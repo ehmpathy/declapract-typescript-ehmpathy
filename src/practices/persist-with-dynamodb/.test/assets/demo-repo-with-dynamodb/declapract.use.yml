@@ -1,0 +1,11 @@
+declarations: './'
+useCase: dynamodb-owners
+variables:
+  organizationName: 'test-org'
+  projectName: 'test-project'
+  infrastructureNamespaceId: 'testns'
+  databaseName: 'testdb'
+  slackWebhookUrl: 'https://hooks.slack.test/webhook'
+  awsAccountId:
+    prep: '123456789012'
+    prod: '123456789012'

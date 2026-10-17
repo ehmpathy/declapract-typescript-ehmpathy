@@ -15,6 +15,9 @@ import { genTempDir, given, then, useThen, when } from 'test-fns';
  * .note = the terraform file is snapshotted in full (before AND after) so a reviewer
  *   can eyeball the exact end-state, per rule.require.declapract-integration-tests.
  */
+// the practice-scoped apply evaluates the whole persist-with-rds practice; under suite load it can outlast the default
+jest.setTimeout(600_000);
+
 describe('terraform-parameters forget', () => {
   given(
     '[case1] a repo with terraform-managed ssm params',
@@ -22,7 +25,7 @@ describe('terraform-parameters forget', () => {
       const tempDir = genTempDir({
         slug: 'declapract-terraform-parameters',
         clone: './src/practices/persist-with-rds/bad-practices/terraform-parameters/.test/assets/demo-repo-with-terraform-ssm',
-        symlink: [{ at: 'src', to: 'src' }],
+        symlink: [{ at: 'declarations', to: 'src' }],
       });
 
       const tfPath = 'provision/aws/product/parameter-store.tf';
@@ -59,6 +62,10 @@ describe('terraform-parameters forget', () => {
               'from = aws_ssm_parameter.secret_twilio_authToken',
             );
             expect(tf).toContain('destroy = false');
+            // the admin forget names its two copy targets under the derived names (#686)
+            expect(tf).toContain(
+              '# copy this value before the first plan → /test-org/test-project/{config}/database.role.cicd.for-plan.password, /test-org/test-project/{config}/database.role.cicd.for-apply.password (see provision/aws/readme.md)\nremoved {\n  from = aws_ssm_parameter.secret_database_admin_password',
+            );
             // full content, for the reviewer's eye
             expect(tf).toMatchSnapshot('parameter-store.tf — after');
           },

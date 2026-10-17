@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`.gitattributes best practice idempotency keeps the repo-own lines of a non-canonical input: .gitattributes — out-of-section input, after one fix 1`] = `
+"*.png binary
+
+# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+"
+`;

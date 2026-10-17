@@ -1,0 +1,5 @@
+# minimal use case for the dates-and-times practice integration test
+use-cases:
+  lambda-service:
+    practices:
+      - dates-and-times

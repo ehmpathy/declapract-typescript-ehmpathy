@@ -1,10 +1,35 @@
 import type { FileContentsContext } from 'declapract';
 
+import { check as checkExpo } from '../cicd-app-react-native-expo/best-practice/.github/workflows/provision.yml.declapract';
 import {
   RDS_JOBS_ANCHOR,
+  check,
   contents,
   withoutRdsJobs,
 } from './best-practice/.github/workflows/provision.yml.declapract';
+
+/**
+ * .what = an absent declared side halts with a malfunction that names its practice and file
+ * .why  = two practices declare a provision.yml; a bare message could not say which one failed
+ */
+describe('provision.yml — absent declared contents', () => {
+  const context = {
+    declaredFileContents: null,
+    relativeFilePath: '.github/workflows/provision.yml',
+  } as any; // a partial check context: only the two read members
+
+  it('the cicd-service check names cicd-service', () => {
+    expect(() => check('jobs: {}\n', context)).toThrow(
+      'the cicd-service practice emitted no declared provision.yml',
+    );
+  });
+
+  it('the expo check names cicd-app-react-native-expo', () => {
+    expect(() => checkExpo('jobs: {}\n', context)).toThrow(
+      'the cicd-app-react-native-expo practice emitted no declared provision.yml',
+    );
+  });
+});
 
 /**
  * .what = builds the minimal FileContentsContext the `contents` fn actually reads

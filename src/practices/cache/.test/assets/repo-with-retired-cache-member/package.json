@@ -1,0 +1,8 @@
+{
+  "name": "test-project-retired-cache",
+  "version": "1.0.0",
+  "dependencies": {
+    "with-domain-driven-cache": "1.0.0",
+    "with-simple-caching": "0.14.4"
+  }
+}

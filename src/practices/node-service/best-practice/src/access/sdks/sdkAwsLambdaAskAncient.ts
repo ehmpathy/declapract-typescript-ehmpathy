@@ -1,0 +1,39 @@
+import { askLambdaEndpoint } from 'sdk-aws-lambda';
+import type { EnvironmentAccessTier } from 'sdk-environment';
+
+import { sdkAwsLambdaEnvAccessAncient } from '@src/access/sdks/sdkAwsLambdaEnvAccessAncient';
+
+/**
+ * .what = ask an ancient peer — one that publishes `-dev-` only, and reads a flat event.
+ * .why  = an ancient peer differs from a contemp one on two axes at once: its address (the legacy
+ *         `dev` slug below prod) and its payload (a bare event, never the `{ event, trail }`
+ *         envelope). a caller that sets one and forgets the other reaches a lambda that 404s, or
+ *         one that reads `undefined` for every field. this helper binds both, so neither can be
+ *         set alone.
+ * .note = the helper choice IS the migration ledger, with `sdkAwsLambdaEnvAccessAncient`: once
+ *         `grep Ancient` reaches zero, both retire, and each caller moves to `askLambdaEndpoint`.
+ */
+export const sdkAwsLambdaAskAncient = <TRequest, TResponse>(
+  input: { which: { service: string; function: string }; event: TRequest },
+  // the context of askLambdaEndpoint as instantiated on THIS call's types, so `cache.response`
+  // is a SimpleCache<TResponse>; the sdk's exported context type pins it to <unknown>
+  context: Omit<
+    Parameters<typeof askLambdaEndpoint<TRequest, TResponse>>[1],
+    'env'
+  > & {
+    env?: { region?: string };
+  },
+): Promise<TResponse> =>
+  askLambdaEndpoint<TRequest, TResponse>(
+    { which: input.which, event: input.event, struct: { payload: 'ancient' } },
+    {
+      ...context,
+      env: {
+        ...context.env,
+        // .cast = askLambdaEndpoint types `env.access` as the access set, which has no `dev`;
+        //   the ancient slug is the one value it must carry here. remove this cast once
+        //   sdk-aws-lambda#42 releases a `dev`-aware access type.
+        access: sdkAwsLambdaEnvAccessAncient() as EnvironmentAccessTier,
+      },
+    },
+  );

@@ -1,0 +1,6 @@
+# minimal usecase for artifact pipeline tests
+# .note = no variables — artifact references only @declapract{check.minVersion}
+use-cases:
+  artifact-only:
+    practices:
+      - artifact

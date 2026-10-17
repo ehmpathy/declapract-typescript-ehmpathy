@@ -1,0 +1,6 @@
+*.png binary
+
+# exclude package-lock from git diff; https://stackoverflow.com/a/72834452/3068233
+package-lock.json -diff
+pnpm-lock.json -diff
+pnpm-lock.yaml merge=theirs

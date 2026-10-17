@@ -30,12 +30,21 @@ const config: Config = {
   ],
   testMatch: [
     // note: order matters
-    '**/*.test.ts',
+    '**/*.test.ts', // also matches the `._.unit.test` kind seam
     '!**/*.acceptance.test.ts',
     '!**/*.integration.test.ts',
+    '!**/*.evaluation.test.ts',
+    '!**/*._.acpt.test.ts',
+    '!**/*._.intg.test.ts',
+    '!**/*._.eval.test.ts',
+    '!**/.agent/.actors/**', // rhachet host-local state; holds a scratch clone of this repo, whose suites are not ours
     '!**/.agent/.cache/**',
     '!**/.yalc/**',
   ],
+  // skip all of `.agent/`: rhachet roles, host-local clones, and the rmsafe trash live there. a test
+  // there would run as ours, and a snapshot there would read as obsolete (the haste map scans it)
+  testPathIgnorePatterns: ['/node_modules/', '/.agent/'],
+  modulePathIgnorePatterns: ['<rootDir>/.agent/'],
   setupFilesAfterEnv: ['./jest.unit.env.ts'],
 
   // reclaim every temp dir genTempDir made this run (test-fns autoprune; needs test-fns >=1.16,

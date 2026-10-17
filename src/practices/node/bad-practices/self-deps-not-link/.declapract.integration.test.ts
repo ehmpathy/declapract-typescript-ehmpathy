@@ -33,7 +33,7 @@ describe('node/self-deps-not-link removal', () => {
     const tempDir = genTempDir({
       slug: 'declapract-node-self-deps-not-link',
       clone: './src/practices/node/bad-practices/self-deps-not-link/.test/assets/demo-repo-with-self-deps',
-      symlink: [{ at: 'src', to: 'src' }],
+      symlink: [{ at: 'declarations', to: 'src' }],
     });
 
     const pkgPath = 'package.json';

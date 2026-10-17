@@ -1,0 +1,4 @@
+# declarations that isolate the tool-swap removal bad-practices (#660, #517), so best-practice floors stay out of the diff
+declare:
+  practices: practices
+  use-cases: useCases.yml

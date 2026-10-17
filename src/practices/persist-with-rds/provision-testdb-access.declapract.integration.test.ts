@@ -10,7 +10,7 @@ import { given, then, when } from 'test-fns';
  * .why  = each schema call invokes sql-schema-control → getConfig() → getEnvironment.static(); with
  *         no ACCESS in a local shell (no aws account alias / NODE_ENV that fits), every access parser
  *         fails and it throws `could not derive access`. the local testdb always provisions the
- *         `test` tier, so ACCESS=test is a constant here, not the cicd `${{ inputs.access }}`
+ *         `test` access, so ACCESS=test is a constant here, not the cicd `${{ inputs.access }}`
  *         interpolation the live-db path uses.
  * .teeth = drop an `ACCESS=test` from any inner schema call in best-practice/package.json and the
  *          "no bare schema call" assertion reddens (a bare `&& npm run provision:schema:` reappears).

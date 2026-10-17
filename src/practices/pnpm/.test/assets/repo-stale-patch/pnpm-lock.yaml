@@ -1,0 +1,19 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+packages:
+
+  rhachet-roles-ehmpathy@1.40.0:
+    resolution: {integrity: sha512-a}
+
+  type-fns@1.21.3:
+    resolution: {integrity: sha512-b}
+
+snapshots:
+
+  rhachet-roles-ehmpathy@1.40.0: {}
+
+  type-fns@1.21.3: {}

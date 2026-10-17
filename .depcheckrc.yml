@@ -30,6 +30,7 @@ ignores:
   # consumer-bound imports as this repo's absent deps.
   - "@jest/globals"
   - isomorphic-fetch
+  - type-fns
 ignorePatterns:
   # the lint bad-practice eslintrc is a forbidden-pattern template declapract
   # ships, never a real dep consumer. depcheck reaches it at its canonical src
@@ -37,3 +38,16 @@ ignorePatterns:
   # src/.test/assets/expo-fullusecase/declarations/practices/lint -> src/practices/lint),
   # so the glob spans both with a `**/` prefix.
   - "**/practices/lint/bad-practices/*"
+  # the persist-with-rds test-asset fixtures are consumer repos (and retired templates) that
+  # import `pg` as a consumer would; this library never runs them, so they are never its deps
+  - "**/practices/persist-with-rds/**/.test/assets/**"
+  # rhachet host-local runtime state (actor caches, plugin copies); gitignored,
+  # never source, and its files import packages this repo does not use
+  - .agent/.actors
+  # rhachet links `.claude` into the enrolled actor's dir, so depcheck reaches the same
+  # host-local cache through it; the link is not source either
+  - .claude
+  # role dirs vendored from other repos import their own origin's deps; only
+  # this repo's own role dir is source that depcheck should attribute
+  - .agent/repo=*
+  - "!.agent/repo=.this"

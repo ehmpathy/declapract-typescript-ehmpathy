@@ -1,0 +1,4 @@
+declare:
+  examples: declarations/examples
+  practices: declarations/practices
+  use-cases: useCases.yml

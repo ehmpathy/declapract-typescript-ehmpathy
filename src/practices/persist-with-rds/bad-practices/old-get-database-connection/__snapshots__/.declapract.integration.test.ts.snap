@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`old-get-database-connection (#659) given: [case4] a repo with the old factory, its test, and two importers when: [t0] the input, before any fix then: each importer matches snapshot: src/access/daos/daoSurfer.ts — before 1`] = `
+"import type { DatabaseConnection } from '@src/utils/database/getDatabaseConnection';
+
+// a getDatabaseConnection from another module must never be renamed
+import { getDatabaseConnection as getLegacyWarehouse } from 'surf-warehouse-sdk';
+
+export const findSurferByUuid = async (
+  input: { uuid: string },
+  context: { dbConnection: DatabaseConnection },
+) => {
+  await getLegacyWarehouse();
+  return context.dbConnection.query({
+    sql: 'select * from surfer where uuid = $1',
+    values: [input.uuid],
+  });
+};
+"
+`;
+
+exports[`old-get-database-connection (#659) given: [case4] a repo with the old factory, its test, and two importers when: [t0] the input, before any fix then: each importer matches snapshot: src/domain.operations/getSurfLesson.ts — before 1`] = `
+"import {
+  type DatabaseConnection,
+  getDatabaseConnection,
+} from '../utils/database/getDatabaseConnection';
+
+export const getSurfLesson = async (input: { uuid: string }) => {
+  const dbConnection: DatabaseConnection = await getDatabaseConnection();
+  const result = await dbConnection.query({
+    sql: 'select * from surf_lesson where uuid = $1',
+    values: [input.uuid],
+  });
+  await dbConnection.end();
+  return result.rows[0] ?? null;
+};
+"
+`;
+
+exports[`old-get-database-connection (#659) given: [case4] a repo with the old factory, its test, and two importers when: [t1] apply runs over each affected file then: the dao is repointed, its foreign import untouched, and matches snapshot: src/access/daos/daoSurfer.ts — after 1`] = `
+"import type { DatabaseConnection } from '@src/utils/database/getOneDatabaseConnection';
+
+// a getDatabaseConnection from another module must never be renamed
+import { getDatabaseConnection as getLegacyWarehouse } from 'surf-warehouse-sdk';
+
+export const findSurferByUuid = async (
+  input: { uuid: string },
+  context: { dbConnection: DatabaseConnection },
+) => {
+  await getLegacyWarehouse();
+  return context.dbConnection.query({
+    sql: 'select * from surfer where uuid = $1',
+    values: [input.uuid],
+  });
+};
+"
+`;
+
+exports[`old-get-database-connection (#659) given: [case4] a repo with the old factory, its test, and two importers when: [t1] apply runs over each affected file then: the operation reads getOneDatabaseConnection, and matches snapshot: src/domain.operations/getSurfLesson.ts — after 1`] = `
+"import {
+  type DatabaseConnection,
+  getOneDatabaseConnection,
+} from '../utils/database/getOneDatabaseConnection';
+
+export const getSurfLesson = async (input: { uuid: string }) => {
+  const dbConnection: DatabaseConnection = await getOneDatabaseConnection();
+  const result = await dbConnection.query({
+    sql: 'select * from surf_lesson where uuid = $1',
+    values: [input.uuid],
+  });
+  await dbConnection.end();
+  return result.rows[0] ?? null;
+};
+"
+`;

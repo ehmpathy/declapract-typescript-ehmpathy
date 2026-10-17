@@ -7,6 +7,9 @@ module.exports = {
     // line. keep body lines aligned with the 140-char header cap so a long
     // header can never fail the release-branch commit lint.
     'body-max-line-length': [1, 'always', 140],
+    // the same allowance for the footer: a long `Co-Authored-By:` or `Refs:` trailer
+    // must never fail a commit lint the body rule would pass
+    'footer-max-line-length': [1, 'always', 140],
     'type-enum': [
       2,
       'always',

@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`withLambdaClientGenMarker (#532) given: [case1] a hand-written client that wraps askLambdaEndpoint when: [t0] it is marked then: a review marker on line one names the codegen for this peer 1`] = `
+"// @declapract:review — a hand-written lambda client drifts from its peer's contract; generate it via \`npx sdk-aws-lambda gen --for svc-jobs --into src/access/svcs/ --env prep\`, move callers onto the generated sdk, then delete this file (declapract-typescript-ehmpathy#532)
+import { askLambdaEndpoint } from 'sdk-aws-lambda';
+
+export const getJob = (event: { jobUuid: string }, context: AskContext) =>
+  askLambdaEndpoint({ which: { service: 'svc-jobs', function: 'getJob' }, event }, context);
+"
+`;

@@ -1,4 +1,4 @@
-import { fix } from './best-practice/package.json.declapract';
+import { check, fix } from './best-practice/package.json.declapract';
 
 const exampleFoundContents = `
 {
@@ -148,5 +148,18 @@ describe('package.json order', () => {
   it('should sort a full example of a package json correctly', async () => {
     const fixedContents = await fix(exampleFoundContents, {} as any);
     expect(fixedContents).toMatchSnapshot();
+  });
+
+  describe('idempotency (rule.require.idempotent-fixes)', () => {
+    it('check passes on the fixed output — a second apply finds no key out of order', async () => {
+      const { contents: once } = await fix(exampleFoundContents, {} as any);
+      expect(() => check(once, {} as any)).not.toThrow();
+    });
+
+    it('fix(fix(x)) === fix(x) — the second pass moves zero keys', async () => {
+      const { contents: once } = await fix(exampleFoundContents, {} as any);
+      const { contents: twice } = await fix(once, {} as any);
+      expect(twice).toEqual(once);
+    });
   });
 });

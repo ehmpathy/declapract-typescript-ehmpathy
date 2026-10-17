@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`workflow templates grant id-token at job scope (#550) given: [case1] every workflow template under src/practices when: [t1] each workflow is read for its grants then: the grant table reads as declared 1`] = `
+[
+  "src/practices/cicd-app-react-native-expo/best-practice/.github/workflows/.deploy-expo.yml :: deploy-os",
+  "src/practices/cicd-app-react-native-expo/best-practice/.github/workflows/.deploy-expo.yml :: deploy-web",
+  "src/practices/cicd-common/best-practice/.github/workflows/.declastruct.yml :: plan",
+  "src/practices/cicd-common/best-practice/.github/workflows/.declastruct.yml :: apply",
+  "src/practices/cicd-common/best-practice/.github/workflows/.test.yml :: test-shards-integration",
+  "src/practices/cicd-common/best-practice/.github/workflows/.test.yml :: test-shards-acceptance",
+  "src/practices/cicd-common/best-practice/.github/workflows/.test.yml :: test-evaluation",
+  "src/practices/cicd-package/best-practice/.github/workflows/.publish-npm.yml :: publish",
+  "src/practices/cicd-service/best-practice/.github/workflows/.deploy-sls.yml :: deploy",
+  "src/practices/cicd-service/best-practice/.github/workflows/.deploy-sls.yml :: assure",
+  "src/practices/cicd-service/best-practice/.github/workflows/.deploy-sls.yml :: prune",
+  "src/practices/cicd-service/best-practice/.github/workflows/.sql-schema-control.yml :: plan",
+  "src/practices/cicd-service/best-practice/.github/workflows/.sql-schema-control.yml :: apply",
+  "src/practices/cicd-service/best-practice/.github/workflows/.terraform.yml :: plan",
+  "src/practices/cicd-service/best-practice/.github/workflows/.terraform.yml :: apply",
+]
+`;
+
+exports[`workflow templates grant id-token at job scope (#550) given: [case2] a corpus that is defective on purpose when: [t0] the corpus is read the way the walk reads a real one then: each report names its offender -- the text a maintainer meets on red 1`] = `
+{
+  "grantsWithoutMinter": [
+    "demo/.github/workflows/.demo.yml :: lint",
+  ],
+  "jobBlocksWithoutContentsRead": [
+    "demo/.github/workflows/.demo.yml :: lint",
+  ],
+  "mintersWithoutGrant": [
+    "demo/.github/workflows/.demo.yml :: deploy",
+  ],
+  "workflowScopeGrants": [
+    "demo/.github/workflows/.demo.yml",
+  ],
+}
+`;

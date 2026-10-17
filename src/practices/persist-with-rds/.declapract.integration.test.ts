@@ -6,29 +6,33 @@ import { genTempDir, given, then, useThen, when } from 'test-fns';
 
 /**
  * .what = end-to-end proof of the persist-with-rds `old-dev-config-location` relocate +
- *         tier-migrate, run through the REAL declapract apply pipeline against a genTempDir
+ *         access-migrate, run through the REAL declapract apply pipeline against a genTempDir
  *         clone of a consumer repo (the row-4 clamp, rds declarer).
  * .why  = the config declarer has its own pipeline test; per
  *         `rule.require.declapract-integration-tests` EACH declarer that relocates a file AND
  *         transforms blocks owes its own end-to-end test — a unit test of the exported `fix`
  *         never exercises the glob→file match or the `relativeFilePath` rewrite. the rds
- *         declarer adds one transform the config twin lacks (`__CHANG3_ME__` → aws-param), so
- *         it needs its own clamp rather than a claim that the config test covers it.
+ *         declarer must also keep the `__CHANG3_ME__` passwords prep users are created with
+ *         (#683), so it needs its own clamp rather than a claim that the config test covers it.
  * .teeth = the input holds `"access": "dev"` (unambiguous → migrated to `prep`) plus four `.dev`
  *          hosts the util runs on in a CONSUMER's real config — a `://` URL `https://auth.myapp.dev`,
  *          a mid-dotted `bastion.dev.example.com`, a terminal `aws.ssmproxy.mydb.dev`, and a FOREIGN
  *          public host `api.dev.paypal.com` (paypal's own label). a `.dev` label is axis-ambiguous
  *          WHEREVER it sits, so per guard #3 EVERY host is preserved byte-for-byte — the after-state
  *          proves all four survive, that none flips to `.prep`, and that NO `@declapract:review`
- *          bytes ever enter the config. it also proves the rds-only `__CHANG3_ME__` → aws-param
- *          transform (the one the config twin lacks) plus the relocation.
+ *          bytes ever enter the config. it also proves the `__CHANG3_ME__` passwords survive as-is
+ *          (#683) plus the relocation.
  */
-describe('persist-with-rds — old-dev-config-location relocate + tier-migrate (row-4 clamp)', () => {
+// the declarations mount at `declarations/`, never `src/`, so the practice's `src/**` wildcards scan
+// only the demo repo's own files; the whole-practice evaluation still runs long under load
+jest.setTimeout(600_000);
+
+describe('persist-with-rds — old-dev-config-location relocate + access-migrate (row-4 clamp)', () => {
   given('[case1] an rds repo with a config/dev.json to migrate', () => {
     const tempDir = genTempDir({
       slug: 'declapract-persist-with-rds-old-dev-config-location',
       clone: './src/practices/persist-with-rds/.test/assets/demo-repo-with-dev-config',
-      symlink: [{ at: 'src', to: 'src' }],
+      symlink: [{ at: 'declarations', to: 'src' }],
     });
 
     const devPath = 'config/dev.json';
@@ -39,7 +43,10 @@ describe('persist-with-rds — old-dev-config-location relocate + tier-migrate (
       fs
         .access(path.join(tempDir, relativePath))
         .then(() => true)
-        .catch(() => false);
+        .catch((error: NodeJS.ErrnoException) => {
+          if (error.code === 'ENOENT') return false; // absent is the probe's answer
+          throw error; // any other read failure is a malfunction, never "absent"
+        });
     const applyMigrate = () =>
       executeApply({
         config: path.join(tempDir, 'declapract.use.yml'),
@@ -48,7 +55,7 @@ describe('persist-with-rds — old-dev-config-location relocate + tier-migrate (
       });
 
     when('[t0] the migration input (before any fix)', () => {
-      then('config/dev.json holds the dev tier + the placeholder + matches snapshot', async () => {
+      then('config/dev.json holds the dev access + the placeholder + matches snapshot', async () => {
         const before = await read(devPath);
         expect(before).toContain('"access": "dev"');
         expect(before).toContain('"__CHANG3_ME__"');
@@ -79,14 +86,14 @@ describe('persist-with-rds — old-dev-config-location relocate + tier-migrate (
           // rewrite turned this into `api.prep.paypal.com`, a silent public-endpoint corruption.
           expect(after).toContain('api.dev.paypal.com');
           expect(after).not.toContain('api.prep.paypal.com');
-          // no host was flipped to `.prep`, so no wrong-tier value ever enters the config
+          // no host was flipped to `.prep`, so no wrong-access value ever enters the config
           expect(after).not.toContain('bastion.prep.example.com');
           expect(after).not.toContain('aws.ssmproxy.mydb.prep');
           // the migration never emits a value it cannot verify — no marker bytes in config
           expect(after).not.toContain('@declapract:review');
-          // the rds-only placeholder → the aws-param reference (the transform the twin lacks)
-          expect(after).toContain('"$.at(aws::param)"');
-          expect(after).not.toContain('__CHANG3_ME__');
+          // the prep password placeholder survives — prep users are created with it (#683)
+          expect(after).toContain('"__CHANG3_ME__"');
+          expect(after).not.toContain('"$.at(aws::param)"');
           // full content, for the reviewer's eye
           expect(after).toMatchSnapshot('config/prep.json — after');
         },
@@ -140,7 +147,10 @@ describe('persist-with-rds — getConfig has a single declarer (D55 clamp)', () 
     fs
       .access(relativePath)
       .then(() => true)
-      .catch(() => false);
+      .catch((error: NodeJS.ErrnoException) => {
+        if (error.code === 'ENOENT') return false; // absent is the probe's answer
+        throw error; // any other read failure is a malfunction, never "absent"
+      });
 
   given('[case1] the two practices that touch src/utils/config/getConfig.ts', () => {
     when('[t0] the declarers of that path are read', () => {
@@ -159,7 +169,7 @@ describe('persist-with-rds — getConfig has a single declarer (D55 clamp)', () 
       then('persist-with-rds imports getConfig from the config-supplied path', async () => {
         // the consumer receives config's real getConfig at this exact path, so the import resolves
         const dbConn = await fs.readFile(rdsDbConnection, 'utf-8');
-        expect(dbConn).toContain("from '../config/getConfig'");
+        expect(dbConn).toContain("from '@src/utils/config/getConfig'");
       });
     });
   });
@@ -195,7 +205,10 @@ describe('persist-with-rds — config.schema.ts is a plain overwrite, not a spli
     fs
       .access(relativePath)
       .then(() => true)
-      .catch(() => false);
+      .catch((error: NodeJS.ErrnoException) => {
+        if (error.code === 'ENOENT') return false; // absent is the probe's answer
+        throw error; // any other read failure is a malfunction, never "absent"
+      });
 
   given('[case1] the two by-design declarers of src/utils/config/config.schema.ts', () => {
     when('[t0] the declared files are read', () => {

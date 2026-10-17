@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`pnpm override-undercuts-dependency bad-practice given: [case1] dependencies.zod 4.0.0 under a pnpm.overrides.zod of 3.23.8 (#624) when: [t1] the fix runs then: the override rises to 4.0.0 and the other override is kept: package.json — after 1`] = `
+"{
+  "dependencies": {
+    "zod": "4.0.0",
+    "other": "1.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "zod": "4.0.0",
+      "react-refresh": "~0.14.0"
+    }
+  }
+}"
+`;

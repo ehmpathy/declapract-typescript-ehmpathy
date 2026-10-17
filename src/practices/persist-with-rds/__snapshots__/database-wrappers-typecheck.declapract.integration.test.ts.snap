@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds database wrappers type-check where they land (#627, #633) given: [case2] the jsdoc example that withDatabaseContext ships when: [t0] tsc runs over the example, as an adopter would paste it then: the example matches snapshot: withDatabaseContext jsdoc example 1`] = `
+"  const findById = withDatabaseContext(({ id }: { id: string }, context: { dbConnection: DatabaseConnection }) => {
+    // do logic with dbConnection
+  });
+  // ...
+  await findById({ id: '821' }, {}); // the context is required, but the dbConnection within it is not
+  await findById({ id: '821' }, { dbConnection }); // pass one in to reuse it, e.g. inside a transaction"
+`;

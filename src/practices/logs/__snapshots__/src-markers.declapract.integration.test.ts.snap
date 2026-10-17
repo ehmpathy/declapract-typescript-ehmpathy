@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`logs src review markers given: [case1] a repo with a leveled-log import and a vendored withLogTrail fork when: [t0] the input (before any fix) then: both src files match snapshot: fork — before 1`] = `
+"import { log } from './logger';
+
+/**
+ * enables input output logs for a function
+ *
+ * todo: - hookup visual tracing w/ external lib (vi...lo...)
+ */
+export const withInputOutputTracing = <T extends (...args: any[]) => any>(
+  logic: T,
+  options: { name: string; durationReportingThresholdInSeconds: number },
+): T => {
+  return (async (...args: any[]) => {
+    log.debug(\`\${options.name}.input\`, { args });
+    const result = await logic(...args);
+    log.debug(\`\${options.name}.output\`, { result });
+    return result;
+  }) as T;
+};
+"
+`;
+
+exports[`logs src review markers given: [case1] a repo with a leveled-log import and a vendored withLogTrail fork when: [t0] the input (before any fix) then: both src files match snapshot: op — before 1`] = `
+"import { generateLogMethods } from 'simple-leveled-log-methods';
+
+export const log = generateLogMethods();
+"
+`;
+
+exports[`logs src review markers given: [case1] a repo with a leveled-log import and a vendored withLogTrail fork when: [t1] the logs fixes are applied then: the fork gains one review line above its export, which names withLogTrail and (input, context) (#635): fork — after 1`] = `
+"import { log } from './logger';
+
+/**
+ * enables input output logs for a function
+ *
+ * todo: - hookup visual tracing w/ external lib (vi...lo...)
+ */
+// @declapract:review: this vendored copy of withLogTrail (it logs no error on a throw) is retired — move to visualogic's withLogTrail, the (input, context) shape: each op becomes \`(input, context) => …\`, a dependency (dbConnection, log) moves out of the input into the context arg, and each caller passes it as the 2nd arg. then delete this marker
+export const withInputOutputTracing = <T extends (...args: any[]) => any>(
+  logic: T,
+  options: { name: string; durationReportingThresholdInSeconds: number },
+): T => {
+  return (async (...args: any[]) => {
+    log.debug(\`\${options.name}.input\`, { args });
+    const result = await logic(...args);
+    log.debug(\`\${options.name}.output\`, { result });
+    return result;
+  }) as T;
+};
+"
+`;
+
+exports[`logs src review markers given: [case1] a repo with a leveled-log import and a vendored withLogTrail fork when: [t1] the logs fixes are applied then: the op gains one review line above its leveled-log import, which names sdk-logs (#643): op — after 1`] = `
+"// @declapract:review: simple-leveled-log-methods is retired — import the logs practice's \`log\` (src/utils/logger.ts, built by sdk-logs \`genLogMethods\`) in its place, then delete this marker
+import { generateLogMethods } from 'simple-leveled-log-methods';
+
+export const log = generateLogMethods();
+"
+`;

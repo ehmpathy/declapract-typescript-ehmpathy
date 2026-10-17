@@ -1,0 +1,4 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/lint/declarations
+# .why  = a node repo whose .dpdmrc.yaml holds a cited devDep exclude entry (#628)
+declarations: 'declarations/declapract.declare.yml'
+useCase: lint-node

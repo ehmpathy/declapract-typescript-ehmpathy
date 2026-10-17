@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "fix:format": "npm run fix:format:biome",
+    "test:format": "npm run test:format:biome"
+  }
+}

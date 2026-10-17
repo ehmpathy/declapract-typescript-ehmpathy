@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`adhoc-lambda-clients (#532) given: [case1] a repo with two hand-written clients and one generated client when: [t0] the input, before any fix then: no client carries a review marker: svcJobs.ts — before 1`] = `
+"import { askLambdaEndpoint, type AskLambdaEndpointContext } from 'sdk-aws-lambda';
+
+export const getJob = (
+  event: { jobUuid: string },
+  context: AskLambdaEndpointContext,
+): Promise<{ job: { uuid: string } | null }> =>
+  askLambdaEndpoint(
+    { which: { service: 'svc-jobs', function: 'getJob' }, event },
+    context,
+  );
+"
+`;
+
+exports[`adhoc-lambda-clients (#532) given: [case1] a repo with two hand-written clients and one generated client when: [t0] the input, before any fix then: no client carries a review marker: svcQuotes.ts — before 1`] = `
+"import { askLambdaEndpoint, type AskLambdaEndpointContext } from 'sdk-aws-lambda';
+
+export const getQuote = (
+  event: { quoteUuid: string },
+  context: AskLambdaEndpointContext,
+): Promise<{ quote: { uuid: string } | null }> =>
+  askLambdaEndpoint(
+    { which: { service: 'svc-quotes', function: 'getQuote' }, event },
+    context,
+  );
+"
+`;
+
+exports[`adhoc-lambda-clients (#532) given: [case1] a repo with two hand-written clients and one generated client when: [t1] the node-service practice is applied then: each hand-written client names the codegen for its own peer: svcJobs.ts — after 1`] = `
+"// @declapract:review — a hand-written lambda client drifts from its peer's contract; generate it via \`npx sdk-aws-lambda gen --for svc-jobs --into src/access/svcs/ --env prep\`, move callers onto the generated sdk, then delete this file (declapract-typescript-ehmpathy#532)
+import { askLambdaEndpoint, type AskLambdaEndpointContext } from 'sdk-aws-lambda';
+
+export const getJob = (
+  event: { jobUuid: string },
+  context: AskLambdaEndpointContext,
+): Promise<{ job: { uuid: string } | null }> =>
+  askLambdaEndpoint(
+    { which: { service: 'svc-jobs', function: 'getJob' }, event },
+    context,
+  );
+"
+`;
+
+exports[`adhoc-lambda-clients (#532) given: [case1] a repo with two hand-written clients and one generated client when: [t1] the node-service practice is applied then: each hand-written client names the codegen for its own peer: svcQuotes.ts — after 1`] = `
+"// @declapract:review — a hand-written lambda client drifts from its peer's contract; generate it via \`npx sdk-aws-lambda gen --for svc-quotes --into src/access/svcs/ --env prep\`, move callers onto the generated sdk, then delete this file (declapract-typescript-ehmpathy#532)
+import { askLambdaEndpoint, type AskLambdaEndpointContext } from 'sdk-aws-lambda';
+
+export const getQuote = (
+  event: { quoteUuid: string },
+  context: AskLambdaEndpointContext,
+): Promise<{ quote: { uuid: string } | null }> =>
+  askLambdaEndpoint(
+    { which: { service: 'svc-quotes', function: 'getQuote' }, event },
+    context,
+  );
+"
+`;

@@ -1,0 +1,7 @@
+{
+  "name": "test-project-retired-cache-imported",
+  "version": "1.0.0",
+  "dependencies": {
+    "with-simple-caching": "0.14.4"
+  }
+}

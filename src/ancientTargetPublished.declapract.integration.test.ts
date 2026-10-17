@@ -1,12 +1,13 @@
 import { readFileSync } from 'node:fs';
 
+import { MalfunctionError } from 'helpful-errors';
 import { given, then, useBeforeAll, when } from 'test-fns';
-import ts from 'typescript';
+import { getModuleExportsFromTsSource } from './utils/getModuleExportsFromTsSource';
 
 /**
  * .what = exercises case=2's no-404 promise at the reachable grain: the fleet slug an
- *         `sdkAwsLambdaEnvAccess{Ancient,Contemp}` target op RETURNS, for any DEPLOYED access
- *         tier, must be a stage the serverless dual-publish scaffold actually deploys under —
+ *         `sdkAwsLambdaEnvAccess{Ancient,Contemp}` target op RETURNS, for any DEPLOYED access,
+ *         must be a stage the serverless dual-publish scaffold actually deploys under —
  *         so a caller that builds `${service}-${slug}-${fn}` addresses a name a fleet answers
  *         to, never a 404.
  * .why  = case=2 (cross-service-call-never-404s) is a demoed critipath whose core promise is
@@ -51,25 +52,25 @@ const runTargetSlug = (input: {
   name: string;
   access: 'test' | 'prep' | 'prod';
 }): string => {
-  const source = readFileSync(input.path, 'utf8');
-  const transpiled = ts.transpileModule(source, {
-    compilerOptions: {
-      module: ts.ModuleKind.CommonJS,
-      target: ts.ScriptTarget.ES2020,
-    },
-  }).outputText;
-  const moduleExports: Record<string, () => string> = {};
   const requireStub = (id: string): unknown =>
     id.includes('environment') ? { envStatic: { access: input.access } } : {};
-  // eslint-disable-next-line no-new-func
-  new Function('exports', 'require', transpiled)(moduleExports, requireStub);
-  return moduleExports[input.name]();
+  const moduleExports = getModuleExportsFromTsSource<Record<string, () => string>>({
+    source: readFileSync(input.path, 'utf8'),
+    requireStub,
+  });
+  const targetOp =
+    moduleExports[input.name] ??
+    MalfunctionError.throw('the target-op template no longer exports this op', {
+      path: input.path,
+      name: input.name,
+    });
+  return targetOp();
 };
 
 /**
  * .what = the `accessByStage` map, read from the serverless template as { stage: access }.
  * .why  = its KEYS are the `--stage` slugs the scaffold deploys under (the published fleet
- *         slugs); its VALUES are the accesses those deploys reach (the deployed tiers).
+ *         slugs); its VALUES are the accesses those deploys run with (the deployed accesses).
  *         serverless.yml carries `@declapract{...}` vars elsewhere, so a full yaml parse would
  *         choke — the block is clean, so a scoped line-scan reads it exactly.
  */
@@ -93,8 +94,8 @@ describe('the EnvAccess target op emits only slugs the dual-publish scaffold pub
     const state = useBeforeAll(() => {
       const accessByStage = readAccessByStage();
       const publishedStages = Object.keys(accessByStage); // the --stage slugs a deploy publishes
-      const deployedTiers = [...new Set(Object.values(accessByStage))]; // accesses that reach a fleet
-      return { accessByStage, publishedStages, deployedTiers };
+      const deployedAccesses = [...new Set(Object.values(accessByStage))]; // accesses that reach a fleet
+      return { accessByStage, publishedStages, deployedAccesses };
     });
 
     when('the scaffold is read', () => {
@@ -110,18 +111,18 @@ describe('the EnvAccess target op emits only slugs the dual-publish scaffold pub
         expect({
           accessByStage: state.accessByStage,
           publishedStages: [...state.publishedStages].sort(),
-          deployedTiers: [...state.deployedTiers].sort(),
+          deployedAccesses: [...state.deployedAccesses].sort(),
         }).toMatchSnapshot('dual-publish scaffold shape');
       });
     });
 
     when('each deployed access is walked through the ancient target op', () => {
       then('the emitted slug is a stage the scaffold publishes (no 404 by construction)', () => {
-        for (const tier of state.deployedTiers) {
+        for (const deployedAccess of state.deployedAccesses) {
           const slug = runTargetSlug({
             path: ANCIENT_PATH,
             name: 'sdkAwsLambdaEnvAccessAncient',
-            access: tier as 'test' | 'prep' | 'prod',
+            access: deployedAccess as 'test' | 'prep' | 'prod',
           });
           // slug ∈ publishedStages ⟺ the caller's target `${service}-${slug}-${fn}` names a
           // fleet the scaffold actually deploys ⟺ the invoke lands, never a 404
@@ -132,42 +133,42 @@ describe('the EnvAccess target op emits only slugs the dual-publish scaffold pub
 
     when('each deployed access is walked through the contemp target op', () => {
       then('the emitted slug is a stage the scaffold publishes (no 404 by construction)', () => {
-        for (const tier of state.deployedTiers) {
+        for (const deployedAccess of state.deployedAccesses) {
           const slug = runTargetSlug({
             path: CONTEMP_PATH,
             name: 'sdkAwsLambdaEnvAccessContemp',
-            access: tier as 'test' | 'prep' | 'prod',
+            access: deployedAccess as 'test' | 'prep' | 'prod',
           });
           expect(state.publishedStages).toContain(slug);
         }
       });
     });
 
-    when('the per-tier emitted slugs are derived for both target ops', () => {
+    when('the per-access emitted slugs are derived for both target ops', () => {
       // the caller-faced contract of the no-404 invariant: which slug each op emits per deployed
-      // tier, and the published set it must land within. snapshot so a reword that keeps the
-      // membership green (a re-mapped tier, a re-shaped scaffold) reddens a vibecheck.
+      // access, and the published set it must land within. snapshot so a reword that keeps the
+      // membership green (a re-mapped access, a re-shaped scaffold) reddens a vibecheck.
       then('the target-slug shape matches snapshot', () => {
-        const perTier = state.deployedTiers
+        const perAccess = state.deployedAccesses
           .slice()
           .sort()
-          .map((tier) => ({
-            access: tier,
+          .map((deployedAccess) => ({
+            access: deployedAccess,
             ancient: runTargetSlug({
               path: ANCIENT_PATH,
               name: 'sdkAwsLambdaEnvAccessAncient',
-              access: tier as 'test' | 'prep' | 'prod',
+              access: deployedAccess as 'test' | 'prep' | 'prod',
             }),
             contemp: runTargetSlug({
               path: CONTEMP_PATH,
               name: 'sdkAwsLambdaEnvAccessContemp',
-              access: tier as 'test' | 'prep' | 'prod',
+              access: deployedAccess as 'test' | 'prep' | 'prod',
             }),
           }));
         expect({
-          perTier,
+          perAccess,
           publishedStages: [...state.publishedStages].sort(),
-        }).toMatchSnapshot('per-tier target slug vs published stages');
+        }).toMatchSnapshot('per-access target slug vs published stages');
       });
     });
   });

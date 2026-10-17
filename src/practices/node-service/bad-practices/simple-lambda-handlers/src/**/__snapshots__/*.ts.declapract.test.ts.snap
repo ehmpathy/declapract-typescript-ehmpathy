@@ -2,31 +2,32 @@
 
 exports[`simple-lambda-handlers source files @declapract:review marker (#594) flags a standard handler call with the schema+invoke contract (no rawEvent): standard handler call — review marker 1`] = `
 "/**
- * @declapract:review — auto-migrated to sdk-aws-lambda; the handler CONTRACT differs and MUST be
- * restructured by hand:
+ * @declapract:review — auto-migrated to sdk-aws-lambda@0.7.1; the handler CONTRACT differs and
+ * MUST be restructured by hand:
  *  - schema: the prior single schema splits into \`schema: { input, output }\`.
- *  - invoke: \`logic: (event) => O\` becomes \`invoke: async ({ event }, { log }) => O\`; \`log\` is now
- *    received in the invoke context, not only at creation.
+ *  - invoke: \`logic: (event) => O\` becomes \`invoke: async ({ payload }, { log }) => O\`; the
+ *    validated input is \`payload\`, and \`log\` is now received in the invoke context.
  * delete this marker once restructured.
  */
 
 import { genLambdaEndpoint } from 'sdk-aws-lambda';
 
-export const handler = genLambdaEndpoint({ log, schema, logic });"
+export const handler = genLambdaEndpoint.forAsk({ log, schema, logic });"
 `;
 
-exports[`simple-lambda-handlers source files @declapract:review marker (#594) flags an api-gateway handler call with the body + rawEvent contract: api-gateway handler call — review marker 1`] = `
+exports[`simple-lambda-handlers source files @declapract:review marker (#594) flags an api-gateway handler call with the { headers, payload, event } contract: api-gateway handler call — review marker 1`] = `
 "/**
- * @declapract:review — auto-migrated to sdk-aws-lambda; the api-gateway handler CONTRACT differs
- * and MUST be restructured by hand (a rename-only migration answers 400 to every request):
+ * @declapract:review — auto-migrated to sdk-aws-lambda@0.7.1; the api-gateway handler CONTRACT
+ * differs and MUST be restructured by hand (a rename-only migration answers 400 to every request):
  *  - schema: the prior single schema described the WHOLE event; the sdk input schema describes the
  *    request BODY only. split into \`schema: { input, output }\` and unwrap the \`body\` key.
- *  - invoke: \`logic: (event) => O\` becomes \`invoke: async ({ event, rawEvent }) => O\`. \`event\` is
- *    the parsed body; thread headers through \`rawEvent.headers\`.
+ *  - invoke: \`logic: (event) => O\` becomes \`invoke: async ({ headers, payload, event }) => O\`.
+ *    \`payload\` is the parsed body; \`headers\` holds the lowercased request headers; \`event\` is
+ *    the reconciled wire event (method, params, codec).
  * delete this marker once restructured.
  */
 
 import { genLambdaEndpoint } from 'sdk-aws-lambda';
 
-export const handler = genLambdaEndpoint.for.apiGateway({ log, schema, logic, cors });"
+export const handler = genLambdaEndpoint.forApiGateway({ log, schema, logic, cors });"
 `;

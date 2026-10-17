@@ -515,4 +515,52 @@ import { calculate } from '../logic/calculate';`;
       expect(() => check(fixed, {} as any)).toThrow();
     });
   });
+
+  describe('bare barrel imports (#655, #671)', () => {
+    const context = { relativeFilePath: 'src/domain.operations/quote/getQuote.ts' } as any;
+    const before = `import { Quote } from '@src/domain';
+import { Lead } from '../../domain';
+import { leadDao } from '../../data';
+import { genQuote } from '@src/logic';
+import { Widget } from 'some-pkg/domain';
+import { Other } from '../domain';
+`;
+
+    it('the check flags a bare @src/<dir> import, and a relative one that lands on src/<dir>', () => {
+      expect(() =>
+        check(`import { Quote } from '@src/domain';`, context),
+      ).not.toThrow();
+      expect(() =>
+        check(`import { Lead } from '../../domain';`, context),
+      ).not.toThrow();
+    });
+
+    it('the check skips a package subpath and a relative import that lands elsewhere', () => {
+      expect(() =>
+        check(`import { Widget } from 'some-pkg/domain';`, context),
+      ).toThrow('does not match bad practice');
+      // '../domain' from src/domain.operations/quote/ lands on src/domain.operations/domain
+      expect(() =>
+        check(`import { Other } from '../domain';`, context),
+      ).toThrow('does not match bad practice');
+    });
+
+    it('the fix repoints each bare barrel import and leaves the rest', async () => {
+      const after = (await fix(before, context)).contents as string;
+      expect(after).toContain(`import { Quote } from '@src/domain.objects';`);
+      expect(after).toContain(`import { Lead } from '../../domain.objects';`);
+      expect(after).toContain(`import { leadDao } from '../../access';`);
+      expect(after).toContain(`import { genQuote } from '@src/domain.operations';`);
+      expect(after).toContain(`import { Widget } from 'some-pkg/domain';`);
+      expect(after).toContain(`import { Other } from '../domain';`);
+      expect(after).toMatchSnapshot('bare barrels — after');
+    });
+
+    it('the fix is a fixed point, and the check skips its output', async () => {
+      const once = (await fix(before, context)).contents as string;
+      const twice = (await fix(once, context)).contents as string;
+      expect(twice).toEqual(once);
+      expect(() => check(once, context)).toThrow('does not match bad practice');
+    });
+  });
 });

@@ -4,6 +4,9 @@ import path from 'node:path';
 import { executeApply } from 'declapract';
 import { genTempDir, given, then, useThen, when } from 'test-fns';
 
+// each executeApply evaluates the whole usecase; under full-suite load one apply runs past 100s
+jest.setTimeout(240_000);
+
 /**
  * .what = end-to-end proof of the logs/leveled-term fix, run through the REAL declapract apply
  *   pipeline against a genTempDir clone of a consumer repo whose package.json lists the deprecated
@@ -23,7 +26,7 @@ describe('logs/leveled-term removal', () => {
     const tempDir = genTempDir({
       slug: 'declapract-logs-leveled-term',
       clone: './src/practices/logs/bad-practices/leveled-term/.test/assets/demo-repo-with-leveled-term',
-      symlink: [{ at: 'src', to: 'src' }],
+      symlink: [{ at: 'declarations', to: 'src' }],
     });
 
     const pkgPath = 'package.json';
