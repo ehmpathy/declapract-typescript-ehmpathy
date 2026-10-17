@@ -1,10 +1,30 @@
 import { spawn } from 'node:child_process';
-import { existsSync, realpathSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { executeApply, executePlan } from 'declapract';
 import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
+
+import { asPackageJSON } from './utils/asPackageJSON';
+
+/**
+ * .what = the pnpm this repo pins in its own `packageManager`, run via npx
+ * .why  = a ci test job restores node_modules from cache and puts no pnpm on its PATH, so a bare
+ *         `pnpm` spawn fails ENOENT. npx fetches the pinned version, so the run needs no host pnpm
+ */
+const PNPM_VIA_NPX = (() => {
+  const packageManager: string = asPackageJSON(
+    {
+      contents: readFileSync(
+        path.join(__dirname, '..', 'package.json'),
+        'utf-8',
+      ),
+    },
+    { practice: 'typecheck-best-practice-templates' },
+  ).packageManager;
+  return { command: 'npx', argsBefore: ['--yes', packageManager] };
+})();
 
 /**
  * .what = clamps that every `.ts` template a usecase ships type-checks, as an adopter compiles it:
@@ -177,8 +197,9 @@ const genTypecheckResult = async (input: {
   // install the emitted deps, at the physical path (outside this repo's tree)
   const install = await runInRepo({
     cwd,
-    command: 'pnpm',
+    command: PNPM_VIA_NPX.command,
     args: [
+      ...PNPM_VIA_NPX.argsBefore,
       'install',
       '--no-frozen-lockfile',
       '--ignore-scripts',
@@ -191,8 +212,9 @@ const genTypecheckResult = async (input: {
   const tsconfigFound = existsSync(path.join(cwd, 'tsconfig.json'));
   const compile = await runInRepo({
     cwd,
-    command: 'pnpm',
+    command: PNPM_VIA_NPX.command,
     args: [
+      ...PNPM_VIA_NPX.argsBefore,
       'exec',
       'tsc',
       '--noEmit',
