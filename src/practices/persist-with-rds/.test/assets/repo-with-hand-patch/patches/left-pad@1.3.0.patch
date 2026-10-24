@@ -1,0 +1,6 @@
+diff --git a/index.js b/index.js
+--- a/index.js
++++ b/index.js
+@@ -1,1 +1,1 @@
+-/* This program is free software. It comes without any warranty, to
++/* This program is free software. It comes without any warranty, to (hand patch)

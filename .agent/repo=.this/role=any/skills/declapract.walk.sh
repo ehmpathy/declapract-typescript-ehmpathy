@@ -27,7 +27,11 @@
 #   - the treestruct shows each step's exit code and its last lines
 #   - the final plan splits its flags: `to author` (FIX_MANUAL, a file a
 #     human writes) vs `not converged` (FIX_AUTOMATIC, a defect)
-#   - exit 0 = every step exited 0, the final plan holds no automatic
+#   - with --compile run, it also runs the emitted `test:lint:cycles`
+#     and, where pg-pool is installed, reports whether its
+#     `require('pg')` fallback is gone. both report, never gate
+#     (a bare repo still holds cycles in floor-version packages)
+#   - exit 0 = every gated step exited 0, the final plan holds no automatic
 #     fix, and tsc passed; 1 = a step failed or the apply did not
 #     converge (named); 2 = bad input
 ######################################################################
@@ -43,7 +47,7 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --usecase) USECASE="${2:-}"; shift 2 ;;
     --compile) COMPILE="${2:-}"; shift 2 ;;
-    --help|-h) sed -n '2,33p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    --help|-h) sed -n '2,37p' "${BASH_SOURCE[0]}"; exit 0 ;;
     --skill|--repo|--role) shift 2 ;; # rhx forwards its own selectors; not ours to read
     *) echo "✋ ConstraintError: unknown arg '$1' (see --help)" >&2; exit 2 ;;
   esac
@@ -128,7 +132,8 @@ print_step() {
   local name="$1" lines="${2:-6}"
   local status; status="$(cat "$LOG_DIR/$name.exit")"
   echo "   ├─ ${name} (exit ${status})"
-  tail -n "$lines" "$LOG_DIR/$name.log" | sed "s#${REPO_DIR}#<repo>#g; s#^#   │     #"
+  # strip color codes a tool emits (dpdm does), so the tree prints plain text
+  tail -n "$lines" "$LOG_DIR/$name.log" | sed -E "s/\x1b\[[0-9;]*m//g; s#${REPO_DIR}#<repo>#g; s#^#   │     #"
   echo "   │"
 }
 
@@ -192,6 +197,24 @@ if [[ "$COMPILE" == "run" ]]; then
   print_step 5.install 3
   run_step 6.compile pnpm exec tsc --noEmit --pretty false -p tsconfig.json
   print_step 6.compile 8
+
+  # run the emitted cycle check, as the adopter's `npm run test:lint` does. report-only: in a bare
+  # repo it still exits 1 on cycles inside floor-version packages, so it does not gate the walk
+  CYCLES_FAILED_BEFORE="$STEP_FAILED"
+  run_step 7.cycles pnpm run test:lint:cycles
+  STEP_FAILED="$CYCLES_FAILED_BEFORE"
+  print_step 7.cycles 12
+
+  # report whether the installed pg-pool still holds the `require('pg')` fallback a shipped patch drops
+  PG_POOL_INDEX="$(find "$REPO_DIR/node_modules/.pnpm" -maxdepth 4 -path '*/node_modules/pg-pool/index.js' | head -n 1)"
+  if [[ -n "$PG_POOL_INDEX" ]]; then
+    PG_POOL_ENTRY="$(basename "$(dirname "$(dirname "$(dirname "$PG_POOL_INDEX")")")" | sed -E 's/_patch_hash=[^_]+/_patch_hash=<hash>/')"
+    PG_POOL_REQUIRES="$(grep -c "require('pg')" "$PG_POOL_INDEX" || true)"
+    echo "   ├─ pg-pool (report)"
+    echo "   │  ├─ install: ${PG_POOL_ENTRY}"
+    echo "   │  └─ require('pg') left in index.js: ${PG_POOL_REQUIRES}"
+    echo "   │"
+  fi
 fi
 
 # halt on the first failed step
@@ -210,6 +233,6 @@ if [[ -n "$NOT_CONVERGED" ]]; then
   exit 1
 fi
 
-echo "   └─ ✨ every step exited 0, and the apply converged"
+echo "   └─ ✨ every gated step exited 0, and the apply converged"
 echo ""
 echo "🐢 righteous!"

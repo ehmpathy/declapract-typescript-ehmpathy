@@ -1,0 +1,21 @@
+.what = drops pg-pool's lazy `require('pg')` fallback, so dpdm sees no pg <-> pg-pool require cycle
+.why  = pg passes its own Client into every pool it builds, so the fallback never runs under pg; but
+        dpdm reads it statically, and `test:lint:cycles` checks node_modules (exclude: []) by policy
+.note = shipped by declapract-typescript-ehmpathy, practice persist-with-rds. if pnpm warns that this
+        patch failed to apply, pg-pool moved the line: upgrade declapract-typescript-ehmpathy and
+        re-apply. if no fix has shipped yet, pin your own `pg-pool@<version>` patch: an exact key
+        outranks this bare one. code that calls `new Pool()` from pg-pool directly must pass
+        `{ Client: require('pg').Client }`. after an apply, run `pnpm install` and commit the
+        lockfile: it records this file's hash.
+.recut = keep one context line on each side of the changed line. wider context misfits older
+        pg-pool releases, and pnpm then warns and installs pg-pool unpatched. edit this file only
+        when the hunk must move: its hash sits in every adopter's lockfile, header included.
+
+diff --git a/index.js b/index.js
+--- a/index.js
++++ b/index.js
+@@ -94,3 +94,3 @@ class Pool extends EventEmitter {
+     this.log = this.options.log || function () {}
+-    this.Client = this.options.Client || Client || require('pg').Client
++    this.Client = this.options.Client || Client
+     this.Promise = this.options.Promise || global.Promise

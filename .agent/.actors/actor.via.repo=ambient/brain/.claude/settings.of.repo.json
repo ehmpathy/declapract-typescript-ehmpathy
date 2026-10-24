@@ -522,5 +522,10 @@
   "claudeMdExcludes": [
     "/home/camper/.claude/CLAUDE.md",
     "**/CLAUDE.local.md"
-  ]
+  ],
+  "statusLine": {
+    "type": "command",
+    "command": "node -e \"import('rhachet-roles-bhrain/cli/route').then(m => m.routeStatusLine())\"",
+    "padding": 0
+  }
 }

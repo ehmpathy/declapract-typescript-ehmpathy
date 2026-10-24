@@ -1,0 +1,147 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.2.1, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.2.1 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.2.2, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.2.2 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.3.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.3.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.4.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.4.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.4.1, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.4.1 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.5.1, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.5.1 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.5.2, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.5.2 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.6.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.6.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.6.1, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.6.1 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.6.2, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.6.2 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.7.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.7.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.7.1, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.7.1 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.8.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.8.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.9.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.9.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.9.1, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.9.1 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.9.2, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.9.2 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.9.5, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.9.5 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.9.6, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.9.6 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.10.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.10.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.10.1, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.10.1 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.11.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.11.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.12.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.12.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.13.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.13.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case2] pg-pool 3.14.0, installed with the shipped patch when: [t0] pnpm install runs then: the patch lines an adopter reads match snapshot: pnpm install — patch lines, pg-pool 3.14.0 1`] = `[]`;
+
+exports[`persist-with-rds pg-pool patch given: [case4] an rds repo that already holds its own "pg-pool@3.14.0" hand patch when: [t0] the persist-with-rds practice is applied then: the before + after contents match snapshot: package.json — after 1`] = `
+"{
+  "name": "repo-with-hand-patch",
+  "version": "1.0.0",
+  "dependencies": {
+    "pg": "8.3.0",
+    "pg-pool": "3.14.0",
+    "iso-time": "@declapract{check.minVersion('<floor>')}",
+    "yesql": "@declapract{check.minVersion('<floor>')}"
+  },
+  "pnpm": {
+    "overrides": {
+      "react-refresh": "0.14.2"
+    },
+    "patchedDependencies": {
+      "pg-pool@3.14.0": "patches/pg-pool@3.14.0.patch",
+      "left-pad@1.3.0": "patches/left-pad@1.3.0.patch",
+      "pg-pool": "patches/pg-pool.patch"
+    }
+  },
+  "devDependencies": {
+    "sql-code-generator": "@declapract{check.minVersion('<floor>')}",
+    "sql-dao-generator": "@declapract{check.minVersion('<floor>')}",
+    "sql-schema-control": "@declapract{check.minVersion('<floor>')}",
+    "sql-schema-generator": "@declapract{check.minVersion('<floor>')}",
+    "@types/yesql": "@declapract{check.minVersion('<floor>')}",
+    "@types/pg": "@declapract{check.minVersion('<floor>')}"
+  },
+  "scripts": {
+    "generate:dao:postgres": "sql-dao-generator generate && npm run fix:format",
+    "generate:schema": "sql-schema-generator generate -c codegen.sql.schema.yml && npm run fix:format",
+    "generate:types-from-sql": "sql-code-generator generate -c codegen.sql.types.yml && npm run fix:format",
+    "provision:schema:plan": "sql-schema-control plan -c provision/schema/control.yml",
+    "provision:schema:apply": "sql-schema-control apply -c provision/schema/control.yml",
+    "provision:schema:sync": "sql-schema-control sync -c provision/schema/control.yml",
+    "provision:testdb:docker:clear": "for port in $(bash provision/docker/testdb/compose.sh config --format json | jq -r '.services[].ports[]?.published'); do docker rm -f $(docker ps -a -f \\"publish=$port\\" -q) 2>/dev/null || true; done && echo 'ensured ports are available 👍'",
+    "provision:testdb:docker:prepare": "cp provision/schema/sql/init/.extensions.sql provision/docker/testdb/init/extensions.sql && cp provision/schema/sql/init/.schema.sql provision/docker/testdb/init/schema.sql && cp provision/schema/sql/init/.user.cicd.sql provision/docker/testdb/init/user.cicd.sql",
+    "provision:testdb:docker:up": "bash provision/docker/testdb/compose.sh up -d --force-recreate --build --renew-anon-volumes",
+    "provision:testdb:docker:await": "bash provision/docker/testdb/compose.sh exec -T postgres /root/wait-for-postgres.sh",
+    "provision:testdb:docker:down": "bash provision/docker/testdb/compose.sh down",
+    "provision:testdb": "npm run provision:testdb:docker:clear && npm run provision:testdb:docker:prepare && npm run provision:testdb:docker:up && npm run provision:testdb:docker:await && ACCESS=test npm run provision:schema:plan && ACCESS=test npm run provision:schema:apply && ACCESS=test npm run provision:schema:plan",
+    "start:testdb": "npm run provision:testdb",
+    "start:livedb:prep": "rhx use.rds.capacity --env prep"
+  }
+}
+"
+`;
+
+exports[`persist-with-rds pg-pool patch given: [case4] an rds repo that already holds its own "pg-pool@3.14.0" hand patch when: [t0] the persist-with-rds practice is applied then: the before + after contents match snapshot: package.json — before 1`] = `
+"{
+  "name": "repo-with-hand-patch",
+  "version": "1.0.0",
+  "dependencies": {
+    "pg": "8.3.0",
+    "pg-pool": "3.14.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "react-refresh": "0.14.2"
+    },
+    "patchedDependencies": {
+      "pg-pool@3.14.0": "patches/pg-pool@3.14.0.patch",
+      "left-pad@1.3.0": "patches/left-pad@1.3.0.patch"
+    }
+  }
+}
+"
+`;
+
+exports[`persist-with-rds pg-pool patch given: [case5] a pg-pool release where the patched line moved, so the hunk fails when: [t0] pnpm install runs then: the warn an adopter reads matches snapshot: pnpm install — patch failure warn 1`] = `
+[
+  " WARN  Could not apply patch <tempdir>/patches/pg-pool.patch to <tempdir>/node_modules/.pnpm/pg-pool@3.14.0_patch_hash=<hash>_pg@8.3.0/node_modules/pg-pool",
+]
+`;
+
+exports[`persist-with-rds pg-pool patch given: [case6] a bare rds adopter: pg, pg-pool, the shipped cycle check, and one src file that imports pg when: [t0] its cycle check runs, with the shipped patch then: the verdict an adopter reads matches snapshot: test:lint:cycles — with the shipped patch 1`] = `
+[
+  "> pg-pool-patch-demo@ test:lint:cycles <tempdir>",
+  "> EXCL=$(node -p "(require('yaml').parse(require('fs').readFileSync('.dpdmrc.yaml','utf8'))?.exclude ?? []).join('|')") && dpdm --no-warning --no-tree --transform --exit-code circular:1 --exclude "$EXCL" 'src/**/!(*.test).ts'",
+  "• Circular Dependencies",
+  "  ✅ Congratulations, no circular dependency was found in your project.",
+  "- Start analyzing dependencies...",
+  "✔ [37/37] Analyze done!",
+]
+`;
+
+exports[`persist-with-rds pg-pool patch given: [case6] a bare rds adopter: pg, pg-pool, the shipped cycle check, and one src file that imports pg when: [t1] its cycle check runs, with no patch then: the verdict an adopter reads matches snapshot: test:lint:cycles — with no patch 1`] = `
+[
+  "> pg-pool-patch-demo@ test:lint:cycles <tempdir>",
+  "> EXCL=$(node -p "(require('yaml').parse(require('fs').readFileSync('.dpdmrc.yaml','utf8'))?.exclude ?? []).join('|')") && dpdm --no-warning --no-tree --transform --exit-code circular:1 --exclude "$EXCL" 'src/**/!(*.test).ts'",
+  "• Circular Dependencies",
+  "  1) node_modules/.pnpm/pg@<floor>/node_modules/pg/lib/index.js -> node_modules/.pnpm/pg-pool@3.14.0_pg@<floor>/node_modules/pg-pool/index.js",
+  " ELIFECYCLE  Command failed with exit code 1.",
+  "- Start analyzing dependencies...",
+  "✔ [37/37] Analyze done!",
+]
+`;

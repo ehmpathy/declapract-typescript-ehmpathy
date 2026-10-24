@@ -14,6 +14,14 @@ exports[`typecheck best-practice templates given: [usecase] app-react-native-exp
 ]
 `;
 
+exports[`typecheck best-practice templates given: [usecase] app-react-native-expo applied to a bare repo when: [t3] the emitted cycle check runs, as \`npm run test:lint\` does then: the exit status and the cycles it finds match snapshot: app-react-native-expo — test:lint:cycles summary 1`] = `
+{
+  "analyzed": false,
+  "cycles": [],
+  "status": 1,
+}
+`;
+
 exports[`typecheck best-practice templates given: [usecase] lambda-service applied to a bare repo when: [t1] the emitted tree is compiled with the emitted tsconfig then: the tsc diagnostics match snapshot: lambda-service — tsc --noEmit diagnostics 1`] = `""`;
 
 exports[`typecheck best-practice templates given: [usecase] lambda-service applied to a bare repo when: [t2] the twice-applied repo is planned again then: the files left for a human to author match snapshot: lambda-service — files flagged for a human 1`] = `
@@ -26,6 +34,22 @@ exports[`typecheck best-practice templates given: [usecase] lambda-service appli
   "src/domain.operations/**/*.ts",
   "serverless.yml",
 ]
+`;
+
+exports[`typecheck best-practice templates given: [usecase] lambda-service applied to a bare repo when: [t3] the emitted cycle check runs, as \`npm run test:lint\` does then: the exit status and the cycles it finds match snapshot: lambda-service — test:lint:cycles summary 1`] = `
+{
+  "analyzed": true,
+  "cycles": [
+    "bottleneck -> bottleneck",
+    "domain-objects -> domain-objects",
+    "domain-objects -> domain-objects -> domain-objects",
+    "helpful-errors -> helpful-errors",
+    "util -> inherits",
+    "with-simple-cache -> with-simple-cache",
+    "with-simple-cache -> with-simple-cache -> with-simple-cache -> with-simple-cache",
+  ],
+  "status": 1,
+}
 `;
 
 exports[`typecheck best-practice templates given: [usecase] lambda-service-with-dynamodb applied to a bare repo when: [t1] the emitted tree is compiled with the emitted tsconfig then: the tsc diagnostics match snapshot: lambda-service-with-dynamodb — tsc --noEmit diagnostics 1`] = `""`;
@@ -42,6 +66,22 @@ exports[`typecheck best-practice templates given: [usecase] lambda-service-with-
 ]
 `;
 
+exports[`typecheck best-practice templates given: [usecase] lambda-service-with-dynamodb applied to a bare repo when: [t3] the emitted cycle check runs, as \`npm run test:lint\` does then: the exit status and the cycles it finds match snapshot: lambda-service-with-dynamodb — test:lint:cycles summary 1`] = `
+{
+  "analyzed": true,
+  "cycles": [
+    "bottleneck -> bottleneck",
+    "domain-objects -> domain-objects",
+    "domain-objects -> domain-objects -> domain-objects",
+    "helpful-errors -> helpful-errors",
+    "util -> inherits",
+    "with-simple-cache -> with-simple-cache",
+    "with-simple-cache -> with-simple-cache -> with-simple-cache -> with-simple-cache",
+  ],
+  "status": 1,
+}
+`;
+
 exports[`typecheck best-practice templates given: [usecase] lambda-service-with-rds applied to a bare repo when: [t1] the emitted tree is compiled with the emitted tsconfig then: the tsc diagnostics match snapshot: lambda-service-with-rds — tsc --noEmit diagnostics 1`] = `""`;
 
 exports[`typecheck best-practice templates given: [usecase] lambda-service-with-rds applied to a bare repo when: [t2] the twice-applied repo is planned again then: the files left for a human to author match snapshot: lambda-service-with-rds — files flagged for a human 1`] = `
@@ -54,6 +94,22 @@ exports[`typecheck best-practice templates given: [usecase] lambda-service-with-
   "src/domain.operations/**/*.ts",
   "serverless.yml",
 ]
+`;
+
+exports[`typecheck best-practice templates given: [usecase] lambda-service-with-rds applied to a bare repo when: [t3] the emitted cycle check runs, as \`npm run test:lint\` does then: the exit status and the cycles it finds match snapshot: lambda-service-with-rds — test:lint:cycles summary 1`] = `
+{
+  "analyzed": true,
+  "cycles": [
+    "bottleneck -> bottleneck",
+    "domain-objects -> domain-objects",
+    "domain-objects -> domain-objects -> domain-objects",
+    "helpful-errors -> helpful-errors",
+    "util -> inherits",
+    "with-simple-cache -> with-simple-cache",
+    "with-simple-cache -> with-simple-cache -> with-simple-cache -> with-simple-cache",
+  ],
+  "status": 1,
+}
 `;
 
 exports[`typecheck best-practice templates given: [usecase] npm-package applied to a bare repo when: [t1] the emitted tree is compiled with the emitted tsconfig then: the tsc diagnostics match snapshot: npm-package — tsc --noEmit diagnostics 1`] = `""`;
@@ -69,6 +125,14 @@ exports[`typecheck best-practice templates given: [usecase] npm-package applied 
 ]
 `;
 
+exports[`typecheck best-practice templates given: [usecase] npm-package applied to a bare repo when: [t3] the emitted cycle check runs, as \`npm run test:lint\` does then: the exit status and the cycles it finds match snapshot: npm-package — test:lint:cycles summary 1`] = `
+{
+  "analyzed": false,
+  "cycles": [],
+  "status": 1,
+}
+`;
+
 exports[`typecheck best-practice templates given: [usecase] rhachet-roles-package applied to a bare repo when: [t1] the emitted tree is compiled with the emitted tsconfig then: the tsc diagnostics match snapshot: rhachet-roles-package — tsc --noEmit diagnostics 1`] = `""`;
 
 exports[`typecheck best-practice templates given: [usecase] rhachet-roles-package applied to a bare repo when: [t2] the twice-applied repo is planned again then: the files left for a human to author match snapshot: rhachet-roles-package — files flagged for a human 1`] = `
@@ -82,6 +146,14 @@ exports[`typecheck best-practice templates given: [usecase] rhachet-roles-packag
 ]
 `;
 
+exports[`typecheck best-practice templates given: [usecase] rhachet-roles-package applied to a bare repo when: [t3] the emitted cycle check runs, as \`npm run test:lint\` does then: the exit status and the cycles it finds match snapshot: rhachet-roles-package — test:lint:cycles summary 1`] = `
+{
+  "analyzed": false,
+  "cycles": [],
+  "status": 1,
+}
+`;
+
 exports[`typecheck best-practice templates given: [usecase] typescript-project applied to a bare repo when: [t1] the emitted tree is compiled with the emitted tsconfig then: the tsc diagnostics match snapshot: typescript-project — tsc --noEmit diagnostics 1`] = `""`;
 
 exports[`typecheck best-practice templates given: [usecase] typescript-project applied to a bare repo when: [t2] the twice-applied repo is planned again then: the files left for a human to author match snapshot: typescript-project — files flagged for a human 1`] = `
@@ -93,4 +165,12 @@ exports[`typecheck best-practice templates given: [usecase] typescript-project a
   "src/domain.objects/index.ts",
   "src/domain.operations/**/*.ts",
 ]
+`;
+
+exports[`typecheck best-practice templates given: [usecase] typescript-project applied to a bare repo when: [t3] the emitted cycle check runs, as \`npm run test:lint\` does then: the exit status and the cycles it finds match snapshot: typescript-project — test:lint:cycles summary 1`] = `
+{
+  "analyzed": false,
+  "cycles": [],
+  "status": 1,
+}
 `;

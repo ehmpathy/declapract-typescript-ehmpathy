@@ -18,6 +18,9 @@ const LOCKFILE = [
   '  type-fns@1.21.3:',
   '    resolution: {integrity: sha512-c}',
   '',
+  '  pg-pool@3.14.1:',
+  '    resolution: {integrity: sha512-d}',
+  '',
 ].join('\n');
 
 const TEST_CASES = [
@@ -47,6 +50,17 @@ const TEST_CASES = [
     description: 'a range key and a bare name key are never stale',
     given: { patchedDependencies: { 'type-fns@^1.0.0': 'p', 'gone': 'p' } },
     expect: { output: [] },
+  },
+  {
+    description:
+      'a hand pin beside the shipped bare-name key: the re-lock retires the hand pin, the bare key stays',
+    given: {
+      patchedDependencies: {
+        'pg-pool@3.14.0': 'patches/pg-pool@3.14.0.patch',
+        'pg-pool': 'patches/pg-pool.patch',
+      },
+    },
+    expect: { output: ['pg-pool@3.14.0'] },
   },
 ];
 
