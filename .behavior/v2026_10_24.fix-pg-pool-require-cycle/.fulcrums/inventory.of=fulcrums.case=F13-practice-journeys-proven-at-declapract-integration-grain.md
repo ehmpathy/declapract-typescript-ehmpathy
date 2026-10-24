@@ -16,4 +16,6 @@
 - confidence: 85%. a reviewer may hold that any adopter journey owes the acceptance suffix
 - where: `src/practices/persist-with-rds/pg-pool-patch.declapract.integration.test.ts`,
   `src/practices/pnpm/stale-patched-dependency.declapract.integration.test.ts`
-- verdict: —
+- verdict: settled by the director, as taken: no acceptance suite. this repo proves practices via declapract
+  integration tests and holds no `.acceptance.test.ts`; a first acceptance harness is a behavior of its own, not a
+  rider on this pr

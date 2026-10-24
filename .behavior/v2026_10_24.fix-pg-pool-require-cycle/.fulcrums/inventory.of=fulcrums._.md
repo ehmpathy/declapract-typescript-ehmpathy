@@ -14,5 +14,5 @@
 | F10 | clamps stop at the shipped path; adjacent cells (pg-pool 2.x, a dep's direct pool) stay unbuilt | clean | best-guessed | 85% |
 | F11 | "built on rhachet 1.50.1" = this repo's build tools; the shipped rhachet floor stays 1.49.2 | clean | best-guessed | 75% |
 | F12 | the patch header keeps the fix text, though an edit re-locks every adopter | clean | best-guessed | 80% |
-| F13 | adopter journeys proven at the declapract integration grain; no new acceptance suite | clean | best-guessed | 85% |
+| F13 | adopter journeys proven at the declapract integration grain; no new acceptance suite | clean | settled (director) | 85% |
 | F14 | the walk skill's `7.cycles` branch is proven by real runs, not a snapshot | clean | best-guessed | 80% || F15 | extant test shapes this pr only appends to stay as they are (caselist; console capture) | clean | best-guessed | 85% |
