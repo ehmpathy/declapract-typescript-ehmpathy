@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { executeApply, executePlan } from 'declapract';
+import { ConstraintError, MalfunctionError } from 'helpful-errors';
 import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
 
 import { asPackageJSON } from './utils/asPackageJSON';
@@ -12,6 +13,10 @@ import { asPackageJSON } from './utils/asPackageJSON';
  * .what = the pnpm this repo pins in its own `packageManager`, run via npx
  * .why  = a ci test job restores node_modules from cache and puts no pnpm on its PATH, so a bare
  *         `pnpm` spawn fails ENOENT. npx fetches the pinned version, so the run needs no host pnpm
+ * .note = `--loglevel=error` sits before the package spec, so it quiets npx's own npm and reaches
+ *         neither pnpm nor tsc: npx reads the emitted `.npmrc`, and a newer host npm warns on each
+ *         pnpm-only key in it (`node-linker`, `public-hoist-pattern`), which says naught of the
+ *         templates and would vary each snapshot with the host's npm
  */
 const PNPM_VIA_NPX = (() => {
   const packageManager: string = asPackageJSON(
@@ -23,7 +28,10 @@ const PNPM_VIA_NPX = (() => {
     },
     { practice: 'typecheck-best-practice-templates' },
   ).packageManager;
-  return { command: 'npx', argsBefore: ['--yes', packageManager] };
+  return {
+    command: 'npx',
+    argsBefore: ['--yes', '--loglevel=error', packageManager],
+  };
 })();
 
 /**
@@ -55,6 +63,12 @@ const PNPM_VIA_NPX = (() => {
  * .teeth = restore `/\bs3\s*:/` as the s3 key pattern in `cache/bad-practices/cache-directory-options`
  *          — the config template `src/utils/config/getOneCacheDirectory.ts` is flagged in each
  *          usecase that ships it.
+ * .what = also runs each usecase's emitted cycle check (`test:lint:cycles`) on the installed tree,
+ *         and clamps that no cycle runs through pg-pool. dpdm walks node_modules (`exclude: []`),
+ *         so a cycle in a shipped prod dep reddens every adopter's lint gate at once. every other
+ *         cycle it finds is held in a snapshot, so a new one shows in review.
+ * .teeth = drop the `pg-pool` key from `persist-with-rds/best-practice/package.json`
+ *          `pnpm.patchedDependencies` — `lambda-service-with-rds` reports `pg -> pg-pool`.
  * .note = the test lives at `src/` (not under `src/.test/`): jest skips dot dirs, so a test there
  *         would never run.
  */
@@ -69,6 +83,10 @@ const USECASES = [
   'app-react-native-expo',
 ] as const;
 type Usecase = (typeof USECASES)[number];
+
+// the usecases whose install holds pg-pool; `[t3]` checks this set against each real install, so
+// a usecase that gains pg reddens until it joins, and its pg-pool verdict is never vacuous
+const USECASES_WITH_PG_POOL: readonly Usecase[] = ['lambda-service-with-rds'];
 
 // every `@declapract{variable.*}` any practice in any usecase references
 const VARIABLES_YML = `
@@ -114,6 +132,8 @@ const runInRepo = (input: {
     const child = spawn(input.command, input.args, {
       cwd: input.cwd,
       env: { ...process.env, CI: 'true', FORCE_COLOR: '0' },
+      // a stalled registry kills the child (status null) instead of a silent park of the run
+      timeout: 900_000,
     });
     const chunks: string[] = [];
     child.stdout.on('data', (chunk) => chunks.push(String(chunk)));
@@ -145,6 +165,39 @@ const asMaskedOutput = (input: { output: string; dirs: string[] }): string =>
   );
 
 /**
+ * .what = the package each segment of one dpdm cycle line sits in, joined in cycle order
+ * .why  = a raw cycle line names pnpm store dirs whose suffix hashes shift with every peer set;
+ *         the packages alone are the stable fact a snapshot can hold
+ */
+const asCyclePackages = (input: { line: string }): string =>
+  input.line
+    .split(' -> ')
+    .map((segment) => {
+      const afterStore = segment.trim().split('node_modules/').pop() ?? '';
+      const match = afterStore.match(/^((?:@[^/]+\/)?[^/]+)/);
+      return match?.[1] ?? segment.trim();
+    })
+    .join(' -> ');
+
+/**
+ * .what = the verdict of one `test:lint:cycles` run: whether dpdm analyzed a tree, and each
+ *         cycle it found, as package chains
+ * .why  = a bare repo of a usecase that emits no `src/**\/*.ts` gives dpdm no entry file, which it
+ *         reports as a failure; that is not a cycle, so the summary keeps the two apart
+ */
+const asCycleSummary = (input: {
+  output: string;
+}): { analyzed: boolean; cycles: string[] } => ({
+  analyzed: input.output.includes('Analyze done!'),
+  cycles: input.output
+    .split('\n')
+    .map((line) => line.match(/^\s*\d+\)\s+(.+)$/)?.[1])
+    .filter((line): line is string => line !== undefined)
+    .map((line) => asCyclePackages({ line }))
+    .sort(), // dpdm reports cycles in traversal order, which shifts between runs
+});
+
+/**
  * .what = applies one usecase into its temp repo, installs the emitted deps, and compiles
  * .why  = the three steps an adopter takes before their first `tsc`
  */
@@ -155,8 +208,11 @@ const genTypecheckResult = async (input: {
 }): Promise<{
   config: string;
   tsconfigFound: boolean;
+  holdsPgPool: boolean;
+  srcImportsPg: boolean;
   install: { status: number | null; output: string };
   compile: { status: number | null; output: string };
+  cycles: { status: number | null; output: string };
 }> => {
   // declare the usecase this repo adopts, from declarations that live outside the repo
   // .note = declapract joins `declarations` onto the config's dir, so the path is relative, and both
@@ -225,17 +281,48 @@ const genTypecheckResult = async (input: {
     ],
   });
 
+  const compiledAt = Date.now();
+
+  // run the emitted cycle check, as the adopter's `npm run test:lint` does
+  const cycles = await runInRepo({
+    cwd,
+    command: PNPM_VIA_NPX.command,
+    args: [...PNPM_VIA_NPX.argsBefore, 'run', 'test:lint:cycles'],
+  });
+
   // report the per-phase cost, so a slow usecase is visible in the run log
   console.log(`typecheck-templates ${input.usecase} phase cost`, {
     applyMs: appliedAt - startedAt,
     installMs: installedAt - appliedAt,
-    compileMs: Date.now() - installedAt,
+    compileMs: compiledAt - installedAt,
+    cyclesMs: Date.now() - compiledAt,
   });
+
+  // whether the install holds pg-pool at all; pnpm keeps a transitive dep only in its store
+  const pnpmStore = path.join(cwd, 'node_modules', '.pnpm');
+  const holdsPgPool =
+    existsSync(pnpmStore) &&
+    (await fs.readdir(pnpmStore)).some((name) => name.startsWith('pg-pool@'));
+
+  // whether any emitted src file imports pg; without one, dpdm never reaches pg-pool
+  const srcDir = path.join(cwd, 'src');
+  const srcFiles = existsSync(srcDir)
+    ? (await fs.readdir(srcDir, { recursive: true }))
+        .map(String)
+        .filter((file) => file.endsWith('.ts'))
+    : [];
+  const srcImportsPg = (
+    await Promise.all(
+      srcFiles.map((file) => fs.readFile(path.join(srcDir, file), 'utf-8')),
+    )
+  ).some((contents) => /from 'pg'/.test(contents));
 
   const dirs = [cwd, input.tempDir];
   return {
     config,
     tsconfigFound,
+    holdsPgPool,
+    srcImportsPg,
     install: {
       status: install.status,
       output: asMaskedOutput({ output: install.output, dirs }),
@@ -243,6 +330,10 @@ const genTypecheckResult = async (input: {
     compile: {
       status: compile.status,
       output: asMaskedOutput({ output: compile.output, dirs }),
+    },
+    cycles: {
+      status: cycles.status,
+      output: asMaskedOutput({ output: cycles.output, dirs }),
     },
   };
 };
@@ -326,8 +417,8 @@ describe('typecheck best-practice templates', () => {
   });
 
   // read one usecase's result; a usecase whose preparation threw fails each of its thens loud
-  const getScene = (usecase: Usecase) => {
-    const result = settled[usecase];
+  const getScene = (input: { usecase: Usecase }) => {
+    const result = settled[input.usecase];
     if (result.status === 'rejected') throw result.reason;
     return result.value;
   };
@@ -358,8 +449,8 @@ describe('typecheck best-practice templates', () => {
   });
 
   // read one usecase's plan flags; a plan that threw fails each of its thens loud
-  const getPlan = (usecase: Usecase) => {
-    const result = plans[usecase];
+  const getPlan = (input: { usecase: Usecase }) => {
+    const result = plans[input.usecase];
     if (result.status === 'rejected') throw result.reason;
     return result.value;
   };
@@ -368,53 +459,124 @@ describe('typecheck best-practice templates', () => {
     given(`[usecase] ${usecase} applied to a bare repo`, () => {
       when('[t0] the emitted deps are installed', () => {
         then('the install exits 0', () => {
-          const scene = getScene(usecase);
+          const scene = getScene({ usecase });
           if (scene.install.status !== 0)
-            throw new Error(
-              `pnpm install failed for ${usecase} (exit ${scene.install.status}):\n${scene.install.output}`,
-            );
+            throw new MalfunctionError(`pnpm install failed for ${usecase}`, {
+              status: scene.install.status,
+              output: scene.install.output,
+              hint: 'read the install output above; a registry or cache fault is the usual cause',
+            });
           expect(scene.install.status).toEqual(0);
         });
       });
 
       when('[t1] the emitted tree is compiled with the emitted tsconfig', () => {
         then('the usecase emits a tsconfig.json', () => {
-          expect(getScene(usecase).tsconfigFound).toEqual(true);
+          expect(getScene({ usecase }).tsconfigFound).toEqual(true);
         });
 
         then('the tsc diagnostics match snapshot', () => {
-          expect(getScene(usecase).compile.output).toMatchSnapshot(
+          expect(getScene({ usecase }).compile.output).toMatchSnapshot(
             `${usecase} — tsc --noEmit diagnostics`,
           );
         });
 
         then('tsc --noEmit exits 0', () => {
-          const scene = getScene(usecase);
+          const scene = getScene({ usecase });
           if (scene.compile.status !== 0)
-            throw new Error(
-              `tsc --noEmit failed for ${usecase} (exit ${scene.compile.status}):\n${scene.compile.output}`,
-            );
+            throw new ConstraintError(`tsc --noEmit failed for ${usecase}`, {
+              status: scene.compile.status,
+              output: scene.compile.output,
+              hint: 'a template the usecase ships does not compile; the diagnostics name it',
+            });
           expect(scene.compile.status).toEqual(0);
         });
       });
 
       when('[t2] the twice-applied repo is planned again', () => {
         then('no file is flagged for an automatic fix (the apply converges)', () => {
-          expect(getPlan(usecase).automatic).toEqual([]);
+          expect(getPlan({ usecase }).automatic).toEqual([]);
         });
 
         then('no file the apply wrote is flagged by its own usecase', () => {
           const cwd = realpathSync(tempDirs[usecase].repo);
-          const flaggedWritten = getPlan(usecase).manual.filter((file) =>
+          const flaggedWritten = getPlan({ usecase }).manual.filter((file) =>
             existsSync(path.join(cwd, file)),
           );
           expect(flaggedWritten).toEqual([]);
         });
 
         then('the files left for a human to author match snapshot', () => {
-          expect(getPlan(usecase).manual).toMatchSnapshot(
+          expect(getPlan({ usecase }).manual).toMatchSnapshot(
             `${usecase} — files flagged for a human`,
           );
+        });
+      });
+
+      when('[t3] the emitted cycle check runs, as `npm run test:lint` does', () => {
+        then('the install holds pg-pool exactly where the usecase is declared to', () => {
+          const scene = getScene({ usecase });
+          const declared = USECASES_WITH_PG_POOL.includes(usecase);
+          if (scene.holdsPgPool !== declared)
+            throw new ConstraintError(`pg-pool presence drifted for ${usecase}`, {
+              holdsPgPool: scene.holdsPgPool,
+              declared,
+              hint: 'update USECASES_WITH_PG_POOL to match the install, so the pg-pool verdict below stays real',
+            });
+          expect(scene.holdsPgPool).toEqual(declared);
+        });
+
+        then('it reports no cycle through pg-pool', () => {
+          const { cycles } = asCycleSummary({
+            output: getScene({ usecase }).cycles.output,
+          });
+          const cyclesThroughPgPool = cycles.filter((cycle) =>
+            cycle.includes('pg-pool'),
+          );
+          if (cyclesThroughPgPool.length > 0)
+            throw new ConstraintError(`pg-pool cycle found for ${usecase}`, {
+              cyclesThroughPgPool,
+              hint: 'the shipped patches/pg-pool.patch did not apply; check its key in persist-with-rds package.json, and whether pg-pool moved the line (pnpm warns by name)',
+            });
+          expect(cyclesThroughPgPool).toEqual([]);
+        });
+
+        if (USECASES_WITH_PG_POOL.includes(usecase))
+          then('it analyzes the tree, so the pg-pool verdict is real', () => {
+            expect(
+              asCycleSummary({ output: getScene({ usecase }).cycles.output })
+                .analyzed,
+            ).toEqual(true);
+          });
+
+        if (USECASES_WITH_PG_POOL.includes(usecase))
+          then('its emitted src imports pg, so dpdm can reach pg-pool', () => {
+            expect(getScene({ usecase }).srcImportsPg).toEqual(true);
+          });
+
+        // a drift in dpdm's cycle line format would parse to zero cycles and pass the pg-pool verdict blind
+        then('the parsed cycles agree with the verdict dpdm prints', () => {
+          const { output } = getScene({ usecase }).cycles;
+          const summary = asCycleSummary({ output });
+          if (!summary.analyzed) return expect(summary.cycles).toEqual([]);
+          const noneFound = output.includes('no circular dependency was found');
+          if (noneFound !== (summary.cycles.length === 0))
+            throw new MalfunctionError(`cycle parse drifted for ${usecase}`, {
+              noneFound,
+              cyclesParsed: summary.cycles.length,
+              hint: 'dpdm changed its cycle line format; update the line pattern in asCycleSummary',
+            });
+          expect(noneFound).toEqual(summary.cycles.length === 0);
+        });
+
+        // .note = the exit status rides in the snapshot, so a pass/fail flip shows in review. it is not
+        //         asserted 0: a bare repo with no src entry, and cycles at floor versions outside pg-pool,
+        //         each exit the check 1 for causes this clamp does not own
+        then('the exit status and the cycles it finds match snapshot', () => {
+          expect({
+            status: getScene({ usecase }).cycles.status,
+            ...asCycleSummary({ output: getScene({ usecase }).cycles.output }),
+          }).toMatchSnapshot(`${usecase} — test:lint:cycles summary`);
         });
       });
     });

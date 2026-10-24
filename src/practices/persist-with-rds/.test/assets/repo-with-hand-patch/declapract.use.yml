@@ -1,0 +1,4 @@
+# .note = the test writes declarations/ into the temp clone (genDeclarationsOfPackageJsonOnly)
+# .why  = an rds repo that already holds its own exact-version pg-pool hand patch (vision case=2)
+declarations: 'declarations/declapract.declare.yml'
+useCase: lambda-service

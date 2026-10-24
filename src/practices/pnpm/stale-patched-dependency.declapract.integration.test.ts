@@ -79,4 +79,57 @@ describe('pnpm — a stale patch never blocks an install', () => {
       });
     });
   });
+
+  given('[case2] a repo with a bare-name patch key beside a stale exact key of the same package', () => {
+    // the shape persist-with-rds ships for pg-pool: a bare key, which no lockfile can move past
+    const tempDir = genTempRepoWithDeclarationsOutside({
+      slug: 'pnpm-stale-patch-beside-bare',
+      clone: './src/practices/pnpm/.test/assets/repo-stale-patch-beside-bare',
+      declarations: './src/.test/assets/pnpm/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
+    });
+    const stalePatch = 'patches/rhachet-roles-ehmpathy@1.39.1.patch';
+    const barePatch = 'patches/rhachet-roles-ehmpathy.patch';
+
+    const state = useBeforeAll(async () => {
+      const config = path.join(tempDir, 'declapract.use.yml');
+      const read = () =>
+        fs.readFile(path.join(tempDir, 'package.json'), 'utf-8');
+      const before = await read();
+      await executeApply({ config });
+      const after1 = await read();
+      const exists1 = {
+        stale: existsSync(path.join(tempDir, stalePatch)),
+        bare: existsSync(path.join(tempDir, barePatch)),
+      };
+      await executeApply({ config });
+      const after2 = await read();
+      return { before, after1, after2, exists1 };
+    }, 170_000);
+
+    when('[t0] the pnpm practice is applied', () => {
+      then('the stale exact key is retired; the bare-name key is kept', () => {
+        const patched = JSON.parse(state.after1).pnpm.patchedDependencies;
+        expect(patched).toEqual({
+          'rhachet-roles-ehmpathy': barePatch,
+          'type-fns@1.21.3': 'patches/type-fns@1.21.3.patch',
+        });
+      });
+
+      then('the stale patch file is deleted; the bare-name file is kept', () => {
+        expect(state.exists1).toEqual({ stale: false, bare: true });
+      });
+
+      then('the before + after contents match snapshot', () => {
+        expect(state.before).toMatchSnapshot('package.json — before');
+        expect(state.after1).toMatchSnapshot('package.json — after');
+      });
+    });
+
+    when('[t1] the practice is applied a second time', () => {
+      then('the second apply is a no-op', () => {
+        expect(state.after2).toEqual(state.after1);
+      });
+    });
+  });
 });

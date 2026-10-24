@@ -12,6 +12,11 @@
     "@types/yesql": "@declapract{check.minVersion('3.2.2')}",
     "@types/pg": "@declapract{check.minVersion('8.6.1')}"
   },
+  "pnpm": {
+    "patchedDependencies": {
+      "pg-pool": "patches/pg-pool.patch"
+    }
+  },
   "scripts": {
     "generate:dao:postgres": "sql-dao-generator generate && npm run fix:format",
     "generate:schema": "sql-schema-generator generate -c codegen.sql.schema.yml && npm run fix:format",
