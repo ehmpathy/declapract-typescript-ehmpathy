@@ -10,10 +10,10 @@
   "description": "## .what\n\nextend keyrack to healthcheck the keys it holds: verify each key is accepted by its provider (not\nexpired, not revoked), at unlock or on demand (e.g. `rhx keyrack status --healthcheck`).\n\n## .why\n\na rejected or expired provider key today surfaces only as a test failure deep in a ci shard.\ndeclapract-typescript-ehmpathy considered a ci preflight job (#585) and ruled it out: key health\nbelongs to the test suite authors or to keyrack, never to ci (`rule.forbid.key-health-checks-in-cicd`).\nkeyrack holds the keys, so it is the right owner of a healthcheck that catches a stale key before\nany run, on every machine.\n\n## .shape of the fix\n\n- per key, a cheap provider call that proves acceptance (e.g. a models list for an llm key)\n- report each key as accepted, rejected, or unchecked (no probe known for its provider)\n- name the fix on rejection: the `keyrack fill` command for that key\n\nsource: ehmpathy/declapract-typescript-ehmpathy#585",
   "status": null,
   "via": "gh.issues",
-  "auth": null,
-  "idem": null,
+  "auth": "as-human",
+  "idem": "findsert",
   "heldSeq": 1,
-  "recordStatus": "QUEUED",
-  "reason": "radio.uses:blocked — global",
-  "deliveredExid": null
+  "recordStatus": "DELIVERED",
+  "reason": null,
+  "deliveredExid": "623"
 }
