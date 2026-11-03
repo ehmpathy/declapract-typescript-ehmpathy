@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`gitattributes declarers converge given: every order of all five declarers, from a legacy file when: [t1] each order folds its fixes over the legacy file then: every order lands on one identical file 1`] = `
+"# [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# [git] auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+
+# [tests-any] collapse test source in pr diffs; snapshots stay open
+*.test.ts linguist-generated
+*.test.tsx linguist-generated
+
+# [persist-with-rds] collapse dao-generator output in pr diffs
+src/access/daos/** linguist-generated
+provision/schema/sql/tables/** linguist-generated
+provision/schema/sql/views/** linguist-generated
+provision/schema/sql/functions/** linguist-generated
+
+# [persist-with-dynamodb] collapse dao-generator output in pr diffs
+src/access/daos/** linguist-generated
+
+# [rhachet] collapse route robocode in pr diffs; yields and radio stay open
+.route/** linguist-generated
+.route/**/*.yield.* -linguist-generated
+.route/**/.radio/** -linguist-generated
+.behavior/** linguist-generated
+.behavior/**/*.yield.* -linguist-generated
+.behavior/**/.radio/** -linguist-generated
+
+*.png binary
+"
+`;

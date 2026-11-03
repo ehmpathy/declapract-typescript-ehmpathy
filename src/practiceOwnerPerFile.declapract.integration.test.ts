@@ -4,6 +4,7 @@ import { join, relative } from 'node:path';
 import { given, then, when } from 'test-fns';
 import yaml from 'yaml';
 
+import { declarersOrderedForGitattributes } from './utils/defineExpectedGitattributesContents';
 import { getAllPathsUnderDir } from './utils/getAllPathsUnderDir';
 import { getAllPracticesForUsecase } from './utils/getAllPracticesForUsecase';
 
@@ -35,6 +36,8 @@ const SHARED_BY_DESIGN: Record<string, string> = {
     'each practice declares a CONTAINS json subset; the json fix merges keys, so declarers compose',
   '.gitignore':
     'each declarer unions its own lines through defineExpectedGitignoreContents (#541)',
+  '.gitattributes':
+    'each declarer emits its tagged sections through defineExpectedGitattributesContents, in one fixed declarer order (#754)',
   'tsconfig.json':
     'node-package and typescript-node each declare a CONTAINS json subset; the json fix merges keys',
   'config/prep.json':
@@ -158,6 +161,56 @@ describe('every file in a usecase has one owner practice (#630)', () => {
         );
       });
       expect(offenders).toEqual([]);
+    });
+  });
+
+  given('[case3] every practice that declares .gitattributes (#754)', () => {
+    when('[t0] each practice dir is read for the paths it declares', () => {
+      const declarers = readdirSync(practicesDir)
+        .filter((practice) =>
+          getAllDeclaredPaths({ practice }).includes('.gitattributes'),
+        )
+        .sort();
+
+      then('two or more practices declare it, so the clamp is not vacuous', () => {
+        expect(declarers.length).toBeGreaterThan(1);
+      });
+
+      then('each declares it through defineExpectedGitattributesContents', () => {
+        const offenders = declarers.filter((practice) => {
+          const declaration = join(
+            practicesDir,
+            practice,
+            'best-practice/.gitattributes.declapract.ts',
+          );
+          if (!existsSync(declaration)) return true;
+          const source = readFileSync(declaration, 'utf8');
+          return !/from '[./]+\/utils\/defineExpectedGitattributesContents'/.test(
+            source,
+          );
+        });
+        expect(offenders).toEqual([]);
+      });
+
+      then('each names its own practice dir, both as its declarer literal and in every header tag', () => {
+        // a declaration copied from a peer with the literal left unchanged would pass the util's own
+        // throw (the tag and the literal still agree); the dir is the third anchor that catches it
+        const offenders = declarers.filter((practice) => {
+          const source = readFileSync(
+            join(practicesDir, practice, 'best-practice/.gitattributes.declapract.ts'),
+            'utf8',
+          );
+          const tags = [...source.matchAll(/'# \[([^\]]+)\]/g)].map((m) => m[1]);
+          const literalFits = source.includes(`declarer: '${practice}'`);
+          const tagsFit = tags.length > 0 && tags.every((tag) => tag === practice);
+          return !(literalFits && tagsFit);
+        });
+        expect(offenders).toEqual([]);
+      });
+
+      then('the declarers are exactly the ones placed in declarersOrderedForGitattributes', () => {
+        expect(declarers).toEqual([...declarersOrderedForGitattributes].sort());
+      });
     });
   });
 });

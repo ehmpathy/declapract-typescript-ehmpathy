@@ -4,8 +4,23 @@ import path from 'node:path';
 import { executeApply } from 'declapract';
 import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
 
-// executeApply evaluates the whole git practice before the `file` filter narrows it
+import { check as checkGit } from './best-practice/.gitattributes.declapract';
+
+// executeApply evaluates the whole practice before the `file` filter narrows it
 jest.setTimeout(5 * 60 * 1000);
+
+const context = {} as Parameters<typeof checkGit>[1]; // .note = the check reads no context
+
+// .note = a literal, independent of the declaration: the check is `x === fix(x)`, so it passes on
+//         any fixed point and cannot by itself prove the bytes are the ones the practice promises
+const MANAGED_SECTIONS = `# [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# [git] auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+`;
 
 const MANAGED_ENTRIES = [
   'pnpm-lock.yaml -diff',
@@ -15,15 +30,13 @@ const MANAGED_ENTRIES = [
 ];
 
 /**
- * .what = proves the .gitattributes fix through the real declapract pipeline
- * .why  = the unit suite proves the fix in isolation; only executeApply proves the declared path
- *         reaches the repo-root file, the CONTAINS check gates the fix, and the settled file
- *         satisfies that check — so a rerun is a no-op and the plan stops to flag it
+ * .what = proves the git `.gitattributes` declaration through the real declapract pipeline
+ * .why  = the unit suite proves the fix in isolation; only executeApply proves the declared
+ *         path reaches the repo-root file, the check gates the fix, and the settled file
+ *         satisfies the check — so a rerun is a no-op and the plan stops to flag it
  *         (rule.require.declapract-integration-tests, rule.require.idempotent-fixes)
- * .teeth = emit any section's entries out of declared order, and [t1] `contains the template`
- *          reddens while [t2] stays a byte-identical fixed point — the reflag loop a fixed-point
- *          test alone cannot see. the prior fix (sections re-assembled in place, a stray entry
- *          left outside its section) was in exactly that state
+ * .note = all five declarers together, and this repo's own file, are proven in
+ *         `src/gitattributesDeclarers.declapract.integration.test.ts`
  */
 describe('git .gitattributes', () => {
   given('[case1] a repo whose .gitattributes holds a legacy header, a legacy entry, and an out-of-section entry', () => {
@@ -31,7 +44,7 @@ describe('git .gitattributes', () => {
       slug: 'git-gitattributes-legacy',
       clone: './src/practices/git/.test/assets/repo-with-legacy-gitattributes',
       symlink: [
-        { at: 'declarations', to: './.test/assets/git/declarations' },
+        { at: 'declarations', to: './src/.test/assets/git/declarations' },
         { at: 'node_modules', to: 'node_modules' },
       ],
     });
@@ -53,15 +66,15 @@ describe('git .gitattributes', () => {
     when('[t1] apply runs', () => {
       const scene = useThen('apply settles', async () => {
         await apply();
-        const template = await fs.readFile(
-          path.join(__dirname, 'best-practice/.gitattributes'),
-          'utf-8',
-        );
-        return { after: await read(), template };
+        return { after: await read() };
       });
 
-      then('the file contains the template verbatim — the CONTAINS check passes', () => {
-        expect(scene.after).toContain(scene.template.trim());
+      then('the git check passes on the file', () => {
+        expect(() => checkGit(scene.after, context)).not.toThrow();
+      });
+
+      then('the file holds the managed sections verbatim, then the repo-own line', () => {
+        expect(scene.after).toEqual(`${MANAGED_SECTIONS}\n*.png binary\n`);
       });
 
       then('the legacy header and the legacy entry are gone', () => {
@@ -77,8 +90,10 @@ describe('git .gitattributes', () => {
         );
       });
 
-      then('the repo-own line survives', () => {
-        expect(scene.after).toContain('*.png binary');
+      then('the repo-own line survives, after the managed sections', () => {
+        expect(scene.after.trim().split('\n').slice(-1)[0]).toEqual(
+          '*.png binary',
+        );
       });
 
       then('no declapract template syntax leaked', () => {

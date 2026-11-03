@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`tests-any .gitattributes check throws on a file without the section, so a plan flags it 1`] = `
+"expect(received).toEqual(expected) // deep equality
+
+- Expected  - 4
++ Received  + 0
+
+  # [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+  pnpm-lock.yaml -diff
+
+- # [tests-any] collapse test source in pr diffs; snapshots stay open
+- *.test.ts linguist-generated
+- *.test.tsx linguist-generated
+-"
+`;

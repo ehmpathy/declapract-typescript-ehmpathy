@@ -2,7 +2,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { executeApply } from 'declapract';
-import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
+import { given, then, useBeforeAll, useThen, when } from 'test-fns';
+
+import { genTempRepoWithDeclarationsOutside } from '../../utils/genTempRepoWithDeclarationsOutside';
 
 // executeApply is slow (full practice evaluation before the file filter narrows it)
 // .note = this suite scopes each apply with `file: '.github/workflows/review.yml'`, which
@@ -76,14 +78,12 @@ const getAllActionRefLines = (input: { contents: string }): string[] =>
  */
 describe('cicd-common workflow templates', () => {
   given('[case1] a consumer repo whose workflow still carries a tag ref', () => {
-    const tempDir = genTempDir({
+    const tempDir = genTempRepoWithDeclarationsOutside({
       slug: 'cicd-common-action-pins',
       clone:
         './src/practices/cicd-common/.test/assets/repo-with-unpinned-workflow',
-      symlink: [
-        { at: 'declarations', to: './.test/assets/cicd-common/declarations' },
-        { at: 'node_modules', to: 'node_modules' },
-      ],
+      declarations: './src/.test/assets/cicd-common/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
     });
 
     when('[t0] before any apply', () => {
@@ -237,14 +237,12 @@ describe('cicd-common workflow templates', () => {
    *         case runs the real pipeline, so an empty delivery goes red on byte-equality
    */
   given('[case2] a consumer whose .test.yml is stale, on the custom-fix path', () => {
-    const tempDir = genTempDir({
+    const tempDir = genTempRepoWithDeclarationsOutside({
       slug: 'cicd-common-action-pins-test-yml',
       clone:
         './src/practices/cicd-common/.test/assets/repo-with-unpinned-workflow',
-      symlink: [
-        { at: 'declarations', to: './.test/assets/cicd-common/declarations' },
-        { at: 'node_modules', to: 'node_modules' },
-      ],
+      declarations: './src/.test/assets/cicd-common/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
     });
 
     when('[t0] before any apply', () => {
@@ -419,14 +417,12 @@ describe('cicd-common workflow templates', () => {
    *         claim to mean what it says
    */
   given('[case3] a consumer repo that also has a workflow of its OWN', () => {
-    const tempDir = genTempDir({
+    const tempDir = genTempRepoWithDeclarationsOutside({
       slug: 'cicd-common-consumer-owned',
       clone:
         './src/practices/cicd-common/.test/assets/repo-with-unpinned-workflow',
-      symlink: [
-        { at: 'declarations', to: './.test/assets/cicd-common/declarations' },
-        { at: 'node_modules', to: 'node_modules' },
-      ],
+      declarations: './src/.test/assets/cicd-common/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
     });
 
     when('[t0] the whole practice is applied, unscoped', () => {
@@ -532,14 +528,12 @@ describe('cicd-common workflow templates', () => {
    *         could drift from the first and quietly cease to be the same repo
    */
   given('[case4] a consumer repo where the declared workflow is ABSENT', () => {
-    const tempDir = genTempDir({
+    const tempDir = genTempRepoWithDeclarationsOutside({
       slug: 'cicd-common-absent-workflow',
       clone:
         './src/practices/cicd-common/.test/assets/repo-with-unpinned-workflow',
-      symlink: [
-        { at: 'declarations', to: './.test/assets/cicd-common/declarations' },
-        { at: 'node_modules', to: 'node_modules' },
-      ],
+      declarations: './src/.test/assets/cicd-common/declarations',
+      symlink: [{ at: 'node_modules', to: 'node_modules' }],
     });
 
     when('[t0] before any apply, with the workflow removed', () => {

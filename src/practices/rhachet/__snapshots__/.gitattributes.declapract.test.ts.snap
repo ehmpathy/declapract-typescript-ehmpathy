@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`rhachet .gitattributes check throws when its section sits above another declarer 1`] = `
+"expect(received).toEqual(expected) // deep equality
+
+- Expected  - 3
++ Received  + 3
+
+- # [tests-any] collapse test source in pr diffs; snapshots stay open
+- *.test.ts linguist-generated
+-
+  # [rhachet] collapse route robocode in pr diffs; yields and radio stay open
+  .route/** linguist-generated
+  .route/**/*.yield.* -linguist-generated
+  .route/**/.radio/** -linguist-generated
+  .behavior/** linguist-generated
+  .behavior/**/*.yield.* -linguist-generated
+  .behavior/**/.radio/** -linguist-generated
+
++ # [tests-any] collapse test source in pr diffs; snapshots stay open
++ *.test.ts linguist-generated
++"
+`;
