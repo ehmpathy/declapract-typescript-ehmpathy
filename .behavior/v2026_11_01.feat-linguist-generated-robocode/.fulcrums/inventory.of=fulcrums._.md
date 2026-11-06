@@ -4,7 +4,7 @@
 |------|-------|--------|--------|------------|------|-------------|
 | F1 | each owner practice declares its own lines, via one shared util | dirty | best-guessed | 80% | none | no credential, no prod write: the util emits `.gitattributes` text in consumer repos via `declapract apply`; a reversal is a code teardown in this repo, not an act on a live system |
 | F2 | route collapse covers `.behavior/` as well as `.route/` | clean | best-guessed | 70% | none | no credential, no prod write: two glob lines in a shipped template |
-| F3 | "dao-generator output" = the dao + sql footprint, not only `.generated/`; dynamodb terraform stays open | clean | best-guessed | 65% | none | no credential, no prod write: path lines in a template. it keeps the infra dir open, so no terraform change is ever folded out of a reviewer's view |
+| F3 | "dao-generator output" = the dao + sql footprint, not only `.generated/`; dynamodb terraform stays open | clean | overruled by the commander: only `.generated/` dirs fold | 65% | none | no credential, no prod write: path lines in a template. it keeps the infra dir open, so no terraform change is ever folded out of a reviewer's view |
 | F4 | repo-own lines move below the managed sections | clean | best-guessed | 85% | none | no credential, no prod write: line order in a generated file |
 | F5 | proceed despite the code search risk; probe it on the pilot branch | clean | best-guessed | 60% | none | no credential, no prod write: the probe pushes a non-default scratch branch and runs a github code search under the human's own session; no keyrack key, no deploy |
 | F6 | collapse `*.test.tsx` too, not only `*.test.ts` | clean | best-guessed | 80% | none | no credential, no prod write: one glob line in a shipped template |

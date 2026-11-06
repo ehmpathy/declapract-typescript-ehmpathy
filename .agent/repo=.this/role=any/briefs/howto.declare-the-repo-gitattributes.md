@@ -35,7 +35,7 @@ every managed collapse line, so a repo un-folds a path with no edit to any pract
 each managed header opens with `# [<declarer>] `. a declarer knows only its own sections. it
 recognizes another declarer's block by the tag and keeps it verbatim, in canonical place, byte for
 byte: it drops no line from it, not even one it also declares. so the fixes commute, and each is a
-fixed point. two sections may carry one entry (`src/access/daos/**`, rds and dynamodb); both are
+fixed point. two sections may carry one entry (`src/access/daos/**/.generated/**`, rds and dynamodb); both are
 collapse lines above every exception, so the repeat is inert. the util throws on a section header
 that lacks the tag.
 

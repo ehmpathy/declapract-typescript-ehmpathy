@@ -7,7 +7,7 @@ exports[`persist-with-dynamodb .gitattributes check throws on a file without the
 + Received  + 0
 
 - # [persist-with-dynamodb] collapse dao-generator output in pr diffs
-- src/access/daos/** linguist-generated
+- src/access/daos/**/.generated/** linguist-generated
 -
   *.png binary
   ↵"

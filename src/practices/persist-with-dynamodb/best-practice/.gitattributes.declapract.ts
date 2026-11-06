@@ -7,12 +7,12 @@ import {
 } from '../../../utils/defineExpectedGitattributesContents';
 
 /**
- * .what = the `.gitattributes` section this practice owns: dao-generator output folds in pr diffs
- * .why  = one domain-object change regenerates the dao tree; the domain object is the change a
- *         human judges. github folds a file marked `linguist-generated`, one click away
- * .note = only `src/access/daos` (`codegen.dynamodb.dao.ts` → `directories.dao`). the
- *         generator's terraform dir, `provision/aws/product`, also holds hand-written infra, and
- *         an infra change owes open eyes, so it stays open
+ * .what = the `.gitattributes` section this practice owns: the dao `.generated/` dir folds in pr diffs
+ * .why  = the daos are the internal contracts, so a reviewer reads them open. a `.generated/` dir
+ *         under `src/access/daos` holds derived code that every regen rewrites. github folds a
+ *         file marked `linguist-generated`, one click away
+ * .note = the generator's terraform dir, `provision/aws/product`, also holds hand-written infra,
+ *         and an infra change owes open eyes, so it stays open
  */
 const sections: readonly GitattributesSection[] = [
   {
@@ -22,8 +22,8 @@ const sections: readonly GitattributesSection[] = [
       retired: [],
     },
     entries: {
-      latest: ['src/access/daos/** linguist-generated'],
-      retired: [],
+      latest: ['src/access/daos/**/.generated/** linguist-generated'],
+      retired: ['src/access/daos/** linguist-generated'],
     },
   },
 ];

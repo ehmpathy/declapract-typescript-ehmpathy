@@ -7,13 +7,19 @@ import { check, fix } from './best-practice/.gitattributes.declapract';
 const context = {} as Parameters<typeof fix>[1]; // .note = the fix reads no context
 
 const SECTION = `# [persist-with-dynamodb] collapse dao-generator output in pr diffs
-src/access/daos/** linguist-generated
+src/access/daos/**/.generated/** linguist-generated
 `;
 
 const TEST_CASES: { description: string; given: string | null; expect: string }[] = [
   {
     description: 'emits its section when no file exists',
     given: null,
+    expect: SECTION,
+  },
+  {
+    description: 'lifts the retired fold of whole daos, so the internal contracts render open',
+    given:
+      '# [persist-with-dynamodb] collapse dao-generator output in pr diffs\nsrc/access/daos/** linguist-generated\n',
     expect: SECTION,
   },
   {
@@ -49,7 +55,7 @@ describe('persist-with-dynamodb .gitattributes', () => {
     // the plan shows the adopter this diff: received vs the file the fix would write
     const message = stripVTControlCharacters(error.message);
     expect(message).toContain('toEqual');
-    expect(message).toContain('src/access/daos/** linguist-generated');
+    expect(message).toContain('src/access/daos/**/.generated/** linguist-generated');
     expect(message).toMatchSnapshot();
   });
 

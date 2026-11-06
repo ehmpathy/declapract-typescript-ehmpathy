@@ -27,3 +27,12 @@ no credential, no prod write: path lines in a template. it keeps the infra dir o
 ## .where
 
 `1.vision.yield.md` § the contract, persist sections.
+
+## .verdict: overruled → A, widened to any depth (commander review, #761)
+
+the daos and the schemas are the internal contracts, so a reviewer reads them open. only the `.generated/` dirs within them fold:
+
+- rds: `src/access/daos/**/.generated/**`, `provision/schema/**/.generated/**`
+- dynamodb: `src/access/daos/**/.generated/**`
+
+the B lines are retired entries: a fix lifts them from an adopter's file. the `**` keeps a nested `.generated/` folded.

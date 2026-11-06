@@ -47,8 +47,8 @@ export const declarersOrderedForGitattributes: readonly string[] = [
  *         by the tag in its header and keeps that block verbatim, in canonical place. so
  *         `fix_A(fix_B(x)) === fix_B(fix_A(x))`, and each is a fixed point
  * .note = no fix edits another declarer's section, not even to drop a line it also holds. two
- *         sections may then both carry one entry (`src/access/daos/**`, rds and dynamodb); both
- *         are collapse lines above every exception, so a repeat is inert under last-match-wins
+ *         sections may then both carry one entry (the dao `.generated/` fold, rds and dynamodb);
+ *         both are collapse lines above every exception, so a repeat is inert under last-match-wins
  *
  * .note = a new declarer of the repo-root `.gitattributes` imports this rather than re-derive
  *         it: a hand-rolled copy can pass its own check and still oscillate against the rest.

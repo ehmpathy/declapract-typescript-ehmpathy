@@ -14,13 +14,11 @@ package-lock.json merge=theirs
 *.test.tsx linguist-generated
 
 # [persist-with-rds] collapse dao-generator output in pr diffs
-src/access/daos/** linguist-generated
-provision/schema/sql/tables/** linguist-generated
-provision/schema/sql/views/** linguist-generated
-provision/schema/sql/functions/** linguist-generated
+src/access/daos/**/.generated/** linguist-generated
+provision/schema/**/.generated/** linguist-generated
 
 # [persist-with-dynamodb] collapse dao-generator output in pr diffs
-src/access/daos/** linguist-generated
+src/access/daos/**/.generated/** linguist-generated
 
 # [rhachet] collapse route robocode in pr diffs; yields and radio stay open
 .route/** linguist-generated

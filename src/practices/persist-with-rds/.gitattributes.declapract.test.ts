@@ -7,10 +7,8 @@ import { check, fix } from './best-practice/.gitattributes.declapract';
 const context = {} as Parameters<typeof fix>[1]; // .note = the fix reads no context
 
 const SECTION = `# [persist-with-rds] collapse dao-generator output in pr diffs
-src/access/daos/** linguist-generated
-provision/schema/sql/tables/** linguist-generated
-provision/schema/sql/views/** linguist-generated
-provision/schema/sql/functions/** linguist-generated
+src/access/daos/**/.generated/** linguist-generated
+provision/schema/**/.generated/** linguist-generated
 `;
 
 const TEST_CASES: { description: string; given: string | null; expect: string }[] = [
@@ -20,16 +18,27 @@ const TEST_CASES: { description: string; given: string | null; expect: string }[
     expect: SECTION,
   },
   {
-    description: 'keeps a repo-own override for hand-written daos, last',
-    given: 'src/access/daos/custom/** -linguist-generated\n',
-    expect: `${SECTION}\nsrc/access/daos/custom/** -linguist-generated\n`,
+    description: 'keeps a repo-own line, last',
+    given: '*.png binary\n',
+    expect: `${SECTION}\n*.png binary\n`,
+  },
+  {
+    description:
+      'lifts the retired folds of whole daos and schema sql, so the internal contracts render open',
+    given: `# [persist-with-rds] collapse dao-generator output in pr diffs
+src/access/daos/** linguist-generated
+provision/schema/sql/tables/** linguist-generated
+provision/schema/sql/views/** linguist-generated
+provision/schema/sql/functions/** linguist-generated
+`,
+    expect: SECTION,
   },
   {
     description:
       'sits ahead of persist-with-dynamodb, and leaves its shared dao line untouched',
     given:
-      '# [persist-with-dynamodb] collapse dao-generator output in pr diffs\nsrc/access/daos/** linguist-generated\n',
-    expect: `${SECTION}\n# [persist-with-dynamodb] collapse dao-generator output in pr diffs\nsrc/access/daos/** linguist-generated\n`,
+      '# [persist-with-dynamodb] collapse dao-generator output in pr diffs\nsrc/access/daos/**/.generated/** linguist-generated\n',
+    expect: `${SECTION}\n# [persist-with-dynamodb] collapse dao-generator output in pr diffs\nsrc/access/daos/**/.generated/** linguist-generated\n`,
   },
 ];
 
@@ -59,7 +68,7 @@ describe('persist-with-rds .gitattributes', () => {
     // the plan shows the adopter this diff: received vs the file the fix would write
     const message = stripVTControlCharacters(error.message);
     expect(message).toContain('toEqual');
-    expect(message).toContain('src/access/daos/** linguist-generated');
+    expect(message).toContain('src/access/daos/**/.generated/** linguist-generated');
     expect(message).toMatchSnapshot();
   });
 

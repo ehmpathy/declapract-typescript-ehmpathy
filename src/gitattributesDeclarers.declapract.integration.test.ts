@@ -112,8 +112,9 @@ describe('gitattributes declarers', () => {
           getLinguistGeneratedByPath({
             cwd: tempDir,
             paths: [
-              'src/access/daos/daoInvoice/findByUnique.ts',
-              'provision/schema/sql/tables/invoice.sql',
+              'src/access/daos/.generated/queryFunctions.ts',
+              'src/access/daos/daoInvoice/.generated/casts.ts',
+              'provision/schema/sql/.generated/types.sql',
               'src/domain.operations/setInvoice.test.ts',
               'src/app/Invoice.test.tsx',
               '.route/v2026_11_01.demo/1.vision.stone',
@@ -130,8 +131,10 @@ describe('gitattributes declarers', () => {
             ],
           }),
         ).toEqual({
-          'src/access/daos/daoInvoice/findByUnique.ts': 'set',
-          'provision/schema/sql/tables/invoice.sql': 'set',
+          // only the `.generated/` dirs fold, at any depth under the daos and the schemas
+          'src/access/daos/.generated/queryFunctions.ts': 'set',
+          'src/access/daos/daoInvoice/.generated/casts.ts': 'set',
+          'provision/schema/sql/.generated/types.sql': 'set',
           'src/domain.operations/setInvoice.test.ts': 'set',
           'src/app/Invoice.test.tsx': 'set',
           // each route root: the trail folds, `0.wish.md` included (Q3); yields and radio stay open
@@ -151,12 +154,14 @@ describe('gitattributes declarers', () => {
         });
       });
 
-      then('snapshots, hand-declared sql, and domain source stay unspecified', () => {
+      then('snapshots, the daos, the schemas, and domain source stay unspecified', () => {
         expect(
           getLinguistGeneratedByPath({
             cwd: tempDir,
             paths: [
               'src/domain.operations/__snapshots__/setInvoice.test.ts.snap',
+              'src/access/daos/daoInvoice/findByUnique.ts',
+              'provision/schema/sql/tables/invoice.sql',
               'provision/schema/sql/init/.schema.sql',
               'src/domain.objects/Invoice.ts',
             ],
@@ -164,6 +169,9 @@ describe('gitattributes declarers', () => {
         ).toEqual({
           'src/domain.operations/__snapshots__/setInvoice.test.ts.snap':
             'unspecified',
+          // the daos and the schemas are internal contracts: a reviewer reads them open
+          'src/access/daos/daoInvoice/findByUnique.ts': 'unspecified',
+          'provision/schema/sql/tables/invoice.sql': 'unspecified',
           'provision/schema/sql/init/.schema.sql': 'unspecified',
           'src/domain.objects/Invoice.ts': 'unspecified',
         });
@@ -173,9 +181,9 @@ describe('gitattributes declarers', () => {
         expect(
           getLinguistGeneratedByPath({
             cwd: tempDir,
-            paths: ['src/access/daos/custom/getInvoiceReport.ts'],
+            paths: ['src/access/daos/custom/.generated/report.ts'],
           }),
-        ).toEqual({ 'src/access/daos/custom/getInvoiceReport.ts': 'unset' });
+        ).toEqual({ 'src/access/daos/custom/.generated/report.ts': 'unset' });
       });
 
       then('the output holds every declarer section in order, then the repo-own lines; it matches snapshot', () => {
@@ -188,7 +196,7 @@ describe('gitattributes declarers', () => {
           'persist-with-rds',
           'persist-with-dynamodb',
           'rhachet',
-        ]); // .note = rds and dynamodb both carry `src/access/daos/**`; no fix edits the other's section
+        ]); // .note = rds and dynamodb both carry `src/access/daos/**/.generated/**`; no fix edits the other's section
         expect(scene.after.trim().split('\n').slice(-1)[0]).toEqual(
           'src/access/daos/custom/** -linguist-generated',
         );
@@ -298,18 +306,20 @@ describe('gitattributes declarers', () => {
         expect(scene.after).toMatchSnapshot('.gitattributes — born, git + dynamodb');
       });
 
-      then('git folds the dao tree; terraform output and test files stay open', () => {
+      then('git folds the dao .generated dir; the daos, terraform output, and test files stay open', () => {
         expect(
           getLinguistGeneratedByPath({
             cwd: tempDir,
             paths: [
+              'src/access/daos/.generated/casts.ts',
               'src/access/daos/daoInvoice/index.ts',
               'provision/aws/product/main.tf',
               'src/domain.operations/setInvoice.test.ts',
             ],
           }),
         ).toEqual({
-          'src/access/daos/daoInvoice/index.ts': 'set',
+          'src/access/daos/.generated/casts.ts': 'set',
+          'src/access/daos/daoInvoice/index.ts': 'unspecified',
           'provision/aws/product/main.tf': 'unspecified',
           // tests-any is not adopted here, so its fold is absent
           'src/domain.operations/setInvoice.test.ts': 'unspecified',

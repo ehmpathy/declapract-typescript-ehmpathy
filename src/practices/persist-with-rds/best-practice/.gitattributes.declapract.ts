@@ -7,15 +7,13 @@ import {
 } from '../../../utils/defineExpectedGitattributesContents';
 
 /**
- * .what = the `.gitattributes` section this practice owns: dao-generator output folds in pr diffs
- * .why  = one domain-object change regenerates the dao tree and its sql. the domain object is
- *         the change a human judges; the regen derives from it. github folds a file marked
- *         `linguist-generated`, one click away, so a pr opens on the domain change
- * .note = paths match `codegen.sql.dao.yml` (`src/access/daos`), `codegen.sql.schema.yml`
- *         (`provision/schema/sql`), and `codegen.sql.types.yml` (its tables/views/functions
- *         globs). `provision/schema/sql/init/` is hand-declared, so it stays open
- * .note = a repo with hand-written queries under `src/access/daos/` un-folds them with a
- *         repo-own `<path> -linguist-generated` line; the shared layout keeps it last, so it wins
+ * .what = the `.gitattributes` section this practice owns: `.generated/` dirs fold in pr diffs
+ * .why  = the daos and the schemas are the internal contracts, so a reviewer reads them open.
+ *         a `.generated/` dir holds derived code (casts, query types, query functions) that
+ *         every regen rewrites. github folds a file marked `linguist-generated`, one click away
+ * .note = `codegen.sql.types.yml` and the dao generator write `src/access/daos/.generated/`.
+ *         the `**` keeps a nested `.generated/` folded too, under the daos and the schemas
+ *         alike; every other dao and schema file stays open
  */
 const sections: readonly GitattributesSection[] = [
   {
@@ -25,12 +23,15 @@ const sections: readonly GitattributesSection[] = [
     },
     entries: {
       latest: [
+        'src/access/daos/**/.generated/** linguist-generated',
+        'provision/schema/**/.generated/** linguist-generated',
+      ],
+      retired: [
         'src/access/daos/** linguist-generated',
         'provision/schema/sql/tables/** linguist-generated',
         'provision/schema/sql/views/** linguist-generated',
         'provision/schema/sql/functions/** linguist-generated',
       ],
-      retired: [],
     },
   },
 ];
