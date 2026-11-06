@@ -1,0 +1,26 @@
+# .note = declarations dir is symlinked by the test to src/.test/assets/git/declarations
+# .why  = a repo that adopts all five `.gitattributes` declarers, from a file that predates
+#         them: the untagged git template, a repo-own binary line, and a repo-own override
+#         that must outrank the dao collapse
+# .note = the persist practices reference `@declapract{variable.*}` in other files; the whole
+#         practice evaluates before the `file` filter narrows it, so each variable is supplied
+declarations: 'declarations/declapract.declare.yml'
+useCase: gitattributes-all-declarers
+variables:
+  organizationName: 'test-org'
+  projectName: 'test-project'
+  infrastructureNamespaceId: 'testns'
+  databaseName: 'testdb'
+  slackWebhookUrl: 'https://hooks.slack.test/webhook'
+  databaseUserName:
+    cicdUser: 'cicd_user'
+    serviceUser: 'service_user'
+  databaseTunnelHost:
+    prep: 'tunnel.prep.example.com'
+    prod: 'tunnel.prod.example.com'
+  databaseClusterHost:
+    prep: 'cluster.prep.example.com'
+    prod: 'cluster.prod.example.com'
+  awsAccountId:
+    prep: '123456789012'
+    prod: '123456789012'

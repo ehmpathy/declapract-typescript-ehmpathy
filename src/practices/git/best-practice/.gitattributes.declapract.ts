@@ -1,98 +1,77 @@
-import { FileCheckType, type FileFixFunction } from 'declapract';
+import type { FileCheckFunction, FileFixFunction } from 'declapract';
+import expect from 'expect';
+
+import {
+  defineExpectedGitattributesContents,
+  type GitattributesSection,
+} from '../../../utils/defineExpectedGitattributesContents';
 
 /**
- * check that they're contained in the file
+ * .what = the `.gitattributes` sections this practice owns: lock-file diff and merge rules
+ * .why  = lock files churn on every install. `-diff` folds them out of `git diff`, and
+ *         `merge=theirs` takes the incoming lock on a conflict, so an install after the merge
+ *         rebuilds it
+ * .note = `retired` hold every form these sections once took — the untagged headers, the
+ *         `pnpm-lock.json` typo — so a fix lifts them out of an extant file
  */
-export const check: FileCheckType = FileCheckType.CONTAINS;
-
-/**
- * sections of gitattributes entries to ensure exist
- */
-const SECTIONS: {
-  header: { latest: string; priors: string[] };
-  entries: { latest: string[]; priors: string[] };
-}[] = [
+const sections: readonly GitattributesSection[] = [
   {
     header: {
       latest:
+        '# [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233',
+      retired: [
         '# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233',
-      priors: [
         '# exclude package-lock from git diff; https://stackoverflow.com/a/72834452/3068233',
       ],
     },
     entries: {
       latest: ['pnpm-lock.yaml -diff', 'package-lock.json -diff'],
-      priors: ['pnpm-lock.json -diff'],
+      retired: ['pnpm-lock.json -diff'],
     },
   },
   {
     header: {
       latest:
+        '# [git] auto-resolve lock file conflicts by taking theirs; run install after merge',
+      retired: [
         '# auto-resolve lock file conflicts by taking theirs; run install after merge',
-      priors: [],
+      ],
     },
     entries: {
       latest: ['pnpm-lock.yaml merge=theirs', 'package-lock.json merge=theirs'],
-      priors: ['pnpm-lock.json merge=theirs'],
+      retired: ['pnpm-lock.json merge=theirs'],
     },
   },
 ];
 
 /**
- * .what = every line this practice manages: each section's header and entries, latest and prior
- * .why  = the fix lifts each of these out of wherever it sits, so none can linger out of place,
- *         out of order, or twice
+ * .what = emits the `.gitattributes` this practice declares, given the repo's extant one
+ * .why  = tests-any, rhachet, and the persist practices declare this same file. they converge
+ *         only through one shared algorithm, so this file declares its sections and imports
+ *         the rest
  */
-const ALL_MANAGED_LINES = SECTIONS.flatMap((s) => [
-  s.header.latest,
-  ...s.header.priors,
-  ...s.entries.latest,
-  ...s.entries.priors,
-]);
+const defineExpectedContents = (input: { contents: string | null }): string =>
+  defineExpectedGitattributesContents({
+    contents: input.contents,
+    declarer: 'git',
+    sections,
+  });
 
 /**
- * .what = the canonical block: each section's latest header + latest entries, in declared order
- * .why  = the check is CONTAINS — the file must hold the whole template as one contiguous run of
- *         text — so the fix must emit this block verbatim. a section re-assembled in place (an
- *         entry inserted after its header, or a stray entry left outside its section) is a fixed
- *         point that never CONTAINS the template, so the plan would flag the file on every run
+ * .what = throws when the repo's `.gitattributes` differs from what the shared layout emits
+ * .why  = `check` gates `fix`: a throw means violated (best-practice semantics). an exact
+ *         equality, not CONTAINS, since order carries load and `check(x) ⟺ x === fix(x)`
+ *         keeps `declapract apply` from a loop
  */
-const CANONICAL_BLOCK = SECTIONS.map((s) =>
-  [s.header.latest, ...s.entries.latest].join('\n'),
-).join('\n\n');
-
-/**
- * .what = the repo-own lines of a .gitattributes: every managed line dropped, runs of blank
- *         lines collapsed to one, and the edges trimmed
- * .why  = the repo keeps every line this practice does not manage, in its own order
- */
-const asRepoOwnBlock = (input: { contents: string }): string => {
-  // drop every managed line, wherever it sits
-  const linesRepoOwn = input.contents
-    .split('\n')
-    .filter((line) => !ALL_MANAGED_LINES.includes(line.trim()));
-
-  // collapse runs of blank lines into one (drop a blank that follows a blank)
-  const linesCollapsed = linesRepoOwn.filter(
-    (line, index) =>
-      !(
-        line.trim() === '' &&
-        index > 0 &&
-        linesRepoOwn[index - 1]!.trim() === ''
-      ),
-  );
-
-  return linesCollapsed.join('\n').trim();
+export const check: FileCheckFunction = (contents) => {
+  expect(contents).toEqual(defineExpectedContents({ contents }));
 };
 
 /**
- * .what = the repo-own lines first, then the canonical block, with exactly one final newline
- * .why  = legacy headers and entries drop, duplicates collapse to one, and the output CONTAINS the
- *         template — so the check passes on the fixed output and a second fix changes zero
+ * .what = sets this practice's sections into the repo's `.gitattributes`
+ * .why  = legacy headers and entries drop, duplicates collapse to one, repo-own lines move
+ *         last; a fixed point, so a second fix changes zero
  */
-export const fix: FileFixFunction = (contents) => {
-  const repoOwnBlock = asRepoOwnBlock({ contents: contents ?? '' });
-  return {
-    contents: `${[repoOwnBlock, CANONICAL_BLOCK].filter((block) => block).join('\n\n')}\n`,
-  };
-};
+export const fix: FileFixFunction = (contents) => ({
+  contents: defineExpectedContents({ contents }),
+});

@@ -1,0 +1,19 @@
+{
+  "key": "130982a8f2a4e0c2",
+  "kind": "create",
+  "repo": {
+    "owner": "ehmpathy",
+    "name": "declapract"
+  },
+  "exid": null,
+  "title": "fix(glob): bound the project walk under symlinks and gitignored dirs",
+  "description": "# 🌙 dream: declapract's project glob stays bounded under symlinks and gitignored dirs\n\n- kind: reseed (owner: declapract)\n- caught: 2026-11-02\n\n## .the cue that fired\n\n`declapract apply --practice git --file .gitattributes` on declapract-typescript-ehmpathy ran 25 minutes, then died: `JavaScript heap out of memory`. the practice declares two files.\n\n## .the gap, precisely\n\n- `evaluateProjectAgainstFileCheckDeclaration` calls globby with `gitignore: true` and `dot: true`, per check\n- globby's `gitignore: true` first globs `**/.gitignore` with fast-glob defaults: symlinks followed, and no `.gitignore` honored by that walk. the only skips are declapract's name list (`**/node_modules/**`, `**/.git/**`, `**/dist/**`, `**/build/**`, `**/coverage/**`)\n- so a gitignored dir with symlinks is walked in full, on every check. measured on this repo: 1923 `.gitignore` files in 77s with symlinks followed, 73 in 0.2s without; ~1850 of them under `.temp/genTempDir.symlink/` (test-fns temp repos, each with symlinks into declaration trees)\n- a symlink cycle (`.temp/loop -> ..`) fails the apply with `ELOOP`, and the walk enters `node_modules/.pnpm` through the loop path, past the name skip\n- every ehmpathy repo that runs `genTempDir` accumulates `.temp/`; an adopter's `declapract apply` slows and can crash as it grows\n\n## .the shape of the fix\n\nin declapract, either or both:\n1. pass `followSymbolicLinks: false` to the project globs (declapract never needs to follow a link to find a declared file)\n2. compute the ignore set once per project, with the walk itself bounded by `.gitignore` (e.g. tracked files plus `git ls-files --others --exclude-standard`, or an `ignore` built from the root `.gitignore` before the walk)\n\nclamp: a fixture repo with `.temp/loop -> ..` under a gitignored `.temp/`, which today fails `apply` with `ELOOP`.\n\n## .why it is not done in this round\n\nthe defect lives in declapract, another repo. this repo's `declapract.self.apply` now applies in an isolated root outside the repo, with a `.temp/loop` clamp in `src/repoSkills.declapract.acceptance.test.ts` `[case4]`.",
+  "status": null,
+  "via": "gh.issues",
+  "auth": "as-human",
+  "idem": null,
+  "heldSeq": 3,
+  "recordStatus": "DELIVERED",
+  "reason": null,
+  "deliveredExid": "111"
+}

@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-dynamodb .gitattributes check throws on a file without the section, so a plan flags it 1`] = `
+"expect(received).toEqual(expected) // deep equality
+
+- Expected  - 3
++ Received  + 0
+
+- # [persist-with-dynamodb] collapse dao-generator output in pr diffs
+- src/access/daos/**/.generated/** linguist-generated
+-
+  *.png binary
+  ↵"
+`;

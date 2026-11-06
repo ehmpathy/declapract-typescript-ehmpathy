@@ -1,14 +1,56 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`.gitattributes best practice idempotency keeps the repo-own lines of a non-canonical input: .gitattributes — out-of-section input, after one fix 1`] = `
-"*.png binary
+exports[`.gitattributes best practice check throws on the untagged prior template, so a plan flags it 1`] = `
+"expect(received).toEqual(expected) // deep equality
 
-# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+- Expected  - 2
++ Received  + 2
+
+- # [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
++ # exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+  pnpm-lock.yaml -diff
+  package-lock.json -diff
+
+- # [git] auto-resolve lock file conflicts by taking theirs; run install after merge
++ # auto-resolve lock file conflicts by taking theirs; run install after merge
+  pnpm-lock.yaml merge=theirs
+  package-lock.json merge=theirs
+  ↵"
+`;
+
+exports[`.gitattributes best practice snapshot: a borked legacy file, after one fix 1`] = `
+"# [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
 pnpm-lock.yaml -diff
 package-lock.json -diff
 
-# auto-resolve lock file conflicts by taking theirs; run install after merge
+# [git] auto-resolve lock file conflicts by taking theirs; run install after merge
 pnpm-lock.yaml merge=theirs
 package-lock.json merge=theirs
+"
+`;
+
+exports[`.gitattributes best practice snapshot: managed entries outside any section, beside a repo-own line, after one fix 1`] = `
+"# [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# [git] auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+
+*.png binary
+"
+`;
+
+exports[`.gitattributes best practice snapshot: repo-own lines above the prior template, after one fix 1`] = `
+"# [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# [git] auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+
+*.png binary
 "
 `;

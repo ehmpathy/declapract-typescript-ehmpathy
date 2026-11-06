@@ -1,0 +1,512 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t0] --help is asked then: it prints usage, options, and guarantee to stdout, exit 0: git.attr.get --help 1`] = `
+".what = report the value of one git attribute for each given path,
+        as git itself computes it
+
+.why  = a \`.gitattributes\` reads by last-match-wins, and a line order
+        that looks right can still lose (an override above a broader
+        line). only git can say which line won. \`git check-attr\` is
+        read-only, yet not a paved call on its own
+
+usage:
+  rhx git.attr.get --attr linguist-generated --paths 'src/a.test.ts .route/x/1.vision.yield.md'
+  printf '%s\\n' 'docs/my file.md' | rhx git.attr.get --attr linguist-generated --paths @stdin
+
+options:
+  --attr    the attribute name (required), e.g. linguist-generated, diff
+  --paths   space-separated repo-relative paths, or @stdin for one per
+            line (required). a path with a space goes via @stdin. a path
+            need not exist; attributes are path-based
+
+guarantee:
+  - read-only: runs \`git check-attr\` only; writes naught
+  - the skill's stdout holds only git's lines, one per path:
+    \`<path>: <attr>: set | unset | unspecified | <value>\`
+    its banner goes to stderr. via rhx, stderr shows only on a
+    failure, so a success prints rhx's header, then git's lines
+  - a \`--paths\` split that broke an extant file with a space fails
+    loud, and names the @stdin call that keeps it whole. a spaced path
+    that does not exist cannot be told from two paths, so it splits;
+    the banner names the split count. pass any spaced path via @stdin
+  - a path set that names no path (a blank \`--paths\`, an empty pipe)
+    fails loud, before git runs
+  - exit 0 = reported, 1 = git failed, 2 = bad input (incl a path
+    outside the repo) or no repo
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t1] paths are passed by flag then: stdout holds only git lines, and the banner rides stderr, exit 0: git.attr.get banner 1`] = `
+"🐢 lets peek...
+
+🐚 git.attr.get --attr linguist-generated
+   ├─ paths: 3, split on spaces; a path with a space goes via @stdin
+   └─ git check-attr, last match wins
+
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t1] paths are passed by flag then: stdout holds only git lines, and the banner rides stderr, exit 0: git.attr.get stdout — paths by flag 1`] = `
+"a.test.ts: linguist-generated: set
+keep.test.ts: linguist-generated: unset
+a.ts: linguist-generated: unspecified
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t2] paths are piped via @stdin, one with a space then: each path is reported whole, exit 0: git.attr.get banner — paths via @stdin 1`] = `
+"🐢 lets peek...
+
+🐚 git.attr.get --attr linguist-generated
+   ├─ paths: from stdin, one per line
+   └─ git check-attr, last match wins
+
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t2] paths are piped via @stdin, one with a space then: each path is reported whole, exit 0: git.attr.get stdout — paths via @stdin 1`] = `
+"docs/my notes.test.ts: linguist-generated: set
+keep.test.ts: linguist-generated: unset
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t3] bad input is given then: --attr with no value: a ConstraintError that names the fix, stdout empty, exit 2: git.attr.get — --attr with no value 1`] = `
+"✋ ConstraintError: --attr needs a value
+   └─ fix: rhx git.attr.get --attr linguist-generated --paths 'src/a.test.ts'
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t3] bad input is given then: --paths with no value: a ConstraintError that names the fix, stdout empty, exit 2: git.attr.get — --paths with no value 1`] = `
+"✋ ConstraintError: --paths needs a value
+   └─ fix: rhx git.attr.get --attr diff --paths 'src/a.test.ts'
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t3] bad input is given then: a flag where a value belongs: a ConstraintError that names the fix, stdout empty, exit 2: git.attr.get — a flag where a value belongs 1`] = `
+"✋ ConstraintError: --attr needs a value
+   └─ fix: rhx git.attr.get --attr linguist-generated --paths 'src/a.test.ts'
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t3] bad input is given then: an invalid attr name: a ConstraintError that names the fix, stdout empty, exit 2: git.attr.get — an invalid attr name 1`] = `
+"✋ ConstraintError: '!bad' is not a valid attribute name
+   └─ fix: rhx git.attr.get --attr linguist-generated --paths 'src/a.test.ts'
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t3] bad input is given then: an unknown option: a ConstraintError that names the fix, stdout empty, exit 2: git.attr.get — an unknown option 1`] = `
+"✋ ConstraintError: unknown option '--path'
+   └─ fix: rhx git.attr.get --attr linguist-generated --paths 'src/a.test.ts'
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t3] bad input is given then: no args: a ConstraintError that names the fix, stdout empty, exit 2: git.attr.get — no args 1`] = `
+"✋ ConstraintError: --attr and --paths are both required
+   └─ fix: rhx git.attr.get --attr linguist-generated --paths 'src/a.test.ts'
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t4] --paths @stdin is run from a terminal, with no pipe then: a ConstraintError names the pipe to add, before git waits on the terminal, exit 2: git.attr.get — @stdin on a terminal 1`] = `
+"✋ ConstraintError: --paths @stdin needs paths piped in
+   └─ fix: printf '%s\\n' 'src/a.test.ts' | rhx git.attr.get --attr linguist-generated --paths @stdin
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t5] git itself fails then: check-attr fails: a MalfunctionError names the step, exit 1: git.attr.get — git check-attr failed 1`] = `
+"🐢 lets peek...
+
+🐚 git.attr.get --attr linguist-generated
+   ├─ paths: 1, split on spaces; a path with a space goes via @stdin
+   └─ git check-attr, last match wins
+
+fatal: simulated failure
+💥 MalfunctionError: git check-attr failed
+   └─ fix: read git's message above, repair the cause, then rerun
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t5] git itself fails then: rev-parse fails for a reason other than no repo: a MalfunctionError with git's message, exit 1: git.attr.get — git rev-parse failed 1`] = `
+"fatal: simulated failure
+💥 MalfunctionError: git rev-parse failed
+   └─ fix: read git's message above, repair the cause, then rerun
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t6] a path outside the repo is given then: a ConstraintError, with git's message kept, exit 2: git.attr.get — a path outside the repo 1`] = `
+"🐢 lets peek...
+
+🐚 git.attr.get --attr linguist-generated
+   ├─ paths: 1, split on spaces; a path with a space goes via @stdin
+   └─ git check-attr, last match wins
+
+fatal: '/etc/hostname' is outside repository at '[tempdir]'
+✋ ConstraintError: a path lies outside this repo
+   └─ fix: pass repo-relative paths, e.g. --paths 'src/a.test.ts'
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t7] a file with a space is passed via --paths, which splits it then: a ConstraintError names the @stdin call that keeps it whole, exit 2: git.attr.get — a path with a space via --paths 1`] = `
+"✋ ConstraintError: 'docs/my notes.test.ts' holds a space, so --paths split it in two
+   └─ fix: printf '%s\\n' 'docs/my notes.test.ts' | rhx git.attr.get --attr linguist-generated --paths @stdin
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t8] an attribute that carries a value is asked then: stdout holds the value git computes, exit 0: git.attr.get stdout — a value attribute 1`] = `
+"yarn.lock: merge: theirs
+a.ts: merge: unspecified
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t9] the path set names no path then: a blank --paths: a ConstraintError that names the fix, before git runs, exit 2: git.attr.get — a blank --paths 1`] = `
+"✋ ConstraintError: --paths named no path
+   └─ fix: rhx git.attr.get --attr linguist-generated --paths 'src/a.test.ts'
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t9] the path set names no path then: an empty pipe to @stdin: a ConstraintError that names the fix, exit 2: git.attr.get — an empty pipe to @stdin 1`] = `
+"✋ ConstraintError: --paths @stdin got no path from the pipe
+   └─ fix: printf '%s\\n' 'src/a.test.ts' | rhx git.attr.get --attr linguist-generated --paths @stdin
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t10] a spaced path that does not exist is passed via --paths then: it splits into two paths, each reported, and the banner names the count, exit 0: git.attr.get banner — an absent spaced path, split 1`] = `
+"🐢 lets peek...
+
+🐚 git.attr.get --attr linguist-generated
+   ├─ paths: 2, split on spaces; a path with a space goes via @stdin
+   └─ git check-attr, last match wins
+
+"
+`;
+
+exports[`repo skills given: [case1] git.attr.get, in a repo with a collapse line and an override when: [t10] a spaced path that does not exist is passed via --paths then: it splits into two paths, each reported, and the banner names the count, exit 0: git.attr.get stdout — an absent spaced path, split 1`] = `
+"no: linguist-generated: unspecified
+such.ts: linguist-generated: unspecified
+"
+`;
+
+exports[`repo skills given: [case2] git.attr.get, outside any git repo when: [t0] a valid call is made then: a ConstraintError names the fix, not a raw git fatal, exit 2: git.attr.get — outside a repo 1`] = `
+"✋ ConstraintError: not inside a git repo
+   └─ fix: run from within the repo whose attributes you want
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t0] --help is asked then: it prints usage, options, and guarantee to stdout, exit 0: declapract.self.apply --help 1`] = `
+".what = apply one practice's declaration of one file to THIS repo
+
+.why  = this repo consumes the practices it declares (\`useCase:
+        npm-package\`). when a practice's output changes, this repo's own
+        copy of the file owes the new output, driven by the practice and
+        never by hand. the declarations load from the compiled \`dist/\`, so a stale build
+        applies a stale practice; and \`npx declapract apply\` is not a
+        paved call on its own
+
+usage:
+  rhx declapract.self.apply --practice git --file .gitattributes
+  rhx declapract.self.apply --practice rhachet --file .gitattributes --build skip
+
+options:
+  --practice  the practice to apply (required)
+  --file      the repo-relative file to scope the apply to (required)
+  --build     run | skip — compile dist/ first (default: run)
+
+guarantee:
+  - compiles dist/ first unless --build skip, so the apply reads the
+    declarations as they stand in src/. dist/ is gitignored build output;
+    the build regenerates it and moves no tracked file
+  - scopes the apply to one practice and one file; no other tracked
+    file moves
+  - runs the apply in an isolated root outside the repo, which holds
+    only the use config, package.json, the one file, and links to the
+    paths the declare config names. declapract globs with symlinks
+    followed, so a root inside the repo walks every leftover test repo
+    under .temp/ and can run out of memory. the one file is copied back
+  - a check sees only those files; a check that reads another repo file
+    sees it absent
+  - output passes through unmodified, then names what this apply did
+    to the file, apart from its diff vs HEAD (\`git diff --shortstat\`):
+    written | rewritten | unchanged, already converged | removed |
+    absent before and after, no fix wrote it. a file HEAD never held
+    reads \`vs HEAD: new file, absent from HEAD\` if present, else
+    \`vs HEAD: no diff, absent at HEAD too\`
+  - a practice the declarations do not hold, a practice name that is a
+    path, or a --file outside the repo, fails loud before the apply runs
+  - exit 0 = applied, 1 = a git, build, apply, or diff step failed,
+    2 = bad input, no repo, or no declapract config
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: --build with no value: a ConstraintError that names the fix, exit 2: declapract.self.apply — --build with no value 1`] = `
+"✋ ConstraintError: --build needs a value
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: --file with no value: a ConstraintError that names the fix, exit 2: declapract.self.apply — --file with no value 1`] = `
+"✋ ConstraintError: --file needs a value
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: --practice with no value: a ConstraintError that names the fix, exit 2: declapract.self.apply — --practice with no value 1`] = `
+"✋ ConstraintError: --practice needs a value
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: a --file above the repo root: a ConstraintError that names the fix, exit 2: declapract.self.apply — a --file above the repo root 1`] = `
+"✋ ConstraintError: --file must be a path inside the repo, relative to its root, got '../x'
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: a --practice of ..: a ConstraintError that names the fix, exit 2: declapract.self.apply — a --practice of .. 1`] = `
+"✋ ConstraintError: --practice names a practice dir, not a path, got '..'
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: a --practice with a slash: a ConstraintError that names the fix, exit 2: declapract.self.apply — a --practice with a slash 1`] = `
+"✋ ConstraintError: --practice names a practice dir, not a path, got 'git/x'
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: a build mode outside run or skip: a ConstraintError that names the fix, exit 2: declapract.self.apply — a build mode outside run or skip 1`] = `
+"✋ ConstraintError: --build must be run or skip, got 'later'
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: a flag where a value belongs: a ConstraintError that names the fix, exit 2: declapract.self.apply — a flag where a value belongs 1`] = `
+"✋ ConstraintError: --practice needs a value
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: an absolute --file: a ConstraintError that names the fix, exit 2: declapract.self.apply — an absolute --file 1`] = `
+"✋ ConstraintError: --file must be a path inside the repo, relative to its root, got '/tmp/x'
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: an unknown option: a ConstraintError that names the fix, exit 2: declapract.self.apply — an unknown option 1`] = `
+"✋ ConstraintError: unknown option '--practise'
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t1] bad input is given then: no args: a ConstraintError that names the fix, exit 2: declapract.self.apply — no args 1`] = `
+"✋ ConstraintError: --practice and --file are required
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t2] the repo has no declapract.use.yml then: a ConstraintError names the absent config, before any build, exit 2: declapract.self.apply — no declapract config 1`] = `
+"✋ ConstraintError: no declapract.use.yml at the repo root
+   └─ fix: run from a repo that consumes declapract, with declapract.use.yml at its root
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t3] the build step fails then: a MalfunctionError names the build, exit 1: declapract.self.apply — build failed 1`] = `
+"💥 MalfunctionError: build failed
+   └─ fix: read the build output above, repair the cause, then rerun
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t4] the apply step fails then: a MalfunctionError names the apply, exit 1: declapract.self.apply — apply failed 1`] = `
+"💥 MalfunctionError: apply failed
+   └─ fix: read the apply output above, repair the cause, then rerun
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t5] git rev-parse fails for a reason other than no repo then: a MalfunctionError, with git's message kept, exit 1: declapract.self.apply — git rev-parse failed 1`] = `
+"fatal: simulated failure
+💥 MalfunctionError: git rev-parse failed
+   └─ fix: read the git rev-parse output above, repair the cause, then rerun
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t6] the use config names no declarations path then: a ConstraintError names the absent key, exit 2: declapract.self.apply — use config names no declarations 1`] = `
+"✋ ConstraintError: declapract.use.yml names no declarations path
+   └─ fix: add a line to declapract.use.yml: declarations: '<path to declapract.declare.yml, or its dir>'
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t7] the use config names a declarations path that holds no declare config then: a ConstraintError names the path it read, exit 2: declapract.self.apply — declare config absent 1`] = `
+"✋ ConstraintError: no declare config at declarations-absent/declapract.declare.yml (named in declapract.use.yml)
+   └─ fix: point declarations: in declapract.use.yml at a file or dir that holds declapract.declare.yml
+"
+`;
+
+exports[`repo skills given: [case3] declapract.self.apply, in a git repo with no declapract config when: [t8] the declare config names a practices dir that is absent, as before a build then: a ConstraintError names the practice, finds none, and names --build run, exit 2: declapract.self.apply — no practices found 1`] = `
+"✋ ConstraintError: no practice 'git' in dist/practices, which holds none
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes --build run
+"
+`;
+
+exports[`repo skills given: [case4] declapract.self.apply, in a repo whose .gitattributes holds the legacy git blocks when: [t0] the git practice is applied to .gitattributes then: the full stdout, banner to close, with the apply output passed through between: declapract.self.apply — full stdout 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.self.apply --practice git --file .gitattributes --build skip
+   ├─ build: skip
+   └─ apply: declapract apply --practice git --file .gitattributes, in an isolated root
+
+🔎 reading configs and declarations...
+🔬️ evaluating project...
+  ✓ evaluated practice:git
+🔧 applying fixes...
+  * [FIX_AUTOMATIC] .gitattributes
+    ✓ practice:git.best-practice (fix:applied)
+
+🐢 righteous! applied
+   ├─ .gitattributes: rewritten
+   └─ vs HEAD: 1 file changed, 7 insertions(+), 4 deletions(-)
+"
+`;
+
+exports[`repo skills given: [case4] declapract.self.apply, in a repo whose .gitattributes holds the legacy git blocks when: [t1] the apply runs again, and the final git diff fails then: a MalfunctionError names the diff, exit 1: declapract.self.apply — diff failed 1`] = `
+"fatal: simulated failure
+💥 MalfunctionError: diff failed
+   └─ fix: read the diff output above, repair the cause, then rerun
+"
+`;
+
+exports[`repo skills given: [case4] declapract.self.apply, in a repo whose .gitattributes holds the legacy git blocks when: [t2] the converged file is committed, then the apply runs again then: it says the file is unchanged, and that it matches HEAD, exit 0: declapract.self.apply — applied, converged, no diff 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.self.apply --practice git --file .gitattributes --build skip
+   ├─ build: skip
+   └─ apply: declapract apply --practice git --file .gitattributes, in an isolated root
+
+🔎 reading configs and declarations...
+🔬️ evaluating project...
+  ✓ evaluated practice:git
+🔧 applying fixes...
+
+🐢 righteous! applied
+   ├─ .gitattributes: unchanged, already converged
+   └─ vs HEAD: no diff
+"
+`;
+
+exports[`repo skills given: [case5] declapract.self.apply, outside any git repo when: [t0] a valid call is made then: a ConstraintError names the fix, not a raw git fatal, exit 2: declapract.self.apply — outside a repo 1`] = `
+"✋ ConstraintError: not inside a git repo; run from within this repo
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case6] declapract.self.apply, in a repo that lacks the file, with a build to run when: [t0] the git practice is applied with the default build then: the build runs, the file is written, exit 0: declapract.self.apply — applied, written 1`] = `
+"🐢 righteous! applied
+   ├─ .gitattributes: written
+   └─ vs HEAD: 1 file changed, 5 insertions(+), 4 deletions(-)
+"
+`;
+
+exports[`repo skills given: [case6] declapract.self.apply, in a repo that lacks the file, with a build to run when: [t1] the rhachet practice is applied to the deprecated rhachet.use.ts then: it says the file was removed, exit 0: declapract.self.apply — applied, removed 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.self.apply --practice rhachet --file rhachet.use.ts --build skip
+   ├─ build: skip
+   └─ apply: declapract apply --practice rhachet --file rhachet.use.ts, in an isolated root
+
+🔎 reading configs and declarations...
+🔬️ evaluating project...
+  ✓ evaluated practice:rhachet
+🔧 applying fixes...
+  * [FIX_AUTOMATIC] rhachet.use.ts
+    ✓ practice:rhachet.bad-practice.deprecated-use-file (fix:applied)
+
+🐢 righteous! applied
+   ├─ rhachet.use.ts: removed
+   └─ vs HEAD: no diff, absent at HEAD too
+"
+`;
+
+exports[`repo skills given: [case6] declapract.self.apply, in a repo that lacks the file, with a build to run when: [t2] a committed rhachet.use.ts is removed by the fix then: it says the file was removed, and the diff vs HEAD names the deletion, exit 0: declapract.self.apply — applied, removed, tracked 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.self.apply --practice rhachet --file rhachet.use.ts --build skip
+   ├─ build: skip
+   └─ apply: declapract apply --practice rhachet --file rhachet.use.ts, in an isolated root
+
+🔎 reading configs and declarations...
+🔬️ evaluating project...
+  ✓ evaluated practice:rhachet
+🔧 applying fixes...
+  * [FIX_AUTOMATIC] rhachet.use.ts
+    ✓ practice:rhachet.bad-practice.deprecated-use-file (fix:applied)
+
+🐢 righteous! applied
+   ├─ rhachet.use.ts: removed
+   └─ vs HEAD: 1 file changed, 1 deletion(-)
+"
+`;
+
+exports[`repo skills given: [case7] declapract.self.apply, in a repo with real declarations, asked for aught they do not hold when: [t0] a practice the declarations do not hold is named then: a ConstraintError names the practice and lists the held ones, before the apply, exit 2: declapract.self.apply — unknown practice 1`] = `
+"✋ ConstraintError: no practice 'gitt' in practices
+   ├─ held practices
+   │  ├─ git
+   │  ├─ persist-with-dynamodb
+   │  ├─ persist-with-rds
+   │  ├─ rhachet
+   │  └─ tests-any
+   │
+   └─ fix: rhx declapract.self.apply --practice git --file .gitattributes
+"
+`;
+
+exports[`repo skills given: [case7] declapract.self.apply, in a repo with real declarations, asked for aught they do not hold when: [t1] a file that no fix of the practice writes is named then: it says the file was absent before and after, never "converged", exit 0: declapract.self.apply — applied, absent before and after 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.self.apply --practice git --file no-such-file.txt --build skip
+   ├─ build: skip
+   └─ apply: declapract apply --practice git --file no-such-file.txt, in an isolated root
+
+🔎 reading configs and declarations...
+🔬️ evaluating project...
+  ✓ evaluated practice:git
+🔧 applying fixes...
+
+🐢 righteous! applied
+   ├─ no-such-file.txt: absent before and after, no fix wrote it
+   └─ vs HEAD: no diff, absent at HEAD too
+"
+`;
+
+exports[`repo skills given: [case7] declapract.self.apply, in a repo with real declarations, asked for aught they do not hold when: [t2] HEAD never held the file, and the apply writes it then: it says the file was written, and that HEAD lacks it, never "no diff", exit 0: declapract.self.apply — applied, written, absent from HEAD 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.self.apply --practice git --file .gitattributes --build skip
+   ├─ build: skip
+   └─ apply: declapract apply --practice git --file .gitattributes, in an isolated root
+
+🔎 reading configs and declarations...
+🔬️ evaluating project...
+  ✓ evaluated practice:git
+🔧 applying fixes...
+  * [FIX_AUTOMATIC] .gitattributes
+    ✓ practice:git.best-practice (fix:applied)
+
+🐢 righteous! applied
+   ├─ .gitattributes: written
+   └─ vs HEAD: new file, absent from HEAD
+"
+`;
+
+exports[`repo skills given: [case7] declapract.self.apply, in a repo with real declarations, asked for aught they do not hold when: [t4] a --file in a subdirectory, which no fix touches then: the nested file comes back byte for byte, exit 0: declapract.self.apply — a nested file, untouched 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.self.apply --practice git --file docs/deep/keep.txt --build skip
+   ├─ build: skip
+   └─ apply: declapract apply --practice git --file docs/deep/keep.txt, in an isolated root
+
+🔎 reading configs and declarations...
+🔬️ evaluating project...
+  ✓ evaluated practice:git
+🔧 applying fixes...
+
+🐢 righteous! applied
+   ├─ docs/deep/keep.txt: unchanged, already converged
+   └─ vs HEAD: new file, absent from HEAD
+"
+`;

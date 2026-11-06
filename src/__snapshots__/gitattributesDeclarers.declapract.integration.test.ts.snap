@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`gitattributes declarers given: [case1] a repo that adopts all five .gitattributes declarers, with a repo-own override when: [t0] before any apply then: the input holds the repo-own override and no declarer tag; it matches snapshot: .gitattributes — before 1`] = `
+"*.png binary
+src/access/daos/custom/** -linguist-generated
+
+# exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+"
+`;
+
+exports[`gitattributes declarers given: [case1] a repo that adopts all five .gitattributes declarers, with a repo-own override when: [t1] each practice applies, in turn then: the output holds every declarer section in order, then the repo-own lines; it matches snapshot: .gitattributes — all declarers 1`] = `
+"# [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# [git] auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+
+# [tests-any] collapse test source in pr diffs; snapshots stay open
+*.test.ts linguist-generated
+*.test.tsx linguist-generated
+
+# [persist-with-rds] collapse dao-generator output in pr diffs
+src/access/daos/**/.generated/** linguist-generated
+provision/schema/**/.generated/** linguist-generated
+
+# [persist-with-dynamodb] collapse dao-generator output in pr diffs
+src/access/daos/**/.generated/** linguist-generated
+
+# [rhachet] collapse route robocode in pr diffs; yields and radio stay open
+.route/** linguist-generated
+.route/**/*.yield.* -linguist-generated
+.route/**/.radio/** -linguist-generated
+.behavior/** linguist-generated
+.behavior/**/*.yield.* -linguist-generated
+.behavior/**/.radio/** -linguist-generated
+
+*.png binary
+src/access/daos/custom/** -linguist-generated
+"
+`;
+
+exports[`gitattributes declarers given: [case3] a repo with no .gitattributes, that adopts git and persist-with-dynamodb when: [t0] the file is removed, then each practice applies then: it holds the git sections, then the dynamodb section, and no other: .gitattributes — born, git + dynamodb 1`] = `
+"# [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# [git] auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+
+# [persist-with-dynamodb] collapse dao-generator output in pr diffs
+src/access/daos/**/.generated/** linguist-generated
+"
+`;
+
+exports[`gitattributes declarers given: [case4] a repo that dropped tests-any, and un-folds one test file when: [t0] git applies over the stale section then: the settled file matches snapshot: .gitattributes — a dropped declarer, after git 1`] = `
+"# [git] exclude package locks from git diff; https://stackoverflow.com/a/72834452/3068233
+pnpm-lock.yaml -diff
+package-lock.json -diff
+
+# [git] auto-resolve lock file conflicts by taking theirs; run install after merge
+pnpm-lock.yaml merge=theirs
+package-lock.json merge=theirs
+
+# [tests-any] collapse test source in pr diffs; snapshots stay open
+*.test.ts linguist-generated
+*.test.tsx linguist-generated
+
+src/domain.operations/keep.test.ts -linguist-generated
+"
+`;

@@ -152,7 +152,7 @@ describe('gitignore practices', () => {
       slug: 'git-cache-dirs',
       clone: './src/practices/git/.test/assets/repo-without-cache-ignores',
       symlink: [
-        { at: 'declarations', to: './.test/assets/git/declarations' },
+        { at: 'declarations', to: './src/.test/assets/git/declarations' },
         { at: 'node_modules', to: 'node_modules' },
       ],
     });
@@ -602,7 +602,7 @@ describe('gitignore practices', () => {
       slug: 'git-rhachet-only',
       clone: './src/practices/git/.test/assets/repo-with-rhachet-only',
       symlink: [
-        { at: 'declarations', to: './.test/assets/git/declarations' },
+        { at: 'declarations', to: './src/.test/assets/git/declarations' },
         { at: 'node_modules', to: 'node_modules' },
       ],
     });

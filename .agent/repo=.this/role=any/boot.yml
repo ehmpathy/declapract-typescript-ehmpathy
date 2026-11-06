@@ -67,6 +67,10 @@ skills:
   # every skill boots say, except these, which boot as ref (path only):
   # - use.apikeys: keyrack (`rhx keyrack unlock`) supersedes it for test credentials
   # - husky.lock.restamp: the timestamp brief names it at the one moment it is owed
+  # - git.attr.get: a niche probe for `.gitattributes` work; its path line names it
+  # - declapract.self.apply: the self-check failures name it at the moment it is owed
   ref:
     - skills/use.apikeys.*
     - skills/husky.lock.restamp.sh
+    - skills/git.attr.get.sh
+    - skills/declapract.self.apply.sh

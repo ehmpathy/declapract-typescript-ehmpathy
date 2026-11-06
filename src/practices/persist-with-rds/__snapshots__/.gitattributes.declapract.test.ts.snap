@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds .gitattributes check throws on a file without the section, so a plan flags it 1`] = `
+"expect(received).toEqual(expected) // deep equality
+
+- Expected  - 4
++ Received  + 0
+
+- # [persist-with-rds] collapse dao-generator output in pr diffs
+- src/access/daos/**/.generated/** linguist-generated
+- provision/schema/**/.generated/** linguist-generated
+-
+  *.png binary
+  ↵"
+`;
