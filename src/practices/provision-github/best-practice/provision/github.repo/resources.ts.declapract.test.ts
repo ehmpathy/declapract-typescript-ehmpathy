@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { UnexpectedCodePathError } from 'helpful-errors';
 import { given, then, when } from 'test-fns';
 
 /**
@@ -13,11 +14,8 @@ import { given, then, when } from 'test-fns';
  *         of getResources() is fragile; the field text is the reliable oracle.
  */
 
-// anchor on __dirname (a nested jest run has a different cwd); the declaration is under best-practice/.
-const RESOURCES = readFileSync(
-  join(__dirname, 'best-practice/provision/github.repo/resources.ts'),
-  'utf8',
-);
+// anchor on __dirname (a nested jest run has a different cwd); the clamped template sits beside this file
+const RESOURCES = readFileSync(join(__dirname, 'resources.ts'), 'utf8');
 
 // isolate the main branch protection block, so a match elsewhere cannot satisfy the clamp
 const PROTECTION_BLOCK = (() => {
@@ -26,7 +24,10 @@ const PROTECTION_BLOCK = (() => {
   );
   const end = RESOURCES.indexOf('\n  });', start);
   if (start < 0 || end < 0)
-    throw new Error('branchMainProtection block not found in resources.ts');
+    UnexpectedCodePathError.throw(
+      'branchMainProtection block not found in resources.ts',
+      { start, end, hint: 'the declaration was renamed or reshaped; re-anchor the slice' },
+    );
   return RESOURCES.slice(start, end);
 })();
 

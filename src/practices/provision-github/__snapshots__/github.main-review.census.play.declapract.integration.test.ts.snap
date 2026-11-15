@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`github.main-review.census given: [case1] a caller who asks for help when: [t0] --help then: it matches snapshot 1`] = `
+"######################################################################
+# .what = census, read only: for each repo in the named owners, does
+#         main require a review approval before a merge?
+#
+# .why  = the provision-github practice declares main's protection; a
+#         census shows which repos would gain a review gate on apply.
+#         the caller token often holds push, not admin, so the classic
+#         protection endpoint 404s. two signals a push token can read
+#         decide it instead:
+#           - ruleset: an active \`pull_request\` rule on main
+#           - classic: the graphql \`reviewDecision\` of the latest prs
+#             into main. a gated repo never yields an empty decision
+#             (unreviewed = REVIEW_REQUIRED, merged = APPROVED), so:
+#               empty            → lacks
+#               REVIEW_REQUIRED  → requires
+#               APPROVED | CHANGES_REQUESTED → ambiguous: github sets
+#               these on any reviewed pr, gate or not; read the next pr
+#             proven against facebook/react (gated) and this repo
+#             (ungated, yet #761 reads APPROVED)
+#         an admin token reads the protection endpoint directly
+#
+# .note = reviewDecision describes recent prs, so a gate added after
+#         the latest pr shows only once a new pr opens
+#
+# usage:
+#   rhx github.main-review.census
+#   rhx github.main-review.census --owners 'ehmpathy ahbode'
+#
+# options:
+#   --owners   space-separated orgs or users
+#              (default: 'ehmpathy ahbode whodisio uladkasach')
+#
+# guarantee:
+#   - every github call is a read (\`--method GET\`); it writes naught to github
+#   - skips archived repos and forks (counted, not listed)
+#   - verdict per repo: requires | lacks | unknown (no main branch | no decisive pr)
+#   - full table kept in .log/github.main-review.census/census.md
+#   - each run reads into its own scratch dir, so two runs never mix
+#   - exit 0 = census done, 1 = a github read failed, 2 = bad input
+######################################################################
+"
+`;
+
+exports[`github.main-review.census given: [case2] a caller with bad input when: [t0] each bad input runs then: --owners with no value exits 2 with a ConstraintError and an example 1`] = `
+"✋ ConstraintError: --owners needs a value
+   └─ e.g.: rhx github.main-review.census --owners 'ehmpathy ahbode'
+"
+`;
+
+exports[`github.main-review.census given: [case2] a caller with bad input when: [t0] each bad input runs then: an unknown arg exits 2 with a ConstraintError that names the arg and --help 1`] = `
+"✋ ConstraintError: unknown arg '--nope'
+   └─ run: rhx github.main-review.census --help
+"
+`;
+
+exports[`github.main-review.census given: [case3] an owner with one repo of each shape when: [t0] the census runs then: stdout matches snapshot 1`] = `
+"🐢 heres the wave...
+
+🐚 github.main-review.census --owners 'acme'
+   ├─ mode: read only
+   ├─ repos read: 8 (skipped 2 archived or fork)
+   ├─ verdicts
+   │  ├─ requires: 3
+   │  ├─ lacks: 3 (2 with a release workflow)
+   │  └─ unknown: 2
+   └─ table: .log/github.main-review.census/census.md
+
+🐢 righteous! census done
+"
+`;
+
+exports[`github.main-review.census given: [case3] an owner with one repo of each shape when: [t0] the census runs then: the table matches snapshot 1`] = `
+"| repo | release workflow | main requires review | signal |
+|------|------------------|----------------------|--------|
+| acme/admin-open | no | lacks | protection: 0 approvals |
+| acme/bare | yes | lacks | main unprotected |
+| acme/push-open | yes | lacks | pr #7 reviewDecision=(empty) |
+| acme/admin-gated | yes | requires | protection: 1 approval(s) |
+| acme/push-gated | yes | requires | pr #12 reviewDecision=REVIEW_REQUIRED |
+| acme/ruled | yes | requires | ruleset: 2 approval(s) |
+| acme/no-main | no | unknown | no main branch |
+| acme/push-undecided | no | unknown | protected; no decisive pr in the latest 10 |
+"
+`;
+
+exports[`github.main-review.census given: [case4] a github read that fails for a cause other than absence when: [t0] the release workflow read returns a 500 then: stderr matches snapshot 1`] = `
+"💥 MalfunctionError: a github read failed, so the census cannot verdict 'acme/flaky'
+   ├─ read: release workflow
+   ├─ cause: gh: Server Error (HTTP 500)
+   └─ fix: retry once the cause clears (rate limit, network, or auth)
+"
+`;
+
+exports[`github.main-review.census given: [case5] an owner github does not know when: [t0] the repo list fails on the owner then: it exits 2 with a ConstraintError that names the owner and the fix 1`] = `
+"✋ ConstraintError: github knows no owner 'ghost'
+   └─ fix: check the owner name in --owners
+"
+`;
