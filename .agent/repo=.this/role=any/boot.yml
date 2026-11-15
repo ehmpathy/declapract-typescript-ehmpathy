@@ -69,8 +69,10 @@ skills:
   # - husky.lock.restamp: the timestamp brief names it at the one moment it is owed
   # - git.attr.get: a niche probe for `.gitattributes` work; its path line names it
   # - declapract.self.apply: the self-check failures name it at the moment it is owed
+  # - github.census.main-review: a fleet census, run on demand; its path line names it
   ref:
     - skills/use.apikeys.*
     - skills/husky.lock.restamp.sh
     - skills/git.attr.get.sh
     - skills/declapract.self.apply.sh
+    - skills/github.census.main-review.sh
