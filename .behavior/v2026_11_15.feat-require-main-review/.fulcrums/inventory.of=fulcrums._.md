@@ -1,0 +1,22 @@
+# inventory.of=fulcrums
+
+| case | title | rework | status | confidence |
+|------|-------|--------|--------|------------|
+| F1 | release-please prs: no exemption | clean | open, for the commander | 80% |
+| F2 | dismissStaleReviews: true | clean | open, for the commander | 65% |
+| F3 | one approval, no code owner review | clean | best-guessed | 90% |
+| F4 | census verdict from reviewDecision, not the protection endpoint | clean | best-guessed | 88% |
+| F5 | any write account may approve (no CODEOWNERS) | clean | open, for the commander | 75% |
+| F6 | census skill: a hermetic play test, via a gh stub | clean | superseded (first guess: no suite) | 92% |
+| F7 | practice clamp reads source text, not getResources() | clean | best-guessed | 85% |
+| F8 | boot edits stay out of the pr | clean | settled by the director | 95% |
+| F9 | no opt-out from the review gate | clean | open, for the commander | 70% |
+| F10 | census progress per owner, not per repo | clean | best-guessed | 75% |
+| F11 | main-review clamp beside its template | clean | best-guessed | 85% |
+| F12 | census gh reads stay in the skill until a second consumer | clean | best-guessed | 90% |
+| F13 | this repo's own main gate: a follow-up pr, not this one | clean | open, for the commander | 85% |
+| F14 | census real-gh test: no-creds case in; token-backed live reads a follow-up | clean | open, for the commander | 80% |
+| F15 | census acceptance file at the src root, beside `repoSkills` | clean | settled by repo precedent | 92% |
+| F16 | census banner keeps the sea turtle's `heres the wave...` | clean | best-guessed | 90% |
+| F17 | census tests are criteria born in this pr; each change recorded | clean | open, for the commander | 85% |
+| F18 | census presentation reshapes wait for a follow-up | clean | best-guessed | 80% |

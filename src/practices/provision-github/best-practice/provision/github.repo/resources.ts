@@ -114,12 +114,18 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
       ],
     },
 
+    // a green pr still waits for one human approval; checks prove it builds, a review proves it was read
+    requiredPullRequestReviews: {
+      requiredApprovingReviewCount: 1,
+      dismissStaleReviews: true, // a push after approval drops it, so no commit merges unread
+      requireCodeOwnerReviews: false, // no CODEOWNERS declared; any write collaborator may approve
+    },
+
     // github's defaults, declared so drift shows in a plan
     allowForkSyncing: false,
     blockCreations: false,
     lockBranch: false,
     requiredConversationResolution: false,
-    requiredPullRequestReviews: null,
     requiredSignatures: false,
     restrictions: null,
   });
