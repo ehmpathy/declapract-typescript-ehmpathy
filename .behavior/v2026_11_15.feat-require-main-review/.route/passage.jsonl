@@ -158,3 +158,5 @@
 {"stone":"5.1.execution.from_vision","status":"conceded","reviewer":"enroll-impl-arch-defects","about":"nitpick.6","given":"5.1.execution.from_vision._.review.i004.9479ea0d550bd8a785.r011._.given.by_peer.enroll-impl-arch-defects.md","severity":"better","reason":"conceded review.peer: enroll-impl-arch-defects nitpick.6 (better)"}
 {"stone":"5.1.execution.from_vision","status":"absorbed","reason":"absorbed review.peer: enroll-impl-behavior-intent"}
 {"stone":"5.1.execution.from_vision","status":"absorbed","reason":"absorbed review.peer: enroll-impl-arch-defects"}
+{"stone":"5.1.execution.from_vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0), after 1 blocker shed (0 disputed + 1 conceded better), 10 nitpicks shed (0 disputed + 10 conceded better)"}

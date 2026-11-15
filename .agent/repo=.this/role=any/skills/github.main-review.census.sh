@@ -127,9 +127,11 @@ fail_read() {
 }
 
 # emit one census row; the one place the row shape lives
-# .note = fields, tab-separated: slug, release, verdict, signal, perm
+# .note = fields, tab-separated: slug, release, verdict, signal, perm, basis
+#         basis = certain (ruleset, protection, or main unprotected) | inferred (a pr's
+#         reviewDecision) | none (unknown); set where the verdict is decided, never parsed back
 emit_row() {
-  local slug='' release='' verdict='' signal='' perm=''
+  local slug='' release='' verdict='' signal='' perm='' basis=''
   for arg in "$@"; do
     case "$arg" in
       slug=*) slug="${arg#slug=}" ;;
@@ -137,9 +139,10 @@ emit_row() {
       verdict=*) verdict="${arg#verdict=}" ;;
       signal=*) signal="${arg#signal=}" ;;
       perm=*) perm="${arg#perm=}" ;;
+      basis=*) basis="${arg#basis=}" ;;
     esac
   done
-  printf '%s\t%s\t%s\t%s\t%s\n' "$slug" "$release" "$verdict" "$signal" "$perm"
+  printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$slug" "$release" "$verdict" "$signal" "$perm" "$basis"
 }
 
 # read whether main is protected, as true | false | no-main
@@ -209,52 +212,54 @@ get_one_verdict() {
   done
   local release protected rulesetCount protectionCount prDecision prNumber prReview
 
+  # each read halts the census on its own failure (`|| exit $?`), whatever the caller's errexit
+
   # does the repo carry a release workflow?
-  release=$(get_one_release_flag slug="$slug")
+  release=$(get_one_release_flag slug="$slug") || exit $?
 
   # is main protected at all?
-  protected=$(get_one_main_protected slug="$slug")
+  protected=$(get_one_main_protected slug="$slug") || exit $?
   if [[ "$protected" == 'no-main' ]]; then
-    emit_row slug="$slug" release="$release" verdict=unknown signal='no main branch' perm="$perm"
+    emit_row slug="$slug" release="$release" verdict=unknown signal='no main branch' perm="$perm" basis=none
     return 0
   fi
 
   # an active ruleset pull_request rule?
-  rulesetCount=$(get_one_ruleset_approval_count slug="$slug")
+  rulesetCount=$(get_one_ruleset_approval_count slug="$slug") || exit $?
   if [[ "$rulesetCount" -gt 0 ]]; then
-    emit_row slug="$slug" release="$release" verdict=requires signal="ruleset: $rulesetCount approval(s)" perm="$perm"
+    emit_row slug="$slug" release="$release" verdict=requires signal="ruleset: $rulesetCount approval(s)" perm="$perm" basis=certain
     return 0
   fi
 
   # main unprotected and no ruleset: no review gate
   if [[ "$protected" != 'true' ]]; then
-    emit_row slug="$slug" release="$release" verdict=lacks signal='main unprotected' perm="$perm"
+    emit_row slug="$slug" release="$release" verdict=lacks signal='main unprotected' perm="$perm" basis=certain
     return 0
   fi
 
   # an admin token reads classic protection directly
   if [[ "$perm" == 'ADMIN' ]]; then
-    protectionCount=$(get_one_protection_approval_count slug="$slug")
+    protectionCount=$(get_one_protection_approval_count slug="$slug") || exit $?
     if [[ "$protectionCount" -gt 0 ]]; then
-      emit_row slug="$slug" release="$release" verdict=requires signal="protection: $protectionCount approval(s)" perm="$perm"
+      emit_row slug="$slug" release="$release" verdict=requires signal="protection: $protectionCount approval(s)" perm="$perm" basis=certain
       return 0
     fi
-    emit_row slug="$slug" release="$release" verdict=lacks signal='protection: 0 approvals' perm="$perm"
+    emit_row slug="$slug" release="$release" verdict=lacks signal='protection: 0 approvals' perm="$perm" basis=certain
     return 0
   fi
 
   # a push token reads the first decisive reviewDecision among the latest prs into main
-  prDecision=$(get_one_pr_decision slug="$slug")
+  prDecision=$(get_one_pr_decision slug="$slug") || exit $?
   if [[ -z "$prDecision" ]]; then
-    emit_row slug="$slug" release="$release" verdict=unknown signal='protected; no decisive pr in the latest 10' perm="$perm"
+    emit_row slug="$slug" release="$release" verdict=unknown signal='protected; no decisive pr in the latest 10' perm="$perm" basis=none
     return 0
   fi
   IFS=$'\t' read -r prNumber prReview <<< "$prDecision"
   if [[ "$prReview" == 'REVIEW_REQUIRED' ]]; then
-    emit_row slug="$slug" release="$release" verdict=requires signal="pr #$prNumber reviewDecision=REVIEW_REQUIRED" perm="$perm"
+    emit_row slug="$slug" release="$release" verdict=requires signal="pr #$prNumber reviewDecision=REVIEW_REQUIRED" perm="$perm" basis=inferred
     return 0
   fi
-  emit_row slug="$slug" release="$release" verdict=lacks signal="pr #$prNumber reviewDecision=(empty)" perm="$perm"
+  emit_row slug="$slug" release="$release" verdict=lacks signal="pr #$prNumber reviewDecision=(empty)" perm="$perm" basis=inferred
 }
 
 # halt the census on an owner github does not know; a comma in the name gets its own hint
@@ -309,7 +314,7 @@ render_table_rows() {
 }
 
 # count rows by verdict (all where none given), by release=yes, and by basis=inferred|certain
-# .note = basis inferred = the verdict rests on a pr's reviewDecision (signal "pr #…")
+# .note = reads the basis field emit_row wrote; it never parses the signal text
 count_rows() {
   local verdict='' release='' basis=''
   for arg in "$@"; do
@@ -321,7 +326,7 @@ count_rows() {
   done
   awk -F'\t' -v v="$verdict" -v r="$release" -v b="$basis" '
     (v == "" || $3 == v) && (r == "" || $2 == r) &&
-    (b == "" || (b == "inferred" && $4 ~ /^pr #/) || (b == "certain" && $4 !~ /^pr #/))
+    (b == "" || $6 == b)
   ' "$ROWS" | wc -l | tr -d ' '
 }
 
@@ -330,7 +335,7 @@ count_rows() {
 SKIPPED=0
 echo "   ├─ owners"
 for owner in $OWNERS; do
-  repos=$(get_all_repos owner="$owner")
+  repos=$(get_all_repos owner="$owner") || exit $?
   echo "   │  ├─ $owner: $(printf '%s\n' "$repos" | awk 'NF { n++ } END { print n + 0 }') repos listed"
   while IFS=$'\t' read -r slug archived fork perm; do
     [[ -z "$slug" ]] && continue

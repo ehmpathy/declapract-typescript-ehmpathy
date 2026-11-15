@@ -3,7 +3,7 @@
 🗿 route.stone.set
    ├─ stone = 5.1.execution.from_vision
    ├─ passage = blocked
-   ├─ reason = nitpicks exceed threshold (15 > 7)
+   ├─ reason = blockers exceed threshold (1 > 0)
    │  ├─ after 1 blocker shed (0 disputed + 1 conceded better)
    │  └─ after 10 nitpicks shed (0 disputed + 10 conceded better)
    └─ guard
@@ -66,24 +66,24 @@
       │   │   ├─ 2 nitpicks 🟠
       │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r009._.given.by_peer.ergo-friction-hazards.md
       │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r009._.taken.by_self.ergo-friction-hazards.md
-      │   ├─ r10: enroll-impl-behavior-intent (l3, 1/3)
-      │   │   ├─ rejected 288.2s
-      │   │   ├─ 0 blockers ✓
-      │   │   ├─ 8 nitpicks 🟠
+      │   ├─ r10: enroll-impl-behavior-intent (l3, 2/3)
+      │   │   ├─ rejected 273.0s
+      │   │   ├─ 1 blocker 🔴
+      │   │   ├─ 4 nitpicks 🟠
       │   │   ├─ tallied by reviewer@openrouter/deepseek/flash
-      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i004.9479ea0d550bd8a785.r010._.given.by_peer.enroll-impl-behavior-intent.md
-      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i004.9479ea0d550bd8a785.r010._.taken.by_self.enroll-impl-behavior-intent.md
-      │   └─ r11: enroll-impl-arch-defects (l3, 1/3)
-      │       ├─ approved 333.3s
+      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i005.fdc72778483ee6dc29.r010._.given.by_peer.enroll-impl-behavior-intent.md
+      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i005.fdc72778483ee6dc29.r010._.taken.by_self.enroll-impl-behavior-intent.md
+      │   └─ r11: enroll-impl-arch-defects (l3, 2/3)
+      │       ├─ approved 223.3s
       │       ├─ 0 blockers ✓
-      │       ├─ 7 nitpicks 🟠
+      │       ├─ 5 nitpicks 🟠
       │       ├─ tallied by reviewer@openrouter/deepseek/flash
-      │       ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i004.9479ea0d550bd8a785.r011._.given.by_peer.enroll-impl-arch-defects.md
-      │       └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i004.9479ea0d550bd8a785.r011._.taken.by_self.enroll-impl-arch-defects.md
+      │       ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i005.fdc72778483ee6dc29.r011._.given.by_peer.enroll-impl-arch-defects.md
+      │       └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i005.fdc72778483ee6dc29.r011._.taken.by_self.enroll-impl-arch-defects.md
       └─ judges
           └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
-              ├─ finished 3.8s ✗
-              └─ reason: nitpicks exceed threshold (15 > 7)
+              ├─ finished 1.9s ✗
+              └─ reason: blockers exceed threshold (1 > 0)
                  ├─ after 1 blocker shed (0 disputed + 1 conceded better)
                  └─ after 10 nitpicks shed (0 disputed + 10 conceded better)
 
@@ -102,7 +102,7 @@
    │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
    │  │
    │  │  passed: false
-   │  │  reason: nitpicks exceed threshold (15 > 7), after 1 blocker shed (0 disputed + 1 conceded better), 10 nitpicks shed (0 disputed + 10 conceded better)
+   │  │  reason: blockers exceed threshold (1 > 0), after 1 blocker shed (0 disputed + 1 conceded better), 10 nitpicks shed (0 disputed + 10 conceded better)
    │  │
    │  └─
    ├─ stderr
@@ -112,7 +112,7 @@
    │  │     └─ ✋ blocked by constraints
    │  │
    │  │  conceded better: 1 blocker, 10 nitpicks excluded from the tally
-   │  │  residual: 0/0 blockers, 15/7 nitpicks
+   │  │  residual: 1/0 blockers, 9/7 nitpicks
    │  │
    │  └─
    └─ passage blocked

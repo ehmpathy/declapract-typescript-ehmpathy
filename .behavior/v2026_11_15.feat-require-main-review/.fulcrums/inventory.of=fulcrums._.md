@@ -11,3 +11,6 @@
 | F7 | practice clamp reads source text, not getResources() | clean | best-guessed | 85% |
 | F8 | boot edits stay out of the pr | clean | settled by the director | 95% |
 | F9 | no opt-out from the review gate | clean | open, for the commander | 70% |
+| F10 | census progress per owner, not per repo | clean | best-guessed | 75% |
+| F11 | main-review clamp beside its template | clean | best-guessed | 85% |
+| F12 | census gh reads stay in the skill until a second consumer | clean | best-guessed | 90% |
