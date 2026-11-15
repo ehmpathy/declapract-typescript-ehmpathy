@@ -3,74 +3,74 @@
 🗿 route.stone.set
    ├─ stone = 5.1.execution.from_vision
    ├─ passage = blocked
-   ├─ reason = blockers exceed threshold (9 > 0)
+   ├─ reason = blockers exceed threshold (1 > 0)
    └─ guard
       ├─ artifacts
       │   ├─ $route/5.1.execution.from_vision.yield.md
       │   └─ src/**/*
       ├─ reviews
-      │   ├─ r1: repo-rules (l1, 2/3)
-      │   │   ├─ rejected 71.1s
-      │   │   ├─ 1 blocker 🔴
-      │   │   ├─ 0 nitpicks ✓
-      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r001._.given.by_peer.repo-rules.md
-      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r001._.taken.by_self.repo-rules.md
-      │   ├─ r2: mech-failhides (l1, 2/3)
-      │   │   ├─ approved 45.9s
+      │   ├─ r1: repo-rules (l1, 3/3)
+      │   │   ├─ approved 144.5s
       │   │   ├─ 0 blockers ✓
       │   │   ├─ 0 nitpicks ✓
-      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r002._.given.by_peer.mech-failhides.md
-      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r002._.taken.by_self.mech-failhides.md
-      │   ├─ r3: mech-decode-friction (l1, 2/3)
-      │   │   ├─ rejected 62.3s
-      │   │   ├─ 3 blockers 🔴
+      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r001._.given.by_peer.repo-rules.md
+      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r001._.taken.by_self.repo-rules.md
+      │   ├─ r2: mech-failhides (l1, 3/3)
+      │   │   ├─ approved 89.1s
+      │   │   ├─ 0 blockers ✓
       │   │   ├─ 1 nitpick 🟠
-      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r003._.given.by_peer.mech-decode-friction.md
-      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r003._.taken.by_self.mech-decode-friction.md
-      │   ├─ r4: arch-opport-decomposition (l1, 2/3)
-      │   │   ├─ rejected 80.9s
-      │   │   ├─ 1 blocker 🔴
-      │   │   ├─ 3 nitpicks 🟠
-      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r004._.given.by_peer.arch-opport-decomposition.md
-      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r004._.taken.by_self.arch-opport-decomposition.md
-      │   ├─ r5: arch-smell-scopeleaks (l1, 2/3)
-      │   │   ├─ approved 54.9s
-      │   │   ├─ 0 blockers ✓
-      │   │   ├─ 0 nitpicks ✓
-      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r005._.given.by_peer.arch-smell-scopeleaks.md
-      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r005._.taken.by_self.arch-smell-scopeleaks.md
-      │   ├─ r6: arch-hazards-maintenance (l1, 2/3)
-      │   │   ├─ approved 94.1s
+      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r002._.given.by_peer.mech-failhides.md
+      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r002._.taken.by_self.mech-failhides.md
+      │   ├─ r3: mech-decode-friction (l1, 3/3)
+      │   │   ├─ approved 60.2s
       │   │   ├─ 0 blockers ✓
       │   │   ├─ 2 nitpicks 🟠
-      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r006._.given.by_peer.arch-hazards-maintenance.md
-      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r006._.taken.by_self.arch-hazards-maintenance.md
-      │   ├─ r7: arch-hazards-behavior (l1, 2/3)
-      │   │   ├─ rejected 100.2s
-      │   │   ├─ 2 blockers 🔴
-      │   │   ├─ 6 nitpicks 🟠
-      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r007._.given.by_peer.arch-hazards-behavior.md
-      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r007._.taken.by_self.arch-hazards-behavior.md
-      │   ├─ r8: behavior-intent-coverage (l1, 2/3)
-      │   │   ├─ rejected 102.3s
-      │   │   ├─ 1 blocker 🔴
+      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r003._.given.by_peer.mech-decode-friction.md
+      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r003._.taken.by_self.mech-decode-friction.md
+      │   ├─ r4: arch-opport-decomposition (l1, 3/3)
+      │   │   ├─ approved 87.2s
+      │   │   ├─ 0 blockers ✓
       │   │   ├─ 0 nitpicks ✓
-      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r008._.given.by_peer.behavior-intent-coverage.md
-      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r008._.taken.by_self.behavior-intent-coverage.md
-      │   ├─ r9: ergo-friction-hazards (l1, 2/3)
-      │   │   ├─ rejected 129.6s
+      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r004._.given.by_peer.arch-opport-decomposition.md
+      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r004._.taken.by_self.arch-opport-decomposition.md
+      │   ├─ r5: arch-smell-scopeleaks (l1, 3/3)
+      │   │   ├─ approved 74.3s
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r005._.given.by_peer.arch-smell-scopeleaks.md
+      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r005._.taken.by_self.arch-smell-scopeleaks.md
+      │   ├─ r6: arch-hazards-maintenance (l1, 3/3)
+      │   │   ├─ approved 89.3s
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 2 nitpicks 🟠
+      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r006._.given.by_peer.arch-hazards-maintenance.md
+      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r006._.taken.by_self.arch-hazards-maintenance.md
+      │   ├─ r7: arch-hazards-behavior (l1, 3/3)
+      │   │   ├─ approved 102.2s
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 2 nitpicks 🟠
+      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r007._.given.by_peer.arch-hazards-behavior.md
+      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r007._.taken.by_self.arch-hazards-behavior.md
+      │   ├─ r8: behavior-intent-coverage (l1, 3/3)
+      │   │   ├─ rejected 89.2s
       │   │   ├─ 1 blocker 🔴
-      │   │   ├─ 4 nitpicks 🟠
-      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r009._.given.by_peer.ergo-friction-hazards.md
-      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i002.25219260fa9cef3b50.r009._.taken.by_self.ergo-friction-hazards.md
+      │   │   ├─ 1 nitpick 🟠
+      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r008._.given.by_peer.behavior-intent-coverage.md
+      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r008._.taken.by_self.behavior-intent-coverage.md
+      │   ├─ r9: ergo-friction-hazards (l1, 3/3)
+      │   │   ├─ approved 100.1s
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 2 nitpicks 🟠
+      │   │   ├─ given: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r009._.given.by_peer.ergo-friction-hazards.md
+      │   │   └─ taken: .behavior/v2026_11_15.feat-require-main-review/.reviews/peer/5.1.execution.from_vision._.review.i003.333eb7ca3236cbe376.r009._.taken.by_self.ergo-friction-hazards.md
       │   ├─ r10: enroll-impl-behavior-intent (l3, 0/3)
       │   │   └─ awaits l1 terminal
       │   └─ r11: enroll-impl-arch-defects (l3, 0/3)
       │       └─ awaits l1 terminal
       └─ judges
           └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
-              ├─ finished 2.4s ✗
-              └─ reason: blockers exceed threshold (9 > 0)
+              ├─ finished 4.4s ✗
+              └─ reason: blockers exceed threshold (1 > 0)
 
 ────────────────────────────────────────────────────────────────
 
@@ -81,7 +81,7 @@
    │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
    │  │
    │  │  passed: false
-   │  │  reason: blockers exceed threshold (9 > 0)
+   │  │  reason: blockers exceed threshold (1 > 0)
    │  │
    │  └─
    ├─ stderr

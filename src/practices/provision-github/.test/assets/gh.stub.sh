@@ -26,7 +26,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-case "${args[0]} ${args[1]}" in
+case "${args[0]:-} ${args[1]:-}" in
   'api --method') key="api/${args[3]}" ;;
   'pr list') key="pr/${args[3]}" ;;
   'repo list') key="repo/${args[2]}" ;;

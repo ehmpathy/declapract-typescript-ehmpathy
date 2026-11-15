@@ -59,9 +59,10 @@ while [[ $# -gt 0 ]]; do
     *) echo "✋ ConstraintError: unknown arg '$1'" >&2; echo "   └─ run: rhx github.main-review.census --help" >&2; exit 2 ;;
   esac
 done
-[[ -z "$OWNERS" ]] && { echo "✋ ConstraintError: --owners is empty" >&2; exit 2; }
+[[ -z "$OWNERS" ]] && { echo "✋ ConstraintError: --owners is empty" >&2; echo "   └─ e.g.: rhx github.main-review.census --owners 'ehmpathy ahbode'" >&2; exit 2; }
 
-ROOT="$(git rev-parse --show-toplevel)"
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" \
+  || { echo "✋ ConstraintError: the census must run inside a git repo" >&2; echo "   └─ fix: cd into a repo; its .log/ holds the table" >&2; exit 2; }
 LOG_DIR="$ROOT/.log/github.main-review.census"
 mkdir -p "$LOG_DIR"
 TABLE="$LOG_DIR/census.md"
@@ -131,6 +132,26 @@ emit_row() {
   printf '%s\t%s\t%s\t%s\t%s\n' "$slug" "$release" "$verdict" "$signal" "$perm"
 }
 
+# read whether main is protected, as true | false; '@absent' where the repo has no main
+get_one_main_protected() {
+  local slug="${1#slug=}" found
+  found=$(get_or_absent path="repos/$slug/branches/main" jq='.protected' err="$ERR_FILE") \
+    || fail_read slug="$slug" what='main branch' err="$ERR_FILE"
+  printf '%s' "$found"
+}
+
+# decide whether a listed repo is out of the census (archived or fork)
+is_repo_skipped() {
+  local archived='' fork=''
+  for arg in "$@"; do
+    case "$arg" in
+      archived=*) archived="${arg#archived=}" ;;
+      fork=*) fork="${arg#fork=}" ;;
+    esac
+  done
+  [[ "$archived" == 'true' || "$fork" == 'true' ]]
+}
+
 # read whether the repo carries a release workflow, as yes | no
 get_one_release_flag() {
   local slug="${1#slug=}" found
@@ -187,8 +208,7 @@ get_one_verdict() {
   release=$(get_one_release_flag slug="$slug")
 
   # is main protected at all?
-  protected=$(get_or_absent path="repos/$slug/branches/main" jq='.protected' err="$ERR_FILE") \
-    || fail_read slug="$slug" what='main branch' err="$ERR_FILE"
+  protected=$(get_one_main_protected slug="$slug")
   if [[ "$protected" == '@absent' ]]; then
     emit_row slug="$slug" release="$release" verdict=unknown signal='no main branch' perm="$perm"
     return 0
@@ -233,15 +253,27 @@ get_one_verdict() {
 }
 
 # list every repo of one owner, one "<slug>\t<archived>\t<fork>\t<perm>" line each
-# .why = an owner github does not know is a caller typo (exit 2); any other failure is a malfunction
+# .why = an owner github does not know is a caller typo (exit 2), told apart by a 404 on
+#        users/<owner>; any other failure is a malfunction. a list that reaches the cap fails
+#        loud, so the census never undercounts an owner
+readonly REPO_LIST_CAP=1000
 get_all_repos() {
-  local owner="${1#owner=}" out
-  if out=$(gh repo list "$owner" --limit 1000 --json nameWithOwner,isArchived,isFork,viewerPermission \
+  local owner="${1#owner=}" out count known
+  if out=$(gh repo list "$owner" --limit "$REPO_LIST_CAP" --json nameWithOwner,isArchived,isFork,viewerPermission \
     --jq '.[] | "\(.nameWithOwner)\t\(.isArchived)\t\(.isFork)\t\(.viewerPermission)"' 2>"$ERR_FILE"); then
+    count=$(printf '%s' "$out" | awk 'NF { n++ } END { print n + 0 }')
+    if [[ "$count" -ge "$REPO_LIST_CAP" ]]; then
+      echo "💥 MalfunctionError: the repo list for '$owner' reached the cap of $REPO_LIST_CAP, so the census would undercount" >&2
+      echo "   └─ fix: raise REPO_LIST_CAP in this skill, then rerun" >&2
+      exit 1
+    fi
     printf '%s' "$out"
     return 0
   fi
-  if grep -q 'with the login of' "$ERR_FILE"; then
+
+  # an owner github does not know reads 404 on users/<owner>; a probe that fails reads as unknown cause
+  known=$(get_or_absent path="users/$owner" jq='.login' err="$RUN_DIR/gh.owner.stderr") || known='@unread'
+  if [[ "$known" == '@absent' ]]; then
     echo "✋ ConstraintError: github knows no owner '$owner'" >&2
     echo "   └─ fix: check the owner name in --owners" >&2
     exit 2
@@ -276,7 +308,7 @@ for owner in $OWNERS; do
   repos=$(get_all_repos owner="$owner")
   while IFS=$'\t' read -r slug archived fork perm; do
     [[ -z "$slug" ]] && continue
-    if [[ "$archived" == 'true' || "$fork" == 'true' ]]; then SKIPPED=$((SKIPPED + 1)); continue; fi
+    if is_repo_skipped archived="$archived" fork="$fork"; then SKIPPED=$((SKIPPED + 1)); continue; fi
     get_one_verdict slug="$slug" perm="$perm" >> "$ROWS"
   done <<< "$repos"
 done

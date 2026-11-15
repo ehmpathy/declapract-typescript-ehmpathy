@@ -47,10 +47,15 @@ const genCensusSandbox = (input: { slug: string }) => {
     fs.writeFileSync(path.join(stubDir, `${asKey(key)}.err`), `${stderr}\n`);
 
   // run the skill, as rhx would, with the stub first on PATH
-  const run = (args: string[]) => {
+  const run = (args: string[], options?: { envExtra: Record<string, string> }) => {
     const res = spawnSync('bash', [SKILL, ...args], {
       cwd: tempDir,
-      env: { ...process.env, PATH: `${binDir}:${process.env.PATH}`, GH_STUB_DIR: stubDir },
+      env: {
+        ...process.env,
+        PATH: `${binDir}:${process.env.PATH}`,
+        GH_STUB_DIR: stubDir,
+        ...options?.envExtra,
+      },
     });
     return { code: res.status, stdout: res.stdout.toString(), stderr: res.stderr.toString() };
   };
@@ -64,7 +69,7 @@ const genCensusSandbox = (input: { slug: string }) => {
       .readdirSync(path.join(tempDir, '.log/github.main-review.census'))
       .filter((name) => name.startsWith('run.'));
 
-  return { init, setJson, setErr, run, readTable, readCalls, readScratchDirs };
+  return { tempDir, init, setJson, setErr, run, readTable, readCalls, readScratchDirs };
 };
 
 /**
@@ -154,9 +159,11 @@ describe('github.main-review.census', () => {
         expect(results.ownersBare.stderr).toContain('✋ ConstraintError: --owners needs a value');
         expect(results.ownersBare.stderr).toMatchSnapshot();
       });
-      then('--owners empty exits 2 with a ConstraintError', () => {
+      then('--owners empty exits 2 with a ConstraintError and an example', () => {
         expect(results.ownersEmpty.code).toEqual(2);
         expect(results.ownersEmpty.stderr).toContain('✋ ConstraintError: --owners is empty');
+        expect(results.ownersEmpty.stderr).toContain('e.g.:');
+        expect(results.ownersEmpty.stderr).toMatchSnapshot();
       });
     });
   });
@@ -352,13 +359,10 @@ describe('github.main-review.census', () => {
   given('[case5] an owner github does not know', () => {
     const sandbox = genCensusSandbox({ slug: 'census-unknown-owner' });
 
-    when('[t0] the repo list fails on the owner', () => {
+    when('[t0] the repo list fails and users/<owner> reads 404', () => {
       const result = useThen('the census runs', async () => {
         sandbox.init();
-        sandbox.setErr(
-          'repo/ghost',
-          "GraphQL: no User with the login of 'ghost'. (repositoryOwner)",
-        );
+        sandbox.setErr('repo/ghost', 'GraphQL: owner not found (repositoryOwner)');
         return sandbox.run(['--owners', 'ghost']);
       });
 
@@ -366,6 +370,126 @@ describe('github.main-review.census', () => {
         expect(result.code).toEqual(2);
         expect(result.stderr).toContain("✋ ConstraintError: github knows no owner 'ghost'");
         expect(result.stderr).toContain('fix: check the owner name in --owners');
+        expect(result.stderr).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case6] a repo list that fails for a known owner', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-list-failed' });
+
+    when('[t0] the repo list returns a 500 and users/<owner> reads fine', () => {
+      const result = useThen('the census runs', async () => {
+        sandbox.init();
+        sandbox.setErr('repo/acme', 'gh: Server Error (HTTP 500)');
+        sandbox.setJson('api/users/acme', { login: 'acme' });
+        return sandbox.run(['--owners', 'acme']);
+      });
+
+      then('it exits 1 with a MalfunctionError that names the owner, the cause, and the fix', () => {
+        expect(result.code).toEqual(1);
+        expect(result.stderr).toContain("💥 MalfunctionError: could not list repos for 'acme'");
+        expect(result.stderr).toContain('cause: gh: Server Error (HTTP 500)');
+        expect(result.stderr).toContain('fix: retry once the cause clears');
+        expect(result.stdout).not.toContain('census done');
+      });
+      then('stderr matches snapshot', () => {
+        expect(result.stderr).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case7] two owners, with the selectors rhx forwards', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-two-owners' });
+
+    when('[t0] the census runs with --repo, --skill=, and --owners=', () => {
+      const result = useThen('it completes', async () => {
+        sandbox.init();
+        sandbox.setJson('repo/acme', [
+          asRepoRow({ slug: 'acme/bare', archived: false, fork: false, perm: 'WRITE' }),
+        ]);
+        sandbox.setJson('repo/beta', [
+          asRepoRow({ slug: 'beta/ruled', archived: false, fork: false, perm: 'WRITE' }),
+        ]);
+        seedRepo(sandbox, {
+          slug: 'acme/bare',
+          release: true,
+          main: { protected: false },
+          rules: [],
+          prs: null,
+          protection: null,
+        });
+        seedRepo(sandbox, {
+          slug: 'beta/ruled',
+          release: false,
+          main: { protected: true },
+          rules: [{ type: 'pull_request', parameters: { required_approving_review_count: 1 } }],
+          prs: null,
+          protection: null,
+        });
+        const run = sandbox.run([
+          '--repo',
+          '.this',
+          '--skill=github.main-review.census',
+          '--owners=acme beta',
+        ]);
+        return { ...run, table: sandbox.readTable() };
+      });
+
+      then('the selectors are consumed and the tally spans both owners', () => {
+        expect(result.stderr).toEqual('');
+        expect(result.code).toEqual(0);
+        expect(result.stdout).toContain("--owners 'acme beta'");
+        expect(result.stdout).toContain('repos read: 2 (skipped 0 archived or fork)');
+        expect(result.stdout).toContain('requires: 1');
+        expect(result.stdout).toContain('lacks: 1 (1 with a release workflow)');
+        expect(result.table).toContain('| acme/bare | yes | lacks | main unprotected |');
+        expect(result.table).toContain('| beta/ruled | no | requires | ruleset: 1 approval(s) |');
+      });
+    });
+  });
+
+  given('[case8] an owner whose repo list reaches the cap', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-list-cap' });
+
+    when('[t0] the repo list returns 1000 rows', () => {
+      const result = useThen('the census runs', async () => {
+        sandbox.init();
+        sandbox.setJson(
+          'repo/huge',
+          Array.from({ length: 1000 }, (_, index) =>
+            asRepoRow({ slug: `huge/repo-${index}`, archived: false, fork: false, perm: 'WRITE' }),
+          ),
+        );
+        return sandbox.run(['--owners', 'huge']);
+      });
+
+      then('it exits 1 with a MalfunctionError, never an undercount', () => {
+        expect(result.code).toEqual(1);
+        expect(result.stderr).toContain(
+          "💥 MalfunctionError: the repo list for 'huge' reached the cap of 1000",
+        );
+        expect(result.stdout).not.toContain('census done');
+      });
+    });
+  });
+
+  given('[case9] a caller outside any git repo', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-no-repo' });
+
+    when('[t0] the census runs where git finds no repo', () => {
+      const result = useThen('it runs', async () =>
+        // no init, so no git repo here; git's upward search halts at the sandbox's parent dir
+        sandbox.run(['--owners', 'acme'], {
+          envExtra: { GIT_CEILING_DIRECTORIES: path.dirname(sandbox.tempDir) },
+        }),
+      );
+
+      then('it exits 2 with a ConstraintError that names the fix', () => {
+        expect(result.code).toEqual(2);
+        expect(result.stderr).toContain(
+          '✋ ConstraintError: the census must run inside a git repo',
+        );
         expect(result.stderr).toMatchSnapshot();
       });
     });

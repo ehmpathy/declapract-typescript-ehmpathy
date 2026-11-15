@@ -44,6 +44,12 @@ exports[`github.main-review.census given: [case1] a caller who asks for help whe
 "
 `;
 
+exports[`github.main-review.census given: [case2] a caller with bad input when: [t0] each bad input runs then: --owners empty exits 2 with a ConstraintError and an example 1`] = `
+"✋ ConstraintError: --owners is empty
+   └─ e.g.: rhx github.main-review.census --owners 'ehmpathy ahbode'
+"
+`;
+
 exports[`github.main-review.census given: [case2] a caller with bad input when: [t0] each bad input runs then: --owners with no value exits 2 with a ConstraintError and an example 1`] = `
 "✋ ConstraintError: --owners needs a value
    └─ e.g.: rhx github.main-review.census --owners 'ehmpathy ahbode'
@@ -94,8 +100,21 @@ exports[`github.main-review.census given: [case4] a github read that fails for a
 "
 `;
 
-exports[`github.main-review.census given: [case5] an owner github does not know when: [t0] the repo list fails on the owner then: it exits 2 with a ConstraintError that names the owner and the fix 1`] = `
+exports[`github.main-review.census given: [case5] an owner github does not know when: [t0] the repo list fails and users/<owner> reads 404 then: it exits 2 with a ConstraintError that names the owner and the fix 1`] = `
 "✋ ConstraintError: github knows no owner 'ghost'
    └─ fix: check the owner name in --owners
+"
+`;
+
+exports[`github.main-review.census given: [case6] a repo list that fails for a known owner when: [t0] the repo list returns a 500 and users/<owner> reads fine then: stderr matches snapshot 1`] = `
+"💥 MalfunctionError: could not list repos for 'acme'
+   ├─ cause: gh: Server Error (HTTP 500)
+   └─ fix: retry once the cause clears (rate limit, network, or auth: gh auth status)
+"
+`;
+
+exports[`github.main-review.census given: [case9] a caller outside any git repo when: [t0] the census runs where git finds no repo then: it exits 2 with a ConstraintError that names the fix 1`] = `
+"✋ ConstraintError: the census must run inside a git repo
+   └─ fix: cd into a repo; its .log/ holds the table
 "
 `;
