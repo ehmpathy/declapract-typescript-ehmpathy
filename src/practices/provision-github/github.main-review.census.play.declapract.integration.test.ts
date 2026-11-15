@@ -13,6 +13,11 @@ import { genTempDir, given, then, useThen, when } from 'test-fns';
  *         and a token the test job does not hold
  * .how  = put a `gh` stub first on PATH, seed it with canned json per call, run the skill in a
  *         fresh git repo, and read stdout, stderr, exit code, the table, and the stub's call log
+ * .mock = gh, the github cli (via `.test/assets/gh.stub.sh` on PATH)
+ * .why  = the ci test job holds no github token, so a live read would go red there (fulcrum F14);
+ *         the vision marks this exception (`rule.require.external-contract-integration-tests`)
+ * .real = `src/github.main-review.census.declapract.acceptance.test.ts` runs the real gh, with no
+ *         credentials, and proves the census fails loud
  */
 
 // the skill under test, and the stub that stands in for gh
@@ -69,6 +74,8 @@ const genCensusSandbox = (input: { slug: string }) => {
 
   const readTable = () =>
     fs.readFileSync(path.join(tempDir, '.log/github.main-review.census/census.md'), 'utf-8');
+  const readRows = () =>
+    fs.readFileSync(path.join(tempDir, '.log/github.main-review.census/rows.tsv'), 'utf-8');
   const readCalls = () =>
     fs.readFileSync(path.join(stubDir, 'calls.log'), 'utf-8').trim().split('\n').filter(Boolean);
   const readScratchDirs = () =>
@@ -76,7 +83,7 @@ const genCensusSandbox = (input: { slug: string }) => {
       .readdirSync(path.join(tempDir, '.log/github.main-review.census'))
       .filter((name) => name.startsWith('run.'));
 
-  return { tempDir, init, setJson, setErr, run, readTable, readCalls, readScratchDirs };
+  return { tempDir, init, setJson, setErr, run, readTable, readRows, readCalls, readScratchDirs };
 };
 
 /**
@@ -169,7 +176,7 @@ describe('github.main-review.census', () => {
       then('--owners empty exits 2 with a ConstraintError and an example', () => {
         expect(results.ownersEmpty.code).toEqual(2);
         expect(results.ownersEmpty.stderr).toContain('✋ ConstraintError: --owners is empty');
-        expect(results.ownersEmpty.stderr).toContain('e.g.:');
+        expect(results.ownersEmpty.stderr).toContain("fix: name the owners, e.g. rhx github.main-review.census --owners 'ehmpathy ahbode'");
         expect(results.ownersEmpty.stderr).toMatchSnapshot();
       });
     });
@@ -247,6 +254,7 @@ describe('github.main-review.census', () => {
           rules: [],
           prs: [
             { number: 14, reviewDecision: 'APPROVED' },
+            { number: 13, reviewDecision: 'CHANGES_REQUESTED' }, // ambiguous too: read the next pr
             { number: 12, reviewDecision: 'REVIEW_REQUIRED' },
           ],
           protection: null,
@@ -274,6 +282,7 @@ describe('github.main-review.census', () => {
         return {
           ...run,
           table: sandbox.readTable(),
+          rows: sandbox.readRows(),
           calls: sandbox.readCalls(),
           scratch: sandbox.readScratchDirs(),
         };
@@ -282,7 +291,7 @@ describe('github.main-review.census', () => {
       then('it exits 0 with the tally', () => {
         expect(result.stderr).toEqual('');
         expect(result.code).toEqual(0);
-        expect(result.stdout).toContain('repos read: 8 (skipped 2 archived or fork)');
+        expect(result.stdout).toContain('repos read: 8 (skipped 2 archived or forked)');
         expect(result.stdout).toContain('requires: 3');
         expect(result.stdout).toContain('acme: 10 repos listed');
         expect(result.stdout).toContain('requires: 3 (2 certain, 1 inferred)');
@@ -290,7 +299,11 @@ describe('github.main-review.census', () => {
           'lacks: 3 (2 certain, 1 inferred; 2 with a release workflow)',
         );
         expect(result.stdout).toContain('unknown: 2');
-        expect(result.stdout).toContain('table: .log/github.main-review.census/census.md');
+        expect(result.stdout).toContain('└─ landed, at paths from the repo root');
+        expect(result.stdout).toContain('├─ table: .log/github.main-review.census/census.md');
+        expect(result.stdout).toContain(
+          '└─ rows: .log/github.main-review.census/rows.tsv (each repo, with its perm and basis)',
+        );
       });
       then('stdout matches snapshot', () => {
         expect(result.stdout).toMatchSnapshot();
@@ -298,9 +311,9 @@ describe('github.main-review.census', () => {
       then('each repo carries the verdict its signals decide', () => {
         expect(result.table).toContain('| acme/no-main | no | unknown | no main branch |');
         expect(result.table).toContain('| acme/bare | yes | lacks | main unprotected |');
-        expect(result.table).toContain('| acme/ruled | yes | requires | ruleset: 2 approval(s) |');
+        expect(result.table).toContain('| acme/ruled | yes | requires | ruleset: 2 approvals |');
         expect(result.table).toContain(
-          '| acme/admin-gated | yes | requires | protection: 1 approval(s) |',
+          '| acme/admin-gated | yes | requires | protection: 1 approval |',
         );
         expect(result.table).toContain('| acme/admin-open | no | lacks | protection: 0 approvals |');
         expect(result.table).toContain(
@@ -319,6 +332,11 @@ describe('github.main-review.census', () => {
       });
       then('the table matches snapshot', () => {
         expect(result.table).toMatchSnapshot();
+      });
+      then('rows.tsv carries the perm and basis the table drops, and matches snapshot', () => {
+        expect(result.rows).toContain('acme/admin-gated\tyes\trequires\tprotection: 1 approval\tADMIN\tcertain');
+        expect(result.rows).toContain('acme/push-open\tyes\tlacks\tpr #7 reviewDecision=(empty)\tWRITE\tinferred');
+        expect(result.rows).toMatchSnapshot();
       });
       then('every call to gh is a read: an api GET, a pr list, or a repo list', () => {
         expect(result.calls.length).toBeGreaterThan(0);
@@ -355,10 +373,11 @@ describe('github.main-review.census', () => {
       then('it exits 1 with a MalfunctionError that names the repo, the read, and the cause', () => {
         expect(result.code).toEqual(1);
         expect(result.stderr).toContain(
-          "💥 MalfunctionError: a github read failed, so the census cannot verdict 'acme/flaky'",
+          "💥 MalfunctionError: a github read failed, so the census cannot reach a verdict for 'acme/flaky'",
         );
         expect(result.stderr).toContain('read: release workflow');
         expect(result.stderr).toContain('cause: gh: Server Error (HTTP 500)');
+        expect(result.stderr).toContain('fix: retry once the network or github recovers');
         expect(result.stdout).not.toContain('census done');
       });
       then('stderr matches snapshot', () => {
@@ -376,7 +395,11 @@ describe('github.main-review.census', () => {
     when('[t0] the repo list fails and users/<owner> reads 404', () => {
       const result = useThen('the census runs', async () => {
         sandbox.init();
-        sandbox.setErr('repo/ghost', 'GraphQL: owner not found (repositoryOwner)');
+        // gh's own text for an owner it does not know; the census tells it by users/<owner> 404
+        sandbox.setErr(
+          'repo/ghost',
+          'the owner handle "ghost" was not recognized as either a GitHub user or an organization',
+        );
         return sandbox.run(['--owners', 'ghost']);
       });
 
@@ -385,6 +408,10 @@ describe('github.main-review.census', () => {
         expect(result.stderr).toContain("✋ ConstraintError: github knows no owner 'ghost'");
         expect(result.stderr).toContain('fix: check the owner name in --owners');
         expect(result.stderr).toMatchSnapshot();
+      });
+      then('stdout, cut short before any owner line, matches snapshot', () => {
+        expect(result.stdout).not.toContain('repos listed');
+        expect(result.stdout).toMatchSnapshot();
       });
     });
   });
@@ -404,11 +431,14 @@ describe('github.main-review.census', () => {
         expect(result.code).toEqual(1);
         expect(result.stderr).toContain("💥 MalfunctionError: could not list repos for 'acme'");
         expect(result.stderr).toContain('cause: gh: Server Error (HTTP 500)');
-        expect(result.stderr).toContain('fix: retry once the cause clears');
+        expect(result.stderr).toContain('fix: retry once the network or github recovers');
         expect(result.stdout).not.toContain('census done');
       });
       then('stderr matches snapshot', () => {
         expect(result.stderr).toMatchSnapshot();
+      });
+      then('stdout, cut short before any owner line, matches snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
       });
     });
   });
@@ -454,15 +484,21 @@ describe('github.main-review.census', () => {
         expect(result.stderr).toEqual('');
         expect(result.code).toEqual(0);
         expect(result.stdout).toContain("--owners 'acme beta'");
-        expect(result.stdout).toContain('repos read: 2 (skipped 0 archived or fork)');
+        expect(result.stdout).toContain('repos read: 2 (skipped 0 archived or forked)');
         expect(result.stdout).toContain('requires: 1');
-        expect(result.stdout).toContain('acme: 1 repos listed');
-        expect(result.stdout).toContain('beta: 1 repos listed');
+        expect(result.stdout).toContain('acme: 1 repo listed');
+        expect(result.stdout).toContain('beta: 1 repo listed');
         expect(result.stdout).toContain(
           'lacks: 1 (1 certain, 0 inferred; 1 with a release workflow)',
         );
         expect(result.table).toContain('| acme/bare | yes | lacks | main unprotected |');
-        expect(result.table).toContain('| beta/ruled | no | requires | ruleset: 1 approval(s) |');
+        expect(result.table).toContain('| beta/ruled | no | requires | ruleset: 1 approval |');
+      });
+      then('stdout matches snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
+      });
+      then('the table matches snapshot', () => {
+        expect(result.table).toMatchSnapshot();
       });
     });
   });
@@ -488,6 +524,12 @@ describe('github.main-review.census', () => {
           "💥 MalfunctionError: the repo list for 'huge' reached the cap of 1000",
         );
         expect(result.stdout).not.toContain('census done');
+      });
+      then('stderr matches snapshot', () => {
+        expect(result.stderr).toMatchSnapshot();
+      });
+      then('stdout, cut short before any owner line, matches snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
       });
     });
   });
@@ -531,6 +573,12 @@ describe('github.main-review.census', () => {
         expect(result.stderr).toContain('gh auth status');
         expect(result.stdout).not.toContain('census done');
       });
+      then('stderr matches snapshot', () => {
+        expect(result.stderr).toMatchSnapshot();
+      });
+      then('stdout, cut short before any owner line, matches snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
+      });
     });
   });
 
@@ -561,9 +609,19 @@ describe('github.main-review.census', () => {
       then('it exits 1 with a MalfunctionError; only the plan message reads as absent', () => {
         expect(result.code).toEqual(1);
         expect(result.stderr).toContain(
-          "💥 MalfunctionError: a github read failed, so the census cannot verdict 'acme/locked'",
+          "💥 MalfunctionError: a github read failed, so the census cannot reach a verdict for 'acme/locked'",
         );
         expect(result.stderr).toContain('read: rulesets on main');
+        expect(result.stderr).toContain(
+          'fix: check the token may read this repo (gh auth status shows its scopes), then rerun',
+        );
+      });
+      then('stderr matches snapshot', () => {
+        expect(result.stderr).toMatchSnapshot();
+      });
+      then('stdout, cut short mid-walk, matches snapshot', () => {
+        expect(result.stdout).not.toContain('census done');
+        expect(result.stdout).toMatchSnapshot();
       });
     });
   });
@@ -574,7 +632,10 @@ describe('github.main-review.census', () => {
     when('[t0] the census runs with --owners ghost,ghoul', () => {
       const result = useThen('it runs', async () => {
         sandbox.init();
-        sandbox.setErr('repo/ghost,ghoul', 'GraphQL: owner not found (repositoryOwner)');
+        sandbox.setErr(
+          'repo/ghost,ghoul',
+          'the owner handle "ghost,ghoul" was not recognized as either a GitHub user or an organization',
+        );
         return sandbox.run(['--owners', 'ghost,ghoul']);
       });
 
@@ -583,6 +644,159 @@ describe('github.main-review.census', () => {
         expect(result.stderr).toContain("✋ ConstraintError: github knows no owner 'ghost,ghoul'");
         expect(result.stderr).toContain("fix: --owners is space-separated, e.g. --owners 'ghost ghoul'");
         expect(result.stderr).toMatchSnapshot();
+      });
+      then('stdout, cut short before any owner line, matches snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case13] a pr list that fails mid-walk', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-pr-list-failed' });
+
+    when('[t0] the recent prs read fails on a protected repo a push token reads', () => {
+      const result = useThen('the census runs', async () => {
+        sandbox.init();
+        sandbox.setJson('repo/acme', [
+          asRepoRow({ slug: 'acme/push-busy', archived: false, fork: false, perm: 'WRITE' }),
+        ]);
+        seedRepo(sandbox, {
+          slug: 'acme/push-busy',
+          release: true,
+          main: { protected: true },
+          rules: [],
+          prs: null,
+          protection: null,
+        });
+        sandbox.setErr('pr/acme/push-busy', 'GraphQL: API rate limit exceeded for user ID 1.');
+        const run = sandbox.run(['--owners', 'acme']);
+        const tableFound = fs.existsSync(
+          path.join(sandbox.tempDir, '.log/github.main-review.census/census.md'),
+        );
+        return { ...run, tableFound };
+      });
+
+      then('it lands no partial table', () => {
+        expect(result.tableFound).toEqual(false);
+      });
+
+      then('it exits 1 with a MalfunctionError, never an unknown verdict', () => {
+        expect(result.code).toEqual(1);
+        expect(result.stderr).toContain(
+          "💥 MalfunctionError: a github read failed, so the census cannot reach a verdict for 'acme/push-busy'",
+        );
+        expect(result.stderr).toContain('read: recent prs into main');
+        expect(result.stderr).toContain('cause: GraphQL: API rate limit exceeded');
+        expect(result.stderr).toContain(
+          'fix: wait for the rate limit to reset (gh api rate_limit shows when), then rerun',
+        );
+        expect(result.stdout).not.toContain('census done');
+      });
+      then('stderr matches snapshot', () => {
+        expect(result.stderr).toMatchSnapshot();
+      });
+      then('stdout, cut short mid-walk, matches snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case14] the bare invocation, over the four default owners', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-bare' });
+
+    when('[t0] the census runs with no flags', () => {
+      const result = useThen('it completes', async () => {
+        sandbox.init();
+        const owners = ['ehmpathy', 'ahbode', 'whodisio', 'uladkasach'];
+        owners.forEach((owner) => {
+          sandbox.setJson(`repo/${owner}`, [
+            asRepoRow({ slug: `${owner}/app`, archived: false, fork: false, perm: 'WRITE' }),
+          ]);
+          seedRepo(sandbox, {
+            slug: `${owner}/app`,
+            release: true,
+            main: { protected: false },
+            rules: [],
+            prs: null,
+            protection: null,
+          });
+        });
+        return sandbox.run([]);
+      });
+
+      then('it walks the four owners the help names, in order', () => {
+        expect(result.stderr).toEqual('');
+        expect(result.code).toEqual(0);
+        expect(result.stdout).toContain("--owners 'ehmpathy ahbode whodisio uladkasach'");
+        expect(result.stdout).toContain('repos read: 4 (skipped 0 archived or forked)');
+      });
+      then('stdout matches snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case15] a repo list refused for absent credentials', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-no-auth' });
+
+    when('[t0] the repo list returns a 401', () => {
+      const result = useThen('the census runs', async () => {
+        sandbox.init();
+        sandbox.setErr('repo/acme', 'HTTP 401: Bad credentials (https://api.github.com/graphql)');
+        sandbox.setErr('api/users/acme', 'HTTP 401: Bad credentials (https://api.github.com/users/acme)');
+        return sandbox.run(['--owners', 'acme']);
+      });
+
+      then('it exits 1, and the fix names the login, not a retry', () => {
+        expect(result.code).toEqual(1);
+        expect(result.stderr).toContain("💥 MalfunctionError: could not list repos for 'acme'");
+        expect(result.stderr).toContain('fix: log gh in (gh auth login) or set GH_TOKEN, then rerun');
+        expect(result.stderr).not.toContain('retry once');
+      });
+      then('stderr matches snapshot', () => {
+        expect(result.stderr).toMatchSnapshot();
+      });
+      then('stdout, cut short before any owner line, matches snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case16] two runs in one repo, each scoped to another owner', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-two-runs' });
+
+    when('[t0] the census runs for acme, then for beta', () => {
+      const result = useThen('both complete', async () => {
+        sandbox.init();
+        ['acme', 'beta'].forEach((owner) => {
+          sandbox.setJson(`repo/${owner}`, [
+            asRepoRow({ slug: `${owner}/app`, archived: false, fork: false, perm: 'WRITE' }),
+          ]);
+          seedRepo(sandbox, {
+            slug: `${owner}/app`,
+            release: true,
+            main: { protected: false },
+            rules: [],
+            prs: null,
+            protection: null,
+          });
+        });
+        const runAcme = sandbox.run(['--owners', 'acme']);
+        const tableAcme = sandbox.readTable();
+        const runBeta = sandbox.run(['--owners', 'beta']);
+        const tableBeta = sandbox.readTable();
+        return { runAcme, tableAcme, runBeta, tableBeta, rowsBeta: sandbox.readRows() };
+      });
+
+      then('each run exits 0', () => {
+        expect(result.runAcme.code).toEqual(0);
+        expect(result.runBeta.code).toEqual(0);
+      });
+      then('the second table replaces the first: it holds beta, never acme', () => {
+        expect(result.tableAcme).toContain('| acme/app |');
+        expect(result.tableBeta).toContain('| beta/app |');
+        expect(result.tableBeta).not.toContain('acme/');
+        expect(result.rowsBeta).not.toContain('acme/');
       });
     });
   });

@@ -44,7 +44,8 @@
 #   - prints each owner's repo count as it walks; an owner with 0 repos
 #     visible, or at the list cap, fails loud, never an undercount
 #   - verdict per repo: requires | lacks | unknown (no main branch | no decisive pr)
-#   - full table kept in .log/github.main-review.census/census.md
+#   - full table kept in .log/github.main-review.census/census.md; each
+#     run replaces it, so a run scoped by --owners holds only those owners
 #   - each run reads into its own scratch dir; the table and rows land
 #     by a plain copy at the end, so run one census at a time
 #   - exit 0 = census done, 1 = a github read failed, 2 = bad input
@@ -63,13 +64,13 @@ while [[ $# -gt 0 ]]; do
     --skill|--repo|--role) shift; [[ $# -gt 0 ]] && shift ;;
     --owners=*) OWNERS="${1#--owners=}"; shift ;;
     --owners)
-      [[ $# -ge 2 ]] || { echo "✋ ConstraintError: --owners needs a value" >&2; echo "   └─ e.g.: rhx github.main-review.census --owners 'ehmpathy ahbode'" >&2; exit 2; }
+      [[ $# -ge 2 ]] || { echo "✋ ConstraintError: --owners needs a value" >&2; echo "   └─ fix: name the owners, e.g. rhx github.main-review.census --owners 'ehmpathy ahbode'" >&2; exit 2; }
       OWNERS="$2"; shift 2 ;;
     --help|-h) print_usage; exit 0 ;;
-    *) echo "✋ ConstraintError: unknown arg '$1'" >&2; echo "   └─ run: rhx github.main-review.census --help" >&2; exit 2 ;;
+    *) echo "✋ ConstraintError: unknown arg '$1'" >&2; echo "   └─ fix: see the flags via rhx github.main-review.census --help" >&2; exit 2 ;;
   esac
 done
-[[ -z "$OWNERS" ]] && { echo "✋ ConstraintError: --owners is empty" >&2; echo "   └─ e.g.: rhx github.main-review.census --owners 'ehmpathy ahbode'" >&2; exit 2; }
+[[ -z "$OWNERS" ]] && { echo "✋ ConstraintError: --owners is empty" >&2; echo "   └─ fix: name the owners, e.g. rhx github.main-review.census --owners 'ehmpathy ahbode'" >&2; exit 2; }
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" \
   || { echo "✋ ConstraintError: the census must run inside a git repo" >&2; echo "   └─ fix: cd into a repo; its .log/ holds the table" >&2; exit 2; }
@@ -120,11 +121,26 @@ fail_read() {
       err=*) err="${arg#err=}" ;;
     esac
   done
-  echo "💥 MalfunctionError: a github read failed, so the census cannot verdict '$slug'" >&2
+  echo "💥 MalfunctionError: a github read failed, so the census cannot reach a verdict for '$slug'" >&2
   echo "   ├─ read: $what" >&2
   echo "   ├─ cause: $(head -n 3 "$err")" >&2
-  echo "   └─ fix: retry once the cause clears (rate limit, network, or auth)" >&2
+  echo "   └─ fix: $(get_one_read_fix err="$err")" >&2
   exit 1
+}
+
+# name the fix for a failed gh read, from gh's own cause text
+get_one_read_fix() {
+  local err="${1#err=}"
+  if grep -qE 'gh auth login|GH_TOKEN environment variable|HTTP 401' "$err"; then
+    echo 'log gh in (gh auth login) or set GH_TOKEN, then rerun'; return 0
+  fi
+  if grep -qi 'rate limit' "$err"; then
+    echo 'wait for the rate limit to reset (gh api rate_limit shows when), then rerun'; return 0
+  fi
+  if grep -q '(HTTP 403)' "$err"; then
+    echo 'check the token may read this repo (gh auth status shows its scopes), then rerun'; return 0
+  fi
+  echo 'retry once the network or github recovers'
 }
 
 # emit one census row; the one place the row shape lives
@@ -163,6 +179,19 @@ is_repo_skipped() {
     esac
   done
   [[ "$archived" == 'true' || "$fork" == 'true' ]]
+}
+
+# render a count with its noun, singular at one: "1 repo", "2 repos"
+as_counted() {
+  local count='' noun=''
+  for arg in "$@"; do
+    case "$arg" in
+      count=*) count="${arg#count=}" ;;
+      noun=*) noun="${arg#noun=}" ;;
+    esac
+  done
+  if [[ "$count" == '1' ]]; then echo "1 $noun"; return; fi
+  echo "$count ${noun}s"
 }
 
 # read whether the repo carries a release workflow, as yes | no
@@ -228,7 +257,7 @@ get_one_verdict() {
   # an active ruleset pull_request rule?
   rulesetCount=$(get_one_ruleset_approval_count slug="$slug") || exit $?
   if [[ "$rulesetCount" -gt 0 ]]; then
-    emit_row slug="$slug" release="$release" verdict=requires signal="ruleset: $rulesetCount approval(s)" perm="$perm" basis=certain
+    emit_row slug="$slug" release="$release" verdict=requires signal="ruleset: $(as_counted count="$rulesetCount" noun=approval)" perm="$perm" basis=certain
     return 0
   fi
 
@@ -242,10 +271,10 @@ get_one_verdict() {
   if [[ "$perm" == 'ADMIN' ]]; then
     protectionCount=$(get_one_protection_approval_count slug="$slug") || exit $?
     if [[ "$protectionCount" -gt 0 ]]; then
-      emit_row slug="$slug" release="$release" verdict=requires signal="protection: $protectionCount approval(s)" perm="$perm" basis=certain
+      emit_row slug="$slug" release="$release" verdict=requires signal="protection: $(as_counted count="$protectionCount" noun=approval)" perm="$perm" basis=certain
       return 0
     fi
-    emit_row slug="$slug" release="$release" verdict=lacks signal='protection: 0 approvals' perm="$perm" basis=certain
+    emit_row slug="$slug" release="$release" verdict=lacks signal="protection: $(as_counted count=0 noun=approval)" perm="$perm" basis=certain
     return 0
   fi
 
@@ -292,7 +321,7 @@ get_all_repos() {
     fi
     if [[ "$count" -ge "$REPO_LIST_CAP" ]]; then
       echo "💥 MalfunctionError: the repo list for '$owner' reached the cap of $REPO_LIST_CAP, so the census would undercount" >&2
-      echo "   └─ fix: raise REPO_LIST_CAP in this skill, then rerun" >&2
+      echo "   └─ fix: raise REPO_LIST_CAP in .agent/repo=.this/role=any/skills/github.main-review.census.sh, then rerun" >&2
       exit 1
     fi
     printf '%s' "$out"
@@ -305,7 +334,7 @@ get_all_repos() {
   [[ "$known" == '@unknown-owner' ]] && fail_owner_unknown owner="$owner"
   echo "💥 MalfunctionError: could not list repos for '$owner'" >&2
   echo "   ├─ cause: $(head -n 3 "$ERR_FILE")" >&2
-  echo "   └─ fix: retry once the cause clears (rate limit, network, or auth: gh auth status)" >&2
+  echo "   └─ fix: $(get_one_read_fix err="$ERR_FILE")" >&2
   exit 1
 }
 
@@ -337,7 +366,8 @@ SKIPPED=0
 echo "   ├─ owners"
 for owner in $OWNERS; do
   repos=$(get_all_repos owner="$owner") || exit $?
-  echo "   │  ├─ $owner: $(printf '%s\n' "$repos" | awk 'NF { n++ } END { print n + 0 }') repos listed"
+  repos_listed=$(printf '%s\n' "$repos" | awk 'NF { n++ } END { print n + 0 }')
+  echo "   │  ├─ $owner: $(as_counted count="$repos_listed" noun=repo) listed"
   while IFS=$'\t' read -r slug archived fork perm; do
     [[ -z "$slug" ]] && continue
     if is_repo_skipped archived="$archived" fork="$fork"; then SKIPPED=$((SKIPPED + 1)); continue; fi
@@ -349,18 +379,20 @@ echo "   │"
 
 # render the table, then land table and rows at their stable paths
 {
-  echo '| repo | release workflow | main requires review | signal |'
-  echo '|------|------------------|----------------------|--------|'
+  echo '| repo | release workflow | review gate on main | signal |'
+  echo '|------|------------------|---------------------|--------|'
   render_table_rows
 } > "$RUN_DIR/census.md"
 mv "$RUN_DIR/census.md" "$TABLE"
 cp "$ROWS" "$LOG_DIR/rows.tsv"
 
-echo "   ├─ repos read: $(count_rows) (skipped $SKIPPED archived or fork)"
+echo "   ├─ repos read: $(count_rows) (skipped $SKIPPED archived or forked)"
 echo "   ├─ verdicts"
 echo "   │  ├─ requires: $(count_rows verdict=requires) ($(count_rows verdict=requires basis=certain) certain, $(count_rows verdict=requires basis=inferred) inferred)"
 echo "   │  ├─ lacks: $(count_rows verdict=lacks) ($(count_rows verdict=lacks basis=certain) certain, $(count_rows verdict=lacks basis=inferred) inferred; $(count_rows verdict=lacks release=yes) with a release workflow)"
 echo "   │  └─ unknown: $(count_rows verdict=unknown)"
-echo "   └─ table: ${TABLE#"$ROOT"/}"
+echo "   └─ landed, at paths from the repo root"
+echo "      ├─ table: ${TABLE#"$ROOT"/}"
+echo "      └─ rows: ${LOG_DIR#"$ROOT"/}/rows.tsv (each repo, with its perm and basis)"
 echo ""
 echo "🐢 righteous! census done"

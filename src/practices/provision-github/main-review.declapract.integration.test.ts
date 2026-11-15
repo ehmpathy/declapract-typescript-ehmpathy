@@ -16,7 +16,8 @@ jest.setTimeout(5 * 60 * 1000);
 
 /**
  * .what = cut the branchMainProtection declaration out of a resources.ts
- * .why = the snapshot shows the block a reviewer cares about, not 230 lines of the file
+ * .why = the block snapshot states the intent at a glance; a whole-file snapshot beside it
+ *        catches a change anywhere else
  */
 const asMainProtectionBlock = (input: { source: string }): string => {
   const begin = input.source.indexOf('const branchMainProtection');
@@ -47,18 +48,27 @@ describe('provision-github main-review', () => {
       });
 
     when('[t0] the input, before any fix', () => {
-      then('main protection declares no review', async () => {
-        const block = asMainProtectionBlock({ source: await read() });
+      const before = useThen('read resources.ts', async () => ({ source: await read() }));
+
+      then('main protection declares no review', () => {
+        const block = asMainProtectionBlock({ source: before.source });
         expect(block).toMatch(/requiredPullRequestReviews:\s*null/);
         expect(block).toMatchSnapshot('main protection — before');
+      });
+
+      then('the whole file matches snapshot', () => {
+        expect(before.source).toMatchSnapshot('resources.ts — before');
       });
     });
 
     when('[t1] apply runs', () => {
-      useThen('apply the declarations', async () => apply());
+      const after = useThen('apply the declarations, then read resources.ts', async () => {
+        await apply();
+        return { source: await read() };
+      });
 
-      then('main protection requires one approval', async () => {
-        const block = asMainProtectionBlock({ source: await read() });
+      then('main protection requires one approval', () => {
+        const block = asMainProtectionBlock({ source: after.source });
         expect(block).not.toMatch(/requiredPullRequestReviews:\s*null/);
         expect(block).toMatch(/requiredApprovingReviewCount:\s*1\b/);
         expect(block).toMatch(/dismissStaleReviews:\s*true/);
@@ -66,11 +76,14 @@ describe('provision-github main-review', () => {
         expect(block).toMatchSnapshot('main protection — after');
       });
 
-      then('the variables stay filled for this repo', async () => {
-        const after = await read();
-        expect(after).toContain("owner: 'test-org'");
-        expect(after).toContain("name: 'test-project'");
-        expect(after).not.toContain('@declapract{');
+      then('the variables stay filled for this repo', () => {
+        expect(after.source).toContain("owner: 'test-org'");
+        expect(after.source).toContain("name: 'test-project'");
+        expect(after.source).not.toContain('@declapract{');
+      });
+
+      then('the whole file matches snapshot, so a change outside the block shows too', () => {
+        expect(after.source).toMatchSnapshot('resources.ts — after');
       });
     });
 

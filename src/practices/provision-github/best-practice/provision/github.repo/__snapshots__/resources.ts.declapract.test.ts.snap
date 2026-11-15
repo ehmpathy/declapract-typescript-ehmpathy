@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`github-main-review (provision-github) given: [case1] the shipped provision/github.repo/resources.ts when: [t0] we read main branch protection then: the block, as the clamp reads it, matches snapshot 1`] = `
+"const branchMainProtection = DeclaredGithubBranchProtection.as({
+    branch: branchMain,
+
+    enforceAdmins: true,
+    allowsDeletions: false,
+    allowsForcePushes: false,
+    requireLinearHistory: false,
+
+    requiredStatusChecks: {
+      strict: true,
+      contexts: [
+        'suite / install / pnpm',
+        'suite / enshard',
+        'suite / test-commits',
+        'suite / test-types',
+        'suite / test-format',
+        'suite / test-lint',
+        'suite / test-unit',
+        'suite / test-integration',
+        'suite / test-acceptance-locally',
+        'pullreq-title',
+      ],
+    },
+    requiredPullRequestReviews: {
+      requiredApprovingReviewCount: 1,
+      dismissStaleReviews: true,
+      requireCodeOwnerReviews: false,
+    },
+    allowForkSyncing: false,
+    blockCreations: false,
+    lockBranch: false,
+    requiredConversationResolution: false,
+    requiredSignatures: false,
+    restrictions: null,"
+`;

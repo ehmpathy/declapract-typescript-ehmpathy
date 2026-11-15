@@ -15,3 +15,8 @@
 | F11 | main-review clamp beside its template | clean | best-guessed | 85% |
 | F12 | census gh reads stay in the skill until a second consumer | clean | best-guessed | 90% |
 | F13 | this repo's own main gate: a follow-up pr, not this one | clean | open, for the commander | 85% |
+| F14 | census real-gh test: no-creds case in; token-backed live reads a follow-up | clean | open, for the commander | 80% |
+| F15 | census acceptance file at the src root, beside `repoSkills` | clean | settled by repo precedent | 92% |
+| F16 | census banner keeps the sea turtle's `heres the wave...` | clean | best-guessed | 90% |
+| F17 | census tests are criteria born in this pr; each change recorded | clean | open, for the commander | 85% |
+| F18 | census presentation reshapes wait for a follow-up | clean | best-guessed | 80% |
