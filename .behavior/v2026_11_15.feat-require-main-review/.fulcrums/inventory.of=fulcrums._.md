@@ -10,3 +10,4 @@
 | F6 | census skill: a hermetic play test, via a gh stub | clean | superseded (first guess: no suite) | 92% |
 | F7 | practice clamp reads source text, not getResources() | clean | best-guessed | 85% |
 | F8 | boot edits stay out of the pr | clean | settled by the director | 95% |
+| F9 | no opt-out from the review gate | clean | open, for the commander | 70% |

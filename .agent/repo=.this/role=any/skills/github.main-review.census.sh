@@ -20,20 +20,29 @@
 #             (ungated, yet #761 reads APPROVED)
 #         an admin token reads the protection endpoint directly
 #
-# .note = reviewDecision describes recent prs, so a gate added after
-#         the latest pr shows only once a new pr opens
+# .note = reviewDecision describes past prs, so it lags a change of
+#         the gate. a gate added after the latest pr shows only once a
+#         new pr opens. after a rollout, an approved newest pr over an
+#         older ungated pr reads `lacks`; there, trust a rerun only once
+#         the latest 10 prs all postdate the gate
+# .note = the tally splits each verdict by basis: `certain` (ruleset,
+#         protection endpoint, or main unprotected) vs `inferred` (the
+#         reviewDecision of a pr)
 #
 # usage:
 #   rhx github.main-review.census
 #   rhx github.main-review.census --owners 'ehmpathy ahbode'
 #
 # options:
-#   --owners   space-separated orgs or users
+#   --owners   space-separated orgs or users, never comma-separated
 #              (default: 'ehmpathy ahbode whodisio uladkasach')
 #
 # guarantee:
-#   - every github call is a read (`--method GET`); it writes naught to github
+#   - every github call is a read: rest GETs (`--method GET`) plus two
+#     graphql queries (`gh pr list`, `gh repo list`); it writes naught
 #   - skips archived repos and forks (counted, not listed)
+#   - prints each owner's repo count as it walks; an owner with 0 repos
+#     visible, or at the list cap, fails loud, never an undercount
 #   - verdict per repo: requires | lacks | unknown (no main branch | no decisive pr)
 #   - full table kept in .log/github.main-review.census/census.md
 #   - each run reads into its own scratch dir, so two runs never mix
@@ -78,24 +87,25 @@ echo ""
 echo "🐚 github.main-review.census --owners '$OWNERS'"
 echo "   ├─ mode: read only"
 
-# read one github api path; print the jq result, or '@absent' where github says it is not there
+# read one github api path; print the jq result, or the `absent=` value where github says it is not there
 # .why = two answers mean "not there": a 404, and the 403 a free-plan private repo gives for a
 #        feature its plan lacks (rulesets), which no repo on that plan can hold. any other
 #        failure (network, rate limit, auth) must fail the census loud, never read as a verdict
 get_or_absent() {
-  local path='' jq='.' err=''
+  local path='' jq='.' err='' absent='@absent'
   for arg in "$@"; do
     case "$arg" in
       path=*) path="${arg#path=}" ;;
       jq=*) jq="${arg#jq=}" ;;
       err=*) err="${arg#err=}" ;;
+      absent=*) absent="${arg#absent=}" ;;
     esac
   done
   # buffer stdout: on a failure gh prints the error body there too, which must never pass as a value
   local out
   if out=$(gh api --method GET "$path" --jq "$jq" 2>"$err"); then printf '%s' "$out"; return 0; fi
-  if grep -q '(HTTP 404)' "$err"; then printf '%s' '@absent'; return 0; fi
-  if grep -q 'Upgrade to GitHub Pro.*(HTTP 403)' "$err"; then printf '%s' '@absent'; return 0; fi
+  if grep -q '(HTTP 404)' "$err"; then printf '%s' "$absent"; return 0; fi
+  if grep -q 'Upgrade to GitHub Pro.*(HTTP 403)' "$err"; then printf '%s' "$absent"; return 0; fi
   return 1
 }
 
@@ -132,12 +142,11 @@ emit_row() {
   printf '%s\t%s\t%s\t%s\t%s\n' "$slug" "$release" "$verdict" "$signal" "$perm"
 }
 
-# read whether main is protected, as true | false; '@absent' where the repo has no main
+# read whether main is protected, as true | false | no-main
 get_one_main_protected() {
-  local slug="${1#slug=}" found
-  found=$(get_or_absent path="repos/$slug/branches/main" jq='.protected' err="$ERR_FILE") \
+  local slug="${1#slug=}"
+  get_or_absent path="repos/$slug/branches/main" jq='.protected' err="$ERR_FILE" absent='no-main' \
     || fail_read slug="$slug" what='main branch' err="$ERR_FILE"
-  printf '%s' "$found"
 }
 
 # decide whether a listed repo is out of the census (archived or fork)
@@ -154,31 +163,27 @@ is_repo_skipped() {
 
 # read whether the repo carries a release workflow, as yes | no
 get_one_release_flag() {
-  local slug="${1#slug=}" found
-  found=$(get_or_absent path="repos/$slug/contents/.github/workflows/release.yml" jq='.name' err="$ERR_FILE") \
+  local slug="${1#slug=}" name
+  name=$(get_or_absent path="repos/$slug/contents/.github/workflows/release.yml" jq='.name' err="$ERR_FILE" absent='') \
     || fail_read slug="$slug" what='release workflow' err="$ERR_FILE"
-  [[ "$found" == '@absent' ]] && { printf 'no'; return 0; }
-  printf 'yes'
+  [[ -n "$name" ]] && { printf 'yes'; return 0; }
+  printf 'no'
 }
 
 # read the most approvals any active ruleset pull_request rule on main requires; 0 where none
 get_one_ruleset_approval_count() {
-  local slug="${1#slug=}" count
-  count=$(get_or_absent path="repos/$slug/rules/branches/main" \
+  local slug="${1#slug=}"
+  get_or_absent path="repos/$slug/rules/branches/main" \
     jq='[.[] | select(.type == "pull_request") | .parameters.required_approving_review_count] | max // 0' \
-    err="$ERR_FILE") || fail_read slug="$slug" what='rulesets on main' err="$ERR_FILE"
-  [[ "$count" == '@absent' ]] && { printf '0'; return 0; }
-  printf '%s' "$count"
+    err="$ERR_FILE" absent='0' || fail_read slug="$slug" what='rulesets on main' err="$ERR_FILE"
 }
 
 # read the approvals classic protection on main requires (admin token only); 0 where none
 get_one_protection_approval_count() {
-  local slug="${1#slug=}" count
-  count=$(get_or_absent path="repos/$slug/branches/main/protection" \
-    jq='.required_pull_request_reviews.required_approving_review_count // 0' err="$ERR_FILE") \
+  local slug="${1#slug=}"
+  get_or_absent path="repos/$slug/branches/main/protection" \
+    jq='.required_pull_request_reviews.required_approving_review_count // 0' err="$ERR_FILE" absent='0' \
     || fail_read slug="$slug" what='main protection' err="$ERR_FILE"
-  [[ "$count" == '@absent' ]] && { printf '0'; return 0; }
-  printf '%s' "$count"
 }
 
 # read the first decisive pr among the latest 10 into main, as "<number>\t<decision>"
@@ -209,7 +214,7 @@ get_one_verdict() {
 
   # is main protected at all?
   protected=$(get_one_main_protected slug="$slug")
-  if [[ "$protected" == '@absent' ]]; then
+  if [[ "$protected" == 'no-main' ]]; then
     emit_row slug="$slug" release="$release" verdict=unknown signal='no main branch' perm="$perm"
     return 0
   fi
@@ -252,16 +257,33 @@ get_one_verdict() {
   emit_row slug="$slug" release="$release" verdict=lacks signal="pr #$prNumber reviewDecision=(empty)" perm="$perm"
 }
 
+# halt the census on an owner github does not know; a comma in the name gets its own hint
+fail_owner_unknown() {
+  local owner="${1#owner=}"
+  echo "✋ ConstraintError: github knows no owner '$owner'" >&2
+  if [[ "$owner" == *,* ]]; then
+    echo "   └─ fix: --owners is space-separated, e.g. --owners '${owner//,/ }'" >&2
+    exit 2
+  fi
+  echo "   └─ fix: check the owner name in --owners" >&2
+  exit 2
+}
+
 # list every repo of one owner, one "<slug>\t<archived>\t<fork>\t<perm>" line each
 # .why = an owner github does not know is a caller typo (exit 2), told apart by a 404 on
-#        users/<owner>; any other failure is a malfunction. a list that reaches the cap fails
-#        loud, so the census never undercounts an owner
+#        users/<owner>; any other failure is a malfunction. a list of 0 rows, or one that
+#        reaches the cap, fails loud, so the census never undercounts an owner
 readonly REPO_LIST_CAP=1000
 get_all_repos() {
   local owner="${1#owner=}" out count known
   if out=$(gh repo list "$owner" --limit "$REPO_LIST_CAP" --json nameWithOwner,isArchived,isFork,viewerPermission \
     --jq '.[] | "\(.nameWithOwner)\t\(.isArchived)\t\(.isFork)\t\(.viewerPermission)"' 2>"$ERR_FILE"); then
     count=$(printf '%s' "$out" | awk 'NF { n++ } END { print n + 0 }')
+    if [[ "$count" -eq 0 ]]; then
+      echo "💥 MalfunctionError: the repo list for '$owner' came back empty, so the census would undercount" >&2
+      echo "   └─ fix: check the token can see '$owner' (gh auth status), then rerun" >&2
+      exit 1
+    fi
     if [[ "$count" -ge "$REPO_LIST_CAP" ]]; then
       echo "💥 MalfunctionError: the repo list for '$owner' reached the cap of $REPO_LIST_CAP, so the census would undercount" >&2
       echo "   └─ fix: raise REPO_LIST_CAP in this skill, then rerun" >&2
@@ -272,12 +294,9 @@ get_all_repos() {
   fi
 
   # an owner github does not know reads 404 on users/<owner>; a probe that fails reads as unknown cause
-  known=$(get_or_absent path="users/$owner" jq='.login' err="$RUN_DIR/gh.owner.stderr") || known='@unread'
-  if [[ "$known" == '@absent' ]]; then
-    echo "✋ ConstraintError: github knows no owner '$owner'" >&2
-    echo "   └─ fix: check the owner name in --owners" >&2
-    exit 2
-  fi
+  known=$(get_or_absent path="users/$owner" jq='.login' err="$RUN_DIR/gh.owner.stderr" absent='@unknown-owner') \
+    || known='@unread'
+  [[ "$known" == '@unknown-owner' ]] && fail_owner_unknown owner="$owner"
   echo "💥 MalfunctionError: could not list repos for '$owner'" >&2
   echo "   ├─ cause: $(head -n 3 "$ERR_FILE")" >&2
   echo "   └─ fix: retry once the cause clears (rate limit, network, or auth: gh auth status)" >&2
@@ -289,29 +308,38 @@ render_table_rows() {
   LC_ALL=C sort -t$'\t' -k3,3 -k1,1 "$ROWS" | awk -F'\t' '{ printf "| %s | %s | %s | %s |\n", $1, $2, $3, $4 }'
 }
 
-# count the rows with a given verdict (all rows where none given); with release=yes, only those with a release workflow
+# count rows by verdict (all where none given), by release=yes, and by basis=inferred|certain
+# .note = basis inferred = the verdict rests on a pr's reviewDecision (signal "pr #…")
 count_rows() {
-  local verdict='' release=''
+  local verdict='' release='' basis=''
   for arg in "$@"; do
     case "$arg" in
       verdict=*) verdict="${arg#verdict=}" ;;
       release=*) release="${arg#release=}" ;;
+      basis=*) basis="${arg#basis=}" ;;
     esac
   done
-  awk -F'\t' -v v="$verdict" -v r="$release" '(v == "" || $3 == v) && (r == "" || $2 == r)' "$ROWS" | wc -l | tr -d ' '
+  awk -F'\t' -v v="$verdict" -v r="$release" -v b="$basis" '
+    (v == "" || $3 == v) && (r == "" || $2 == r) &&
+    (b == "" || (b == "inferred" && $4 ~ /^pr #/) || (b == "certain" && $4 !~ /^pr #/))
+  ' "$ROWS" | wc -l | tr -d ' '
 }
 
-# walk each owner
+# walk each owner, with its repo count as it goes
 : > "$ROWS"
 SKIPPED=0
+echo "   ├─ owners"
 for owner in $OWNERS; do
   repos=$(get_all_repos owner="$owner")
+  echo "   │  ├─ $owner: $(printf '%s\n' "$repos" | awk 'NF { n++ } END { print n + 0 }') repos listed"
   while IFS=$'\t' read -r slug archived fork perm; do
     [[ -z "$slug" ]] && continue
     if is_repo_skipped archived="$archived" fork="$fork"; then SKIPPED=$((SKIPPED + 1)); continue; fi
     get_one_verdict slug="$slug" perm="$perm" >> "$ROWS"
   done <<< "$repos"
 done
+echo "   │  └─ done"
+echo "   │"
 
 # render the table, then land table and rows at their stable paths
 {
@@ -324,8 +352,8 @@ cp "$ROWS" "$LOG_DIR/rows.tsv"
 
 echo "   ├─ repos read: $(count_rows) (skipped $SKIPPED archived or fork)"
 echo "   ├─ verdicts"
-echo "   │  ├─ requires: $(count_rows verdict=requires)"
-echo "   │  ├─ lacks: $(count_rows verdict=lacks) ($(count_rows verdict=lacks release=yes) with a release workflow)"
+echo "   │  ├─ requires: $(count_rows verdict=requires) ($(count_rows verdict=requires basis=certain) certain, $(count_rows verdict=requires basis=inferred) inferred)"
+echo "   │  ├─ lacks: $(count_rows verdict=lacks) ($(count_rows verdict=lacks basis=certain) certain, $(count_rows verdict=lacks basis=inferred) inferred; $(count_rows verdict=lacks release=yes) with a release workflow)"
 echo "   │  └─ unknown: $(count_rows verdict=unknown)"
 echo "   └─ table: ${TABLE#"$ROOT"/}"
 echo ""

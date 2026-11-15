@@ -22,20 +22,29 @@ exports[`github.main-review.census given: [case1] a caller who asks for help whe
 #             (ungated, yet #761 reads APPROVED)
 #         an admin token reads the protection endpoint directly
 #
-# .note = reviewDecision describes recent prs, so a gate added after
-#         the latest pr shows only once a new pr opens
+# .note = reviewDecision describes past prs, so it lags a change of
+#         the gate. a gate added after the latest pr shows only once a
+#         new pr opens. after a rollout, an approved newest pr over an
+#         older ungated pr reads \`lacks\`; there, trust a rerun only once
+#         the latest 10 prs all postdate the gate
+# .note = the tally splits each verdict by basis: \`certain\` (ruleset,
+#         protection endpoint, or main unprotected) vs \`inferred\` (the
+#         reviewDecision of a pr)
 #
 # usage:
 #   rhx github.main-review.census
 #   rhx github.main-review.census --owners 'ehmpathy ahbode'
 #
 # options:
-#   --owners   space-separated orgs or users
+#   --owners   space-separated orgs or users, never comma-separated
 #              (default: 'ehmpathy ahbode whodisio uladkasach')
 #
 # guarantee:
-#   - every github call is a read (\`--method GET\`); it writes naught to github
+#   - every github call is a read: rest GETs (\`--method GET\`) plus two
+#     graphql queries (\`gh pr list\`, \`gh repo list\`); it writes naught
 #   - skips archived repos and forks (counted, not listed)
+#   - prints each owner's repo count as it walks; an owner with 0 repos
+#     visible, or at the list cap, fails loud, never an undercount
 #   - verdict per repo: requires | lacks | unknown (no main branch | no decisive pr)
 #   - full table kept in .log/github.main-review.census/census.md
 #   - each run reads into its own scratch dir, so two runs never mix
@@ -67,10 +76,14 @@ exports[`github.main-review.census given: [case3] an owner with one repo of each
 
 🐚 github.main-review.census --owners 'acme'
    ├─ mode: read only
+   ├─ owners
+   │  ├─ acme: 10 repos listed
+   │  └─ done
+   │
    ├─ repos read: 8 (skipped 2 archived or fork)
    ├─ verdicts
-   │  ├─ requires: 3
-   │  ├─ lacks: 3 (2 with a release workflow)
+   │  ├─ requires: 3 (2 certain, 1 inferred)
+   │  ├─ lacks: 3 (2 certain, 1 inferred; 2 with a release workflow)
    │  └─ unknown: 2
    └─ table: .log/github.main-review.census/census.md
 
@@ -100,6 +113,16 @@ exports[`github.main-review.census given: [case4] a github read that fails for a
 "
 `;
 
+exports[`github.main-review.census given: [case4] a github read that fails for a cause other than absence when: [t0] the release workflow read returns a 500 then: stdout, cut short, matches snapshot 1`] = `
+"🐢 heres the wave...
+
+🐚 github.main-review.census --owners 'acme'
+   ├─ mode: read only
+   ├─ owners
+   │  ├─ acme: 1 repos listed
+"
+`;
+
 exports[`github.main-review.census given: [case5] an owner github does not know when: [t0] the repo list fails and users/<owner> reads 404 then: it exits 2 with a ConstraintError that names the owner and the fix 1`] = `
 "✋ ConstraintError: github knows no owner 'ghost'
    └─ fix: check the owner name in --owners
@@ -116,5 +139,11 @@ exports[`github.main-review.census given: [case6] a repo list that fails for a k
 exports[`github.main-review.census given: [case9] a caller outside any git repo when: [t0] the census runs where git finds no repo then: it exits 2 with a ConstraintError that names the fix 1`] = `
 "✋ ConstraintError: the census must run inside a git repo
    └─ fix: cd into a repo; its .log/ holds the table
+"
+`;
+
+exports[`github.main-review.census given: [case12] owners given comma-separated when: [t0] the census runs with --owners ghost,ghoul then: it exits 2 and the fix names the space-separated form 1`] = `
+"✋ ConstraintError: github knows no owner 'ghost,ghoul'
+   └─ fix: --owners is space-separated, e.g. --owners 'ghost ghoul'
 "
 `;

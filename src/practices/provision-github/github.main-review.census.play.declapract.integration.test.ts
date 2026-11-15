@@ -2,6 +2,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { ConstraintError } from 'helpful-errors';
 import { genTempDir, given, then, useThen, when } from 'test-fns';
 
 /**
@@ -31,6 +32,12 @@ const genCensusSandbox = (input: { slug: string }) => {
 
   // prepare the repo, the stub dir, and `gh` on PATH
   const init = () => {
+    // the stub filters with the host jq, as gh filters with its own; without it, every read would fail
+    const jqFound = spawnSync('jq', ['--version']).status === 0;
+    if (!jqFound)
+      throw new ConstraintError('the gh stub needs jq on PATH', {
+        hint: 'install jq (apt install jq, brew install jq), then rerun',
+      });
     execFileSync('git', ['init', '-q'], { cwd: tempDir });
     fs.mkdirSync(stubDir, { recursive: true });
     fs.mkdirSync(binDir, { recursive: true });
@@ -277,7 +284,11 @@ describe('github.main-review.census', () => {
         expect(result.code).toEqual(0);
         expect(result.stdout).toContain('repos read: 8 (skipped 2 archived or fork)');
         expect(result.stdout).toContain('requires: 3');
-        expect(result.stdout).toContain('lacks: 3 (2 with a release workflow)');
+        expect(result.stdout).toContain('acme: 10 repos listed');
+        expect(result.stdout).toContain('requires: 3 (2 certain, 1 inferred)');
+        expect(result.stdout).toContain(
+          'lacks: 3 (2 certain, 1 inferred; 2 with a release workflow)',
+        );
         expect(result.stdout).toContain('unknown: 2');
         expect(result.stdout).toContain('table: .log/github.main-review.census/census.md');
       });
@@ -352,6 +363,9 @@ describe('github.main-review.census', () => {
       });
       then('stderr matches snapshot', () => {
         expect(result.stderr).toMatchSnapshot();
+      });
+      then('stdout, cut short, matches snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
       });
     });
   });
@@ -442,7 +456,11 @@ describe('github.main-review.census', () => {
         expect(result.stdout).toContain("--owners 'acme beta'");
         expect(result.stdout).toContain('repos read: 2 (skipped 0 archived or fork)');
         expect(result.stdout).toContain('requires: 1');
-        expect(result.stdout).toContain('lacks: 1 (1 with a release workflow)');
+        expect(result.stdout).toContain('acme: 1 repos listed');
+        expect(result.stdout).toContain('beta: 1 repos listed');
+        expect(result.stdout).toContain(
+          'lacks: 1 (1 certain, 0 inferred; 1 with a release workflow)',
+        );
         expect(result.table).toContain('| acme/bare | yes | lacks | main unprotected |');
         expect(result.table).toContain('| beta/ruled | no | requires | ruleset: 1 approval(s) |');
       });
@@ -490,6 +508,80 @@ describe('github.main-review.census', () => {
         expect(result.stderr).toContain(
           '✋ ConstraintError: the census must run inside a git repo',
         );
+        expect(result.stderr).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case10] an owner whose repo list comes back empty', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-list-empty' });
+
+    when('[t0] the repo list returns 0 rows', () => {
+      const result = useThen('the census runs', async () => {
+        sandbox.init();
+        sandbox.setJson('repo/hidden', []);
+        return sandbox.run(['--owners', 'hidden']);
+      });
+
+      then('it exits 1 with a MalfunctionError, never a silent undercount', () => {
+        expect(result.code).toEqual(1);
+        expect(result.stderr).toContain(
+          "💥 MalfunctionError: the repo list for 'hidden' came back empty",
+        );
+        expect(result.stderr).toContain('gh auth status');
+        expect(result.stdout).not.toContain('census done');
+      });
+    });
+  });
+
+  given('[case11] a 403 that is not the free-plan answer', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-other-403' });
+
+    when('[t0] the rulesets read returns a 403 for a cause other than the plan', () => {
+      const result = useThen('the census runs', async () => {
+        sandbox.init();
+        sandbox.setJson('repo/acme', [
+          asRepoRow({ slug: 'acme/locked', archived: false, fork: false, perm: 'WRITE' }),
+        ]);
+        seedRepo(sandbox, {
+          slug: 'acme/locked',
+          release: false,
+          main: { protected: true },
+          rules: null,
+          prs: null,
+          protection: null,
+        });
+        sandbox.setErr(
+          'api/repos/acme/locked/rules/branches/main',
+          'gh: Resource not accessible by integration (HTTP 403)',
+        );
+        return sandbox.run(['--owners', 'acme']);
+      });
+
+      then('it exits 1 with a MalfunctionError; only the plan message reads as absent', () => {
+        expect(result.code).toEqual(1);
+        expect(result.stderr).toContain(
+          "💥 MalfunctionError: a github read failed, so the census cannot verdict 'acme/locked'",
+        );
+        expect(result.stderr).toContain('read: rulesets on main');
+      });
+    });
+  });
+
+  given('[case12] owners given comma-separated', () => {
+    const sandbox = genCensusSandbox({ slug: 'census-comma-owners' });
+
+    when('[t0] the census runs with --owners ghost,ghoul', () => {
+      const result = useThen('it runs', async () => {
+        sandbox.init();
+        sandbox.setErr('repo/ghost,ghoul', 'GraphQL: owner not found (repositoryOwner)');
+        return sandbox.run(['--owners', 'ghost,ghoul']);
+      });
+
+      then('it exits 2 and the fix names the space-separated form', () => {
+        expect(result.code).toEqual(2);
+        expect(result.stderr).toContain("✋ ConstraintError: github knows no owner 'ghost,ghoul'");
+        expect(result.stderr).toContain("fix: --owners is space-separated, e.g. --owners 'ghost ghoul'");
         expect(result.stderr).toMatchSnapshot();
       });
     });
