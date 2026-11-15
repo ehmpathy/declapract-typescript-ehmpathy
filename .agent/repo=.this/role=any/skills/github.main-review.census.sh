@@ -45,7 +45,8 @@
 #     visible, or at the list cap, fails loud, never an undercount
 #   - verdict per repo: requires | lacks | unknown (no main branch | no decisive pr)
 #   - full table kept in .log/github.main-review.census/census.md
-#   - each run reads into its own scratch dir, so two runs never mix
+#   - each run reads into its own scratch dir; the table and rows land
+#     by a plain copy at the end, so run one census at a time
 #   - exit 0 = census done, 1 = a github read failed, 2 = bad input
 ######################################################################
 set -euo pipefail
@@ -76,7 +77,7 @@ LOG_DIR="$ROOT/.log/github.main-review.census"
 mkdir -p "$LOG_DIR"
 TABLE="$LOG_DIR/census.md"
 
-# one scratch dir per run; only the finished table and rows land at the stable paths
+# one scratch dir per run; the finished table and rows land at the stable paths at the end
 RUN_DIR="$(mktemp -d "$LOG_DIR/run.XXXXXX")"
 trap 'rm -rf "$RUN_DIR"' EXIT
 readonly ERR_FILE="$RUN_DIR/gh.stderr"

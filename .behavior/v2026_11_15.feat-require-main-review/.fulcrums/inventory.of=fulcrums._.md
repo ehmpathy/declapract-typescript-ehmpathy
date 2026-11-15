@@ -14,3 +14,4 @@
 | F10 | census progress per owner, not per repo | clean | best-guessed | 75% |
 | F11 | main-review clamp beside its template | clean | best-guessed | 85% |
 | F12 | census gh reads stay in the skill until a second consumer | clean | best-guessed | 90% |
+| F13 | this repo's own main gate: a follow-up pr, not this one | clean | open, for the commander | 85% |

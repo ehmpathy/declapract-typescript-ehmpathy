@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`provision-github main-review given: [case1] a repo whose main protection requires no review when: [t0] the input, before any fix then: main protection declares no review: main protection — before 1`] = `
+"const branchMainProtection = DeclaredGithubBranchProtection.as({
+    branch: branchMain,
+
+    enforceAdmins: true, // admins too; an exception means a deliberate settings change
+    allowsDeletions: false,
+    allowsForcePushes: false,
+    requireLinearHistory: false, // squash-only merges (repoConfig) already keep history linear
+
+    requiredStatusChecks: {
+      strict: true, // the branch must be up to date, so a green check holds after the merge
+      contexts: [
+        'suite / install / pnpm',
+        'suite / enshard',
+        'suite / test-commits',
+        'suite / test-types',
+        'suite / test-format',
+        'suite / test-lint',
+        'suite / test-unit',
+        'suite / test-integration',
+        'suite / test-acceptance-locally',
+        'pullreq-title',
+      ],
+    },
+
+    // github's defaults, declared so drift shows in a plan
+    allowForkSyncing: false,
+    blockCreations: false,
+    lockBranch: false,
+    requiredConversationResolution: false,
+    requiredPullRequestReviews: null,
+    requiredSignatures: false,
+    restrictions: null,
+  });"
+`;
+
+exports[`provision-github main-review given: [case1] a repo whose main protection requires no review when: [t1] apply runs then: main protection requires one approval: main protection — after 1`] = `
+"const branchMainProtection = DeclaredGithubBranchProtection.as({
+    branch: branchMain,
+
+    enforceAdmins: true, // admins too; an exception means a deliberate settings change
+    allowsDeletions: false,
+    allowsForcePushes: false,
+    requireLinearHistory: false, // squash-only merges (repoConfig) already keep history linear
+
+    requiredStatusChecks: {
+      strict: true, // the branch must be up to date, so a green check holds after the merge
+      contexts: [
+        'suite / install / pnpm',
+        'suite / enshard',
+        'suite / test-commits',
+        'suite / test-types',
+        'suite / test-format',
+        'suite / test-lint',
+        'suite / test-unit',
+        'suite / test-integration',
+        'suite / test-acceptance-locally',
+        'pullreq-title',
+      ],
+    },
+
+    // a green pr still waits for one human approval; checks prove it builds, a review proves it was read
+    requiredPullRequestReviews: {
+      requiredApprovingReviewCount: 1,
+      dismissStaleReviews: true, // a push after approval drops it, so no commit merges unread
+      requireCodeOwnerReviews: false, // no CODEOWNERS declared; any write collaborator may approve
+    },
+
+    // github's defaults, declared so drift shows in a plan
+    allowForkSyncing: false,
+    blockCreations: false,
+    lockBranch: false,
+    requiredConversationResolution: false,
+    requiredSignatures: false,
+    restrictions: null,
+  });"
+`;

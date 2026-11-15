@@ -47,7 +47,8 @@ exports[`github.main-review.census given: [case1] a caller who asks for help whe
 #     visible, or at the list cap, fails loud, never an undercount
 #   - verdict per repo: requires | lacks | unknown (no main branch | no decisive pr)
 #   - full table kept in .log/github.main-review.census/census.md
-#   - each run reads into its own scratch dir, so two runs never mix
+#   - each run reads into its own scratch dir; the table and rows land
+#     by a plain copy at the end, so run one census at a time
 #   - exit 0 = census done, 1 = a github read failed, 2 = bad input
 ######################################################################
 "
