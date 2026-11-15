@@ -1,79 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`github.main-review.census given: [case1] a caller who asks for help when: [t0] --help then: it matches snapshot 1`] = `
-"######################################################################
-# .what = census, read only: for each repo in the named owners, does
-#         main require a review approval before a merge?
-#
-# .why  = the provision-github practice declares main's protection; a
-#         census shows which repos would gain a review gate on apply.
-#         the caller token often holds push, not admin, so the classic
-#         protection endpoint 404s. two signals a push token can read
-#         decide it instead:
-#           - ruleset: an active \`pull_request\` rule on main
-#           - classic: the graphql \`reviewDecision\` of the latest prs
-#             into main. a gated repo never yields an empty decision
-#             (unreviewed = REVIEW_REQUIRED, merged = APPROVED), so:
-#               empty            → lacks
-#               REVIEW_REQUIRED  → requires
-#               APPROVED | CHANGES_REQUESTED → ambiguous: github sets
-#               these on any reviewed pr, gate or not; read the next pr
-#             proven against facebook/react (gated) and this repo
-#             (ungated, yet #761 reads APPROVED)
-#         an admin token reads the protection endpoint directly
-#
-# .note = reviewDecision describes past prs, so it lags a change of
-#         the gate. a gate added after the latest pr shows only once a
-#         new pr opens. after a rollout, an approved newest pr over an
-#         older ungated pr reads \`lacks\`; there, trust a rerun only once
-#         the latest 10 prs all postdate the gate
-# .note = the tally splits each verdict by basis: \`certain\` (ruleset,
-#         protection endpoint, or main unprotected) vs \`inferred\` (the
-#         reviewDecision of a pr)
-#
-# usage:
-#   rhx github.main-review.census
-#   rhx github.main-review.census --owners 'ehmpathy ahbode'
-#
-# options:
-#   --owners   space-separated orgs or users, never comma-separated
-#              (default: 'ehmpathy ahbode whodisio uladkasach')
-#
-# guarantee:
-#   - every github call is a read: rest GETs (\`--method GET\`) plus two
-#     graphql queries (\`gh pr list\`, \`gh repo list\`); it writes naught
-#   - skips archived repos and forks (counted, not listed)
-#   - prints each owner's repo count as it walks; an owner with 0 repos
-#     visible, or at the list cap, fails loud, never an undercount
-#   - verdict per repo: requires | lacks | unknown (no main branch | no decisive pr)
-#   - full table kept in .log/github.main-review.census/census.md; each
-#     run replaces it, so a run scoped by --owners holds only those owners
-#   - each run reads into its own scratch dir; the table and rows land
-#     by a plain copy at the end, so run one census at a time
-#   - exit 0 = census done, 1 = a github read failed, 2 = bad input
-######################################################################
-"
-`;
-
-exports[`github.main-review.census given: [case2] a caller with bad input when: [t0] each bad input runs then: --owners empty exits 2 with a ConstraintError and an example 1`] = `
-"✋ ConstraintError: --owners is empty
-   └─ fix: name the owners, e.g. rhx github.main-review.census --owners 'ehmpathy ahbode'
-"
-`;
-
-exports[`github.main-review.census given: [case2] a caller with bad input when: [t0] each bad input runs then: --owners with no value exits 2 with a ConstraintError and an example 1`] = `
-"✋ ConstraintError: --owners needs a value
-   └─ fix: name the owners, e.g. rhx github.main-review.census --owners 'ehmpathy ahbode'
-"
-`;
-
-exports[`github.main-review.census given: [case2] a caller with bad input when: [t0] each bad input runs then: an unknown arg exits 2 with a ConstraintError that names the arg and --help 1`] = `
-"✋ ConstraintError: unknown arg '--nope'
-   └─ fix: see the flags via rhx github.main-review.census --help
-"
-`;
-
-exports[`github.main-review.census given: [case3] an owner with one repo of each shape when: [t0] the census runs then: rows.tsv carries the perm and basis the table drops, and matches snapshot 1`] = `
+exports[`github.main-review.census given: [case1] an owner with one repo of each shape when: [t0] the census runs then: rows.tsv carries the perm and basis the table drops, and matches snapshot 1`] = `
 "acme/no-main	no	unknown	no main branch	WRITE	none
 acme/bare	yes	lacks	main unprotected	WRITE	certain
 acme/ruled	yes	requires	ruleset: 2 approvals	WRITE	certain
@@ -85,7 +12,7 @@ acme/push-undecided	no	unknown	protected; no decisive pr in the latest 10	WRITE	
 "
 `;
 
-exports[`github.main-review.census given: [case3] an owner with one repo of each shape when: [t0] the census runs then: stdout matches snapshot 1`] = `
+exports[`github.main-review.census given: [case1] an owner with one repo of each shape when: [t0] the census runs then: stdout matches snapshot 1`] = `
 "🐢 heres the wave...
 
 🐚 github.main-review.census --owners 'acme'
@@ -107,7 +34,7 @@ exports[`github.main-review.census given: [case3] an owner with one repo of each
 "
 `;
 
-exports[`github.main-review.census given: [case3] an owner with one repo of each shape when: [t0] the census runs then: the table matches snapshot 1`] = `
+exports[`github.main-review.census given: [case1] an owner with one repo of each shape when: [t0] the census runs then: the table matches snapshot 1`] = `
 "| repo | release workflow | review gate on main | signal |
 |------|------------------|---------------------|--------|
 | acme/admin-open | no | lacks | protection: 0 approvals |
@@ -121,174 +48,7 @@ exports[`github.main-review.census given: [case3] an owner with one repo of each
 "
 `;
 
-exports[`github.main-review.census given: [case4] a github read that fails for a cause other than absence when: [t0] the release workflow read returns a 500 then: stderr matches snapshot 1`] = `
-"💥 MalfunctionError: a github read failed, so the census cannot reach a verdict for 'acme/flaky'
-   ├─ read: release workflow
-   ├─ cause: gh: Server Error (HTTP 500)
-   └─ fix: retry once the network or github recovers
-"
-`;
-
-exports[`github.main-review.census given: [case4] a github read that fails for a cause other than absence when: [t0] the release workflow read returns a 500 then: stdout, cut short, matches snapshot 1`] = `
-"🐢 heres the wave...
-
-🐚 github.main-review.census --owners 'acme'
-   ├─ mode: read only
-   ├─ owners
-   │  ├─ acme: 1 repo listed
-"
-`;
-
-exports[`github.main-review.census given: [case5] an owner github does not know when: [t0] the repo list fails and users/<owner> reads 404 then: it exits 2 with a ConstraintError that names the owner and the fix 1`] = `
-"✋ ConstraintError: github knows no owner 'ghost'
-   └─ fix: check the owner name in --owners
-"
-`;
-
-exports[`github.main-review.census given: [case5] an owner github does not know when: [t0] the repo list fails and users/<owner> reads 404 then: stdout, cut short before any owner line, matches snapshot 1`] = `
-"🐢 heres the wave...
-
-🐚 github.main-review.census --owners 'ghost'
-   ├─ mode: read only
-   ├─ owners
-"
-`;
-
-exports[`github.main-review.census given: [case6] a repo list that fails for a known owner when: [t0] the repo list returns a 500 and users/<owner> reads fine then: stderr matches snapshot 1`] = `
-"💥 MalfunctionError: could not list repos for 'acme'
-   ├─ cause: gh: Server Error (HTTP 500)
-   └─ fix: retry once the network or github recovers
-"
-`;
-
-exports[`github.main-review.census given: [case6] a repo list that fails for a known owner when: [t0] the repo list returns a 500 and users/<owner> reads fine then: stdout, cut short before any owner line, matches snapshot 1`] = `
-"🐢 heres the wave...
-
-🐚 github.main-review.census --owners 'acme'
-   ├─ mode: read only
-   ├─ owners
-"
-`;
-
-exports[`github.main-review.census given: [case7] two owners, with the selectors rhx forwards when: [t0] the census runs with --repo, --skill=, and --owners= then: stdout matches snapshot 1`] = `
-"🐢 heres the wave...
-
-🐚 github.main-review.census --owners 'acme beta'
-   ├─ mode: read only
-   ├─ owners
-   │  ├─ acme: 1 repo listed
-   │  ├─ beta: 1 repo listed
-   │  └─ done
-   │
-   ├─ repos read: 2 (skipped 0 archived or forked)
-   ├─ verdicts
-   │  ├─ requires: 1 (1 certain, 0 inferred)
-   │  ├─ lacks: 1 (1 certain, 0 inferred; 1 with a release workflow)
-   │  └─ unknown: 0
-   └─ landed, at paths from the repo root
-      ├─ table: .log/github.main-review.census/census.md
-      └─ rows: .log/github.main-review.census/rows.tsv (each repo, with its perm and basis)
-
-🐢 righteous! census done
-"
-`;
-
-exports[`github.main-review.census given: [case7] two owners, with the selectors rhx forwards when: [t0] the census runs with --repo, --skill=, and --owners= then: the table matches snapshot 1`] = `
-"| repo | release workflow | review gate on main | signal |
-|------|------------------|---------------------|--------|
-| acme/bare | yes | lacks | main unprotected |
-| beta/ruled | no | requires | ruleset: 1 approval |
-"
-`;
-
-exports[`github.main-review.census given: [case8] an owner whose repo list reaches the cap when: [t0] the repo list returns 1000 rows then: stderr matches snapshot 1`] = `
-"💥 MalfunctionError: the repo list for 'huge' reached the cap of 1000, so the census would undercount
-   └─ fix: raise REPO_LIST_CAP in .agent/repo=.this/role=any/skills/github.main-review.census.sh, then rerun
-"
-`;
-
-exports[`github.main-review.census given: [case8] an owner whose repo list reaches the cap when: [t0] the repo list returns 1000 rows then: stdout, cut short before any owner line, matches snapshot 1`] = `
-"🐢 heres the wave...
-
-🐚 github.main-review.census --owners 'huge'
-   ├─ mode: read only
-   ├─ owners
-"
-`;
-
-exports[`github.main-review.census given: [case9] a caller outside any git repo when: [t0] the census runs where git finds no repo then: it exits 2 with a ConstraintError that names the fix 1`] = `
-"✋ ConstraintError: the census must run inside a git repo
-   └─ fix: cd into a repo; its .log/ holds the table
-"
-`;
-
-exports[`github.main-review.census given: [case10] an owner whose repo list comes back empty when: [t0] the repo list returns 0 rows then: stderr matches snapshot 1`] = `
-"💥 MalfunctionError: the repo list for 'hidden' came back empty, so the census would undercount
-   └─ fix: check the token can see 'hidden' (gh auth status), then rerun
-"
-`;
-
-exports[`github.main-review.census given: [case10] an owner whose repo list comes back empty when: [t0] the repo list returns 0 rows then: stdout, cut short before any owner line, matches snapshot 1`] = `
-"🐢 heres the wave...
-
-🐚 github.main-review.census --owners 'hidden'
-   ├─ mode: read only
-   ├─ owners
-"
-`;
-
-exports[`github.main-review.census given: [case11] a 403 that is not the free-plan answer when: [t0] the rulesets read returns a 403 for a cause other than the plan then: stderr matches snapshot 1`] = `
-"💥 MalfunctionError: a github read failed, so the census cannot reach a verdict for 'acme/locked'
-   ├─ read: rulesets on main
-   ├─ cause: gh: Resource not accessible by integration (HTTP 403)
-   └─ fix: check the token may read this repo (gh auth status shows its scopes), then rerun
-"
-`;
-
-exports[`github.main-review.census given: [case11] a 403 that is not the free-plan answer when: [t0] the rulesets read returns a 403 for a cause other than the plan then: stdout, cut short mid-walk, matches snapshot 1`] = `
-"🐢 heres the wave...
-
-🐚 github.main-review.census --owners 'acme'
-   ├─ mode: read only
-   ├─ owners
-   │  ├─ acme: 1 repo listed
-"
-`;
-
-exports[`github.main-review.census given: [case12] owners given comma-separated when: [t0] the census runs with --owners ghost,ghoul then: it exits 2 and the fix names the space-separated form 1`] = `
-"✋ ConstraintError: github knows no owner 'ghost,ghoul'
-   └─ fix: --owners is space-separated, e.g. --owners 'ghost ghoul'
-"
-`;
-
-exports[`github.main-review.census given: [case12] owners given comma-separated when: [t0] the census runs with --owners ghost,ghoul then: stdout, cut short before any owner line, matches snapshot 1`] = `
-"🐢 heres the wave...
-
-🐚 github.main-review.census --owners 'ghost,ghoul'
-   ├─ mode: read only
-   ├─ owners
-"
-`;
-
-exports[`github.main-review.census given: [case13] a pr list that fails mid-walk when: [t0] the recent prs read fails on a protected repo a push token reads then: stderr matches snapshot 1`] = `
-"💥 MalfunctionError: a github read failed, so the census cannot reach a verdict for 'acme/push-busy'
-   ├─ read: recent prs into main
-   ├─ cause: GraphQL: API rate limit exceeded for user ID 1.
-   └─ fix: wait for the rate limit to reset (gh api rate_limit shows when), then rerun
-"
-`;
-
-exports[`github.main-review.census given: [case13] a pr list that fails mid-walk when: [t0] the recent prs read fails on a protected repo a push token reads then: stdout, cut short mid-walk, matches snapshot 1`] = `
-"🐢 heres the wave...
-
-🐚 github.main-review.census --owners 'acme'
-   ├─ mode: read only
-   ├─ owners
-   │  ├─ acme: 1 repo listed
-"
-`;
-
-exports[`github.main-review.census given: [case14] the bare invocation, over the four default owners when: [t0] the census runs with no flags then: stdout matches snapshot 1`] = `
+exports[`github.main-review.census given: [case2] the bare invocation, over the four default owners when: [t0] the census runs with only the selectors rhx forwards then: stdout matches snapshot 1`] = `
 "🐢 heres the wave...
 
 🐚 github.main-review.census --owners 'ehmpathy ahbode whodisio uladkasach'
@@ -313,17 +73,153 @@ exports[`github.main-review.census given: [case14] the bare invocation, over the
 "
 `;
 
-exports[`github.main-review.census given: [case15] a repo list refused for absent credentials when: [t0] the repo list returns a 401 then: stderr matches snapshot 1`] = `
+exports[`github.main-review.census given: [case4] a caller outside any git repo when: [t0] the census runs where git finds no repo then: it exits 2 with a ConstraintError that names the fix 1`] = `
+"✋ ConstraintError: the census must run inside a git repo
+   └─ fix: cd into a repo; its .log/ holds the table
+"
+`;
+
+exports[`github.main-review.census given: [case5] a release workflow read that returns a 500 when: [t0] the census runs then: stderr matches snapshot 1`] = `
+"💥 MalfunctionError: a github read failed, so the census cannot reach a verdict for 'acme/flaky'
+   ├─ read: release workflow
+   ├─ cause: gh: Server Error (HTTP 500)
+   └─ fix: retry once the network or github recovers
+"
+`;
+
+exports[`github.main-review.census given: [case5] a release workflow read that returns a 500 when: [t0] the census runs then: stdout, cut short, matches snapshot 1`] = `
+"🐢 heres the wave...
+
+🐚 github.main-review.census --owners 'acme'
+   ├─ mode: read only
+   ├─ owners
+   │  ├─ acme: 1 repo listed
+"
+`;
+
+exports[`github.main-review.census given: [case6] a rulesets read that returns a 403 for a cause other than the plan when: [t0] the census runs then: stderr matches snapshot 1`] = `
+"💥 MalfunctionError: a github read failed, so the census cannot reach a verdict for 'acme/locked'
+   ├─ read: rulesets on main
+   ├─ cause: gh: Resource not accessible by integration (HTTP 403)
+   └─ fix: check the token may read this repo (gh auth status shows its scopes), then rerun
+"
+`;
+
+exports[`github.main-review.census given: [case6] a rulesets read that returns a 403 for a cause other than the plan when: [t0] the census runs then: stdout, cut short, matches snapshot 1`] = `
+"🐢 heres the wave...
+
+🐚 github.main-review.census --owners 'acme'
+   ├─ mode: read only
+   ├─ owners
+   │  ├─ acme: 1 repo listed
+"
+`;
+
+exports[`github.main-review.census given: [case7] a recent prs read that fails mid-walk on a rate limit when: [t0] the census runs then: stderr matches snapshot 1`] = `
+"💥 MalfunctionError: a github read failed, so the census cannot reach a verdict for 'acme/push-busy'
+   ├─ read: recent prs into main
+   ├─ cause: GraphQL: API rate limit exceeded for user ID 1.
+   └─ fix: wait for the rate limit to reset (gh api rate_limit shows when), then rerun
+"
+`;
+
+exports[`github.main-review.census given: [case7] a recent prs read that fails mid-walk on a rate limit when: [t0] the census runs then: stdout, cut short, matches snapshot 1`] = `
+"🐢 heres the wave...
+
+🐚 github.main-review.census --owners 'acme'
+   ├─ mode: read only
+   ├─ owners
+   │  ├─ acme: 1 repo listed
+"
+`;
+
+exports[`github.main-review.census given: [case8] a repo list that returns a 500 for a known owner when: [t0] the census runs then: stderr matches snapshot 1`] = `
+"💥 MalfunctionError: could not list repos for 'acme'
+   ├─ cause: gh: Server Error (HTTP 500)
+   └─ fix: retry once the network or github recovers
+"
+`;
+
+exports[`github.main-review.census given: [case8] a repo list that returns a 500 for a known owner when: [t0] the census runs then: stdout, cut short, matches snapshot 1`] = `
+"🐢 heres the wave...
+
+🐚 github.main-review.census --owners 'acme'
+   ├─ mode: read only
+   ├─ owners
+"
+`;
+
+exports[`github.main-review.census given: [case9] a repo list refused for absent credentials when: [t0] the census runs then: stderr matches snapshot 1`] = `
 "💥 MalfunctionError: could not list repos for 'acme'
    ├─ cause: HTTP 401: Bad credentials (https://api.github.com/graphql)
    └─ fix: log gh in (gh auth login) or set GH_TOKEN, then rerun
 "
 `;
 
-exports[`github.main-review.census given: [case15] a repo list refused for absent credentials when: [t0] the repo list returns a 401 then: stdout, cut short before any owner line, matches snapshot 1`] = `
+exports[`github.main-review.census given: [case9] a repo list refused for absent credentials when: [t0] the census runs then: stdout, cut short, matches snapshot 1`] = `
 "🐢 heres the wave...
 
 🐚 github.main-review.census --owners 'acme'
+   ├─ mode: read only
+   ├─ owners
+"
+`;
+
+exports[`github.main-review.census given: [case10] a repo list that comes back empty when: [t0] the census runs then: stderr matches snapshot 1`] = `
+"💥 MalfunctionError: the repo list for 'hidden' came back empty, so the census would undercount
+   └─ fix: check the token can see 'hidden' (gh auth status), then rerun
+"
+`;
+
+exports[`github.main-review.census given: [case10] a repo list that comes back empty when: [t0] the census runs then: stdout, cut short, matches snapshot 1`] = `
+"🐢 heres the wave...
+
+🐚 github.main-review.census --owners 'hidden'
+   ├─ mode: read only
+   ├─ owners
+"
+`;
+
+exports[`github.main-review.census given: [case11] a repo list that reaches the cap when: [t0] the census runs then: stderr matches snapshot 1`] = `
+"💥 MalfunctionError: the repo list for 'huge' reached the cap of 1000, so the census would undercount
+   └─ fix: raise REPO_LIST_CAP in .agent/repo=.this/role=any/skills/github.main-review.census.sh, then rerun
+"
+`;
+
+exports[`github.main-review.census given: [case11] a repo list that reaches the cap when: [t0] the census runs then: stdout, cut short, matches snapshot 1`] = `
+"🐢 heres the wave...
+
+🐚 github.main-review.census --owners 'huge'
+   ├─ mode: read only
+   ├─ owners
+"
+`;
+
+exports[`github.main-review.census given: [case12] an owner github does not know when: [t0] the census runs then: stderr matches snapshot 1`] = `
+"✋ ConstraintError: github knows no owner 'ghost'
+   └─ fix: check the owner name in --owners
+"
+`;
+
+exports[`github.main-review.census given: [case12] an owner github does not know when: [t0] the census runs then: stdout, cut short, matches snapshot 1`] = `
+"🐢 heres the wave...
+
+🐚 github.main-review.census --owners 'ghost'
+   ├─ mode: read only
+   ├─ owners
+"
+`;
+
+exports[`github.main-review.census given: [case13] owners given comma-separated when: [t0] the census runs then: stderr matches snapshot 1`] = `
+"✋ ConstraintError: github knows no owner 'ghost,ghoul'
+   └─ fix: --owners is space-separated, e.g. --owners 'ghost ghoul'
+"
+`;
+
+exports[`github.main-review.census given: [case13] owners given comma-separated when: [t0] the census runs then: stdout, cut short, matches snapshot 1`] = `
+"🐢 heres the wave...
+
+🐚 github.main-review.census --owners 'ghost,ghoul'
    ├─ mode: read only
    ├─ owners
 "

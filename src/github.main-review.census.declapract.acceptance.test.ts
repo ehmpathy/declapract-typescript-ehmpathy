@@ -74,6 +74,13 @@ describe('github.main-review.census', () => {
         expect(result.stdout).toContain('--owners   space-separated orgs or users');
         expect(result.stdout).toContain("(default: 'ehmpathy ahbode whodisio uladkasach')");
         expect(result.stdout).toContain('exit 0 = census done, 1 = a github read failed, 2 = bad input');
+        expect(result.stdout).toContain(
+          'verdict per repo: requires | lacks | unknown (no main branch | no decisive pr)',
+        );
+      });
+      then('it prints the header to its close rule, and no code', () => {
+        expect(result.stdout.trim().split('\n').pop()).toMatch(/^#{20,}$/);
+        expect(result.stdout).not.toContain('set -euo pipefail');
       });
       then('stdout matches snapshot', () => {
         expect(result.stdout).toMatchSnapshot();
@@ -84,31 +91,41 @@ describe('github.main-review.census', () => {
   given('[case2] a human who mistypes an arg', () => {
     const repo = genCensusRepo({ slug: 'census-acceptance-bad-input' });
 
-    when('[t0] an unknown arg, then an empty --owners', () => {
+    when('[t0] an unknown arg, --owners with no value, then an empty --owners', () => {
       const result = useThen('each runs', async () => {
         repo.init();
         return {
           unknownArg: repo.run(['--nope'], { env: process.env }),
+          ownersBare: repo.run(['--owners'], { env: process.env }),
           ownersEmpty: repo.run(['--owners', ''], { env: process.env }),
         };
       });
 
-      then('each exits 2 with a ConstraintError that names the fix, before any github call', () => {
+      then('each exits 2 with a ConstraintError, before any github call', () => {
         expect(result.unknownArg.code).toEqual(2);
         expect(result.unknownArg.stderr).toContain("✋ ConstraintError: unknown arg '--nope'");
+        expect(result.ownersBare.code).toEqual(2);
+        expect(result.ownersBare.stderr).toContain('✋ ConstraintError: --owners needs a value');
         expect(result.ownersEmpty.code).toEqual(2);
         expect(result.ownersEmpty.stderr).toContain('✋ ConstraintError: --owners is empty');
       });
-      then('each fix names the next move', () => {
+      then('each fix names the next move, and no stdout prints', () => {
         expect(result.unknownArg.stderr).toContain(
           'fix: see the flags via rhx github.main-review.census --help',
+        );
+        expect(result.ownersBare.stderr).toContain(
+          "fix: name the owners, e.g. rhx github.main-review.census --owners 'ehmpathy ahbode'",
         );
         expect(result.ownersEmpty.stderr).toContain(
           "fix: name the owners, e.g. rhx github.main-review.census --owners 'ehmpathy ahbode'",
         );
+        expect([result.unknownArg, result.ownersBare, result.ownersEmpty].map((r) => r.stdout)).toEqual(['', '', '']);
       });
       then('stderr of the unknown arg matches snapshot', () => {
         expect(result.unknownArg.stderr).toMatchSnapshot();
+      });
+      then('stderr of --owners with no value matches snapshot', () => {
+        expect(result.ownersBare.stderr).toMatchSnapshot();
       });
       then('stderr of the empty --owners matches snapshot', () => {
         expect(result.ownersEmpty.stderr).toMatchSnapshot();

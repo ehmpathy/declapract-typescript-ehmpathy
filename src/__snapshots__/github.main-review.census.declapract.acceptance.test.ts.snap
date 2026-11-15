@@ -55,13 +55,19 @@ exports[`github.main-review.census given: [case1] a human who asks for help when
 "
 `;
 
-exports[`github.main-review.census given: [case2] a human who mistypes an arg when: [t0] an unknown arg, then an empty --owners then: stderr of the empty --owners matches snapshot 1`] = `
+exports[`github.main-review.census given: [case2] a human who mistypes an arg when: [t0] an unknown arg, --owners with no value, then an empty --owners then: stderr of --owners with no value matches snapshot 1`] = `
+"✋ ConstraintError: --owners needs a value
+   └─ fix: name the owners, e.g. rhx github.main-review.census --owners 'ehmpathy ahbode'
+"
+`;
+
+exports[`github.main-review.census given: [case2] a human who mistypes an arg when: [t0] an unknown arg, --owners with no value, then an empty --owners then: stderr of the empty --owners matches snapshot 1`] = `
 "✋ ConstraintError: --owners is empty
    └─ fix: name the owners, e.g. rhx github.main-review.census --owners 'ehmpathy ahbode'
 "
 `;
 
-exports[`github.main-review.census given: [case2] a human who mistypes an arg when: [t0] an unknown arg, then an empty --owners then: stderr of the unknown arg matches snapshot 1`] = `
+exports[`github.main-review.census given: [case2] a human who mistypes an arg when: [t0] an unknown arg, --owners with no value, then an empty --owners then: stderr of the unknown arg matches snapshot 1`] = `
 "✋ ConstraintError: unknown arg '--nope'
    └─ fix: see the flags via rhx github.main-review.census --help
 "
