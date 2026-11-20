@@ -38,16 +38,23 @@ const ignoresSortable: readonly string[] = [
   // `**/` so the actor brain's own `.agent/.actors/<actor>/brain/.claude/` lock is
   // ignored too; a line with a slash anchors to the repo root otherwise (#667)
   '**/.claude/scheduled_tasks*',
+  // the ambient actor's brain config is the one tracked actor dir; rhachet >= 1.50 findserts
+  // this line at each init, link, or upgrade, so a repo that lacks it churns on every boot (#786)
+  '!.agent/.actors/actor.via.repo=ambient/',
 ];
 
 /**
  * .what = lines this practice once declared and now replaces
- * .why  = the root-anchored `.claude/scheduled_tasks*` is superseded by the any-depth form;
- *         a union alone would leave it in every extant file forever
+ * .why  = the root-anchored `.claude/scheduled_tasks*` is superseded by the any-depth form, and
+ *         the pre-1.50 `.default` actor exception by the `repo=ambient` one (#786); a union alone
+ *         would leave each in every extant file forever
  * .note = a lock already tracked stays tracked until `git rm --cached` — an ignore never
  *         untracks a file
  */
-const ignoresRetired: readonly string[] = ['.claude/scheduled_tasks*'];
+const ignoresRetired: readonly string[] = [
+  '.claude/scheduled_tasks*',
+  '!.agent/.actors/actor.via.slug=.default/',
+];
 
 /**
  * .what = emits the `.gitignore` this practice declares, given the repo's extant one

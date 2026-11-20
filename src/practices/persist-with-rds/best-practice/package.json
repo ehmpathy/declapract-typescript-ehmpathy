@@ -24,7 +24,7 @@
     "provision:schema:plan": "sql-schema-control plan -c provision/schema/control.yml",
     "provision:schema:apply": "sql-schema-control apply -c provision/schema/control.yml",
     "provision:schema:sync": "sql-schema-control sync -c provision/schema/control.yml",
-    "provision:testdb:docker:clear": "for port in $(bash provision/docker/testdb/compose.sh config --format json | jq -r '.services[].ports[]?.published'); do docker rm -f $(docker ps -a -f \"publish=$port\" -q) 2>/dev/null || true; done && echo 'ensured ports are available 👍'",
+    "provision:testdb:docker:clear": "bash provision/docker/testdb/compose.sh clear",
     "provision:testdb:docker:prepare": "cp provision/schema/sql/init/.extensions.sql provision/docker/testdb/init/extensions.sql && cp provision/schema/sql/init/.schema.sql provision/docker/testdb/init/schema.sql && cp provision/schema/sql/init/.user.cicd.sql provision/docker/testdb/init/user.cicd.sql",
     "provision:testdb:docker:up": "bash provision/docker/testdb/compose.sh up -d --force-recreate --build --renew-anon-volumes",
     "provision:testdb:docker:await": "bash provision/docker/testdb/compose.sh exec -T postgres /root/wait-for-postgres.sh",

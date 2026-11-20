@@ -273,11 +273,13 @@ ignores:
       expect(parsed.ignores).not.toContain('metro-config');
     });
 
-    it('declares ignorePatterns for the actor dir, its `.claude` link, and vendored roles, in both runtimes', async () => {
+    it('declares ignorePatterns for the actor dir, the cache, .temp, the `.claude` link, and vendored roles, in both runtimes', async () => {
       const declared = await contents({ projectPractices: ['lint'] } as any);
       const parsed = yaml.parse(declared) as { ignorePatterns: string[] };
       expect(parsed.ignorePatterns).toEqual([
         '.agent/.actors',
+        '.agent/.cache',
+        '.temp',
         '.claude',
         '.agent/repo=*',
         '!.agent/repo=.this',

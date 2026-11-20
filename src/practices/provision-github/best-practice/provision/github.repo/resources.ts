@@ -17,11 +17,13 @@ import { genLogMethods } from 'sdk-logs';
 
 import pkgJson from '../../package.json';
 
-const pkg = pkgJson as {
+// the package.json fields the repo declaration reads; each is optional in a package.json
+// .note = a typed assignment, not a cast: the imported json is checked against this shape
+const pkg: {
   description?: string;
   private?: boolean;
   homepage?: string;
-};
+} = pkgJson;
 
 export const getProviders = async (): Promise<DeclastructProvider[]> => [
   getDeclastructGithubProvider(
@@ -100,18 +102,16 @@ export const getResources = async (): Promise<DomainEntity<any>[]> => {
 
     requiredStatusChecks: {
       strict: true, // the branch must be up to date, so a green check holds after the merge
-      contexts: [
-        'suite / install / pnpm',
-        'suite / enshard',
-        'suite / test-commits',
-        'suite / test-types',
-        'suite / test-format',
-        'suite / test-lint',
-        'suite / test-unit',
-        'suite / test-integration',
-        'suite / test-acceptance-locally',
-        'pullreq-title',
-      ],
+      // require the one stable gate, never the inner job names: a protection that names inner
+      // jobs strands every pr whose jobs were renamed. `test-passed` needs the
+      // whole suite and fails on any failed or cancelled job (test.yml)
+      // .note = a repo whose live protection still names the pre-`suite /` checks (`test-commits`,
+      //         …) sees its upgrade pr wait on checks no job reports; apply this wish once, before
+      //         the merge, from the upgrade branch, to move protection to the gate (GITHUB_TOKEN
+      //         set, admin on the repo):
+      //         `npx declastruct plan --wish provision/github.repo/resources.ts --into plan.json`
+      //         `npx declastruct apply --plan plan.json`
+      contexts: ['test-passed', 'pullreq-title'],
     },
 
     // github's defaults, declared so drift shows in a plan

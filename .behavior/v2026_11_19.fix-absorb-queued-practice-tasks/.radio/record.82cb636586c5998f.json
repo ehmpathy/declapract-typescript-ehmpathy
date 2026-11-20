@@ -1,0 +1,19 @@
+{
+  "key": "82cb636586c5998f",
+  "kind": "update",
+  "repo": {
+    "owner": "ehmpathy",
+    "name": "declapract-typescript-ehmpathy"
+  },
+  "exid": "781",
+  "title": null,
+  "description": null,
+  "status": "CLAIMED",
+  "via": "gh.issues",
+  "auth": null,
+  "idem": null,
+  "heldSeq": 4,
+  "recordStatus": "QUEUED",
+  "reason": "radio.uses:blocked — global",
+  "deliveredExid": null
+}

@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`node_modules cache key (#796) given: [case1] a repo with no patches/ dir when: [t0] the key is computed then: the step prints the node version and the key, and hands both to later steps: deps-hash step output, no patches 1`] = `
+{
+  "output": "node-version=20
+package-deps-hash=cfe3cd5710ecf1f2a2c0854259ca8e74
+",
+  "stdout": "NODE_VERSION=20
+PACKAGE_DEPS_HASH=cfe3cd5710ecf1f2a2c0854259ca8e74
+",
+}
+`;
+
+exports[`the output key is a promise kept (#793) given: [case2] every confirm missed when: [t1] the verdict runs then: it fails with exit 1, and names the key, the race, and the fix: install verdict — key never appeared 1`] = `
+"💥 MalfunctionError: the node_modules cache key never appeared
+   ├─ key: Linux-node-20-pnpm-abc123
+   ├─ why: the save did not land after 90s; most often a parallel install won the reserve and had not committed, else the cache refused it (quota, eviction)
+   └─ fix: rerun the failed jobs; if this halts again on the rerun, read the save step's own warn for the cache's refusal
+"
+`;

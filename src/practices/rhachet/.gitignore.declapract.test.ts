@@ -13,6 +13,8 @@ import {
   check as checkOfGit,
   fix as fixOfGit,
 } from '../git/best-practice/.gitignore.declapract';
+import { getError, given, then, when } from 'test-fns';
+
 import { check, fix } from './best-practice/.gitignore.declapract';
 
 describe('.gitignore best practice (rhachet)', () => {
@@ -205,6 +207,56 @@ node_modules
           {} as any,
         ),
       ).toThrow();
+    });
+  });
+
+  /**
+   * .what = rhachet >= 1.50 tracks the ambient actor dir, and retires the pre-1.50 `.default` one (#786)
+   * .why  = rhachet findserts the ambient line at each boot, so a repo without it churns; a union
+   *         alone would keep the dead `.default` line in every extant file forever
+   */
+  describe('the tracked actor dir (#786)', () => {
+    given('[case1] a file that tracks the pre-1.50 .default actor dir', () => {
+      when('[t0] the fix runs', () => {
+        then('it retires the .default actor line and declares the ambient one; the repo own lines stay', async () => {
+          const lines = (
+            await fix('.agent/.actors/\n!.agent/.actors/actor.via.slug=.default/\ndist\n', {} as any)
+          ).contents!.split('\n');
+
+          expect(lines).not.toContain('!.agent/.actors/actor.via.slug=.default/');
+          expect(lines).toContain('!.agent/.actors/actor.via.repo=ambient/');
+          expect(lines).toContain('dist');
+        });
+      });
+    });
+
+    given('[case2] a file that ignores the actors dir with no negation', () => {
+      when('[t0] the fix runs', () => {
+        then('it places the ambient negation after the actors ignore, so git honors it', async () => {
+          const lines = (await fix('.agent/.actors/\ndist\n', {} as any)).contents!.split('\n');
+
+          expect(lines.indexOf('!.agent/.actors/actor.via.repo=ambient/')).toBeGreaterThan(
+            lines.indexOf('.agent/.actors/'),
+          );
+        });
+      });
+    });
+
+    given('[case3] a fixed file that still holds the .default line', () => {
+      when('[t0] the check runs', () => {
+        then('it flags the file', async () => {
+          const contentsWithDefault = (await fix('dist\n', {} as any)).contents!.concat(
+            '!.agent/.actors/actor.via.slug=.default/\n',
+          );
+
+          // the diff a `plan` reader meets, with the color codes stripped so it reads the same in any env
+          const error = await getError(async () => check(contentsWithDefault, {} as any));
+          const diff = error.message.replace(/\u001b\[[0-9;]*m/g, '');
+          expect(diff).toContain('+ !.agent/.actors/actor.via.slug=.default/');
+          expect(diff).not.toContain('\u001b[');
+          expect(diff).toMatchSnapshot('the diff that names the retired .default line');
+        });
+      });
     });
   });
 

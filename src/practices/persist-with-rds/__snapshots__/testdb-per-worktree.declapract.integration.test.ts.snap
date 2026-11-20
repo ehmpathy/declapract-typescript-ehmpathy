@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`persist-with-rds testdb per worktree (#674) given: [case7.1] compose.sh, where the identity cannot be derived at all when: [t0] config/test.json is absent then: it halts with exit 2, names the absent file and its fix, and never shows node words: compose.sh constraint — absent config 1`] = `
+"✋ ConstraintError: config/test.json not found — the testdb identity cannot be derived
+   └─ fix: add config/test.json with database.tunnel.local.port, or run 'npx declapract apply' to restore it
+"
+`;
+
+exports[`persist-with-rds testdb per worktree (#674) given: [case7.1] compose.sh, where the identity cannot be derived at all when: [t1] config/test.json declares no port then: it halts with exit 2 and names the absent key, never a TypeError: compose.sh constraint — portless config 1`] = `
+"✋ ConstraintError: could not derive this checkout's testdb identity
+   ├─ cause: config/test.json declares no numeric database.tunnel.local.port
+   └─ fix: declare database.tunnel.local.port in config/test.json, or run 'npx declapract apply' to restore it
+"
+`;
+
+exports[`persist-with-rds testdb per worktree (#674) given: [case7] compose.sh, where the identity util yields a malformed port then: it halts with exit 1 and names the malformed identity: compose.sh malfunction — malformed identity 1`] = `
+"💥 MalfunctionError: getTestdbIdentity yielded '-abc123 NaN', not '<suffix> <port>'
+   └─ fix: check src/.test/assets/database/getTestdbIdentity.ts and config/test.json database.tunnel.local.port
+"
+`;
+
+exports[`persist-with-rds testdb per worktree (#674) given: [case8] compose.sh clear, on a host shared with another testdb (#805 #807) when: [t0] the port is free after this project is down then: it exits 0 and says the port is available: compose.sh clear — port free 1`] = `
+"ensured port 7821 is available 👍
+"
+`;
+
+exports[`persist-with-rds testdb per worktree (#674) given: [case8] compose.sh clear, on a host shared with another testdb (#805 #807) when: [t1] another repo still holds the port then: it halts with exit 2 and names the holder and the fix: compose.sh clear — one holder 1`] = `
+"✋ ConstraintError: port 7821 is held by a container outside this checkout's compose project
+   ├─ holder: svcjobs (project: svcjobs)
+   ├─ why: a clear downs only this checkout's compose project; it never evicts another container
+   └─ fix
+      ├─ another worktree of this repo: stop that testdb from its own checkout
+      └─ another repo: declare another port in config/test.json database.tunnel.local.port
+"
+`;
+
+exports[`persist-with-rds testdb per worktree (#674) given: [case8] compose.sh clear, on a host shared with another testdb (#805 #807) when: [t2] two containers hold the port then: it names both holders on the one holder branch, so the tree stays whole: compose.sh clear — two holders 1`] = `
+"✋ ConstraintError: port 7821 is held by a container outside this checkout's compose project
+   ├─ holder: svcjobs (project: svcjobs), svcquotes (project: svcquotes)
+   ├─ why: a clear downs only this checkout's compose project; it never evicts another container
+   └─ fix
+      ├─ another worktree of this repo: stop that testdb from its own checkout
+      └─ another repo: declare another port in config/test.json database.tunnel.local.port
+"
+`;
+
+exports[`persist-with-rds testdb per worktree (#674) given: [case8] compose.sh clear, on a host shared with another testdb (#805 #807) when: [t3] docker cannot list the containers after the down then: it halts with exit 1 and names the fault, the state left, and the fix: compose.sh clear — docker fault 1`] = `
+"💥 MalfunctionError: could not list the containers that hold port 7821
+   ├─ state: this checkout's own project is down; whether another holds the port is unknown
+   └─ fix: check that docker runs (docker ps), then rerun clear
+"
+`;
+
+exports[`persist-with-rds testdb per worktree (#674) given: [case8] compose.sh clear, on a host shared with another testdb (#805 #807) when: [t4] docker cannot take down this project then: it halts with exit 1 and names the fault, the state left, and the fix: compose.sh clear — docker down fault 1`] = `
+"💥 MalfunctionError: could not take down this checkout's testdb compose project
+   ├─ state: the project may still run; no other container was touched
+   └─ fix: check that docker runs (docker ps), then rerun clear
+"
+`;
+
+exports[`persist-with-rds testdb per worktree (#674) given: [case8] compose.sh clear, on a host shared with another testdb (#805 #807) when: [t5] a hand-run container with no compose project holds the port then: it names the holder as one with no compose project, never an empty label: compose.sh clear — holder with no compose project 1`] = `
+"✋ ConstraintError: port 7821 is held by a container outside this checkout's compose project
+   ├─ holder: pg-handrun (no compose project)
+   ├─ why: a clear downs only this checkout's compose project; it never evicts another container
+   └─ fix
+      ├─ another worktree of this repo: stop that testdb from its own checkout
+      └─ another repo: declare another port in config/test.json database.tunnel.local.port
+"
+`;
+
+exports[`persist-with-rds testdb per worktree (#674) given: [case8] compose.sh clear, on a host shared with another testdb (#805 #807) when: [t6] this checkout own testdb, under an older project name, holds the port then: it halts with exit 2, and offers the removal for its own holder only, by name: compose.sh clear — own older-project holder 1`] = `
+"✋ ConstraintError: port 7821 is held by a container outside this checkout's compose project
+   ├─ holder: svcjobs_testdb (project: svcjobs_old), svcquotes (project: svcquotes)
+   ├─ why: a clear downs only this checkout's compose project; it never evicts another container
+   └─ fix
+      ├─ this checkout's own testdb, under an older project name: docker rm -f svcjobs_testdb
+      ├─ another worktree of this repo: stop that testdb from its own checkout
+      └─ another repo: declare another port in config/test.json database.tunnel.local.port
+"
+`;

@@ -9,14 +9,36 @@
 #
 # ⛔ NEVER ADD AN EXEMPTION TO THIS HOOK. NOT A PATH, NOT A DIR, NOT A FILE, NOT A PATTERN.
 #    this hook exists to block EVERY timestamp in every tracked file. that is the whole point.
-#    an exemption is how the leak gets back in — one dir today, every dir tomorrow.
+#    an exemption is how the leak gets back in.
 #    a file that "needs" a timestamp removes it or masks it (e.g. `[timestamp]`, a fixed clock).
 #    the .ts/.sh skip below is code that computes time, not data that records it; it may never
 #    widen. check.timestamps.lock.sh halts every commit if this file differs from the practice.
 
-# fail fast on errors and unbound vars (safe here: scan pipelines end in `head`
-# so a no-match grep does not abort, and all vars are assigned before use)
+# fail fast on errors and unbound vars (safe here: every git read and scan is guarded by `||`,
+# and all vars are assigned before use)
 set -eu
+
+# halt when a read or a scan faults; a fault never reads as a clean pass
+# reads named args: what=<the step that failed> tool=<the tool that faulted> file=<the staged path, or none>
+timestamps_malfunction() {
+  TIMESTAMPS_MALFUNCTION_WHAT='a step'
+  TIMESTAMPS_MALFUNCTION_TOOL='git'
+  TIMESTAMPS_MALFUNCTION_FILE='none'
+  for TIMESTAMPS_MALFUNCTION_ARG in "$@"; do
+    case "$TIMESTAMPS_MALFUNCTION_ARG" in
+      what=*) TIMESTAMPS_MALFUNCTION_WHAT="${TIMESTAMPS_MALFUNCTION_ARG#what=}" ;;
+      tool=*) TIMESTAMPS_MALFUNCTION_TOOL="${TIMESTAMPS_MALFUNCTION_ARG#tool=}" ;;
+      file=*) TIMESTAMPS_MALFUNCTION_FILE="${TIMESTAMPS_MALFUNCTION_ARG#file=}" ;;
+    esac
+  done
+  printf '💥 MalfunctionError: check.timestamps could not %s\n' "$TIMESTAMPS_MALFUNCTION_WHAT" >&2
+  if [ "$TIMESTAMPS_MALFUNCTION_FILE" != 'none' ]; then printf '   ├─ file: %s\n' "$TIMESTAMPS_MALFUNCTION_FILE" >&2; fi
+  printf '   ├─ why: a failed read or scan halts the commit, never reads as clean\n' >&2
+  # a git fault names itself in `git status`; a grep or sed fault prints its own words above
+  if [ "$TIMESTAMPS_MALFUNCTION_TOOL" = 'git' ]; then printf '   └─ fix: repair git (git status names the fault), then commit again\n' >&2; fi
+  if [ "$TIMESTAMPS_MALFUNCTION_TOOL" != 'git' ]; then printf '   └─ fix: repair %s (its own words print above), then commit again\n' "$TIMESTAMPS_MALFUNCTION_TOOL" >&2; fi
+  exit 1
+}
 
 # the time-of-day forms, each a valid clock (hour 00-23, minute + second 00-59):
 #   - colon clock, with or without seconds: 14:30, 14:30:00, T14:30Z, 14:30:00+05:00
@@ -39,7 +61,8 @@ DURATION_PATTERN='P([0-9]+[YMWD])*T([0-9]+[HMS])*[0-9][0-9]:[0-9][0-9](:[0-9][0-
 
 # collect staged files (added/copied/modified); skip deletions
 # core.quotepath=off emits a non-ascii path raw, so `git show` below can read it
-staged=$(git -c core.quotepath=off diff --cached --name-only --diff-filter=ACM)
+# --no-renames lists a moved-and-edited file as added, so its new lines are scanned; T keeps a type change
+staged=$(git -c core.quotepath=off diff --cached --no-renames --name-only --diff-filter=ACMT) || timestamps_malfunction what='list the staged files'
 
 # scan each staged file for a raw timestamp
 # note: the here-doc feeds the loop in the current shell (no pipe subshell),
@@ -55,20 +78,29 @@ while IFS= read -r file; do
 
   # read the staged blob; fail loud if git cannot read it
   # (git's own stderr flows straight to the terminal, never into the scanned content)
-  if ! content=$(git show ":$file"); then
-    printf '💥 MalfunctionError: check.timestamps could not read the staged blob\n' >&2
-    printf '   └─ %s\n' "$file" >&2
-    exit 1
-  fi
+  content=$(git show ":$file") || timestamps_malfunction what='read the staged blob' file="$file"
 
-  # halt if the staged content embeds a raw timestamp. strip iso durations first (sed is
-  # line-by-line, so line numbers are preserved): a duration-only line loses its HH:MM:SS run
-  # and falls through; a line that also holds a real stamp still matches (the stamp wins)
-  match=$(printf '%s\n' "$content" | sed -E "s/$DURATION_PATTERN//g" | grep -nIE "$TIMESTAMP_PATTERN" | head -n 1)
-  if [ -n "$match" ]; then
-    printf '✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions\n' >&2
+  # strip iso durations first (sed is line-by-line, so line numbers are preserved): a
+  # duration-only line loses its HH:MM:SS run and falls through; a line that also holds a
+  # real stamp still matches (the stamp wins). sed runs alone, so its own status is read.
+  # LC_ALL=C reads bytes, never characters: a binary file or a stray byte outside the locale
+  # (bsd sed's "illegal byte sequence") never faults the scan; the pattern is ascii either way
+  stripped=$(printf '%s\n' "$content" | LC_ALL=C sed -E "s/$DURATION_PATTERN//g") || timestamps_malfunction what='mask durations before the timestamp scan' tool='sed' file="$file"
+
+  # scan for a raw timestamp. grep exits 0 on a match, 1 on none, 2 on a fault; only a fault halts
+  # as a malfunction (sh has no portable pipefail, so the status is read from grep itself)
+  TIMESTAMPS_GREP_STATUS=0
+  matches=$(printf '%s\n' "$stripped" | LC_ALL=C grep -nIE "$TIMESTAMP_PATTERN") || TIMESTAMPS_GREP_STATUS=$?
+  [ "$TIMESTAMPS_GREP_STATUS" -le 1 ] || timestamps_malfunction what='scan for timestamps' tool='grep' file="$file"
+
+  # halt if the staged content embeds a raw timestamp; name the line number only, since the line
+  # itself may also hold a key, and this halt prints before the secrets scan runs
+  line=$(printf '%s\n' "$matches" | head -n 1 | cut -d: -f1)
+  if [ -n "$line" ]; then
+    printf '✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included\n' >&2
     printf '   ├─ why: a timestamp is a privacy leak, and churns every diff\n' >&2
-    printf '   └─ %s:%s\n' "$file" "$match" >&2
+    printf '   ├─ file: %s:%s\n' "$file" "$line" >&2
+    printf '   └─ fix: remove them, or mask each one (e.g. [time]); zero exceptions\n' >&2
     exit 2
   fi
 done <<EOF

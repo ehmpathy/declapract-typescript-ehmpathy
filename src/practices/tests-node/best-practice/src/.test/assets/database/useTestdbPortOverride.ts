@@ -1,7 +1,12 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { ConstraintError } from 'helpful-errors';
+
+import {
+  getOneTestConfig,
+  asTestdbPortDeclared,
+} from '../../../../jest.integration.env.db';
 
 /**
  * .what = declare this checkout's testdb port as TESTDB_PORT, for the app under test to dial
@@ -41,11 +46,17 @@ export const useTestdbPortOverride = (): void => {
 
   // the declared port lives in config/test.json; persist-with-rds owes it, so its absence is loud
   const testConfigPath = join(process.cwd(), 'config', 'test.json');
-  const portDeclared: unknown = existsSync(testConfigPath)
-    ? JSON.parse(readFileSync(testConfigPath, 'utf8')).database?.tunnel?.local
-        ?.port
-    : undefined;
-  if (typeof portDeclared !== 'number')
+  const testConfig = getOneTestConfig({ path: testConfigPath });
+  if (testConfig === null)
+    throw new ConstraintError(
+      'config/test.json not found — the testdb port cannot be derived',
+      {
+        testConfigPath,
+        hint: 'add config/test.json with database.tunnel.local.port, or run `npx declapract apply` to restore it',
+      },
+    );
+  const portDeclared = asTestdbPortDeclared({ testConfig });
+  if (portDeclared === null)
     throw new ConstraintError(
       'config/test.json declares no database.tunnel.local.port — the testdb port cannot be derived',
       {

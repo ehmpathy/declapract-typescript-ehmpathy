@@ -7,5 +7,24 @@ exports[`.gitignore best practice (rhachet) cache dir is declared should emit a 
 node_modules
 !.test*/**/node_modules
 !.test*/**/node_modules/**
+!.agent/.actors/actor.via.repo=ambient/
 "
+`;
+
+exports[`.gitignore best practice (rhachet) the tracked actor dir (#786) given: [case3] a fixed file that still holds the .default line when: [t0] the check runs then: it flags the file: the diff that names the retired .default line 1`] = `
+"expect(received).toEqual(expected) // deep equality
+
+- Expected  - 1
++ Received  + 2
+
+@@ -3,7 +3,8 @@
+  .agent/.notes/
+  dist
+  node_modules
+  !.test*/**/node_modules
+  !.test*/**/node_modules/**
+- !.agent/.actors/actor.via.repo=ambient/
++ !.agent/.actors/actor.via.repo=ambient/
++ !.agent/.actors/actor.via.slug=.default/
+  ↵"
 `;

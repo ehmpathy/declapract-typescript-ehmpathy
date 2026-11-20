@@ -58,8 +58,8 @@ describe('check.timestamps.lock', () => {
         practice: 'husky',
         file,
       });
-    const runLock = () => {
-      const res = spawnSync('bash', [lockRel], { cwd: tempDir, encoding: 'utf-8' });
+    const runLock = (input: { env: NodeJS.ProcessEnv } = { env: process.env }) => {
+      const res = spawnSync('bash', [lockRel], { cwd: tempDir, encoding: 'utf-8', env: input.env });
       return { code: res.status, stderr: res.stderr };
     };
     // pre-commit is `#!/bin/sh` and SOURCES the lock, so the lock must also hold under posix sh
@@ -101,7 +101,7 @@ describe('check.timestamps.lock', () => {
         const result = runLock();
         expect(result.code).toEqual(2);
         expect(result.stderr).toContain(
-          '✋ ConstraintError: .husky/check.timestamps.sh was changed. revert the hook, zero exceptions — remove all timestamps',
+          '✋ ConstraintError: .husky/check.timestamps.sh was changed. revert the hook\n',
         );
         expect(result.stderr).toContain('a privacy leak');
         expect(result.stderr).not.toContain('permadrift');
@@ -111,7 +111,7 @@ describe('check.timestamps.lock', () => {
       then('the lock halts with exit 2 when sourced by posix sh, as pre-commit does', () => {
         const result = runLockSourcedBySh();
         expect(result.code).toEqual(2);
-        expect(result.stderr).toContain('revert the hook, zero exceptions');
+        expect(result.stderr).toContain('was changed. revert the hook');
       });
     });
 
@@ -166,9 +166,61 @@ describe('check.timestamps.lock', () => {
         // the hook may be intact, so the halt blames the index, never asks to revert the hook
         expect(result.code).toEqual(1);
         expect(result.stderr).toContain('💥 MalfunctionError:');
-        expect(result.stderr).toContain('unreadable (in the index)');
+        // the found line names the place as every lock halt does: `on disk` or `in the index`
+        expect(result.stderr).toContain('found: unreadable (in the index)');
         expect(result.stderr).not.toContain('was changed');
-        expect(asMaskedBlob(result.stderr)).toMatchSnapshot('lock halt output — index unreadable');
+        // snap the lock's own lines, from its header on; git's `fatal:` line precedes them and varies by git version
+        const lockOwnStderr = result.stderr.slice(result.stderr.indexOf('💥'));
+        expect(asMaskedBlob(lockOwnStderr)).toMatchSnapshot('lock halt output — index unreadable');
+      });
+    });
+
+    when('[t4.1] the hook is dropped from the index but kept on disk (#810, #789)', () => {
+      const result = useThen('git rm --cached the hook, run the lock, then stage it again', async () => {
+        execFileSync('git', ['rm', '-q', '--cached', '--', hookRel], { cwd: tempDir });
+        const outcome = runLock();
+        execFileSync('git', ['add', '--', hookRel], { cwd: tempDir });
+        return outcome;
+      });
+
+      then('the lock halts with exit 2, names the absence in the index, and the fix is a git add', () => {
+        // a hook absent from the index would drop from the commit, so an empty index read halts
+        expect(result.code).toEqual(2);
+        expect(result.stderr).toContain('found: absent (in the index)');
+        expect(result.stderr).toContain('fix: git add .husky/check.timestamps.sh');
+        expect(asMaskedBlob(result.stderr)).toMatchSnapshot('lock halt output — absent from the index');
+      });
+    });
+
+    when('[t4.2] git cannot read the hook on disk (#810, #789, #802)', () => {
+      // a git whose `hash-object` read faults, and every other verb is the real git
+      // .why = a chmod 000 hook still reads as root (a root ci runner), so the fault is injected
+      //        at the read itself, the same under any uid
+      const result = useThen('run the lock with a git whose hash-object read faults', async () => {
+        const gitReal = execFileSync('sh', ['-c', 'command -v git'], { encoding: 'utf-8' }).trim();
+        const binDir = genTempDir({ slug: 'declapract-husky-lock-faulty-git' });
+        fs.writeFileSync(
+          path.join(binDir, 'git'),
+          [
+            '#!/bin/sh',
+            'if [ "$1" = "hash-object" ]; then echo "fatal: could not open the hook" >&2; exit 128; fi',
+            `exec "${gitReal}" "$@"`,
+          ].join('\n'),
+          { mode: 0o755 },
+        );
+        return runLock({ env: { ...process.env, PATH: `${binDir}:${process.env.PATH}` } });
+      });
+
+      then('the lock halts as a malfunction (exit 1), never as a hook edit', () => {
+        // a failed read yields no id; read as an edit, it would tell the human to revert an intact hook
+        expect(result.code).toEqual(1);
+        expect(result.stderr).toContain('💥 MalfunctionError:');
+        expect(result.stderr).toContain('found: unreadable (on disk)');
+        expect(result.stderr).not.toContain('was changed');
+
+        // snap the lock's own lines, from its header on; git's `fatal:` line precedes them
+        const lockOwnStderr = result.stderr.slice(result.stderr.indexOf('💥'));
+        expect(asMaskedBlob(lockOwnStderr)).toMatchSnapshot('lock halt output — hook on disk unreadable');
       });
     });
 

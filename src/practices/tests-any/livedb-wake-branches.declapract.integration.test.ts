@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 
+import { ConstraintError } from 'helpful-errors';
 import { given, then, useBeforeAll, when } from 'test-fns';
 import { getModuleExportsFromTsSource } from '../../utils/getModuleExportsFromTsSource';
 
@@ -51,15 +52,6 @@ const runUseWakeOfLivedb = async (input: {
   const execCalls: string[] = [];
   const stderr: string[] = [];
 
-  class FakeConstraintError extends Error {
-    public readonly cause: unknown;
-    constructor(message: string, meta?: { cause?: unknown }) {
-      super(message);
-      this.name = 'ConstraintError';
-      this.cause = meta?.cause;
-    }
-  }
-
   const requireStub = (id: string): unknown => {
     if (id === 'node:child_process')
       return {
@@ -75,7 +67,7 @@ const runUseWakeOfLivedb = async (input: {
       };
     if (id === 'node:path')
       return { join: (...parts: string[]): string => parts.join('/') };
-    if (id === 'helpful-errors') return { ConstraintError: FakeConstraintError };
+    if (id === 'helpful-errors') return { ConstraintError };
     return {};
   };
 
@@ -179,11 +171,17 @@ describe('the useWakeOfLivedb decide-gate runs its real branches (executed, no l
         const error = await runUseWakeOfLivedb({
           env: 'prep',
           ci: false,
-          configText: '{ not: valid json',
+          configText: '{ "password": "hunter2secret", not: valid json',
         }).catch((caught: unknown) => caught);
-        expect(error).toBeInstanceOf(Error);
-        expect((error as Error).name).toBe('ConstraintError');
+        expect(error).toBeInstanceOf(ConstraintError);
         expect((error as Error).message).toContain('could not parse');
+        // the parse engine's text can quote the secret; neither the message nor a cause carries it
+        expect((error as Error).message).not.toContain('hunter2secret');
+        expect((error as Error).cause).toBeUndefined();
+        // the whole error a human reads, with the host's cwd masked
+        expect((error as Error).message.split(process.cwd()).join('<cwd>')).toMatchSnapshot(
+          'useWakeOfLivedb parse failure',
+        );
       });
     });
   });
@@ -218,6 +216,83 @@ describe('the useWakeOfLivedb decide-gate runs its real branches (executed, no l
         expect((error as Error).message).toBe('a real bug in this module');
       });
     });
+
+    // each shape execSync really throws, and whether the wake tolerates it
+    const asExecError = (input: { message: string; fields: Record<string, unknown> }): Error =>
+      Object.assign(new Error(input.message), input.fields);
+    const FAILURE_CASES: { slug: string; thrown: unknown; tolerated: boolean; cause: string }[] = [
+      {
+        slug: 'a real exec Error with a non-zero exit',
+        thrown: asExecError({ message: 'Command failed: rhx use.rds.capacity --env prep', fields: { status: 2 } }),
+        tolerated: true,
+        cause: 'Command failed: rhx use.rds.capacity --env prep',
+      },
+      {
+        slug: 'an absent binary (ENOENT)',
+        thrown: asExecError({ message: 'spawnSync /bin/sh ENOENT', fields: { code: 'ENOENT' } }),
+        tolerated: true,
+        cause: 'spawnSync /bin/sh ENOENT',
+      },
+      {
+        slug: 'the timeout cap (ETIMEDOUT, killed by SIGTERM)',
+        thrown: asExecError({ message: 'spawnSync /bin/sh ETIMEDOUT', fields: { code: 'ETIMEDOUT', signal: 'SIGTERM' } }),
+        tolerated: true,
+        cause: 'spawnSync /bin/sh ETIMEDOUT',
+      },
+      {
+        slug: 'a bare signal shape',
+        thrown: { signal: 'SIGKILL' },
+        tolerated: true,
+        cause: 'the command was killed by SIGKILL',
+      },
+      {
+        slug: 'a bare exit shape',
+        thrown: { status: 1 },
+        tolerated: true,
+        cause: 'the command exited with status 1',
+      },
+      {
+        slug: 'a permission fault (EACCES), which is no wake failure',
+        thrown: asExecError({ message: 'spawnSync /bin/sh EACCES', fields: { code: 'EACCES' } }),
+        tolerated: false,
+        cause: '',
+      },
+    ];
+    FAILURE_CASES.forEach((thisCase) =>
+      when(`it fails with ${thisCase.slug}`, () => {
+        const state = useBeforeAll(async () =>
+          runUseWakeOfLivedb({
+            env: 'prep',
+            ci: false,
+            configText: TUNNEL_CONFIG,
+            wakeThrows: thisCase.thrown,
+          }).then(
+            (result) => ({ result, error: null }),
+            (error: unknown) => ({ result: null, error }),
+          ),
+        );
+        then(
+          thisCase.tolerated
+            ? 'it tolerates the failure and warns once, with the legible cause'
+            : 'it rethrows the fault as is, and never warns it away',
+          () => {
+            if (thisCase.tolerated) {
+              expect(state.error).toEqual(null);
+              expect(state.result?.stderr).toEqual([
+                [
+                  "useWakeOfLivedb: 'rhx use.rds.capacity --env prep' failed (non-fatal)",
+                  `   ├─ cause: ${thisCase.cause}`,
+                  "   └─ fix: run 'rhx use.rds.capacity --env prep' by hand to see why; the suite runs on, so a cold-start timeout may follow",
+                  '',
+                ].join('\n'),
+              ]);
+              return;
+            }
+            expect(state.error).toBe(thisCase.thrown);
+          },
+        );
+      }),
+    );
   });
 
   given('a caller that reaches the cluster via its gateway, with no config/ dir (an expo app, #621)', () => {

@@ -1,51 +1,82 @@
 #!/bin/bash
 
 # .what = halt every commit if .husky/check.timestamps.sh differs from the practice's copy
-# .why  = the timestamp hook has zero exemptions, by design. a timestamp in a tracked file a
-#         privacy leak that ships to every clone and fork, forever. an edit
-#         that softens the hook (an exemption, a skip, a looser pattern) lets it back in, so
-#         this lock refuses the commit until the hook is reverted
+# .why  = the timestamp hook has zero exemptions, by design. a timestamp in a tracked file is a
+#         privacy leak that ships to every clone and fork, forever. an edit that softens the
+#         hook (an exemption, a skip, a looser pattern) lets it back in, so this lock refuses
+#         the commit until the hook is reverted
 # .how  = compare the git blob id of the hook (on disk, and in the index) to the blob id the
-#         practice declared; halt with a constraint error (exit 2) on any mismatch, or with a
-#         malfunction error (exit 1) when git cannot read the index
+#         practice declared; halt with a constraint error (exit 2) on any mismatch or absence,
+#         or with a malfunction error (exit 1) when git cannot read the hook or the index
 #
 # ⛔ do not edit this lock or its expected id by hand to let a changed hook through. the only
 #    sanctioned change to the timestamp hook is a practice upgrade, which rewrites both at once.
 
+# fail fast on errors and unbound vars (safe here: every git read is guarded by `||`, and
+# all vars are assigned before use)
+set -eu
+
 # the blob id of the declared hook (stamped by the practice on apply)
-TIMESTAMPS_LOCK_EXPECTED='afea02deb1cb378e08af49b86070c37cacd5b032'
+TIMESTAMPS_LOCK_EXPECTED='e67d660eca86ccd94c8a1aae6ffd4624e7decf92'
 
 # the hook under lock; $0 is the hook dir whether sourced by pre-commit or run direct
 TIMESTAMPS_LOCK_HOOK="$(dirname -- "$0")/check.timestamps.sh"
 
-# halt with the revert instruction
+# halt with the cure; reads named args: found=<id|absent> where=<place> fix=<command> header=<what went wrong>
 timestamps_lock_halt() {
-  printf '✋ ConstraintError: .husky/check.timestamps.sh was changed. revert the hook, zero exceptions — remove all timestamps\n' >&2
+  TIMESTAMPS_LOCK_HALT_FOUND='unknown'
+  TIMESTAMPS_LOCK_HALT_WHERE='unknown'
+  TIMESTAMPS_LOCK_HALT_FIX='npx declapract apply --practice husky'
+  TIMESTAMPS_LOCK_HALT_HEADER='.husky/check.timestamps.sh was changed. revert the hook'
+  for TIMESTAMPS_LOCK_HALT_ARG in "$@"; do
+    case "$TIMESTAMPS_LOCK_HALT_ARG" in
+      found=*) TIMESTAMPS_LOCK_HALT_FOUND="${TIMESTAMPS_LOCK_HALT_ARG#found=}" ;;
+      where=*) TIMESTAMPS_LOCK_HALT_WHERE="${TIMESTAMPS_LOCK_HALT_ARG#where=}" ;;
+      fix=*) TIMESTAMPS_LOCK_HALT_FIX="${TIMESTAMPS_LOCK_HALT_ARG#fix=}" ;;
+      header=*) TIMESTAMPS_LOCK_HALT_HEADER="${TIMESTAMPS_LOCK_HALT_ARG#header=}" ;;
+    esac
+  done
+  printf '✋ ConstraintError: %s\n' "$TIMESTAMPS_LOCK_HALT_HEADER" >&2
   printf '   ├─ why: the timestamp hook never takes an exemption. a timestamp is a privacy leak\n' >&2
   printf '   ├─ expected: %s\n' "$TIMESTAMPS_LOCK_EXPECTED" >&2
-  printf '   ├─ found: %s (%s)\n' "$1" "$2" >&2
-  printf '   └─ fix: npx declapract apply --practice husky\n' >&2
+  printf '   ├─ found: %s (%s)\n' "$TIMESTAMPS_LOCK_HALT_FOUND" "$TIMESTAMPS_LOCK_HALT_WHERE" >&2
+  printf '   └─ fix: %s\n' "$TIMESTAMPS_LOCK_HALT_FIX" >&2
   exit 2
 }
 
-# halt when the index cannot be read; the hook may be intact, so never say it was changed
+# halt when git cannot read the hook or the index; the hook may be intact, so never say it was changed
+# reads named args: what=<the read that failed>, where=<on disk | in the index, as the halt above names it>
 timestamps_lock_malfunction() {
-  printf '💥 MalfunctionError: the git index is unreadable, so the lock cannot verify .husky/check.timestamps.sh\n' >&2
-  printf '   ├─ found: unreadable (in the index)\n' >&2
-  printf '   ├─ why: a failed read halts the commit, never reads as "not staged"\n' >&2
-  printf '   └─ fix: repair the git index (git status names the fault), then commit again\n' >&2
+  TIMESTAMPS_LOCK_MALFUNCTION_WHAT='the index'
+  TIMESTAMPS_LOCK_MALFUNCTION_WHERE='in the index'
+  for TIMESTAMPS_LOCK_MALFUNCTION_ARG in "$@"; do
+    case "$TIMESTAMPS_LOCK_MALFUNCTION_ARG" in
+      what=*) TIMESTAMPS_LOCK_MALFUNCTION_WHAT="${TIMESTAMPS_LOCK_MALFUNCTION_ARG#what=}" ;;
+      where=*) TIMESTAMPS_LOCK_MALFUNCTION_WHERE="${TIMESTAMPS_LOCK_MALFUNCTION_ARG#where=}" ;;
+    esac
+  done
+  printf '💥 MalfunctionError: git could not read %s, so the lock cannot verify .husky/check.timestamps.sh\n' "$TIMESTAMPS_LOCK_MALFUNCTION_WHAT" >&2
+  printf '   ├─ found: unreadable (%s)\n' "$TIMESTAMPS_LOCK_MALFUNCTION_WHERE" >&2
+  printf '   ├─ why: a failed read halts the commit, never reads as "changed" or "not staged"\n' >&2
+  printf '   └─ fix: repair git (git status names the fault), then commit again\n' >&2
   exit 1
 }
 
 # halt if the hook is absent
-[ -f "$TIMESTAMPS_LOCK_HOOK" ] || timestamps_lock_halt 'absent' 'on disk'
+[ -f "$TIMESTAMPS_LOCK_HOOK" ] || timestamps_lock_halt found='absent' where='on disk' header='.husky/check.timestamps.sh was deleted. restore the hook'
 
-# halt if the hook on disk differs
-TIMESTAMPS_LOCK_DISK=$(git hash-object -- "$TIMESTAMPS_LOCK_HOOK")
-[ "$TIMESTAMPS_LOCK_DISK" = "$TIMESTAMPS_LOCK_EXPECTED" ] || timestamps_lock_halt "$TIMESTAMPS_LOCK_DISK" 'on disk'
+# halt if the hook on disk differs; a failed read halts as a malfunction, never as an edit
+TIMESTAMPS_LOCK_DISK=$(git hash-object -- "$TIMESTAMPS_LOCK_HOOK") || timestamps_lock_malfunction what='the hook on disk' where='on disk'
+[ "$TIMESTAMPS_LOCK_DISK" = "$TIMESTAMPS_LOCK_EXPECTED" ] || timestamps_lock_halt found="$TIMESTAMPS_LOCK_DISK" where='on disk'
 
 # halt if the hook in the index differs (a staged edit, then a revert on disk, still commits the edit)
+# or is absent from it (a `git rm --cached` keeps the hook on disk and drops it from the commit)
 # the index read stands alone, so a failed read halts rather than reads as "not staged"
-TIMESTAMPS_LOCK_STAGE=$(git ls-files -s -- "$TIMESTAMPS_LOCK_HOOK") || timestamps_lock_malfunction
-TIMESTAMPS_LOCK_INDEX=$(printf '%s\n' "$TIMESTAMPS_LOCK_STAGE" | awk '{ print $2 }')
-[ -z "$TIMESTAMPS_LOCK_INDEX" ] || [ "$TIMESTAMPS_LOCK_INDEX" = "$TIMESTAMPS_LOCK_EXPECTED" ] || timestamps_lock_halt "$TIMESTAMPS_LOCK_INDEX" 'in the index'
+TIMESTAMPS_LOCK_STAGE=$(git ls-files -s -- "$TIMESTAMPS_LOCK_HOOK") || timestamps_lock_malfunction what='the index' where='in the index'
+# the stage line reads `<mode> <id> <stage>\t<path>`; a shell split takes the id with no pipe to fault
+TIMESTAMPS_LOCK_INDEX="${TIMESTAMPS_LOCK_STAGE#* }"
+TIMESTAMPS_LOCK_INDEX="${TIMESTAMPS_LOCK_INDEX%% *}"
+# the hook on disk already matched above, so the hook is intact: the cure is to stage it as it stands on disk
+TIMESTAMPS_LOCK_UNSTAGED_HEADER='.husky/check.timestamps.sh is not staged as it is on disk. stage it'
+[ -n "$TIMESTAMPS_LOCK_STAGE" ] || timestamps_lock_halt found='absent' where='in the index' fix='git add .husky/check.timestamps.sh' header="$TIMESTAMPS_LOCK_UNSTAGED_HEADER"
+[ "$TIMESTAMPS_LOCK_INDEX" = "$TIMESTAMPS_LOCK_EXPECTED" ] || timestamps_lock_halt found="$TIMESTAMPS_LOCK_INDEX" where='in the index' fix='git add .husky/check.timestamps.sh' header="$TIMESTAMPS_LOCK_UNSTAGED_HEADER"

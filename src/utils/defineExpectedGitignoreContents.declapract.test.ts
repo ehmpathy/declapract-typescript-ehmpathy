@@ -37,6 +37,29 @@ describe('defineExpectedGitignoreContents', () => {
     });
   });
 
+  given('[case1.1] a practice that declares a negation (#786)', () => {
+    const declared = [...ignoresSortable, '!.agent/.actors/actor.via.repo=ambient/'];
+    const contents = ['coverage', '!keep.me', ''].join('\n');
+
+    when('[t0] the expected contents are defined twice', () => {
+      const once = defineExpectedGitignoreContents({ contents, ignoresSortable: declared });
+      const twice = defineExpectedGitignoreContents({ contents: once, ignoresSortable: declared });
+
+      then('it is a fixed point', () => {
+        expect(twice).toEqual(once);
+      });
+
+      then('the declared negation lands below the ordered tail, after the file own negations', () => {
+        const lines = once.split('\n').filter(Boolean);
+        expect(lines.slice(-2)).toEqual(['!keep.me', '!.agent/.actors/actor.via.repo=ambient/']);
+      });
+
+      then('a file that already holds it keeps it once', () => {
+        expect(twice.split('\n').filter((line) => line === '!.agent/.actors/actor.via.repo=ambient/')).toHaveLength(1);
+      });
+    });
+  });
+
   given('[case2] a file whose comments explain the rule below them', () => {
     const contents = ['# build output', 'dist', '# editor state', '.idea', 'coverage', ''].join('\n');
 

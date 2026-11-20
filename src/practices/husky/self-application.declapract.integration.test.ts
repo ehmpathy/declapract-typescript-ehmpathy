@@ -1,7 +1,9 @@
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
 
 import { contents as genLockContents } from './best-practice/.husky/check.timestamps.lock.sh.declapract';
 
@@ -34,6 +36,13 @@ describe('husky self-application', () => {
         );
       });
 
+      // the chain the fresh-checkout clamp runs is this repo's own copy, so each copy must be the shipped one
+      ['check.yalc.sh', 'check.lockfile.sh', 'pre-commit', 'commit-msg'].map((hook) =>
+        then(`${hook} equals the template`, () => {
+          expect(read(path.join(repoRoot, '.husky', hook))).toEqual(read(path.join(templateDir, hook)));
+        }),
+      );
+
       then('check.nvm.sh equals the template, and runs no `nvm use` a hook shell cannot load', () => {
         const template = read(path.join(templateDir, 'check.nvm.sh'));
         expect(read(path.join(repoRoot, '.husky/check.nvm.sh'))).toEqual(template);
@@ -54,6 +63,57 @@ describe('husky self-application', () => {
         const scanAt = preCommit.indexOf('/check.timestamps.sh');
         expect(lockAt).toBeGreaterThan(-1);
         expect(scanAt).toBeGreaterThan(lockAt);
+      });
+    });
+  });
+
+  given('[case2] the shipped commit-msg hook, run as git runs it', () => {
+    /**
+     * .what = a temp checkout that holds the shipped commit-msg + check.commit.sh, a commitlint
+     *         stand-in that echoes its args and exits as told, and husky's runner only if asked
+     * .why  = proves the hook lints the message where `husky install` never ran (a fresh worktree),
+     *         and still sources husky's runner where it did
+     */
+    const runCommitMsg = (input: { huskyInstalled: boolean; lintExit: number }) => {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'husky-commit-msg-'));
+      fs.mkdirSync(path.join(dir, '.husky/_'), { recursive: true });
+      fs.copyFileSync(path.join(templateDir, 'commit-msg'), path.join(dir, '.husky/commit-msg'));
+      fs.copyFileSync(path.join(templateDir, 'check.commit.sh'), path.join(dir, '.husky/check.commit.sh'));
+      if (input.huskyInstalled) fs.writeFileSync(path.join(dir, '.husky/_/husky.sh'), 'echo "husky runner sourced"\n');
+      fs.mkdirSync(path.join(dir, 'node_modules/.bin'), { recursive: true });
+      fs.writeFileSync(
+        path.join(dir, 'node_modules/.bin/commitlint'),
+        `#!/bin/sh\necho "commitlint $*"\nexit ${input.lintExit}\n`,
+      );
+      fs.chmodSync(path.join(dir, 'node_modules/.bin/commitlint'), 0o755);
+      fs.writeFileSync(path.join(dir, 'COMMIT_EDITMSG'), 'fix(surf): wax the board\n');
+      return spawnSync('sh', ['.husky/commit-msg', 'COMMIT_EDITMSG'], { cwd: dir, encoding: 'utf-8' });
+    };
+
+    when('[t0] husky install never ran in this checkout', () => {
+      const result = useBeforeAll(async () => runCommitMsg({ huskyInstalled: false, lintExit: 0 }));
+
+      then('it still lints the message, and skips the absent runner without a fault', () => {
+        expect(result.stdout).toEqual('commitlint --edit COMMIT_EDITMSG\n');
+        expect(result.stderr).toEqual('');
+        expect(result.status).toEqual(0);
+      });
+    });
+
+    when('[t1] husky install ran', () => {
+      const result = useBeforeAll(async () => runCommitMsg({ huskyInstalled: true, lintExit: 0 }));
+
+      then("it sources husky's runner first, then lints the message", () => {
+        expect(result.stdout).toEqual('husky runner sourced\ncommitlint --edit COMMIT_EDITMSG\n');
+        expect(result.status).toEqual(0);
+      });
+    });
+
+    when('[t2] commitlint rejects the message', () => {
+      const result = useBeforeAll(async () => runCommitMsg({ huskyInstalled: false, lintExit: 1 }));
+
+      then('the hook exits non-zero, so git refuses the commit', () => {
+        expect(result.status).toEqual(1);
       });
     });
   });

@@ -32,6 +32,7 @@ dist
 node_modules
 !.test*/**/node_modules
 !.test*/**/node_modules/**
+!.agent/.actors/actor.via.repo=ambient/
 "
 `;
 
@@ -51,5 +52,6 @@ dist
 node_modules
 !.test*/**/node_modules
 !.test*/**/node_modules/**
+!.agent/.actors/actor.via.repo=ambient/
 "
 `;

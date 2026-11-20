@@ -26,6 +26,16 @@ const AGENT_SOURCES = [
     imports: 'declastruct-unix-network',
   },
   {
+    // a file in the rmsafe trash, under the host-local cache (#800)
+    relpath: '.agent/.cache/rmsafe/trash/old.skill.ts',
+    imports: 'trash-only-dep',
+  },
+  {
+    // a scratch clone of another repo (#799)
+    relpath: '.temp/clone/src/index.ts',
+    imports: 'temp-only-dep',
+  },
+  {
     // this repo's own role skill: still source, so still checked
     relpath: '.agent/repo=.this/role=any/skills/own.skill.ts',
     imports: 'own-undeclared-dep',
@@ -98,10 +108,12 @@ describe('lint practice .depcheckrc.yml', () => {
     }, 170_000);
 
     when('[t0] declapract apply', () => {
-      then('ignorePatterns holds the actor dir, its `.claude` link, and the vendored-role pair', () => {
+      then('ignorePatterns holds the actor dir, the cache, .temp, the `.claude` link, and the vendored-role pair', () => {
         const parsed = yaml.parse(state.after1) as { ignorePatterns: string[] };
         expect(parsed.ignorePatterns).toEqual([
           '.agent/.actors',
+          '.agent/.cache',
+          '.temp',
           '.claude',
           '.agent/repo=*',
           '!.agent/repo=.this',
@@ -120,11 +132,13 @@ describe('lint practice .depcheckrc.yml', () => {
         expect(state.after1).not.toContain('metro-config');
       });
 
-      then('before: depcheck flags the actor cache and the vendored skill', () => {
+      then('before: depcheck flags the actor cache, the trash, the .temp clone, and the vendored skill', () => {
         expect(state.undeclaredBefore).toEqual([
           'claude-code',
           'declastruct-unix-network',
           'own-undeclared-dep',
+          'temp-only-dep',
+          'trash-only-dep',
         ]);
       });
 

@@ -4,6 +4,7 @@ import { join, relative } from 'node:path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 import ts from 'typescript';
 
+import { getModuleExportsFromTsSource } from '../../utils/getModuleExportsFromTsSource';
 import { isPgClientWithoutSsl } from '../../utils/withPgClientSslDeclared';
 import { asDatabaseClientSsl } from './best-practice/src/utils/database/asDatabaseClientSsl';
 
@@ -87,7 +88,11 @@ export declare class UnexpectedCodePathError extends HelpfulError {}
 export declare class ConstraintError extends HelpfulError {}
 `,
   'node_modules/iso-time/index.d.ts': `
-export declare const toMilliseconds: (input: { seconds?: number; minutes?: number }) => number;
+export type IsoTimeStamp = string;
+export type IsoDuration = { milliseconds?: number; seconds?: number; minutes?: number };
+export declare const toMilliseconds: (input: IsoDuration) => number;
+export declare const now: () => IsoTimeStamp;
+export declare const getDuration: (input: { of: { range: { since: IsoTimeStamp; until: IsoTimeStamp } } }) => IsoDuration;
 `,
   'src/utils/environment.ts': `
 export declare const getEnvironment: () => Promise<{
@@ -286,6 +291,171 @@ describe('persist-with-rds pg client (#652, #664, #673)', () => {
           clusterEndpoint: 'surfdb.cluster-abc123.eu-west-2.rds.amazonaws.com',
         }),
       ).toThrow('not in us-east-1');
+    });
+  });
+
+  given('[case5] a connect that faults (#794)', () => {
+    /**
+     * .what = run the factory over a fake pg whose connects follow a queued sequence of outcomes
+     * .why = proves which faults earn the one retry, and that the retry builds a fresh client
+     * .note = the clock reads the first connect's start, then `faultAfterSeconds` later at each read after
+     */
+    const runFactory = async (input: {
+      connects: (Error | null)[];
+      faultAfterSeconds: number;
+    }) => {
+      // .note = deliberate mutation: a stand-in for pg's stateful Client, scoped to one run;
+      //         each connect pops the next queued outcome, and each construction is counted
+      const outcomes = [...input.connects];
+      const clientsBuilt: string[] = [];
+      const clockReads: string[] = [];
+      const clockSince = Date.parse('2026-01-01T00:00:00.000Z');
+      const clockNow = (): string => {
+        const offset = clockReads.length === 0 ? 0 : input.faultAfterSeconds * 1000;
+        const stamp = new Date(clockSince + offset).toISOString();
+        clockReads.push(stamp);
+        return stamp;
+      };
+      class FakeClient {
+        public connect = async () => {
+          const fault = outcomes.shift() ?? null;
+          if (fault) throw fault;
+        };
+        public query = async () => ({ rows: [] });
+        public end = async () => undefined;
+        constructor() {
+          clientsBuilt.push('client');
+        }
+      }
+      // .note = deliberate mutation: each pause the factory asks for, in order; the real timer still runs
+      const pauses: number[] = [];
+      const stubs: Record<string, unknown> = {
+        __timer: {
+          setTimeout: (done: () => void, pause: number) => {
+            pauses.push(pause);
+            return setTimeout(done, pause);
+          },
+        },
+        'helpful-errors': { HelpfulError: Error, UnexpectedCodePathError: Error },
+        'iso-time': {
+          now: clockNow,
+          getDuration: (args: { of: { range: { since: string; until: string } } }) => ({
+            milliseconds: Date.parse(args.of.range.until) - Date.parse(args.of.range.since),
+          }),
+          toMilliseconds: (args: { milliseconds?: number; seconds?: number }) =>
+            (args.milliseconds ?? 0) + (args.seconds ?? 0) * 1000,
+        },
+        pg: { default: { types: { setTypeParser: () => undefined } }, Client: FakeClient },
+        '@src/utils/config/getConfig': {
+          getConfig: async () => ({
+            database: {
+              target: { database: 'surfdb', schema: 'surf' },
+              role: { crud: { username: 'crud', password: 'pw' } },
+              tunnel: { local: { host: 'localhost', port: 7821 }, lambda: null },
+            },
+          }),
+        },
+        '@src/utils/environment': {
+          getEnvironment: async () => ({ access: 'test', server: 'local@node' }),
+        },
+        './asDatabaseClientSsl': { asDatabaseClientSsl: () => false },
+        './databaseClientTimeouts': { databaseClientTimeouts: {} },
+        './getOneDatabasePort': { getOneDatabasePort: () => 7821 },
+      };
+      const { getOneDatabaseConnection } = getModuleExportsFromTsSource<{
+        getOneDatabaseConnection: () => Promise<unknown>;
+      }>({
+        // the template's `setTimeout` reads from the timer stub, so each pause it asks for is recorded
+        source: `const { setTimeout } = require('__timer');\n${readTemplate('getOneDatabaseConnection.ts')}`,
+        requireStub: (id) => {
+          if (!(id in stubs)) throw new Error(`no stub for require('${id}')`);
+          return stubs[id];
+        },
+      });
+      const wallSince = Date.now();
+      const error = await getOneDatabaseConnection!().then(
+        () => null,
+        (caught: unknown) => caught,
+      );
+      return { clientsBuilt: clientsBuilt.length, error, wallMs: Date.now() - wallSince, pauses };
+    };
+    const asPgError = (input: { message: string; code: string | null }) =>
+      Object.assign(new Error(input.message), input.code ? { code: input.code } : {});
+
+    const CASES = [
+      { why: 'a reset socket retries once on a fresh client, then connects', connects: [asPgError({ message: 'read ECONNRESET', code: 'ECONNRESET' })], faultAfterSeconds: 1, clientsBuilt: 2, surfaces: null },
+      { why: 'a full cluster (53300) retries once on a fresh client, then connects', connects: [asPgError({ message: 'sorry, too many clients already', code: '53300' })], faultAfterSeconds: 1, clientsBuilt: 2, surfaces: null },
+      { why: 'a reset socket at the 5s window edge still earns the retry', connects: [asPgError({ message: 'read ECONNRESET', code: 'ECONNRESET' })], faultAfterSeconds: 5, clientsBuilt: 2, surfaces: null },
+      { why: 'a reset socket late in the first connect surfaces with no retry, so a second connect cannot outlast the lambda', connects: [asPgError({ message: 'read ECONNRESET', code: 'ECONNRESET' })], faultAfterSeconds: 34, clientsBuilt: 1, surfaces: 0 },
+      { why: "a transient fault twice surfaces the retry's own fault, after the one retry", connects: [asPgError({ message: 'read ECONNRESET', code: 'ECONNRESET' }), asPgError({ message: 'read ECONNRESET, on the retry', code: 'ECONNRESET' })], faultAfterSeconds: 1, clientsBuilt: 2, surfaces: 1 },
+      { why: 'a connect timeout surfaces with no retry, so the lambda is not outlasted', connects: [asPgError({ message: 'Connection terminated due to connection timeout', code: null })], faultAfterSeconds: 35, clientsBuilt: 1, surfaces: 0 },
+      { why: 'an auth fault (28P01) surfaces with no retry', connects: [asPgError({ message: 'password authentication failed', code: '28P01' })], faultAfterSeconds: 1, clientsBuilt: 1, surfaces: 0 },
+      { why: 'a clean connect builds one client', connects: [], faultAfterSeconds: 1, clientsBuilt: 1, surfaces: null },
+    ];
+    when('[t0] the factory connects through each queued sequence of outcomes', () => {
+      for (const thisCase of CASES)
+        then(thisCase.why, async () => {
+          const result = await runFactory({
+            connects: thisCase.connects,
+            faultAfterSeconds: thisCase.faultAfterSeconds,
+          });
+          expect(result.clientsBuilt).toEqual(thisCase.clientsBuilt);
+          // the caller meets the exact fault named (the first connect's, or the retry's), never a wrap
+          expect(result.error).toBe(
+            thisCase.surfaces === null ? null : thisCase.connects[thisCase.surfaces],
+          );
+          // a retry waits 250-750ms first, so lambdas that met one full cluster do not retry in step
+          if (thisCase.clientsBuilt === 2) expect(result.wallMs).toBeGreaterThanOrEqual(240);
+          // exactly one pause, within its jitter bounds, and only where a retry ran
+          if (thisCase.clientsBuilt === 2) expect(result.pauses).toHaveLength(1);
+          if (thisCase.clientsBuilt === 2) expect(result.pauses[0]).toBeGreaterThanOrEqual(250);
+          if (thisCase.clientsBuilt === 2) expect(result.pauses[0]).toBeLessThanOrEqual(750);
+          if (thisCase.clientsBuilt === 1) expect(result.pauses).toEqual([]);
+        });
+    });
+  });
+
+  given('[case6] the ci wake of the shared cluster (#794)', () => {
+    when('[t0] the shipped .test.yml step order is read', () => {
+      const workflow = readFileSync(
+        join(__dirname, '../cicd-common/best-practice/.github/workflows/.test.yml'),
+        'utf8',
+      );
+      const stepNames = [...workflow.matchAll(/- name: (\S+)/g)].map((match) => match[1]);
+
+      then('each wake of prep follows a build, so no build-long idle lets it pause again', () => {
+        const wakes = stepNames.flatMap((name, index) => (name === 'start:livedb:prep' ? [index] : []));
+        expect(wakes.length).toBeGreaterThan(0);
+        for (const index of wakes) expect(stepNames[index - 1]).toEqual('build');
+      });
+    });
+  });
+
+  given('[case7] the connect and query bounds (#794)', () => {
+    // the shipped module, with iso-time's `toMilliseconds` stood in for its seconds form
+    const { databaseClientTimeouts } = getModuleExportsFromTsSource<{
+      databaseClientTimeouts: { connectionTimeoutMillis: number; query_timeout: number };
+    }>({
+      source: readTemplate('databaseClientTimeouts.ts'),
+      requireStub: (id) => {
+        if (id !== 'iso-time') throw new Error(`no stub for require('${id}')`);
+        return { toMilliseconds: (input: { seconds: number }) => input.seconds * 1000 };
+      },
+    });
+
+    when('[t0] the shipped bounds are read', () => {
+      then('the connect bound is 35s, so it outlasts a 19-30s aurora resume', () => {
+        expect(databaseClientTimeouts!.connectionTimeoutMillis).toEqual(35_000);
+      });
+
+      then('the query bound holds at 30s, so no query a service runs today is cut', () => {
+        expect(databaseClientTimeouts!.query_timeout).toEqual(30_000);
+      });
+
+      then('each bound sits under the 60s lambda timeout, so the error surfaces before a kill', () => {
+        expect(databaseClientTimeouts!.connectionTimeoutMillis).toBeLessThan(60_000);
+        expect(databaseClientTimeouts!.query_timeout).toBeLessThan(60_000);
+      });
     });
   });
 });

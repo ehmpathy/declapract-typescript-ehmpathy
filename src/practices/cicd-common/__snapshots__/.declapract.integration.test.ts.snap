@@ -98,6 +98,37 @@ on:
         required: false
         type: string
         default: "us-east-1"
+    # .what = the result of each job (success, failure, cancelled, or skipped)
+    # .why  = the \`test-passed\` gate in test.yml names each job that did not pass, so a reviewer
+    #         clicks once to the cause. \`jobs.<id>.result\` is readable only here, in a reusable
+    #         workflow's outputs, so no \`actions: read\` grant is needed to name them
+    outputs:
+      result-install:
+        value: \${{ jobs.install.result }}
+      result-test-commits:
+        value: \${{ jobs.test-commits.result }}
+      result-test-types:
+        value: \${{ jobs.test-types.result }}
+      result-test-format:
+        value: \${{ jobs.test-format.result }}
+      result-test-lint:
+        value: \${{ jobs.test-lint.result }}
+      result-test-unit:
+        value: \${{ jobs.test-unit.result }}
+      result-enshard:
+        value: \${{ jobs.enshard.result }}
+      result-test-shards-omit:
+        value: \${{ jobs.test-shards-omit.result }}
+      result-test-shards-integration:
+        value: \${{ jobs.test-shards-integration.result }}
+      result-test-shards-acceptance:
+        value: \${{ jobs.test-shards-acceptance.result }}
+      result-test-evaluation:
+        value: \${{ jobs.test-evaluation.result }}
+      result-test-integration:
+        value: \${{ jobs.test-integration.result }}
+      result-test-acceptance-locally:
+        value: \${{ jobs.test-acceptance-locally.result }}
 
 # .why = least privilege: only the jobs that assume the aws role grant id-token, at job scope
 permissions:
@@ -128,6 +159,7 @@ jobs:
         with:
           path: ./node_modules
           key: \${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       - name: test:commits
         run: npm run test:commits
@@ -149,12 +181,18 @@ jobs:
         with:
           path: ./node_modules
           key: \${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       - name: build
         run: npm run build # build before test:types, to ensure .dist/ artifacts are importable for blackbox tests
 
       - name: test:types
         run: npm run test:types
+
+      # .why = a native export with the flags \`eas update\` passes, so a bundler skew turns the pr red,
+      #        never a tag; it runs only where a practice declares \`build:native\` (expo apps)
+      - name: build:native
+        run: npm run build:native --if-present
 
   test-format:
     runs-on: ubuntu-24.04
@@ -173,6 +211,7 @@ jobs:
         with:
           path: ./node_modules
           key: \${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       - name: test:format
         run: npm run test:format
@@ -194,6 +233,7 @@ jobs:
         with:
           path: ./node_modules
           key: \${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       # .why = lint the same linked .agent/repo=* role tree a laptop holds
       - name: prepare:rhachet
@@ -219,6 +259,7 @@ jobs:
         with:
           path: ./node_modules
           key: \${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       - name: test:unit
         run: THOROUGH=true npm run test:unit
@@ -290,6 +331,7 @@ jobs:
         with:
           path: ./node_modules
           key: \${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       # .why = keyrack.yml can extend other manifests via symlinks (e.g., .agent/repo=ehmpathy/role=mechanic/keyrack.yml)
       #        prepare:rhachet creates these symlinks so keyrack.source() can hydrate extended keys
@@ -316,11 +358,13 @@ jobs:
       - name: start:testdb
         run: npm run start:testdb --if-present
 
-      - name: start:livedb:prep
-        run: npm run start:livedb:prep --if-present
-
       - name: build
         run: npm run build
+
+      # .why = the wake runs last before the suite, so a resumed cluster has no build-long idle in
+      #        which to pause again before the first query
+      - name: start:livedb:prep
+        run: npm run start:livedb:prep --if-present
 
       - name: test:integration (explicit \${{ matrix.shard.index }})
         if: matrix.shard.type == 'explicit'
@@ -368,6 +412,7 @@ jobs:
         with:
           path: ./node_modules
           key: \${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       # .why = keyrack.yml can extend other manifests via symlinks (e.g., .agent/repo=ehmpathy/role=mechanic/keyrack.yml)
       #        prepare:rhachet creates these symlinks so keyrack.source() can hydrate extended keys
@@ -394,11 +439,13 @@ jobs:
       - name: start:testdb
         run: npm run start:testdb --if-present
 
-      - name: start:livedb:prep
-        run: npm run start:livedb:prep --if-present
-
       - name: build
         run: npm run build
+
+      # .why = the wake runs last before the suite, so a resumed cluster has no build-long idle in
+      #        which to pause again before the first query
+      - name: start:livedb:prep
+        run: npm run start:livedb:prep --if-present
 
       # .why = the PR acceptance gate runs IN-PROCESS (LOCALLY=true), not against a deployed fleet.
       #        a PR has no deployed lambda to invoke, and a service that publishes only dev/prep (no
@@ -423,6 +470,15 @@ jobs:
           else
             LOCALLY=true THOROUGH=true npm run test:acceptance -- --shard=\${{ matrix.shard.shard }}/\${{ matrix.shard.total }} --json --outputFile=jest-results.json
           fi
+
+      # .why = a red walk keeps its render, so a baseline that must change is taken from ci, never
+      #        re-snapped on a host whose fonts differ
+      - name: upload test-results, on failure
+        if: failure() && hashFiles('test-results/**') != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: test-results-acceptance-\${{ strategy.job-index }}
+          path: test-results/
 
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''
@@ -457,6 +513,7 @@ jobs:
         with:
           path: ./node_modules
           key: \${{ needs.install.outputs.node-modules-cache-key }}
+          fail-on-cache-miss: true
 
       - name: prepare:rhachet
         if: steps.presence.outputs.declared == 'true'

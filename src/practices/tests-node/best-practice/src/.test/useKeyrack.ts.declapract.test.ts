@@ -1,6 +1,6 @@
 import type { execFileSync } from 'node:child_process';
 
-import { ConstraintError } from 'helpful-errors';
+import { ConstraintError, MalfunctionError } from 'helpful-errors';
 import { getError, given, then, when } from 'test-fns';
 
 import {
@@ -36,10 +36,23 @@ import {
 const asExec = (fn: () => string): typeof execFileSync =>
   fn as unknown as typeof execFileSync;
 
+/**
+ * .what = an error in the shape execFileSync throws: a message plus the fields node sets on it
+ * .why  = the export's fault classifier reads `code`, `signal`, and `status`; a fixture that sets
+ *         each one proves which fault reads as a stall and which rethrows as is
+ */
+const asExecError = (input: {
+  message: string;
+  fields: { status?: number | null; signal?: string | null; code?: string };
+}): Error => Object.assign(new Error(input.message), input.fields);
+
 describe('exportAwsCredentialsFromSsoProfile', () => {
   given('[case1] the aws cli fails (a stale or absent sso login)', () => {
     const execThatFails = asExec(() => {
-      throw new Error('The SSO session associated with this profile has expired');
+      throw asExecError({
+        message: 'The SSO session associated with this profile has expired',
+        fields: { status: 255, signal: null },
+      });
     });
 
     when('[t0] the export runs against the failed cli', () => {
@@ -106,6 +119,88 @@ describe('exportAwsCredentialsFromSsoProfile', () => {
       });
     });
   });
+
+  given('[case3] the aws cli stalls past its timeout (a busy host) (#784 #788 #806)', () => {
+    const execThatStalls = asExec(() => {
+      throw asExecError({
+        message: 'spawnSync aws ETIMEDOUT',
+        fields: { status: null, signal: 'SIGTERM', code: 'ETIMEDOUT' },
+      });
+    });
+
+    when('[t0] the export runs against the stalled cli', () => {
+      const error = getError(() =>
+        exportAwsCredentialsFromSsoProfile(
+          { profile: 'my-sso-profile' },
+          { exec: execThatStalls },
+        ),
+      );
+
+      then('it throws a MalfunctionError that names the stall, never a stale login', () => {
+        // a stall must name the stall: read as a stale login, it sends the human to re-login for naught
+        expect(error).toBeInstanceOf(MalfunctionError);
+        expect(error.message).toContain('stalled past 30s');
+        expect(error.message).toContain('not a stale login');
+        expect(error.message).not.toContain('aws sso login');
+        // the export runs once in globalSetup, before any worker forks, so a worker cap cannot help
+        expect(error.message).not.toContain('maxWorkers');
+        expect(error.message).toContain('aws sts get-caller-identity --profile my-sso-profile');
+      });
+
+      then('the user-faced message matches snapshot', () => {
+        expect(error.message).toMatchSnapshot('credential-export stall message');
+      });
+    });
+  });
+
+  given('[case4] the spawn itself faults (no aws cli on PATH) (#788)', () => {
+    const spawnFault = asExecError({
+      message: 'spawnSync aws ENOENT',
+      fields: { code: 'ENOENT' },
+    });
+    const execThatCannotSpawn = asExec(() => {
+      throw spawnFault;
+    });
+
+    when('[t0] the export runs', () => {
+      const error = getError(() =>
+        exportAwsCredentialsFromSsoProfile(
+          { profile: 'my-sso-profile' },
+          { exec: execThatCannotSpawn },
+        ),
+      );
+
+      then('it rethrows the fault as is, never as a caller-fix ConstraintError', () => {
+        expect(error).toBe(spawnFault);
+        expect(error).not.toBeInstanceOf(ConstraintError);
+      });
+    });
+  });
+
+  given('[case5] the cli is killed by a signal with no timeout (an oom kill, a ctrl-c)', () => {
+    const killFault = asExecError({
+      message: 'spawnSync aws SIGKILL',
+      fields: { status: null, signal: 'SIGKILL' },
+    });
+    const execThatIsKilled = asExec(() => {
+      throw killFault;
+    });
+
+    when('[t0] the export runs', () => {
+      const error = getError(() =>
+        exportAwsCredentialsFromSsoProfile(
+          { profile: 'my-sso-profile' },
+          { exec: execThatIsKilled },
+        ),
+      );
+
+      then('it rethrows the kill as is, never as a stall nor a stale login', () => {
+        expect(error).toBe(killFault);
+        expect(error.message).not.toContain('stalled past');
+        expect(error).not.toBeInstanceOf(ConstraintError);
+      });
+    });
+  });
 });
 
 /**
@@ -127,8 +222,11 @@ describe('spliceAwsStaticCredsIntoEnv', () => {
       AWS_SESSION_TOKEN: 'sessionExampleToken',
     });
 
-    when('[t0] the splice runs against an env that carries AWS_PROFILE', () => {
-      const env: NodeJS.ProcessEnv = { AWS_PROFILE: 'my-sso-profile' };
+    when('[t0] the splice runs against an env that carries AWS_PROFILE and AWS_DEFAULT_PROFILE', () => {
+      const env: NodeJS.ProcessEnv = {
+        AWS_PROFILE: 'my-sso-profile',
+        AWS_DEFAULT_PROFILE: 'my-sso-profile',
+      };
       spliceAwsStaticCredsIntoEnv(
         { profile: 'my-sso-profile' },
         { env, exportCreds: exportCredsStub },
@@ -142,6 +240,10 @@ describe('spliceAwsStaticCredsIntoEnv', () => {
 
       then('AWS_PROFILE is removed (so v2 uses the static creds, not the profile)', () => {
         expect(env.AWS_PROFILE).toBeUndefined();
+      });
+
+      then('AWS_DEFAULT_PROFILE is removed too, as the static-creds path already does (#788)', () => {
+        expect(env.AWS_DEFAULT_PROFILE).toBeUndefined();
       });
     });
   });
@@ -201,6 +303,11 @@ describe('getOneAwsSsoProfileFromEnv', () => {
       then('the message names the fix: declare AWS_PROFILE in .agent/keyrack.yml', () => {
         expect(error.message).toContain('AWS_PROFILE');
         expect(error.message).toContain('.agent/keyrack.yml');
+      });
+
+      then('the user-faced message, context block included, matches snapshot', () => {
+        // the first output a consumer on an undeclared manifest reads, so a reword must show in review
+        expect(error.message).toMatchSnapshot('AWS_PROFILE absent message');
       });
     });
   });
@@ -493,9 +600,10 @@ describe('getOneKeyrackEnvForAcceptance', () => {
   });
 
   given('[case4] ACCESS holds a value outside test|prep|prod', () => {
-    then('it throws a ConstraintError', () => {
+    then('it throws a ConstraintError that names the value and the valid ones', () => {
       const error = getError(() => getOneKeyrackEnvForAcceptance({ env: { ACCESS: 'dev' } }));
       expect(error).toBeInstanceOf(ConstraintError);
+      expect(error.message).toMatchSnapshot('acceptance access invalid message');
     });
   });
 

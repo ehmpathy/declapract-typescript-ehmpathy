@@ -31,12 +31,66 @@ const genStagedRepo = (files: Record<string, string>): string => {
   return dir;
 };
 
-// spawn the guard against a repo; return its exit code + streams
+/**
+ * .what = a repo with one committed 40-line file, then `git mv` of it and an appended line, staged
+ * .why  = a moved-and-edited file stages as a rename (R); a file that long keeps git's rename
+ *         similarity above 50%, so the rename is real, never a delete plus an add
+ */
+const genRepoWithRenameAndEdit = (input: { lineAppended: string }): string => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'check-guard-rename-'));
+  const git = (args: string[]) =>
+    execFileSync('git', ['-c', 'user.name=Test Human', '-c', 'user.email=human@test.com', ...args], {
+      cwd: dir,
+      encoding: 'utf-8',
+    });
+  git(['init', '-q']);
+  const body = Array.from({ length: 40 }, (_, index) => `note line ${index + 1}`).join('\n');
+  fs.writeFileSync(path.join(dir, 'notes.md'), `${body}\n`);
+  git(['add', '--', 'notes.md']);
+  git(['commit', '-q', '--no-verify', '-m', 'notes']);
+  git(['mv', 'notes.md', 'moved.md']);
+  fs.appendFileSync(path.join(dir, 'moved.md'), `${input.lineAppended}\n`);
+  git(['add', '--', 'moved.md']);
+  return dir;
+};
+
+/**
+ * .what = spawn the guard against a repo; return its exit code + streams
+ * .why  = an `env` apart from process.env lets a fault case put a stand-in tool first on PATH
+ */
 const runGuard = (input: {
   dir: string;
+  env?: NodeJS.ProcessEnv;
 }): { code: number | null; stdout: string; stderr: string } => {
-  const res = spawnSync('bash', [guardPath], { cwd: input.dir, encoding: 'utf-8' });
+  const res = spawnSync('bash', [guardPath], {
+    cwd: input.dir,
+    encoding: 'utf-8',
+    env: input.env ?? process.env,
+  });
   return { code: res.status, stdout: res.stdout, stderr: res.stderr };
+};
+
+/**
+ * .what = the lines the guard itself printed: stderr from its first `💥` or `✋` header onward
+ * .why  = a failed git read streams git's own words (a usage dump, a `fatal:` line) ahead of the
+ *         guard's header; those vary by git version, so a snapshot pins only the guard's lines
+ */
+const asGuardOwnStderr = (input: { stderr: string }): string => {
+  const lines = input.stderr.split('\n');
+  const headerAt = lines.findIndex((line) => line.startsWith('💥') || line.startsWith('✋'));
+  return headerAt === -1 ? '' : lines.slice(headerAt).join('\n');
+};
+
+/**
+ * .what = an env whose PATH leads with a named tool that faults (exit 2)
+ * .why  = a broken or absent tool must halt the guard as a malfunction, never read as a clean scan
+ */
+const genEnvWithFaultyTool = (input: { tool: 'grep' | 'sed' }): NodeJS.ProcessEnv => {
+  const binDir = fs.mkdtempSync(path.join(os.tmpdir(), 'check-timestamps-bin-'));
+  fs.writeFileSync(path.join(binDir, input.tool), `#!/bin/sh\necho "${input.tool}: fault" >&2\nexit 2\n`, {
+    mode: 0o755,
+  });
+  return { ...process.env, PATH: `${binDir}:${process.env.PATH}` };
 };
 
 describe('check.timestamps guard', () => {
@@ -52,7 +106,7 @@ describe('check.timestamps guard', () => {
       });
       then('it prints the verbatim constraint header on stderr (#681)', () => {
         expect(result.stderr).toContain(
-          '✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions',
+          '✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included\n',
         );
         expect(result.stdout).toEqual('');
       });
@@ -64,11 +118,11 @@ describe('check.timestamps guard', () => {
       then('it names the matched file', () => {
         expect(result.stderr).toContain('snapshot.json');
       });
-      then('it renders the matched file:line:content detail line', () => {
-        // locks the exact halt-output shape: tree-prefixed detail line
-        expect(result.stderr).toContain(
-          '   └─ snapshot.json:1:{ "createdAt": "2026-06-25T14:30:00Z" }',
-        );
+      then('it renders the matched file:line detail line, never the line content', () => {
+        // locks the exact halt-output shape: tree-prefixed detail line, the content withheld
+        // since a line with a clock may also hold a key
+        expect(result.stderr).toContain('   ├─ file: snapshot.json:1\n');
+        expect(result.stderr).not.toContain('createdAt');
       });
       then('the halt output, its instant masked, matches snapshot', () => {
         // user-faced halt message — a reword must redden a vibecheck, not slip past the
@@ -238,7 +292,7 @@ describe('check.timestamps guard', () => {
           expect(result.code).toEqual(2);
         });
         then('it names the file and line on stderr', () => {
-          expect(result.stderr).toContain('   └─ yield.md:1:');
+          expect(result.stderr).toContain('   ├─ file: yield.md:1\n');
         });
       });
     });
@@ -287,7 +341,7 @@ describe('check.timestamps guard', () => {
       then('it halts with exit 2, with the raw path and line on stderr', () => {
         expect(result.code).toEqual(2);
         expect(result.stderr).toContain('✋ ConstraintError:');
-        expect(result.stderr).toContain('   └─ docs/café.md:1:at 14:30');
+        expect(result.stderr).toContain('   ├─ file: docs/café.md:1\n');
       });
     });
   });
@@ -308,7 +362,10 @@ describe('check.timestamps guard', () => {
         expect(result.stderr).toContain(
           '💥 MalfunctionError: check.timestamps could not read the staged blob',
         );
-        expect(result.stderr).toContain('   └─ notes.md');
+        expect(result.stderr).toContain('   ├─ file: notes.md');
+        expect(asGuardOwnStderr({ stderr: result.stderr })).toMatchSnapshot(
+          'check.timestamps malfunction — staged blob',
+        );
       });
     });
   });
@@ -327,7 +384,7 @@ describe('check.timestamps guard', () => {
       then('it halts with exit 2, as for any other path — no path is exempt', () => {
         expect(result.code).toEqual(2);
         expect(result.stderr).toContain('✋ ConstraintError:');
-        expect(result.stderr).toContain('.route/x/.goals/asks.inventory.jsonl:1:');
+        expect(result.stderr).toContain('.route/x/.goals/asks.inventory.jsonl:1\n');
       });
     });
 
@@ -346,6 +403,71 @@ describe('check.timestamps guard', () => {
     });
   });
 
+  given('[case18] a moved file, edited to hold a clock, staged as a rename', () => {
+    const dir = genRepoWithRenameAndEdit({ lineAppended: 'synced at 14:30' });
+
+    when('[t0] the guard runs', () => {
+      const result = runGuard({ dir });
+
+      then('git does stage it as a rename, so the case is real', () => {
+        const status = execFileSync('git', ['diff', '--cached', '--name-status'], { cwd: dir, encoding: 'utf-8' });
+        expect(status).toMatch(/^R\d+\tnotes\.md\tmoved\.md$/m);
+      });
+      then('it halts with exit 2 and names the moved file and the line', () => {
+        expect(result.code).toEqual(2);
+        expect(result.stderr).toContain('   ├─ file: moved.md:41\n');
+        expect(result.stderr).toMatchSnapshot('check.timestamps halt output — rename');
+      });
+    });
+  });
+
+  given('[case19] a line that holds both a clock and a key', () => {
+    // the key is assembled at runtime, so this source never holds a key shape itself
+    const key = 'sk-' + 'ant-' + 'aZ9'.repeat(10);
+    const dir = genStagedRepo({ 'debug.md': `# debug\nat 14:30 ANTHROPIC_API_KEY=${key}\n` });
+
+    when('[t0] the guard runs', () => {
+      const result = runGuard({ dir });
+
+      then('it halts with exit 2 and names the file and line only, so the key never reaches a log', () => {
+        expect(result.code).toEqual(2);
+        expect(result.stderr).toContain('   ├─ file: debug.md:2\n');
+        expect(result.stderr).not.toContain(key);
+        expect(result.stdout).not.toContain(key);
+        expect(result.stderr).toMatchSnapshot('check.timestamps halt output — clock beside a key');
+      });
+    });
+  });
+
+  given('[case20] a staged binary file, under a sed that rejects bytes outside the locale (as bsd sed does)', () => {
+    // a png head, a NUL, and a byte that is no valid utf-8 — the bytes bsd sed calls an illegal byte sequence
+    const dir = genStagedRepo({});
+    fs.writeFileSync(
+      path.join(dir, 'logo.png'),
+      Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0xff, 0xfe, 0x31, 0x34]),
+    );
+    execFileSync('git', ['add', '--', 'logo.png'], { cwd: dir });
+
+    // a stand-in sed that faults as bsd sed does unless it reads bytes (LC_ALL=C), else defers to the real one
+    const sedReal = execFileSync('sh', ['-c', 'command -v sed'], { encoding: 'utf-8' }).trim();
+    const binDir = fs.mkdtempSync(path.join(os.tmpdir(), 'check-timestamps-bsdsed-'));
+    fs.writeFileSync(
+      path.join(binDir, 'sed'),
+      `#!/bin/sh\n[ "$LC_ALL" = C ] || { echo 'sed: RE error: illegal byte sequence' >&2; exit 1; }\nexec ${sedReal} "$@"\n`,
+      { mode: 0o755 },
+    );
+
+    when('[t0] the guard runs', () => {
+      const result = runGuard({ dir, env: { ...process.env, PATH: `${binDir}:${process.env.PATH}` } });
+
+      then('it passes: a binary file holds no text clock, and the scan reads bytes, so sed never faults', () => {
+        expect(result.code).toEqual(0);
+        expect(result.stderr).not.toContain('MalfunctionError');
+        expect(result.stderr).not.toContain('illegal byte sequence');
+      });
+    });
+  });
+
   given('[case-scope] the hook source a reader meets (#641)', () => {
     when('[t0] its header is read', () => {
       const header = fs
@@ -355,6 +477,59 @@ describe('check.timestamps guard', () => {
         expect(header).toContain('ANY staged file but .ts/.sh');
         expect(header).toContain('prose included');
         expect(header).not.toContain('snapshot'); // no single file kind reads as the target
+      });
+    });
+  });
+
+  given('[case-fault] a read or a scan faults (#789, #802)', () => {
+    when('[t0] the guard runs outside a git repo', () => {
+      const result = runGuard({
+        dir: fs.mkdtempSync(path.join(os.tmpdir(), 'check-timestamps-nogit-')),
+      });
+
+      then('it halts as a malfunction (exit 1) that names the failed step, never passes', () => {
+        expect(result.code).toEqual(1);
+        expect(result.stderr).toContain(
+          '💥 MalfunctionError: check.timestamps could not list the staged files',
+        );
+        expect(asGuardOwnStderr({ stderr: result.stderr })).toMatchSnapshot(
+          'check.timestamps malfunction — staged list',
+        );
+      });
+    });
+
+    when('[t1] the guard runs with a grep that exits 2', () => {
+      const result = runGuard({
+        dir: genStagedRepo({ 'readme.md': 'hello\n' }),
+        env: genEnvWithFaultyTool({ tool: 'grep' }),
+      });
+
+      then('it halts as a malfunction (exit 1), never reads the fault as clean', () => {
+        // the guard reads grep's own exit, so a fault halts rather than reads as a clean scan
+        expect(result.code).toEqual(1);
+        expect(result.stderr).toContain(
+          '💥 MalfunctionError: check.timestamps could not scan for timestamps',
+        );
+        expect(result.stderr).toContain('   ├─ file: readme.md');
+        expect(asGuardOwnStderr({ stderr: result.stderr })).toMatchSnapshot(
+          'check.timestamps malfunction — scan',
+        );
+      });
+    });
+
+    when('[t2] the guard runs with a sed that exits 2', () => {
+      const result = runGuard({
+        dir: genStagedRepo({ 'readme.md': 'hello\n' }),
+        env: genEnvWithFaultyTool({ tool: 'sed' }),
+      });
+
+      then('it halts as a malfunction (exit 1) at the duration strip, never scans a blank blob', () => {
+        expect(result.code).toEqual(1);
+        expect(result.stderr).toContain('💥 MalfunctionError: check.timestamps could not mask durations before the timestamp scan');
+        expect(result.stderr).toContain('   ├─ file: readme.md');
+        expect(asGuardOwnStderr({ stderr: result.stderr })).toMatchSnapshot(
+          'check.timestamps malfunction — strip',
+        );
       });
     });
   });

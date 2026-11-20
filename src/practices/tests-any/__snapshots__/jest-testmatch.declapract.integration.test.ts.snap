@@ -1,0 +1,137 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`the six jest testMatch arrays given: [case1] tests-node unit when: [t0] the shipped config is read then: its match and ignore lists match snapshot, so a reviewer reads each as shipped 1`] = `
+{
+  "modulePathIgnorePatterns": [
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+  "testMatch": [
+    "**/*.test.ts",
+    "!**/*.acceptance.test.ts",
+    "!**/*.integration.test.ts",
+    "!**/*.evaluation.test.ts",
+    "!**/*._.acpt.test.ts",
+    "!**/*._.intg.test.ts",
+    "!**/*._.eval.test.ts",
+    "!**/.agent/.actors/**",
+    "!**/.agent/.cache/**",
+    "!**/.yalc/**",
+  ],
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+}
+`;
+
+exports[`the six jest testMatch arrays given: [case2] tests-node integration when: [t0] the shipped config is read then: its match and ignore lists match snapshot, so a reviewer reads each as shipped 1`] = `
+{
+  "modulePathIgnorePatterns": [
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+  "testMatch": [
+    "**/*.integration.test.ts",
+    "**/*._.intg.test.ts",
+    "!**/.agent/.actors/**",
+    "!**/.agent/.cache/**",
+    "!**/.yalc/**",
+  ],
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+}
+`;
+
+exports[`the six jest testMatch arrays given: [case3] tests-node acceptance when: [t0] the shipped config is read then: its match and ignore lists match snapshot, so a reviewer reads each as shipped 1`] = `
+{
+  "modulePathIgnorePatterns": [
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+  "testMatch": [
+    "**/*.acceptance.test.ts",
+    "**/*._.acpt.test.ts",
+    "!**/.agent/.actors/**",
+    "!**/.agent/.cache/**",
+    "!**/.yalc/**",
+  ],
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+}
+`;
+
+exports[`the six jest testMatch arrays given: [case4] tests-expo unit when: [t0] the shipped config is read then: its match and ignore lists match snapshot, so a reviewer reads each as shipped 1`] = `
+{
+  "modulePathIgnorePatterns": [
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+  "testMatch": [
+    "**/*.test.{ts,tsx}",
+    "!**/*.acceptance.test.{ts,tsx}",
+    "!**/*.integration.test.{ts,tsx}",
+    "!**/*.evaluation.test.{ts,tsx}",
+    "!**/*._.acpt.test.{ts,tsx}",
+    "!**/*._.intg.test.{ts,tsx}",
+    "!**/*._.eval.test.{ts,tsx}",
+    "!**/.agent/.actors/**",
+    "!**/.agent/.cache/**",
+    "!**/.yalc/**",
+  ],
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+}
+`;
+
+exports[`the six jest testMatch arrays given: [case5] tests-expo integration when: [t0] the shipped config is read then: its match and ignore lists match snapshot, so a reviewer reads each as shipped 1`] = `
+{
+  "modulePathIgnorePatterns": [
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+  "testMatch": [
+    "**/*.integration.test.{ts,tsx}",
+    "**/*._.intg.test.{ts,tsx}",
+    "!**/.agent/.actors/**",
+    "!**/.agent/.cache/**",
+    "!**/.yalc/**",
+  ],
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+}
+`;
+
+exports[`the six jest testMatch arrays given: [case6] tests-expo acceptance when: [t0] the shipped config is read then: its match and ignore lists match snapshot, so a reviewer reads each as shipped 1`] = `
+{
+  "modulePathIgnorePatterns": [
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+  "testMatch": [
+    "**/*.acceptance.test.{ts,tsx}",
+    "**/*._.acpt.test.{ts,tsx}",
+    "!**/.agent/.actors/**",
+    "!**/.agent/.cache/**",
+    "!**/.yalc/**",
+  ],
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "<root>/\\.agent/(?!repo=\\.this(/|$))",
+    "<root>/\\.temp/",
+  ],
+}
+`;

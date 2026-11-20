@@ -100,11 +100,14 @@ export const defineExpectedGitignoreContents = (input: {
     group.filter((entry) => !isGitignoreNegation({ entry })),
   );
 
-  // union this practice's absent lines into the last group, right above the tail
-  const rulesPresent = new Set(groupsSortable.flat().map((entry) => entry.rule));
-  const entriesDeclared = dedupe([...input.ignoresSortable])
+  // union this practice's absent lines: a rule into the last group, right above the tail; a
+  // negation after the file's own negations, so it lands where a second pass would put it (#786)
+  const rulesPresent = new Set(groupsDeduped.flat().map((entry) => entry.rule));
+  const entriesDeclaredAll = dedupe([...input.ignoresSortable])
     .filter((rule) => !!rule && !rulesPresent.has(rule))
     .map((rule): GitignoreEntry => ({ rule, comments: [] }));
+  const entriesDeclared = entriesDeclaredAll.filter((entry) => !isGitignoreNegation({ entry }));
+  const entriesDeclaredNegated = entriesDeclaredAll.filter((entry) => isGitignoreNegation({ entry }));
   const groupsUnioned = [
     ...groupsSortable.slice(0, -1),
     [...(groupsSortable.slice(-1)[0] ?? []), ...entriesDeclared],
@@ -123,7 +126,7 @@ export const defineExpectedGitignoreContents = (input: {
     .map((lines) => lines.join('\n'));
 
   // append the ordered tail, sequence preserved, then the file's own negations with their comments
-  const linesNegated = entriesNegated.flatMap((entry) => [
+  const linesNegated = [...entriesNegated, ...entriesDeclaredNegated].flatMap((entry) => [
     ...entry.comments,
     ...(entry.rule === null ? [] : [entry.rule]),
   ]);

@@ -10,7 +10,7 @@ exports[`rhachet — prepare:rhachet builds first in a self-linked repo given: [
     "upgrade:rhachet": "rhachet upgrade"
   },
   "devDependencies": {
-    "rhachet": "1.49.2",
+    "rhachet": "1.52.0",
     "rhachet-brains-anthropic": "0.4.3",
     "rhachet-brains-fireworksai": "0.2.3",
     "rhachet-brains-xai": "0.3.3",
@@ -63,7 +63,7 @@ exports[`rhachet — prepare:rhachet builds first in a self-linked repo given: [
     "upgrade:rhachet": "rhachet upgrade"
   },
   "devDependencies": {
-    "rhachet": "1.49.2",
+    "rhachet": "1.52.0",
     "rhachet-brains-anthropic": "0.4.3",
     "rhachet-brains-fireworksai": "0.2.3",
     "rhachet-brains-xai": "0.3.3",

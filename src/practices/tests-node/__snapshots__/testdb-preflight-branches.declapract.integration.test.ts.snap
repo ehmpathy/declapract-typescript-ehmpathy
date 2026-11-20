@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getOneTestConfig (#787 #788) given: [case1] a config/test.json on disk when: [t2] the file holds malformed json then: it throws a ConstraintError that names the path, never a bare SyntaxError: test config failure, malformed json 1`] = `
+"✋ ConstraintError: <dir>/malformed.json is not valid json
+
+{
+  "path": "<dir>/malformed.json",
+  "hint": "fix the json syntax in that file (an editor flags the fault), or run \`npx declapract apply\` to restore it"
+}"
+`;
+
+exports[`the useWakeOfTestdb decide-gate runs its real branches (executed, no live db) given: a service that owns a db (declapract.use.yml declares a databaseUserName) when: its config/test.json is absent then: it throws a ConstraintError that names config/test.json (never a silent skip): testdb wake failure, absent config 1`] = `
+"✋ ConstraintError: config/test.json not found, yet declapract.use.yml declares a databaseUserName, so this service needs a testdb
+
+{
+  "testConfigPath": "<cwd>/config/test.json",
+  "hint": "add config/test.json with database.tunnel.local.host, database.tunnel.local.port, and database.role.crud, or run \`npx declapract apply\` to restore it"
+}"
+`;
+
+exports[`the useWakeOfTestdb decide-gate runs its real branches (executed, no live db) given: a service that owns a db (declapract.use.yml declares a databaseUserName) when: its config/test.json lacks an expected key (no role.crud) then: it throws a ConstraintError that names the missing keys: testdb wake failure, incomplete config 1`] = `
+"✋ ConstraintError: config/test.json lacks an expected key — declare database.role.crud.username (string), database.role.crud.password (string)
+
+{
+  "testConfigPath": "<cwd>/config/test.json",
+  "keysAbsent": [
+    "database.role.crud.username (string)",
+    "database.role.crud.password (string)"
+  ]
+}"
+`;
+
+exports[`the useWakeOfTestdb decide-gate runs its real branches (executed, no live db) given: a service that owns a db (declapract.use.yml declares a databaseUserName) when: the harness declared a malformed TESTDB_PORT then: it throws a ConstraintError that names TESTDB_PORT, and never probes: testdb wake failure, malformed TESTDB_PORT 1`] = `
+"✋ ConstraintError: TESTDB_PORT is not a valid port
+
+{
+  "portOverride": "not-a-port",
+  "hint": "set TESTDB_PORT to a positive integer port, or unset it to probe the declared port"
+}"
+`;

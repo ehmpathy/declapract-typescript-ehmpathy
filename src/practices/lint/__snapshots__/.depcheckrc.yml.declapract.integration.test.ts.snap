@@ -28,6 +28,8 @@ ignores:
   - yaml
 ignorePatterns:
   - .agent/.actors
+  - .agent/.cache
+  - .temp
   - .claude
   - .agent/repo=*
   - "!.agent/repo=.this"
@@ -72,6 +74,8 @@ ignores:
   - metro-config
 ignorePatterns:
   - .agent/.actors
+  - .agent/.cache
+  - .temp
   - .claude
   - .agent/repo=*
   - "!.agent/repo=.this"

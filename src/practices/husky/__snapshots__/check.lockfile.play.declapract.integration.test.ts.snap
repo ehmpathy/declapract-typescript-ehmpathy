@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`check.lockfile reminder given: [case1] a fresh clone whose reflog holds no prior HEAD when: [t0] the reminder runs then: the reminder still shows for the present lockfile, with the reason named: check.lockfile reminder — no prior head 1`] = `
+"📦 pnpm-lock.yaml may have changed (no prior HEAD in the reflog to compare). Run 'pnpm install' to update your locally installed dependencies.
+"
+`;
+
+exports[`check.lockfile reminder given: [case2] a commit that changed the lockfile when: [t0] the reminder runs then: the reminder shows that the lockfile changed: check.lockfile reminder — changed 1`] = `
+"📦 pnpm-lock.yaml changed. Run 'pnpm install' to update your locally installed dependencies.
+"
+`;
+
+exports[`check.lockfile reminder given: [case4] an npm repo, whose lockfile is package-lock.json when: [t0] a commit changes package-lock.json then: the reminder names package-lock.json and npm install, and never pnpm: check.lockfile reminder — package-lock changed 1`] = `
+"📦 package-lock.json changed. Run 'npm install' to update your locally installed dependencies.
+"
+`;
+
+exports[`check.lockfile reminder given: [case4] an npm repo, whose lockfile is package-lock.json when: [t1] a fresh clone of it, whose reflog holds no prior HEAD then: the reminder names package-lock.json and npm install, with the reason named: check.lockfile reminder — package-lock, no prior head 1`] = `
+"📦 package-lock.json may have changed (no prior HEAD in the reflog to compare). Run 'npm install' to update your locally installed dependencies.
+"
+`;

@@ -25,7 +25,7 @@ exports[`rhachet/prod-deps relocation given: [case1] a repo with rhachet + a rha
   },
   "devDependencies": {
     "jest": "29.3.1",
-    "rhachet": "1.49.2",
+    "rhachet": "1.52.0",
     "rhachet-brains-anthropic": "0.4.3",
     "rhachet-brains-fireworksai": "@declapract{check.minVersion('0.2.3')}",
     "rhachet-brains-openrouter": "@declapract{check.minVersion('0.1.3')}",

@@ -23,6 +23,14 @@ jobs:
           echo "NODE_VERSION=$NODE_VERSION"
           echo "node-version=$NODE_VERSION" >> "$GITHUB_OUTPUT"
           PACKAGE_DEPS_HASH=$(md5sum pnpm-lock.yaml | awk '{print $1}');
+          # .why = a patch applied at install (patches/*) changes node_modules with no lockfile change,
+          #        so its name and bytes join the key; a repo with no patch keeps its lockfile-only key
+          #        (no pipe, and no find on an absent dir, so `shell: bash` with pipefail holds too)
+          PATCHES_FOUND="";
+          if [ -d patches ]; then PATCHES_FOUND=$(find patches -type f -print -quit); fi
+          if [ -n "$PATCHES_FOUND" ]; then
+            PACKAGE_DEPS_HASH=$({ md5sum pnpm-lock.yaml; find patches -type f -print0 | LC_ALL=C sort -z | xargs -0 md5sum; } | md5sum | awk '{print $1}');
+          fi
           echo "PACKAGE_DEPS_HASH=$PACKAGE_DEPS_HASH"
           echo "package-deps-hash=$PACKAGE_DEPS_HASH" >> "$GITHUB_OUTPUT"
 
@@ -48,9 +56,74 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile
 
+      # .why = parallel installs race to reserve one key; the loser's save only warns, so the save
+      #        alone does not prove the key exists. the confirm steps below do
       - name: node-modules cache set
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ./node_modules
           key: ${{ steps.cache.outputs.cache-primary-key }}
+
+      # .what = confirm the output key exists before the job ends, so the key is a promise kept
+      # .why  = a job that lost the reserve would otherwise hand its consumers a key the winner has
+      #         not yet committed. each confirm is a lookup-only restore (no `actions: read` grant),
+      #         gated on the prior miss, with a wait between; a winner commits within seconds
+      - name: node-modules cache confirm (1 of 4)
+        id: confirm-1
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ./node_modules
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+          lookup-only: true
+
+      - name: node-modules cache confirm wait (1 of 3)
+        if: steps.cache.outputs.cache-hit != 'true' && steps.confirm-1.outputs.cache-hit != 'true'
+        run: sleep 10
+
+      - name: node-modules cache confirm (2 of 4)
+        id: confirm-2
+        if: steps.cache.outputs.cache-hit != 'true' && steps.confirm-1.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ./node_modules
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+          lookup-only: true
+
+      - name: node-modules cache confirm wait (2 of 3)
+        if: steps.cache.outputs.cache-hit != 'true' && steps.confirm-1.outputs.cache-hit != 'true' && steps.confirm-2.outputs.cache-hit != 'true'
+        run: sleep 20
+
+      - name: node-modules cache confirm (3 of 4)
+        id: confirm-3
+        if: steps.cache.outputs.cache-hit != 'true' && steps.confirm-1.outputs.cache-hit != 'true' && steps.confirm-2.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ./node_modules
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+          lookup-only: true
+
+      - name: node-modules cache confirm wait (3 of 3)
+        if: steps.cache.outputs.cache-hit != 'true' && steps.confirm-1.outputs.cache-hit != 'true' && steps.confirm-2.outputs.cache-hit != 'true' && steps.confirm-3.outputs.cache-hit != 'true'
+        run: sleep 60
+
+      - name: node-modules cache confirm (4 of 4)
+        id: confirm-4
+        if: steps.cache.outputs.cache-hit != 'true' && steps.confirm-1.outputs.cache-hit != 'true' && steps.confirm-2.outputs.cache-hit != 'true' && steps.confirm-3.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ./node_modules
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+          lookup-only: true
+
+      - name: node-modules cache confirm verdict
+        if: steps.cache.outputs.cache-hit != 'true' && steps.confirm-1.outputs.cache-hit != 'true' && steps.confirm-2.outputs.cache-hit != 'true' && steps.confirm-3.outputs.cache-hit != 'true' && steps.confirm-4.outputs.cache-hit != 'true'
+        env:
+          CACHE_KEY: ${{ steps.cache.outputs.cache-primary-key }}
+        run: |
+          echo "💥 MalfunctionError: the node_modules cache key never appeared"
+          echo "   ├─ key: $CACHE_KEY"
+          echo "   ├─ why: the save did not land after 90s; most often a parallel install won the reserve and had not committed, else the cache refused it (quota, eviction)"
+          echo "   └─ fix: rerun the failed jobs; if this halts again on the rerun, read the save step's own warn for the cache's refusal"
+          exit 1

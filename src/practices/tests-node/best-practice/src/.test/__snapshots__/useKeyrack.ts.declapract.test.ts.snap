@@ -1,6 +1,12 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`exportAwsCredentialsFromSsoProfile given: [case1] the aws cli fails (a stale or absent sso login) when: [t0] the export runs against the failed cli then: the user-faced message matches snapshot: credential-export failure message 1`] = `"✋ ConstraintError: failed to export aws credentials from sso profile 'my-sso-profile'. run: aws sso login --profile my-sso-profile"`;
+exports[`exportAwsCredentialsFromSsoProfile given: [case1] the aws cli fails (a stale or absent sso login) when: [t0] the export runs against the failed cli then: the user-faced message matches snapshot: credential-export failure message 1`] = `
+"✋ ConstraintError: failed to export aws credentials from sso profile 'my-sso-profile'. run: aws sso login --profile my-sso-profile
+
+{
+  "profile": "my-sso-profile"
+}"
+`;
 
 exports[`exportAwsCredentialsFromSsoProfile given: [case2] the aws cli returns a valid env-format credential block when: [t0] the export runs against the valid cli then: the parsed record matches snapshot: credential-export all-clear record 1`] = `
 {
@@ -10,4 +16,40 @@ exports[`exportAwsCredentialsFromSsoProfile given: [case2] the aws cli returns a
 }
 `;
 
-exports[`getOneKeyrackEnvForAcceptance given: [case3] neither ACCESS nor LOCALLY, outside ci then: the message names the fix: acceptance access absent message 1`] = `"✋ ConstraintError: no ACCESS set for a cloud acceptance run. set ACCESS=prep|prod for a cloud acceptance run, or LOCALLY=true for an in-process run."`;
+exports[`exportAwsCredentialsFromSsoProfile given: [case3] the aws cli stalls past its timeout (a busy host) (#784 #788 #806) when: [t0] the export runs against the stalled cli then: the user-faced message matches snapshot: credential-export stall message 1`] = `
+"💥 MalfunctionError: the aws credential export for sso profile 'my-sso-profile' stalled past 30s and was killed
+   ├─ why: a slow host or a slow network to aws (vpn, dns), not a stale login
+   └─ fix: check the network (vpn up, \`aws sts get-caller-identity --profile my-sso-profile\` answers), then rerun
+      └─ if another heavy job loads this host, rerun once it quiets
+
+{
+  "profile": "my-sso-profile",
+  "timeoutMs": 30000
+}"
+`;
+
+exports[`getOneAwsSsoProfileFromEnv given: [case1] AWS_PROFILE is absent from env when: [t0] the profile is read then: the user-faced message, context block included, matches snapshot: AWS_PROFILE absent message 1`] = `
+"✋ ConstraintError: AWS_PROFILE not set. declare it in .agent/keyrack.yml (under env.test, and env.all so every access sources it), so keyrack.source() can set it.
+
+{
+  "key": "AWS_PROFILE",
+  "manifest": ".agent/keyrack.yml"
+}"
+`;
+
+exports[`getOneKeyrackEnvForAcceptance given: [case3] neither ACCESS nor LOCALLY, outside ci then: the message names the fix: acceptance access absent message 1`] = `
+"✋ ConstraintError: no ACCESS set for a cloud acceptance run. set ACCESS=prep|prod, or LOCALLY=true for an in-process run.
+
+{
+  "access": null,
+  "locally": null
+}"
+`;
+
+exports[`getOneKeyrackEnvForAcceptance given: [case4] ACCESS holds a value outside test|prep|prod then: it throws a ConstraintError that names the value and the valid ones: acceptance access invalid message 1`] = `
+"✋ ConstraintError: ACCESS=dev is not a known access. set ACCESS=test|prep|prod.
+
+{
+  "access": "dev"
+}"
+`;
