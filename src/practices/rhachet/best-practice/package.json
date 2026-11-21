@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "rhachet": "@declapract{check.minVersion('1.49.2')}",
+    "rhachet": "@declapract{check.minVersion('1.52.0')}",
     "rhachet-brains-anthropic": "@declapract{check.minVersion('0.4.3')}",
     "rhachet-brains-fireworksai": "@declapract{check.minVersion('0.2.3')}",
     "rhachet-brains-openrouter": "@declapract{check.minVersion('0.1.3')}",

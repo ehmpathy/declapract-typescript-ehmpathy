@@ -146,4 +146,62 @@ describe('cicd-app-react-native-expo package.json — access + proxy clamps', ()
       });
     });
   });
+
+  given('[case3] the expo floor and the native export gate (#795)', () => {
+    when('[t0] the shipped package.json is read', () => {
+      const template = JSON.parse(
+        readFileSync(path.join(__dirname, 'best-practice/package.json'), 'utf-8'),
+      );
+      const asFloor = (input: { declared: string }): string | null =>
+        /check\.minVersion\('([^']+)'\)/.exec(input.declared)?.[1] ?? null;
+
+      // expo@51.0.26 is the first patch to pin @expo/metro-config 0.18.11, whose serializer guards
+      // metro 0.80.12's non-default sourceMapString export; below it `--source-maps` throws a TypeError
+      const FLOORS = [
+        { dep: 'expo', floor: '51.0.39' },
+        { dep: 'expo-dev-client', floor: '4.0.29' },
+        { dep: 'expo-updates', floor: '0.25.28' },
+      ];
+      for (const { dep, floor } of FLOORS)
+        then(`${dep} floors at ${floor}, past the metro skew`, () => {
+          expect(asFloor({ declared: template.dependencies[dep] })).toEqual(floor);
+        });
+
+      then('build:native exports both native platforms with the flags eas update passes', () => {
+        const command: string = template.scripts['build:native'];
+        for (const flag of ['--platform ios', '--platform android', '--source-maps', '--dump-assetmap', '--output-dir dist-native'])
+          expect(command).toContain(flag);
+      });
+
+      then('build:native defaults ACCESS to prep, as build:web does, so an absent access never exports with prod access', () => {
+        const command: string = template.scripts['build:native'];
+        expect(command).toMatch(/^ACCESS=\$\{ACCESS:-prep\} expo export /);
+      });
+    });
+
+    when('[t1] the shipped .test.yml is read', () => {
+      // one parse, shared by each then below
+      const workflow = parse(
+        readFileSync(
+          path.join(__dirname, '../cicd-common/best-practice/.github/workflows/.test.yml'),
+          'utf-8',
+        ),
+      );
+
+      then('the required test-types job runs build:native, so a skew reddens the pr', () => {
+        const steps: { name?: string; run?: string }[] = workflow.jobs['test-types'].steps;
+        expect(steps.find((step) => step.name === 'build:native')?.run).toEqual(
+          'npm run build:native --if-present',
+        );
+      });
+
+      then('the acceptance shard keeps test-results on a failure', () => {
+        const steps: { uses?: string; if?: string; with?: { path?: string } }[] =
+          workflow.jobs['test-shards-acceptance'].steps;
+        const upload = steps.find((step) => step.uses?.startsWith('actions/upload-artifact@'));
+        expect(upload?.if).toContain('failure()');
+        expect(upload?.with?.path).toEqual('test-results/');
+      });
+    });
+  });
 });

@@ -51,3 +51,5 @@ ignorePatterns:
   # this repo's own role dir is source that depcheck should attribute
   - .agent/repo=*
   - "!.agent/repo=.this"
+  - .agent/.cache
+  - .temp

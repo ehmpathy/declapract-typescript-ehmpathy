@@ -3,7 +3,12 @@ import { join } from 'node:path';
 
 import { ConstraintError } from 'helpful-errors';
 
-import { probeTestDb } from '../../jest.integration.env.db';
+import {
+  getAllTestConfigKeysAbsent,
+  getOneTestConfig,
+  isTestConfigComplete,
+  probeTestDb,
+} from '../../jest.integration.env.db';
 
 /**
  * .what = the port the local testdb binds, as the app dials it
@@ -60,37 +65,34 @@ export const useWakeOfTestdb = (): void => {
 
   // an own-db service without config/test.json cannot preflight — name the fix (author the config)
   const testConfigPath = join(process.cwd(), 'config', 'test.json');
-  if (!existsSync(testConfigPath))
+  const testConfig = getOneTestConfig({ path: testConfigPath });
+  if (testConfig === null)
     throw new ConstraintError(
-      'config/test.json not found but a databaseUserName is declared in declapract.use.yml — author config/test.json with the testdb tunnel + role',
-      { testConfigPath },
-    );
-
-  // a present-but-incomplete config fails loud, and names the exact keys the preflight needs
-  const testConfig = JSON.parse(readFileSync(testConfigPath, 'utf8'));
-  if (
-    !testConfig.database?.tunnel?.local ||
-    !testConfig.database?.role?.crud ||
-    !testConfig.database?.target?.database
-  )
-    throw new ConstraintError(
-      'config/test.json lacks an expected key — declare database.tunnel.local, database.role.crud, and database.target.database',
+      'config/test.json not found, yet declapract.use.yml declares a databaseUserName, so this service needs a testdb',
       {
-        hasTunnelLocal: !!testConfig.database?.tunnel?.local,
-        hasRoleCrud: !!testConfig.database?.role?.crud,
-        hasTargetDatabase: !!testConfig.database?.target?.database,
+        testConfigPath,
+        hint: 'add config/test.json with database.tunnel.local.host, database.tunnel.local.port, and database.role.crud, or run `npx declapract apply` to restore it',
       },
     );
 
+  // a present-but-incomplete config fails loud, and names the exact keys the preflight needs
+  const config = { testConfig };
+  if (!isTestConfigComplete(config)) {
+    const keysAbsent = getAllTestConfigKeysAbsent(config);
+    throw new ConstraintError(`config/test.json lacks an expected key — declare ${keysAbsent.join(', ')}`, {
+      testConfigPath,
+      keysAbsent,
+    });
+  }
+
   // preflight the testdb; probeTestDb surfaces psql's own stderr on failure (never a swallowed
   // error) and passes PGPASSWORD via env, never the command args
+  const database = config.testConfig.database;
   probeTestDb({
-    host: testConfig.database.tunnel.local.host,
-    port: getTestdbPortForWake({
-      portDeclared: testConfig.database.tunnel.local.port,
-    }),
-    username: testConfig.database.role.crud.username,
-    password: testConfig.database.role.crud.password,
-    database: testConfig.database.target.database,
+    host: database.tunnel.local.host,
+    port: getTestdbPortForWake({ portDeclared: database.tunnel.local.port }),
+    username: database.role.crud.username,
+    password: database.role.crud.password,
+    database: database.target.database,
   });
 };

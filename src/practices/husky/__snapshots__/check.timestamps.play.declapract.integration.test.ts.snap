@@ -1,8 +1,56 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`check.timestamps guard given: [case-fault] a read or a scan faults (#789, #802) when: [t0] the guard runs outside a git repo then: it halts as a malfunction (exit 1) that names the failed step, never passes: check.timestamps malfunction — staged list 1`] = `
+"💥 MalfunctionError: check.timestamps could not list the staged files
+   ├─ why: a failed read or scan halts the commit, never reads as clean
+   └─ fix: repair git (git status names the fault), then commit again
+"
+`;
+
+exports[`check.timestamps guard given: [case-fault] a read or a scan faults (#789, #802) when: [t1] the guard runs with a grep that exits 2 then: it halts as a malfunction (exit 1), never reads the fault as clean: check.timestamps malfunction — scan 1`] = `
+"💥 MalfunctionError: check.timestamps could not scan for timestamps
+   ├─ file: readme.md
+   ├─ why: a failed read or scan halts the commit, never reads as clean
+   └─ fix: repair grep (its own words print above), then commit again
+"
+`;
+
+exports[`check.timestamps guard given: [case-fault] a read or a scan faults (#789, #802) when: [t2] the guard runs with a sed that exits 2 then: it halts as a malfunction (exit 1) at the duration strip, never scans a blank blob: check.timestamps malfunction — strip 1`] = `
+"💥 MalfunctionError: check.timestamps could not mask durations before the timestamp scan
+   ├─ file: readme.md
+   ├─ why: a failed read or scan halts the commit, never reads as clean
+   └─ fix: repair sed (its own words print above), then commit again
+"
+`;
+
 exports[`check.timestamps guard given: [case1] a non-code file with an iso timestamp when: [t0] the guard runs then: the halt output, its instant masked, matches snapshot: check.timestamps halt output 1`] = `
-"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions
+"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included
    ├─ why: a timestamp is a privacy leak, and churns every diff
-   └─ snapshot.json:1:{ "createdAt": "[timestamp]" }
+   ├─ file: snapshot.json:1
+   └─ fix: remove them, or mask each one (e.g. [time]); zero exceptions
+"
+`;
+
+exports[`check.timestamps guard given: [case16] a staged file whose blob git cannot read (#681) when: [t0] the guard runs then: it exits 1, with a MalfunctionError header on stderr: check.timestamps malfunction — staged blob 1`] = `
+"💥 MalfunctionError: check.timestamps could not read the staged blob
+   ├─ file: notes.md
+   ├─ why: a failed read or scan halts the commit, never reads as clean
+   └─ fix: repair git (git status names the fault), then commit again
+"
+`;
+
+exports[`check.timestamps guard given: [case18] a moved file, edited to hold a clock, staged as a rename when: [t0] the guard runs then: it halts with exit 2 and names the moved file and the line: check.timestamps halt output — rename 1`] = `
+"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included
+   ├─ why: a timestamp is a privacy leak, and churns every diff
+   ├─ file: moved.md:41
+   └─ fix: remove them, or mask each one (e.g. [time]); zero exceptions
+"
+`;
+
+exports[`check.timestamps guard given: [case19] a line that holds both a clock and a key when: [t0] the guard runs then: it halts with exit 2 and names the file and line only, so the key never reaches a log: check.timestamps halt output — clock beside a key 1`] = `
+"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included
+   ├─ why: a timestamp is a privacy leak, and churns every diff
+   ├─ file: debug.md:2
+   └─ fix: remove them, or mask each one (e.g. [time]); zero exceptions
 "
 `;

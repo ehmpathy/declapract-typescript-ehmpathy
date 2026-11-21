@@ -9,6 +9,10 @@ process.env.TZ = 'UTC';
 // ensure tests run like on local machines, so snapshots are equal on local && cicd
 process.env.FORCE_COLOR = 'true';
 
+// this checkout's root as a regex, escaped: jest pastes `<rootDir>` into a pattern raw, so a `(` or
+// `+` in the path would break an anchor and let `.agent/` and `.temp/` suites run again
+const rootDirPattern = __dirname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // https://jestjs.io/docs/configuration
 const config: Config = {
   verbose: true,
@@ -41,10 +45,12 @@ const config: Config = {
     '!**/.agent/.cache/**',
     '!**/.yalc/**',
   ],
-  // skip all of `.agent/`: rhachet roles, host-local clones, and the rmsafe trash live there. a test
-  // there would run as ours, and a snapshot there would read as obsolete (the haste map scans it)
-  testPathIgnorePatterns: ['/node_modules/', '/.agent/'],
-  modulePathIgnorePatterns: ['<rootDir>/.agent/'],
+  // skip `.agent/` but for `.agent/repo=.this/`: rhachet roles, host-local clones, and the rmsafe trash
+  // live there; a test there would run as ours, and a snapshot there would read as obsolete (the haste
+  // map scans it). `.agent/repo=.this/` holds this repo's own skills and suites, so those run.
+  // skip `.temp/` too: scratch clones live there
+  testPathIgnorePatterns: ['/node_modules/', `${rootDirPattern}/\\.agent/(?!repo=\\.this(/|$))`, `${rootDirPattern}/\\.temp/`],
+  modulePathIgnorePatterns: [`${rootDirPattern}/\\.agent/(?!repo=\\.this(/|$))`, `${rootDirPattern}/\\.temp/`],
   setupFilesAfterEnv: ['./jest.unit.env.ts'],
 
   // reclaim every temp dir genTempDir made this run (test-fns autoprune; needs test-fns >=1.16,

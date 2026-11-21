@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`useTestdbPortOverride declares the testdb port the app dials given: [case3] a port source whose export drifted when: [t0] the step runs then: it fails loud with a ConstraintError that names the export: port override failure, export drift 1`] = `
+"✋ ConstraintError: src/.test/assets/database/getTestdbPort.ts exports no getTestdbPort function
+
+{
+  "helperPath": "<cwd>/src/.test/assets/database/getTestdbPort.ts",
+  "hint": "export \`getTestdbPort({ access, portDeclared })\` from that file, or run \`npx declapract apply\` to restore it"
+}"
+`;
+
+exports[`useTestdbPortOverride declares the testdb port the app dials given: [case4.1] a port source, but config/test.json is not valid json (#788) when: [t0] the step runs then: it fails loud with a ConstraintError that names the file, never a bare SyntaxError: port override failure, malformed config 1`] = `
+"✋ ConstraintError: <cwd>/config/test.json is not valid json
+
+{
+  "path": "<cwd>/config/test.json",
+  "hint": "fix the json syntax in that file (an editor flags the fault), or run \`npx declapract apply\` to restore it"
+}"
+`;
+
+exports[`useTestdbPortOverride declares the testdb port the app dials given: [case4] a port source, but no port reaches it from config/test.json when: [t0] config/test.json is absent then: it fails loud with a ConstraintError that names the absent file, never a key in it: port override failure, no config file 1`] = `
+"✋ ConstraintError: config/test.json not found — the testdb port cannot be derived
+
+{
+  "testConfigPath": "<cwd>/config/test.json",
+  "hint": "add config/test.json with database.tunnel.local.port, or run \`npx declapract apply\` to restore it"
+}"
+`;
+
+exports[`useTestdbPortOverride declares the testdb port the app dials given: [case4] a port source, but no port reaches it from config/test.json when: [t1] config/test.json is portless then: it fails loud with a ConstraintError that names the absent key: port override failure, no port declared 1`] = `
+"✋ ConstraintError: config/test.json declares no database.tunnel.local.port — the testdb port cannot be derived
+
+{
+  "testConfigPath": "<cwd>/config/test.json",
+  "hint": "declare database.tunnel.local.port in config/test.json, or run \`npx declapract apply\` to restore it"
+}"
+`;

@@ -13,13 +13,82 @@ concurrency:
   cancel-in-progress: true #  cancel workflows for non-latest commits
 
 permissions:
-  id-token: write # required for oidc
   contents: read
 
 jobs:
   suite:
+    # .why = id-token at job scope: the suite mints oidc tokens; the gate below never does
+    permissions:
+      id-token: write # required for oidc; a called workflow cannot exceed its caller's grant
+      contents: read
     uses: ./.github/workflows/.test.yml
     with:
       creds-aws-region: us-east-1
       creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_PREP_OIDC_ROLE_ARN }} # use aws auth via oidc, if this repo supplies it
     secrets: inherit # keyrack firewall in .test.yml filters to declared keys
+
+  # .what = the one check branch protection requires of the suite (with pullreq-title)
+  # .why  = protection that names inner jobs strands every upgrade pr whose jobs were renamed;
+  #         one stable gate decouples protection from job names, so a rename is free
+  # .note = it passes only when the suite passed and no job failed or was cancelled; a skipped job
+  #         (e.g. an acceptance suite the repo lacks) is a pass. on a red, it names each job
+  test-passed:
+    if: always()
+    needs: [suite]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: require every suite job to pass, or name each that did not
+        env:
+          SUITE_RESULT: ${{ needs.suite.result }}
+          SUITE_JOB_RESULTS: ${{ toJSON(needs.suite.outputs) }}
+        run: |
+          # name each job that failed or was cancelled, as `suite / <job>: <result>` (a null outputs reads as none)
+          JOBS_NOT_PASSED=$(printf '%s' "$SUITE_JOB_RESULTS" | jq -r '(. // {}) | to_entries[] | select(.value == "failure" or .value == "cancelled") | "suite / \(.key | sub("^result-"; "")): \(.value)"')
+          JOB_RESULT_COUNT=$(printf '%s' "$SUITE_JOB_RESULTS" | jq '(. // {}) | length')
+
+          # a red that names no job, or that a green roll-up seems to contradict, says why, in the summary and the log alike
+          RED_WHY=""
+          if [ "$SUITE_RESULT" != "success" ] && [ -z "$JOBS_NOT_PASSED" ] && [ "$JOB_RESULT_COUNT" -eq 0 ]; then RED_WHY="no job result reached the gate"; fi
+          if [ "$SUITE_RESULT" != "success" ] && [ -z "$JOBS_NOT_PASSED" ] && [ "$JOB_RESULT_COUNT" -gt 0 ]; then RED_WHY="every job result reads passed or skipped, yet the suite failed (a step outside the jobs)"; fi
+          if [ "$SUITE_RESULT" = "success" ] && [ -n "$JOBS_NOT_PASSED" ]; then RED_WHY="the roll-up reads success, yet a job named above did not pass; a named red job wins over the roll-up"; fi
+
+          # report the verdict in the run summary, so the reviewer reads it in one click
+          {
+            echo "## test-passed"
+            echo ""
+            echo "- roll-up: $SUITE_RESULT"
+            if [ -n "$JOBS_NOT_PASSED" ]; then printf '%s\n' "$JOBS_NOT_PASSED" | sed 's/^/- /'; fi
+            if [ -n "$RED_WHY" ]; then echo "- $RED_WHY"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # warn on a roll-up that carried no job result: the names only explain a red, so their absence never vetoes a green
+          if [ "$JOB_RESULT_COUNT" -eq 0 ]; then
+            echo "::warning title=test-passed::no job result reached the gate; check that .test.yml exports a result-<job> output per job"
+          fi
+
+          # pass when the suite passed and no job result reads failed or cancelled (a named red job wins over the roll-up)
+          # a green claims only what reached the gate: with no job result, it claims the roll-up alone
+          if [ "$SUITE_RESULT" = "success" ] && [ -z "$JOBS_NOT_PASSED" ] && [ "$JOB_RESULT_COUNT" -eq 0 ]; then
+            echo "✨ the suite rolled up as success; no job result reached the gate to name"
+            exit 0
+          fi
+          if [ "$SUITE_RESULT" = "success" ] && [ -z "$JOBS_NOT_PASSED" ]; then
+            echo "✨ every suite job passed or was skipped"
+            exit 0
+          fi
+
+          # halt, and name each job that did not pass; with none named, the fix points at the run
+          FIX_HINT="open the job named above in that run; fix its cause and push, or, for a flake or a cache halt, rerun the failed jobs"
+          if [ -z "$JOBS_NOT_PASSED" ]; then FIX_HINT="open the suite jobs in that run and find the step that failed; fix its cause and push, or, for a flake, rerun the failed jobs"; fi
+          # a job that was only cancelled has no cause of its own to fix, so the rerun leads
+          case "$JOBS_NOT_PASSED" in
+            *': failure'*) ;;
+            ?*) FIX_HINT="rerun the cancelled jobs in that run; if a cancel recurs, open the job named above to see what cancelled it" ;;
+          esac
+          echo "✋ ConstraintError: the suite did not pass"
+          echo "   ├─ roll-up: $SUITE_RESULT"
+          if [ -n "$JOBS_NOT_PASSED" ]; then printf '%s\n' "$JOBS_NOT_PASSED" | sed 's/^/   ├─ /'; fi
+          if [ -n "$RED_WHY" ]; then echo "   ├─ $RED_WHY"; fi
+          echo "   ├─ run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          echo "   └─ fix: $FIX_HINT"
+          exit 1

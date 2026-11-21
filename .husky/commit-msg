@@ -1,8 +1,8 @@
 #!/bin/sh
-if [ ! -f "$(dirname -- "$0")/_/husky.sh" ]; then
-  echo "🟡 husky not available, skipping hook"
-  exit 0
+# husky's runner, where `husky install` wrote it; the check below runs either way, so a checkout
+# that never ran the install (a fresh worktree, where git still reads .husky/) still lints its message
+if [ -f "$(dirname -- "$0")/_/husky.sh" ]; then
+  . "$(dirname -- "$0")/_/husky.sh"
 fi
-. "$(dirname -- "$0")/_/husky.sh"
 
 . "$(dirname -- "$0")/check.commit.sh"

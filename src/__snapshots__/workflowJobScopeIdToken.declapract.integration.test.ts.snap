@@ -9,6 +9,7 @@ exports[`workflow templates grant id-token at job scope (#550) given: [case1] ev
   "src/practices/cicd-common/best-practice/.github/workflows/.test.yml :: test-shards-integration",
   "src/practices/cicd-common/best-practice/.github/workflows/.test.yml :: test-shards-acceptance",
   "src/practices/cicd-common/best-practice/.github/workflows/.test.yml :: test-evaluation",
+  "src/practices/cicd-common/best-practice/.github/workflows/test.yml :: suite",
   "src/practices/cicd-package/best-practice/.github/workflows/.publish-npm.yml :: publish",
   "src/practices/cicd-service/best-practice/.github/workflows/.deploy-sls.yml :: deploy",
   "src/practices/cicd-service/best-practice/.github/workflows/.deploy-sls.yml :: assure",
@@ -22,6 +23,7 @@ exports[`workflow templates grant id-token at job scope (#550) given: [case1] ev
 
 exports[`workflow templates grant id-token at job scope (#550) given: [case2] a corpus that is defective on purpose when: [t0] the corpus is read the way the walk reads a real one then: each report names its offender -- the text a maintainer meets on red 1`] = `
 {
+  "callGrantsWithoutCalleeMinter": [],
   "grantsWithoutMinter": [
     "demo/.github/workflows/.demo.yml :: lint",
   ],

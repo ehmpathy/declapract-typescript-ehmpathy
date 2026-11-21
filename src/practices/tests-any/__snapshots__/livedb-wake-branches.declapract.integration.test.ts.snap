@@ -1,6 +1,16 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`the useWakeOfLivedb decide-gate runs its real branches (executed, no live infra) given: a config the consumer authored but the setup cannot parse when: the wake gate reads it then: it throws a ConstraintError that names the parse failure (never a silent false): useWakeOfLivedb parse failure 1`] = `
+"✋ ConstraintError: useWakeOfLivedb: could not parse <cwd>/config/prep.json as JSON — fix the malformed config so the wake gate can read its database.tunnel signal
+
+{
+  "configPath": "<cwd>/config/prep.json"
+}"
+`;
+
 exports[`the useWakeOfLivedb decide-gate runs its real branches (executed, no live infra) given: the wake command fails when: it fails with a child-process shape (a non-zero exit) then: the wake-failure warn matches snapshot: useWakeOfLivedb wake-failure warn 1`] = `
-"useWakeOfLivedb: 'rhx use.rds.capacity --env prep' failed (non-fatal): {"status":1}
+"useWakeOfLivedb: 'rhx use.rds.capacity --env prep' failed (non-fatal)
+   ├─ cause: the command exited with status 1
+   └─ fix: run 'rhx use.rds.capacity --env prep' by hand to see why; the suite runs on, so a cold-start timeout may follow
 "
 `;

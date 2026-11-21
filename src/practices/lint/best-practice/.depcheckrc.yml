@@ -30,6 +30,10 @@ ignorePatterns:
   # rhachet host-local runtime state (actor caches, plugin copies); gitignored,
   # never source, and its files import packages this repo does not use
   - .agent/.actors
+  # host-local caches + the rmsafe trash, and scratch clones; never source, and the
+  # crawl of them alone can stall the lint for minutes
+  - .agent/.cache
+  - .temp
   # rhachet links `.claude` into the enrolled actor's dir, so depcheck reaches the same
   # host-local cache through it; the link is not source either
   - .claude

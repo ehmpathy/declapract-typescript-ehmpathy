@@ -173,7 +173,10 @@ jobs:
       wish-path: provision/github.repo/resources.ts
       scope: github
       access: prod # github repo settings are inherently a prod resource
-      github-environment-plan: production-on-else-plan
+      # .why = the plan runs in the apply's own environment on main/tag: github creates an environment
+      #        the moment a job names it, and the wish declares that environment, so a plan that ran
+      #        elsewhere would read it absent, then the apply would read it present: \`plan is stale\`
+      github-environment-plan: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-plan' }}
       github-environment-apply: \${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'production-on-main' || 'production-on-else-apply' }} # main/tag => on-main; else => on-else-apply
       creds-github-app-owner: \${{ github.repository_owner }}
       creds-github-app-id: \${{ vars.DECLASTRUCT_GITHUB_CONFORMER_APP_ID }}

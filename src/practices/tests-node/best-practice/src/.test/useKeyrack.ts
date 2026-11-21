@@ -2,8 +2,26 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { ConstraintError } from 'helpful-errors';
+import { ConstraintError, MalfunctionError } from 'helpful-errors';
 import { keyrack } from 'rhachet/keyrack';
+
+/**
+ * .what = classify an execFileSync fault: the child exited non-zero, the child stalled past its
+ *         timeout, or a fault of another kind (a spawn fault such as ENOENT, or a kill by a signal)
+ * .why  = only a non-zero exit of `aws configure export-credentials` means a stale or absent sso
+ *         login, a fix the caller makes. a stall is a slow host (parallel suites starve the spawn) or network,
+ *         never a dead login; a spawn fault or a kill is its own cause. each reads as what it is
+ * .note = execFileSync sets `code: 'ETIMEDOUT'` on a timeout kill, and a numeric `status` on a
+ *         plain non-zero exit; a bare `signal` (an oom kill, a ctrl-c) is no timeout, so it reads
+ *         as other. an `in` narrow reads each, never a cast
+ */
+const asExecFaultKind = (input: { error: unknown }): 'exit' | 'stall' | 'other' => {
+  if (typeof input.error !== 'object' || input.error === null) return 'other';
+  if ('code' in input.error && input.error.code === 'ETIMEDOUT') return 'stall';
+  if ('status' in input.error && typeof input.error.status === 'number' && input.error.status !== 0)
+    return 'exit';
+  return 'other';
+};
 
 /**
  * .what = parse the `export KEY=VALUE` lines of `aws ... export-credentials --format env` into a
@@ -70,12 +88,32 @@ export const exportAwsCredentialsFromSsoProfile = (
         { encoding: 'utf8', timeout: SSO_EXPORT_TIMEOUT_MS },
       ) as string;
     } catch (error) {
-      throw new ConstraintError(
-        `failed to export aws credentials from sso profile '${input.profile}'. run: aws sso login --profile ${input.profile}`,
-        // a catch binds `unknown` under strictest, and `cause` is typed `Error`; narrow, never
-        // cast, so a non-Error throw is re-homed into an Error rather than dropped
-        { cause: error instanceof Error ? error : new Error(String(error)) },
-      );
+      // a catch binds `unknown` under strictest, and `cause` is typed `Error`; narrow, never
+      // cast, so a non-Error throw is re-homed into an Error rather than dropped
+      const cause = error instanceof Error ? error : new Error(String(error));
+      const faultKind = asExecFaultKind({ error });
+
+      // a non-zero exit: the sso login is stale or absent, a fix the caller makes
+      if (faultKind === 'exit')
+        throw new ConstraintError(
+          `failed to export aws credentials from sso profile '${input.profile}'. run: aws sso login --profile ${input.profile}`,
+          { cause, profile: input.profile },
+        );
+
+      // a stall: the spawn outlived its budget, which a busy host causes, never a dead login
+      if (faultKind === 'stall')
+        throw new MalfunctionError(
+          [
+            `the aws credential export for sso profile '${input.profile}' stalled past ${SSO_EXPORT_TIMEOUT_MS / 1000}s and was killed`,
+            '   ├─ why: a slow host or a slow network to aws (vpn, dns), not a stale login',
+            `   └─ fix: check the network (vpn up, \`aws sts get-caller-identity --profile ${input.profile}\` answers), then rerun`,
+            '      └─ if another heavy job loads this host, rerun once it quiets',
+          ].join('\n'),
+          { cause, profile: input.profile, timeoutMs: SSO_EXPORT_TIMEOUT_MS },
+        );
+
+      // any other fault (no aws cli, a permission fault) is its own cause; rethrow it as is
+      throw error;
     }
   })();
 
@@ -119,8 +157,10 @@ export const spliceAwsStaticCredsIntoEnv = (
   for (const [key, value] of Object.entries(creds))
     if (key.startsWith(AWS_CRED_KEY_PREFIX)) context.env[key] = value;
 
-  // the sdk prefers AWS_PROFILE over static creds when both are set, so remove it now that creds are spliced
+  // the sdk prefers a profile over static creds when both are set, so remove both profile keys
+  // now that creds are spliced (AWS_DEFAULT_PROFILE is the v2 sdk's fallback name for it)
   delete context.env.AWS_PROFILE;
+  delete context.env.AWS_DEFAULT_PROFILE;
 };
 
 /**
@@ -144,6 +184,7 @@ export const getOneAwsSsoProfileFromEnv = (
   if (!profile)
     throw new ConstraintError(
       'AWS_PROFILE not set. declare it in .agent/keyrack.yml (under env.test, and env.all so every access sources it), so keyrack.source() can set it.',
+      { key: 'AWS_PROFILE', manifest: '.agent/keyrack.yml' },
     );
   return profile;
 };
@@ -339,6 +380,7 @@ export const getOneKeyrackEnvForAcceptance = (input: {
 
   // a cloud run with no named target must not guess
   throw new ConstraintError(
-    'no ACCESS set for a cloud acceptance run. set ACCESS=prep|prod for a cloud acceptance run, or LOCALLY=true for an in-process run.',
+    'no ACCESS set for a cloud acceptance run. set ACCESS=prep|prod, or LOCALLY=true for an in-process run.',
+    { access: null, locally: input.env.LOCALLY ?? null },
   );
 };

@@ -67,12 +67,24 @@ export const useWakeOfLivedb = async (input: {
     wakeSharedCluster({ env, timeoutMs });
   } catch (error) {
     if (!isWakeCommandFailure({ error })) throw error;
-    // a non-Error failure shape (e.g. a child-process `{ status, signal }` object) must read
-    // legibly on stderr: `String({...})` yields the useless `[object Object]`, so serialize it.
-    const message =
-      error instanceof Error ? error.message : JSON.stringify(error);
-    warnWakeFailed({ env, message });
+    warnWakeFailed({ env, cause: asWakeFailureCause({ error }) });
   }
+};
+
+/**
+ * .what = the cause of a wake failure, in words a human reads at a glance
+ * .why  = a pure transformer leaf: a child-process failure may be a bare `{ status, signal }`
+ *         object, and `String({...})` yields `[object Object]`; so an exit reads as its status,
+ *         a kill as its signal, and an Error as its own message
+ */
+const asWakeFailureCause = (input: { error: unknown }): string => {
+  if (input.error instanceof Error) return input.error.message;
+  if (typeof input.error !== 'object' || input.error === null) return JSON.stringify(input.error);
+  if ('status' in input.error && typeof input.error.status === 'number')
+    return `the command exited with status ${input.error.status}`;
+  if ('signal' in input.error && typeof input.error.signal === 'string')
+    return `the command was killed by ${input.error.signal}`;
+  return JSON.stringify(input.error);
 };
 
 /**
@@ -148,10 +160,12 @@ const asReachesSharedClusterFromConfig = (input: {
     if (!(cause instanceof SyntaxError)) throw cause;
     // a config the consumer authored but the setup cannot parse is a real defect, not "no cluster" —
     // throw with the path so a malformed config names the file to repair (never a silent false)
+    // the engine's own message quotes the source near the fault, which can hold a password, so
+    // the SyntaxError never rides out as a cause; the path is enough to act on
     const configPath = join(process.cwd(), 'config', `${input.env}.json`);
     throw new ConstraintError(
       `useWakeOfLivedb: could not parse ${configPath} as JSON — fix the malformed config so the wake gate can read its database.tunnel signal`,
-      { cause },
+      { configPath },
     );
   }
 };
@@ -182,10 +196,15 @@ const wakeSharedCluster = (input: {
  */
 const warnWakeFailed = (input: {
   env: 'test' | 'prep' | 'prod';
-  message: string;
+  cause: string;
 }): void => {
   process.stderr.write(
-    `useWakeOfLivedb: 'rhx use.rds.capacity --env ${input.env}' failed (non-fatal): ${input.message}\n`,
+    [
+      `useWakeOfLivedb: 'rhx use.rds.capacity --env ${input.env}' failed (non-fatal)`,
+      `   ├─ cause: ${input.cause}`,
+      `   └─ fix: run 'rhx use.rds.capacity --env ${input.env}' by hand to see why; the suite runs on, so a cold-start timeout may follow`,
+      '',
+    ].join('\n'),
   );
 };
 
@@ -197,13 +216,16 @@ const warnWakeFailed = (input: {
  *         those are the wake failures the suite intends to tolerate. an error with none of that shape
  *         is a genuine malfunction in this module's own logic, so the catch rethrows it, never warns
  *         it away — a best-effort op still distinguishes the failures it ignores from the ones it must not.
+ * .note = it reads any signal as a failure, where the keyrack and psql fault-kind reads count only
+ *         ETIMEDOUT as a stall: those name a fault to explain it, this one only asks "tolerate or rethrow?",
+ *         and a best-effort wake tolerates a killed child as it tolerates a non-zero exit
  */
 const isWakeCommandFailure = (input: { error: unknown }): boolean => {
   const error = input.error;
   if (!error || typeof error !== 'object') return false;
-  const shape = error as { status?: unknown; signal?: unknown; code?: unknown };
-  if (typeof shape.status === 'number') return true; // child exited non-zero
-  if (typeof shape.signal === 'string') return true; // child killed by a signal (a timeout)
-  if (shape.code === 'ENOENT' || shape.code === 'ETIMEDOUT') return true; // absent binary, cap hit
+  // an `in` narrow reads each key, never a cast
+  if ('status' in error && typeof error.status === 'number') return true; // child exited non-zero
+  if ('signal' in error && typeof error.signal === 'string') return true; // child killed by a signal (a timeout)
+  if ('code' in error && (error.code === 'ENOENT' || error.code === 'ETIMEDOUT')) return true; // absent binary, cap hit
   return false; // any other `code` (EACCES, EMFILE, …) is not a wake failure, so it rethrows
 };

@@ -40,6 +40,8 @@ ignores:
   - yaml
 ignorePatterns:
   - .agent/.actors
+  - .agent/.cache
+  - .temp
   - .claude
   - .agent/repo=*
   - "!.agent/repo=.this"

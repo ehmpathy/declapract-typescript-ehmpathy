@@ -2,6 +2,7 @@
 
 exports[`.gitignore best practice (cicd-app-react-native-expo) build dirs are declared should emit a declared file that matches snapshot: cicd-app-react-native-expo .gitignore — as declared 1`] = `
 "android/
+dist-native/
 ios/
 node_modules
 !.test*/**/node_modules

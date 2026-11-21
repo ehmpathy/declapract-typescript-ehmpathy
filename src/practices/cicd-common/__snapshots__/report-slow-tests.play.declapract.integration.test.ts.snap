@@ -18,11 +18,44 @@ exports[`report-slow-tests given: [case1] a report with a slow (>30s), a medium 
 `;
 
 exports[`report-slow-tests given: [case2] a non-empty report whose durations are all zero (schema drift) when: [t0] the report runs then: the error output matches snapshot: stdout — schema drift 1`] = `
-"::error::slow-test report parsed 0 durations from 2 test files — the jest --json duration schema likely changed; read endTime/startTime from one entry of [fixture]/jest-results.json to see what moved
+"::error::💥 MalfunctionError: slow-test report parsed 0 durations from 2 test files that ran a test — the jest --json duration schema likely changed; read endTime/startTime from one entry of [fixture]/jest-results.json to see what moved
 "
 `;
 
 exports[`report-slow-tests given: [case3] an empty shard (0 test files) when: [t0] the report runs then: the summary matches snapshot: step summary — empty shard 1`] = `
-"slow-test report: 0 test files in [fixture]/jest-results.json (empty shard)
+"### slowest test files
+
+slow-test report: 0 test files in [fixture]/jest-results.json (empty shard)
+"
+`;
+
+exports[`report-slow-tests given: [case4] a shard whose only file was skipped (a credential-gated suite) (#788) when: [t0] the report runs then: the summary matches snapshot: step summary — all skipped 1`] = `
+"### slowest test files
+
+slow-test report: 1 test file in [fixture]/jest-results.json, none ran a test (each was skipped, or failed before its first test)
+"
+`;
+
+exports[`report-slow-tests given: [case5] a shard with one skipped file and one that ran when: [t0] the report runs then: it exits 0 and ranks only the file that ran: summary — one skipped file, one that ran 1`] = `
+"### slowest test files
+
+| duration | file |
+| --- | --- |
+| 12s | /repo/src/live.acceptance.test.ts |
+"
+`;
+
+exports[`report-slow-tests given: [case6] a report jest never finished (a runner killed mid-write) when: [t0] the report runs then: the error output matches snapshot: stdout — corrupt report 1`] = `
+"::error::💥 MalfunctionError: slow-test report could not parse [fixture]/jest-results.json as json — the jest run likely ended mid-write; read the test step above for why it stopped
+"
+`;
+
+exports[`report-slow-tests given: [case7] a report whose run counts say tests ran, yet no file shows one (status schema drift) when: [t0] the report runs then: it prints an error annotation that names the assertionResults drift and the next move: stdout — status schema drift 1`] = `
+"::error::💥 MalfunctionError: slow-test report found 3 tests that ran yet 0 test files with a passed or failed test — the jest --json testResults schema likely changed; read testResults[].assertionResults[].status in [fixture]/jest-results.json to see what moved
+"
+`;
+
+exports[`report-slow-tests given: [case8] a report whose run counts say tests ran, yet \`testResults\` moved (an empty shard look-alike) when: [t0] the report runs then: it fails loud with exit 1 as drift, never "0 test files (empty shard)": stdout — testResults moved 1`] = `
+"::error::💥 MalfunctionError: slow-test report found 3 tests that ran yet no testResults entry at all — the jest --json testResults array likely moved or was renamed; read the top-level keys of [fixture]/jest-results.json to see where it went
 "
 `;

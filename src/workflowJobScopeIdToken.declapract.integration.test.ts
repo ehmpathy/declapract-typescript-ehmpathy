@@ -15,6 +15,7 @@ import {
  *           2. each job that mints an oidc token declares `id-token: write` at job scope
  *           3. no job grants `id-token: write` that does not mint one
  *           4. a job-level `permissions:` block also grants `contents: read`
+ *           5. a local reusable-call job grants `id-token: write` only where its callee mints one
  * .why  = a workflow-level `permissions:` block reaches EVERY job in the file. a lint, unit, or
  *         install job that never touches aws can then mint an oidc token and assume the cloud role,
  *         and a poisoned action in any of those jobs reaches for it (owasp cicd-sec-3 + cicd-sec-4).
@@ -37,6 +38,13 @@ interface WorkflowJob {
   name: string;
   runsSteps: boolean;
   mintsOidc: boolean;
+  /**
+   * .what = the reusable workflow a call job names (`uses:` at job level), or null for a step job
+   * .why  = a callee cannot exceed its caller's grant, so a call job whose callee mints must hold
+   *         `id-token: write` itself; the grant is earned only where that callee mints, so the
+   *         callee is read too
+   */
+  calleeUses: string | null;
   permissions: Record<string, string> | null;
 }
 
@@ -90,6 +98,7 @@ const asWorkflowFromText = (input: { path: string; text: string }): Workflow => 
         name,
         runsSteps: steps.length > 0,
         mintsOidc: steps.some(isStepOidcMinter),
+        calleeUses: typeof job['uses'] === 'string' ? job['uses'] : null,
         permissions: asPermissionsRecord(job['permissions']),
       };
     }),
@@ -110,8 +119,39 @@ const getAllWorkflowTemplates = (): Workflow[] =>
       }),
     );
 
+// a reusable call into this repo's own workflows; a call into another repo cannot be read here
+const LOCAL_CALL_PREFIX = './.github/workflows/';
+
 /**
- * .what = the four reports, each a list of offenders named `<path> :: <job>`
+ * .what = the workflows a local reusable call may land on: each template of that file name
+ * .why  = a practice's caller may name a workflow another practice declares, so every template
+ *         of that name is a candidate callee
+ */
+const getAllCalleesOfUses = (input: { workflows: Workflow[]; uses: string }): Workflow[] =>
+  input.workflows.filter((flow) =>
+    flow.path.endsWith(`/.github/workflows/${input.uses.slice(LOCAL_CALL_PREFIX.length)}`),
+  );
+
+/**
+ * .what = whether a workflow mints an oidc token, in a job of its own or through a local call
+ * .why  = a caller's grant is the callee's upper bound, so the grant is earned only where some
+ *         job down the call chain mints. `seen` stops a call cycle
+ */
+const isWorkflowOidcMinter = (input: { workflows: Workflow[]; flow: Workflow; seen: string[] }): boolean =>
+  input.flow.jobs.some(
+    (job) =>
+      job.mintsOidc ||
+      (job.calleeUses !== null &&
+        job.calleeUses.startsWith(LOCAL_CALL_PREFIX) &&
+        getAllCalleesOfUses({ workflows: input.workflows, uses: job.calleeUses })
+          .filter((callee) => !input.seen.includes(callee.path))
+          .some((callee) =>
+            isWorkflowOidcMinter({ workflows: input.workflows, flow: callee, seen: [...input.seen, input.flow.path] }),
+          )),
+  );
+
+/**
+ * .what = the five reports, each a list of offenders named `<path> :: <job>`
  * .why  = one transformer the real walk and the defective corpus both read, so the red state a
  *         maintainer meets is the same text the green state proves empty
  */
@@ -125,9 +165,29 @@ const asIdTokenScopeReports = (input: { workflows: Workflow[] }) => ({
       .filter((job) => job.mintsOidc && job.permissions?.['id-token'] !== 'write')
       .map((job) => `${flow.path} :: ${job.name}`),
   ),
+  // a local call job's grant is judged by the next report; a call into another repo cannot be read, so it earns none
   grantsWithoutMinter: input.workflows.flatMap((flow) =>
     flow.jobs
-      .filter((job) => job.permissions?.['id-token'] === 'write' && !job.mintsOidc)
+      .filter(
+        (job) =>
+          job.permissions?.['id-token'] === 'write' &&
+          !job.mintsOidc &&
+          !(job.calleeUses?.startsWith(LOCAL_CALL_PREFIX) ?? false),
+      )
+      .map((job) => `${flow.path} :: ${job.name}`),
+  ),
+  // a local call job's grant is earned only where its callee mints; an unread callee earns none
+  callGrantsWithoutCalleeMinter: input.workflows.flatMap((flow) =>
+    flow.jobs
+      .filter(
+        (job) =>
+          job.permissions?.['id-token'] === 'write' &&
+          job.calleeUses !== null &&
+          job.calleeUses.startsWith(LOCAL_CALL_PREFIX) &&
+          !getAllCalleesOfUses({ workflows: input.workflows, uses: job.calleeUses }).some((callee) =>
+            isWorkflowOidcMinter({ workflows: input.workflows, flow: callee, seen: [flow.path] }),
+          ),
+      )
       .map((job) => `${flow.path} :: ${job.name}`),
   ),
   jobBlocksWithoutContentsRead: input.workflows.flatMap((flow) =>
@@ -186,6 +246,13 @@ describe('workflow templates grant id-token at job scope (#550)', () => {
       );
 
       then(
+        'no reusable-call job grants id-token unless its callee mints one -- if red, drop the grant from that call job',
+        () => {
+          expect(scene.reports.callGrantsWithoutCalleeMinter).toEqual([]);
+        },
+      );
+
+      then(
         'each job-level permissions block restates contents: read -- if red, a job-level block replaces the workflow one, so add `contents: read`',
         () => {
           expect(scene.reports.jobBlocksWithoutContentsRead).toEqual([]);
@@ -230,6 +297,125 @@ describe('workflow templates grant id-token at job scope (#550)', () => {
           'demo/.github/workflows/.demo.yml :: lint',
         ]);
         expect(reports).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case3] a caller that pairs a reusable call with a step job (a gate)', () => {
+    const text = [
+      'on:',
+      '  push:',
+      'permissions:',
+      '  contents: read',
+      'jobs:',
+      '  suite:',
+      '    permissions:',
+      '      id-token: write',
+      '      contents: read',
+      '    uses: ./.github/workflows/.test.yml',
+      '  gate:',
+      '    needs: [suite]',
+      '    runs-on: ubuntu-24.04',
+      '    steps:',
+      '      - run: echo gate',
+    ].join('\n');
+
+    // the callee: one job of it mints the token the caller's grant bounds
+    const calleeMints = [
+      'on:',
+      '  workflow_call:',
+      'jobs:',
+      '  deploy:',
+      '    runs-on: ubuntu-24.04',
+      '    permissions:',
+      '      id-token: write',
+      '      contents: read',
+      '    steps:',
+      '      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4',
+    ].join('\n');
+
+    when('[t0] the corpus is read the way the walk reads a real one', () => {
+      const reports = asIdTokenScopeReports({
+        workflows: [
+          asWorkflowFromText({ path: 'demo/.github/workflows/test.yml', text }),
+          asWorkflowFromText({ path: 'demo/.github/workflows/.test.yml', text: calleeMints }),
+        ],
+      });
+
+      then('the call job may hold the grant its callee needs, and no report names it', () => {
+        expect(reports.workflowScopeGrants).toEqual([]);
+        expect(reports.grantsWithoutMinter).toEqual([]);
+        expect(reports.callGrantsWithoutCalleeMinter).toEqual([]);
+        expect(reports.jobBlocksWithoutContentsRead).toEqual([]);
+      });
+    });
+  });
+
+  given('[case4] a reusable-call job that grants id-token while its callee mints none', () => {
+    const caller = [
+      'on:',
+      '  push:',
+      'jobs:',
+      '  suite:',
+      '    permissions:',
+      '      id-token: write',
+      '      contents: read',
+      '    uses: ./.github/workflows/.test.yml',
+      '  lint:',
+      '    permissions:',
+      '      id-token: write',
+      '      contents: read',
+      '    uses: ./.github/workflows/.lint.yml',
+    ].join('\n');
+    const calleeMintsNone = [
+      'on:',
+      '  workflow_call:',
+      'jobs:',
+      '  unit:',
+      '    runs-on: ubuntu-24.04',
+      '    steps:',
+      '      - run: npm run test:unit',
+    ].join('\n');
+
+    when('[t0] the corpus is read the way the walk reads a real one', () => {
+      const reports = asIdTokenScopeReports({
+        workflows: [
+          asWorkflowFromText({ path: 'demo/.github/workflows/test.yml', text: caller }),
+          asWorkflowFromText({ path: 'demo/.github/workflows/.test.yml', text: calleeMintsNone }),
+        ],
+      });
+
+      then('it names each call job whose grant no callee earns, an unread callee too', () => {
+        // `.lint.yml` is absent from the corpus, so its call job earns no grant either
+        expect(reports.callGrantsWithoutCalleeMinter).toEqual([
+          'demo/.github/workflows/test.yml :: suite',
+          'demo/.github/workflows/test.yml :: lint',
+        ]);
+      });
+    });
+  });
+
+  given('[case5] a call into another repo that grants id-token', () => {
+    const caller = [
+      'on:',
+      '  push:',
+      'jobs:',
+      '  release:',
+      '    permissions:',
+      '      id-token: write',
+      '      contents: read',
+      '    uses: some-org/some-repo/.github/workflows/release.yml@v1',
+    ].join('\n');
+
+    when('[t0] the corpus is read the way the walk reads a real one', () => {
+      const reports = asIdTokenScopeReports({
+        workflows: [asWorkflowFromText({ path: 'demo/.github/workflows/release.yml', text: caller })],
+      });
+
+      then('the grant is named, since no callee this suite can read earns it', () => {
+        expect(reports.grantsWithoutMinter).toEqual(['demo/.github/workflows/release.yml :: release']);
+        // the local-call report reads only local callees, so it never claims this one
+        expect(reports.callGrantsWithoutCalleeMinter).toEqual([]);
       });
     });
   });

@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`test-passed gate given: [case2] a green suite, with a skipped acceptance when: [t0] the gate runs then: the log and summary match snapshot: test-passed summary — passed 1`] = `
+"## test-passed
+
+- roll-up: success
+"
+`;
+
+exports[`test-passed gate given: [case2] a green suite, with a skipped acceptance when: [t0] the gate runs then: the log and summary match snapshot: test-passed — passed 1`] = `
+"✨ every suite job passed or was skipped
+"
+`;
+
+exports[`test-passed gate given: [case3] a red acceptance suite when: [t0] the gate runs then: the log and summary match snapshot: test-passed summary — red acceptance 1`] = `
+"## test-passed
+
+- roll-up: failure
+- suite / test-shards-acceptance: failure
+- suite / test-acceptance-locally: failure
+"
+`;
+
+exports[`test-passed gate given: [case3] a red acceptance suite when: [t0] the gate runs then: the log and summary match snapshot: test-passed — red acceptance 1`] = `
+"✋ ConstraintError: the suite did not pass
+   ├─ roll-up: failure
+   ├─ suite / test-shards-acceptance: failure
+   ├─ suite / test-acceptance-locally: failure
+   ├─ run: https://github.com/ehmpathy/svc-surf/actions/runs/1234
+   └─ fix: open the job named above in that run; fix its cause and push, or, for a flake or a cache halt, rerun the failed jobs
+"
+`;
+
+exports[`test-passed gate given: [case4] a cancelled suite when: [t0] the gate runs then: it fails with exit 1, and names the cancelled job: test-passed summary — cancelled 1`] = `
+"## test-passed
+
+- roll-up: cancelled
+- suite / test-unit: cancelled
+"
+`;
+
+exports[`test-passed gate given: [case4] a cancelled suite when: [t0] the gate runs then: it fails with exit 1, and names the cancelled job: test-passed — cancelled 1`] = `
+"✋ ConstraintError: the suite did not pass
+   ├─ roll-up: cancelled
+   ├─ suite / test-unit: cancelled
+   ├─ run: https://github.com/ehmpathy/svc-surf/actions/runs/1234
+   └─ fix: rerun the cancelled jobs in that run; if a cancel recurs, open the job named above to see what cancelled it
+"
+`;
+
+exports[`test-passed gate given: [case5.1] a green suite whose job results never reached the gate when: [t0] the gate runs with empty outputs then: it passes on the roll-up, and warns that no job result arrived, since the names only explain a red: test-passed summary — green roll-up, no job result 1`] = `
+"## test-passed
+
+- roll-up: success
+"
+`;
+
+exports[`test-passed gate given: [case5.1] a green suite whose job results never reached the gate when: [t0] the gate runs with empty outputs then: it passes on the roll-up, and warns that no job result arrived, since the names only explain a red: test-passed — green roll-up, no job result 1`] = `
+"::warning title=test-passed::no job result reached the gate; check that .test.yml exports a result-<job> output per job
+✨ the suite rolled up as success; no job result reached the gate to name
+"
+`;
+
+exports[`test-passed gate given: [case5] a red suite whose job results never reached the gate when: [t0] the gate runs with empty outputs then: it still fails with exit 1, and says where to look: test-passed summary — no job result 1`] = `
+"## test-passed
+
+- roll-up: failure
+- no job result reached the gate
+"
+`;
+
+exports[`test-passed gate given: [case5] a red suite whose job results never reached the gate when: [t0] the gate runs with empty outputs then: it still fails with exit 1, and says where to look: test-passed — no job result 1`] = `
+"::warning title=test-passed::no job result reached the gate; check that .test.yml exports a result-<job> output per job
+✋ ConstraintError: the suite did not pass
+   ├─ roll-up: failure
+   ├─ no job result reached the gate
+   ├─ run: https://github.com/ehmpathy/svc-surf/actions/runs/1234
+   └─ fix: open the suite jobs in that run and find the step that failed; fix its cause and push, or, for a flake, rerun the failed jobs
+"
+`;
+
+exports[`test-passed gate given: [case6] a suite that rolled up as success while a job failed when: [t0] the gate runs then: the job result wins: it fails with exit 1 and names the job: test-passed summary — job result wins 1`] = `
+"## test-passed
+
+- roll-up: success
+- suite / test-lint: failure
+- the roll-up reads success, yet a job named above did not pass; a named red job wins over the roll-up
+"
+`;
+
+exports[`test-passed gate given: [case6] a suite that rolled up as success while a job failed when: [t0] the gate runs then: the job result wins: it fails with exit 1 and names the job: test-passed — job result wins 1`] = `
+"✋ ConstraintError: the suite did not pass
+   ├─ roll-up: success
+   ├─ suite / test-lint: failure
+   ├─ the roll-up reads success, yet a job named above did not pass; a named red job wins over the roll-up
+   ├─ run: https://github.com/ehmpathy/svc-surf/actions/runs/1234
+   └─ fix: open the job named above in that run; fix its cause and push, or, for a flake or a cache halt, rerun the failed jobs
+"
+`;
+
+exports[`test-passed gate given: [case7] a red suite whose every job result reads passed (a step outside the jobs failed) when: [t0] the gate runs then: it fails with exit 1, and says the results arrived rather than claim none did: test-passed summary — red suite, green job results 1`] = `
+"## test-passed
+
+- roll-up: failure
+- every job result reads passed or skipped, yet the suite failed (a step outside the jobs)
+"
+`;
+
+exports[`test-passed gate given: [case7] a red suite whose every job result reads passed (a step outside the jobs failed) when: [t0] the gate runs then: it fails with exit 1, and says the results arrived rather than claim none did: test-passed — red suite, green job results 1`] = `
+"✋ ConstraintError: the suite did not pass
+   ├─ roll-up: failure
+   ├─ every job result reads passed or skipped, yet the suite failed (a step outside the jobs)
+   ├─ run: https://github.com/ehmpathy/svc-surf/actions/runs/1234
+   └─ fix: open the suite jobs in that run and find the step that failed; fix its cause and push, or, for a flake, rerun the failed jobs
+"
+`;

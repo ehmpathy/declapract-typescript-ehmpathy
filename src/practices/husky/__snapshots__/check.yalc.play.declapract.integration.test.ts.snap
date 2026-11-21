@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`check.yalc guard given: [case1] package.json holds yalc references when: [t0] the guard runs then: it halts with exit 2 and a qualified constraint header, before later checks: check.yalc halt output — references 1`] = `
+"✋ ConstraintError: package.json has yalc references
+   ├─ why: a yalc link points at a folder only this machine holds
+   ├─ yalc said: Yalc dependencies found: [ 'my-pkg' ]
+   └─ fix: npx yalc remove --all
+"
+`;
+
+exports[`check.yalc guard given: [case2] yalc itself is broken when: [t0] the guard runs then: it halts as a malfunction (exit 1), never reads the failure as no references: check.yalc halt output — broken yalc 1`] = `
+"💥 MalfunctionError: yalc check failed, so yalc references cannot be ruled out
+   ├─ exit: 1
+   ├─ output: Error: cannot read package.json
+   └─ fix: repair yalc (reinstall node_modules), then commit again
+"
+`;
+
+exports[`check.yalc guard given: [case5] the staged package.json holds a yalc link, the file on disk does not, and yalc is not installed when: [t0] the guard runs then: it halts with exit 2, names the staged spec, and names the re-stage in its fix: check.yalc halt output — staged link 1`] = `
+"✋ ConstraintError: the staged package.json has yalc references
+   ├─ why: a yalc link points at a folder only this machine holds
+   ├─ found: "my-pkg": "file:.yalc/my-pkg"
+   └─ fix: npx yalc remove --all && git add package.json
+"
+`;
+
+exports[`check.yalc guard given: [case6] git cannot read its index (the guard runs outside a git repo) when: [t0] the guard runs then: it halts as a malfunction (exit 1) that names the index, never reads it as no package.json: check.yalc malfunction — index 1`] = `
+"💥 MalfunctionError: check.yalc could not read the index
+   ├─ why: a failed read halts the commit, never reads as clean
+   └─ fix: repair git (git status names the fault), then commit again
+"
+`;
+
+exports[`check.yalc guard given: [case7.1] a package.json is staged, and grep faults as it scans the blob when: [t0] the guard runs then: it halts as a malfunction (exit 1) that names grep as the tool to repair: check.yalc malfunction — grep 1`] = `
+"💥 MalfunctionError: check.yalc could not read the staged package.json
+   ├─ why: a failed read halts the commit, never reads as clean
+   └─ fix: repair grep (git show :package.json | grep -E file:.yalc names the fault), then commit again
+"
+`;
+
+exports[`check.yalc guard given: [case7] a package.json is staged, and git cannot read its blob when: [t0] the guard runs then: it halts as a malfunction (exit 1) that names the staged package.json, never reads it as clean: check.yalc malfunction — staged blob 1`] = `
+"💥 MalfunctionError: check.yalc could not read the staged package.json
+   ├─ why: a failed read halts the commit, never reads as clean
+   └─ fix: repair git (git show :package.json names the fault), then commit again
+"
+`;
