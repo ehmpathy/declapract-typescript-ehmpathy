@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
 
 import { given, then, when } from 'test-fns';
-import * as ts from 'typescript';
+import * as ts from '@typescript/typescript6';
 
 import {
   getAllPathsUnderDir,

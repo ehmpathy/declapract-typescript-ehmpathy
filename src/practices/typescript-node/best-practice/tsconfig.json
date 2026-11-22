@@ -4,12 +4,11 @@
     "@tsconfig/node20/tsconfig.json"
   ],
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      "@src/*": ["src/*"]
+      "@/*": ["./*"],
+      "@src/*": ["./src/*"]
     },
-    "importsNotUsedAsValues": "remove",
+    "types": ["node", "jest"], // typescript 6+ loads no @types by default
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedLocals": false, // this is something a linter should warn on, not something a compiler should fail on
     "noUnusedParameters": false, // this is something a linter should warn on, not something a compiler should fail on

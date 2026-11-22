@@ -163,6 +163,7 @@ export const genRdsConfigDeclaration = (input: {
       found: asConfigWithoutLegacyTunnelStrings({ found: JSON.parse(found) }),
       path: [],
       isLeafKept,
+      isArrayUnioned: () => false, // a config array is a declared value, swapped whole
     });
     return { contents: `${JSON.stringify(merged, null, 2)}\n` };
   };

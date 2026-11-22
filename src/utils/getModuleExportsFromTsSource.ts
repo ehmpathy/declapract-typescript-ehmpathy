@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 /**
  * .what = transpile a typescript source to commonjs and run it, with each require answered by a stub

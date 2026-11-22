@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 /**
  * .what = whether a module specifier names the retired `getDatabaseConnection` module, by any path

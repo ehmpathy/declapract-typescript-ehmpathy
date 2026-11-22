@@ -6,8 +6,9 @@ declapract sorts every file under a practice into one of three kinds by its name
 one whose name ends `.declapract.test.ts` (or its `.snap`) — is treated specially at two moments:
 
 1. **the loader** (`plan` / `apply`) reads a practice's `best-practice/` dir and turns every file
-   into a template check — EXCEPT a `.declapract.*` file, which is a declaration or a meta file,
-   never a template (`declapract-default-check-equals`).
+   into a template check — EXCEPT a `<name>.declapract.ts` declaration and a root `.declapract.*`
+   meta file (`declapract-default-check-equals`). a `.declapract.test.ts` is neither, so the loader
+   reads it as a template too.
 2. **compile** (the publish step) filters files a second time, and drops `.declapract.test.ts`
    (+ `.snap`) before it copies a practice into the distributed package.
 
@@ -30,11 +31,16 @@ along into every consumer and be enforced as a byte-for-byte template.
 
 `readPracticeDeclaration` finds `best-practice/`; `getProjectCheckDeclaration` walks it via
 `listFilesInDirectory` (globby, honors gitignore + a fixed ignore set of `node_modules/.git/dist/
-build/coverage` — NO `.test.ts` exclusion). every file that does NOT match `\.declapract\.` becomes
-a template check, EQUALS by default. a `^\.declapract\.` file at the PROJECT root is a meta file; a
-`<name>.declapract.ts` beside a template is that template's declaration.
+build/coverage` — NO `.test.ts` exclusion). a `^\.declapract\.` file at the PROJECT root is a meta
+file; every other path is keyed by `path.replace(/\.declapract\.ts$/, '')`, so a `<name>.declapract.ts`
+folds into its template's check, and every other file becomes a template check, EQUALS by default.
+a `x.ts.declapract.test.ts` does not end `.declapract.ts`, so it is a template check of its own.
 
-⇒ so the loader alone would enforce a collocated clamp test as a template. the strip is what saves it.
+⇒ so the loader enforces a collocated clamp test as a template. the compile strip is what keeps it out
+of the published package. a walk that reads practices from `src/` (e.g.
+`typecheckBestPracticeTemplates`) still emits it: a clamp of a template compiles there beside its
+subject, but a clamp of a `.declapract.ts` imports a file the walk never emits, and fails TS2307. so
+a test whose subject is a declaration sits at the practice root.
 
 ### compile — the ship-gate that strips test files
 
@@ -72,8 +78,8 @@ consumer's `apply` enforces it as an EQUALS template. today only a **unit** clam
 
 | name ends | kind | loader | compile |
 |-----------|------|--------|---------|
-| `.declapract.test.ts` (+ `.snap`) | **unit clamp test** | ignored (matches `\.declapract\.`) | **stripped** — never ships |
-| `.declapract.integration.test.ts` (+ `.snap`) | **integration clamp test** | ignored | ⚠️ NOT stripped today (declapract#109) |
+| `.declapract.test.ts` (+ `.snap`) | **unit clamp test** | read as a template (only `.declapract.ts` is a declaration) | **stripped** — never ships |
+| `.declapract.integration.test.ts` (+ `.snap`) | **integration clamp test** | read as a template | ⚠️ NOT stripped today (declapract#109) |
 | `<name>.declapract.ts` | declaration for `<name>` | read as its check/fix | ships (drives the check) |
 | `^.declapract.*` at project root | meta file (declare/use/config) | read as meta | n/a |
 | every other file in `best-practice/` | **template** | EQUALS template check | ships |

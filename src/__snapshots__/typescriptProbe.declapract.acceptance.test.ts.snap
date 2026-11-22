@@ -1,0 +1,730 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`typescript.probe skill given: [case1] the --help flag when: [t0] the probe is asked for help then: the help reads as snapped 1`] = `
+"exit 0
+--- stdout
+# .what = measure the typescript compiler across version rungs, read
+#         the same way on each: typecheck wall, cpu, peak rss. or, diff
+#         the dist/ each rung emits and grep it for unrewritten aliases
+#
+# .why  = a compiler upgrade owes a measured answer: one command, one
+#         tsconfig, cold runs, a spread beside each median. a second
+#         compiler install, a timed loop, and a dist diff are not paved
+#         calls alone, and the next probe should rerun this, not
+#         rediscover it
+#
+# usage:
+#   rhx typescript.probe --what typecheck
+#   rhx typescript.probe --what typecheck --runs 5 --rungs '5.4.5 6.0.3 7.0.2 7.0.2:single'
+#   rhx typescript.probe --what emit --walk lambda-service
+#
+# options:
+#   --what      typecheck | emit (required)
+#   --dir       the repo dir to probe (default: this repo). named --dir, since rhx owns --repo
+#   --walk      a usecase \`rhx declapract.walk\` already walked; probes that consumer (in place of --dir)
+#   --rungs     typescript versions, space-separated; a \`:single\` suffix adds --singleThreaded
+#               (default typecheck: '5.4.5 6.0.3 7.0.2 7.0.2:single'; emit: '5.4.5 7.0.2')
+#   --runs      cold runs per rung, after one discarded warm-up (default: 5)
+#   --tsconfig  the tsconfig to read (default typecheck: tsconfig.json; emit: tsconfig.build.json)
+#   --label     a tag for the log dir, to keep two probes apart (default: none)
+#
+# guarantee:
+#   - each typescript version installs once into ~/.cache/typescript.probe/<version>/, never the repo;
+#     the install lands in a temp dir first and moves into place whole
+#   - one probe at a time per machine: a second one exits 2, since shared cores skew both timings
+#   - never writes into the probed repo: typecheck passes --noEmit --incremental false, and emit
+#     sends tsc and tsc-alias to an --outDir under this repo's .temp/; the warm-up run is discarded, so every
+#     reported run is cold
+#   - typecheck: median + min–max per rung for wall, cpu (user + sys), and peak rss; a rung whose
+#     wall range overlaps the first rung's reads "within noise", never a ratio
+#   - typecheck: a rung where any run exits non-zero reports that exit, with the first error
+#     lines of the first run that failed, and no speed verdict (a stopped check times naught)
+#   - typecheck: each rung reports how many files it reads (\`--listFilesOnly\`), so a fast rung
+#     is proven to check the same scope
+#   - emit: builds each rung's tree with tsc + the repo's own tsc-alias, diffs the first rung's
+#     tree against the last's, and greps the last for unrewritten \`@src/\` and \`@/\` specifiers
+#   - each --rungs value must read <version> or <version>:single, version in [0-9A-Za-z.-];
+#     --label and --walk must be a bare slug in [0-9A-Za-z._-]
+#   - each typecheck rung names the \`tsc --version\` it ran, so a rung like \`latest\` names its subject
+#   - names the machine: cpu model and core count
+#   - every run's full output lands in .log/typescript.probe/<what>[.<label>]/
+#   - every rung installs before the first timed run; a version the registry does not hold exits 2
+#   - exit 0 = every rung ran clean; 1 = a tsc exited non-zero, or emit found an unrewritten
+#     specifier; 2 = bad input
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case2] bad input then: a --dir that is not a dir exits 2 and names it 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: --dir './absent' is not a dir
+"
+`;
+
+exports[`typescript.probe skill given: [case2] bad input then: a --label that climbs out of the log dir exits 2 and names it 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: --label must be a bare slug in [0-9A-Za-z._-], got 'x/../..'
+   └─ e.g. --label npm-package
+"
+`;
+
+exports[`typescript.probe skill given: [case2] bad input then: a --rungs value that is not a bare version exits 2 and names it 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: --rungs value '../../x' is not <version> or <version>:single
+   └─ e.g. --rungs '5.4.5 7.0.2 7.0.2:single'
+"
+`;
+
+exports[`typescript.probe skill given: [case2] bad input then: a --runs that is not a positive integer exits 2 and shows a value 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: --runs must be a positive integer, got '0'
+   └─ e.g. --runs 5
+"
+`;
+
+exports[`typescript.probe skill given: [case2] bad input then: a --tsconfig the repo lacks exits 2 and names the fix 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: no tsconfig.absent.json in <repo>
+   └─ fix: name the file via --tsconfig, or point --dir at the repo that holds it
+"
+`;
+
+exports[`typescript.probe skill given: [case2] bad input then: a --walk with no walked consumer exits 2 and names the walk to run 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: no walked consumer for usecase 'npm-package'
+   └─ fix: rhx declapract.walk --usecase npm-package
+"
+`;
+
+exports[`typescript.probe skill given: [case2] bad input then: a --what that is neither typecheck nor emit exits 2 and shows a call 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: --what must be typecheck or emit, got 'speed'
+   └─ e.g. rhx typescript.probe --what typecheck
+"
+`;
+
+exports[`typescript.probe skill given: [case2] bad input then: a value flag with no value exits 2 and names the flag, never a bare exit 1 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: --what needs a value (see --help)
+"
+`;
+
+exports[`typescript.probe skill given: [case2] bad input then: an unknown arg exits 2 and points at --help 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: unknown arg '--rung' (see --help)
+"
+`;
+
+exports[`typescript.probe skill given: [case3] two rungs that each typecheck clean when: [t0] the probe measures them then: the report reads as snapped, each measured number masked 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 2 --rungs '9.0.0 9.1.0'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   ├─ rungs (median [min–max] over 2 cold runs)
+   │  ├─ typescript@9.0.0 (exit 0) · 2 files read · Version 9.0.0
+   │  │  ├─ wall: <n>s [<n>–<n>] · baseline
+   │  │  ├─ cpu:  <n>s [<n>–<n>]
+   │  │  └─ rss:  <n>MB [<n>–<n>]
+   │  │
+   │  └─ typescript@9.1.0 (exit 0) · 2 files read · Version 9.1.0
+   │     ├─ wall: <n>s [<n>–<n>] · within noise
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     └─ rss:  <n>MB [<n>–<n>]
+   │
+   └─ ✨ every rung ran clean
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case4] a rung whose typecheck fails when: [t0] the probe measures it then: the report reads as snapped, each measured number masked 1`] = `
+"exit 1
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '9.0.0 9.2.0'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   ├─ rungs (median [min–max] over 1 cold run)
+   │  ├─ typescript@9.0.0 (exit 0) · 2 files read · Version 9.0.0
+   │  │  ├─ wall: <n>s [<n>–<n>] · baseline
+   │  │  ├─ cpu:  <n>s [<n>–<n>]
+   │  │  └─ rss:  <n>MB [<n>–<n>]
+   │  │
+   │  └─ typescript@9.2.0 (exit 2) · 2 files read · Version 9.2.0
+   │     ├─ wall: <n>s [<n>–<n>] · not compared, since the rung failed
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     ├─ rss:  <n>MB [<n>–<n>]
+   │     └─ errors (first 8 lines of the warm-up run, the first that failed)
+   │        └─ src/a.ts(1,1): error TS2322: Type 'string' is not assignable to type 'number'.
+   │
+   └─ 💥 MalfunctionError: typescript@9.2.0 exited 2; read .log/typescript.probe/typecheck/
+
+🐢 bummer dude...
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case4] a rung whose typecheck fails when: [t1] the rung fails only on a later cold run then: the report reads as snapped, each measured number masked 1`] = `
+"exit 1
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 2 --rungs '9.0.0'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   ├─ rungs (median [min–max] over 2 cold runs)
+   │  └─ typescript@9.0.0 (exit 2) · 2 files read · Version 9.0.0
+   │     ├─ wall: <n>s [<n>–<n>] · not compared, since the rung failed
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     ├─ rss:  <n>MB [<n>–<n>]
+   │     └─ errors (first 8 lines of cold run 2, the first that failed)
+   │        └─ src/a.ts(1,1): error TS2322: Type 'string' is not assignable to type 'number'.
+   │
+   └─ 💥 MalfunctionError: typescript@9.0.0 exited 2; read .log/typescript.probe/typecheck/
+
+🐢 bummer dude...
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case4] a rung whose typecheck fails when: [t2] the first rung, the would-be baseline, fails then: the report reads as snapped, each measured number masked 1`] = `
+"exit 1
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '9.2.0 9.0.0'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   ├─ rungs (median [min–max] over 1 cold run)
+   │  ├─ typescript@9.2.0 (exit 2) · 2 files read · Version 9.2.0
+   │  │  ├─ wall: <n>s [<n>–<n>] · not compared, since the rung failed
+   │  │  ├─ cpu:  <n>s [<n>–<n>]
+   │  │  ├─ rss:  <n>MB [<n>–<n>]
+   │  │  └─ errors (first 8 lines of the warm-up run, the first that failed)
+   │  │     └─ src/a.ts(1,1): error TS2322: Type 'string' is not assignable to type 'number'.
+   │  │
+   │  └─ typescript@9.0.0 (exit 0) · 2 files read · Version 9.0.0
+   │     ├─ wall: <n>s [<n>–<n>] · baseline
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     └─ rss:  <n>MB [<n>–<n>]
+   │
+   └─ 💥 MalfunctionError: typescript@9.2.0 exited 2; read .log/typescript.probe/typecheck/
+
+🐢 bummer dude...
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case5] another probe holds the lock when: [t0] a second probe starts then: the refusal reads as snapped 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: another typescript.probe holds the lock; two at once skew each other's timings
+   └─ fix: wait for it to finish; if no other probe is live (a crash left the lock), rm -r <home>/.cache/typescript.probe/.lock
+"
+`;
+
+exports[`typescript.probe skill given: [case6] an emit whose alias rewrite leaves an @src/ specifier when: [t0] the probe builds and greps the tree then: the report reads as snapped 1`] = `
+"exit 1
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what emit --rungs '9.0.0'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.build.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/emit/
+   │
+   ├─ builds
+   │  └─ typescript@9.0.0 (exit 0) · 1 file emitted
+   │
+   ├─ diff: skipped, since one rung builds no second tree to compare
+   │
+   ├─ alias seam: 1 unrewritten specifier in dist/ (tsc-alias 1.8.10, typescript@9.0.0)
+   │  ├─ dist/index.js:1:const x = require("@src/logic/x");
+   │  └─ fix: an alias whose target sits outside the build rootDir (e.g. \`@/\` beside \`rootDir: src\`) is one tsc-alias cannot map; point those imports at one under it (\`@src/…\`). if \`@src/\` itself is left, tsc-alias does not yet map \`paths\` with no \`baseUrl\`: keep typescript below 7 in this repo until it does
+   │
+   ├─ trees kept at: <temp>
+   │
+   └─ 💥 MalfunctionError: 1 unrewritten alias specifier under typescript@9.0.0; read .log/typescript.probe/emit/
+
+🐢 bummer dude...
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case7] an emit whose every specifier is relative when: [t0] the probe builds and greps the tree then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what emit --rungs '9.0.0'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.build.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/emit/
+   │
+   ├─ builds
+   │  └─ typescript@9.0.0 (exit 0) · 1 file emitted
+   │
+   ├─ diff: skipped, since one rung builds no second tree to compare
+   │
+   ├─ alias seam: 0 unrewritten \`@src/\` or \`@/\` specifiers in dist/ (tsc-alias 1.8.10, typescript@9.0.0)
+   │
+   ├─ trees kept at: <temp>
+   │
+   └─ ✨ every rung built clean, and no alias specifier was left
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case8] a rung with the :single suffix when: [t0] the probe measures it beside the plain rung then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 2 --rungs '9.0.0 9.0.0:single'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   ├─ rungs (median [min–max] over 2 cold runs)
+   │  ├─ typescript@9.0.0 (exit 0) · 2 files read · Version 9.0.0
+   │  │  ├─ wall: <n>s [<n>–<n>] · baseline
+   │  │  ├─ cpu:  <n>s [<n>–<n>]
+   │  │  └─ rss:  <n>MB [<n>–<n>]
+   │  │
+   │  └─ typescript@9.0.0:single (exit 0) · 2 files read · Version 9.0.0
+   │     ├─ wall: <n>s [<n>–<n>] · within noise
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     └─ rss:  <n>MB [<n>–<n>]
+   │
+   └─ ✨ every rung ran clean
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case9] a --walk whose consumer was walked when: [t0] the probe measures the walked consumer then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '9.0.0'
+   ├─ repo: <consumer>
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   ├─ rungs (median [min–max] over 1 cold run)
+   │  └─ typescript@9.0.0 (exit 0) · 2 files read · Version 9.0.0
+   │     ├─ wall: <n>s [<n>–<n>] · baseline
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     └─ rss:  <n>MB [<n>–<n>]
+   │
+   └─ ✨ every rung ran clean
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case9] a --walk whose consumer was walked when: [t1] the walked consumer dir is gone then: it exits 2 and names the rewalk as the fix 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: --walk npm-package names a consumer dir that is gone: <repo>/consumer-gone
+   └─ fix: rerun rhx declapract.walk --usecase npm-package
+"
+`;
+
+exports[`typescript.probe skill given: [case9] a --walk whose consumer was walked when: [t2] the probe builds the walked consumer then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what emit --rungs '9.0.0'
+   ├─ repo: <consumer>
+   ├─ tsconfig: tsconfig.build.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/emit/
+   │
+   ├─ builds
+   │  └─ typescript@9.0.0 (exit 0) · 1 file emitted
+   │
+   ├─ diff: skipped, since one rung builds no second tree to compare
+   │
+   ├─ alias seam: 0 unrewritten \`@src/\` or \`@/\` specifiers in dist/ (tsc-alias 1.8.10, typescript@9.0.0)
+   │
+   ├─ trees kept at: <temp>
+   │
+   └─ ✨ every rung built clean, and no alias specifier was left
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case10] a rung whose install fails when: [t0] the registry holds no such version then: the refusal reads as snapped 1`] = `
+"exit 2
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '9.0.0 0.0.404'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   └─ ✋ ConstraintError: typescript@0.0.404 could not install; the error and its fix are on stderr
+
+🐢 bummer dude...
+--- stderr
+✋ ConstraintError: --rungs names typescript@0.0.404, which the registry does not hold
+   ├─ log: .log/typescript.probe/typecheck/install.0.0.404.log
+   └─ fix: pick a published version; list them via \`npm view typescript versions\`
+"
+`;
+
+exports[`typescript.probe skill given: [case10] a rung whose install fails when: [t1] the install fails for another cause then: the failure reads as snapped 1`] = `
+"exit 1
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '9.0.0 9.9.9'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   └─ 💥 MalfunctionError: typescript@9.9.9 could not install; the error and its fix are on stderr
+
+🐢 bummer dude...
+--- stderr
+💥 MalfunctionError: 'pnpm add typescript@9.9.9' failed
+   ├─ log: .log/typescript.probe/typecheck/install.9.9.9.log
+   └─ last lines
+      └─ ERR_PNPM_META_FETCH_FAIL  network down
+"
+`;
+
+exports[`typescript.probe skill given: [case11] the emit probe, off its clean path when: [t0] the repo has no tsc-alias installed then: the refusal reads as snapped 1`] = `
+"exit 2
+--- stdout
+--- stderr
+✋ ConstraintError: no tsc-alias in <repo>/node_modules/.bin; install the repo's deps first
+"
+`;
+
+exports[`typescript.probe skill given: [case11] the emit probe, off its clean path when: [t1] the build itself fails then: the report reads as snapped 1`] = `
+"exit 1
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what emit --rungs '9.0.0'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.build.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/emit/
+   │
+   ├─ builds
+   │  └─ typescript@9.0.0 (exit 2) · 0 files emitted
+   │     └─ errors (first 8 lines of the build log)
+   │        └─ src/a.ts(1,1): error TS2307: Cannot find module '@src/x'.
+   │
+   ├─ diff and alias seam: skipped, since a build failed
+   │
+   ├─ trees kept at: <temp>
+   │
+   └─ 💥 MalfunctionError: build under typescript@9.0.0 exited 2; read .log/typescript.probe/emit/
+
+🐢 bummer dude...
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case11] the emit probe, off its clean path when: [t2] two rungs emit different trees then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what emit --rungs '9.0.0 9.1.0'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.build.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/emit/
+   │
+   ├─ builds
+   │  ├─ typescript@9.0.0 (exit 0) · 1 file emitted
+   │  └─ typescript@9.1.0 (exit 0) · 1 file emitted
+   │
+   ├─ diff 9.0.0 vs 9.1.0: 1 file differs
+   │  ├─ differs: 9.0.0/index.js vs 9.1.0/index.js
+   │  └─ full diff: .log/typescript.probe/emit/diff.9.0.0.vs.9.1.0.log
+   │
+   ├─ alias seam: 0 unrewritten \`@src/\` or \`@/\` specifiers in dist/ (tsc-alias 1.8.10, typescript@9.1.0)
+   │
+   ├─ trees kept at: <temp>
+   │
+   └─ ✨ every rung built clean, and no alias specifier was left
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case12] the real registry, compiler, and tsc-alias when: [t0] the probe typechecks it on a real 5.4.5 then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '5.4.5'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   ├─ rungs (median [min–max] over 1 cold run)
+   │  └─ typescript@5.4.5 (exit 0) · 52 files read · Version 5.4.5
+   │     ├─ wall: <n>s [<n>–<n>] · baseline
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     └─ rss:  <n>MB [<n>–<n>]
+   │
+   └─ ✨ every rung ran clean
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case12] the real registry, compiler, and tsc-alias when: [t1] the probe is asked for a version the registry does not hold then: the refusal reads as snapped 1`] = `
+"exit 2
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '0.0.404'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   └─ ✋ ConstraintError: typescript@0.0.404 could not install; the error and its fix are on stderr
+
+🐢 bummer dude...
+--- stderr
+✋ ConstraintError: --rungs names typescript@0.0.404, which the registry does not hold
+   ├─ log: .log/typescript.probe/typecheck/install.0.0.404.log
+   └─ fix: pick a published version; list them via \`npm view typescript versions\`
+"
+`;
+
+exports[`typescript.probe skill given: [case12] the real registry, compiler, and tsc-alias when: [t2] the probe builds it with the real tsc-alias then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what emit --rungs '5.4.5'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.build.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/emit/
+   │
+   ├─ builds
+   │  └─ typescript@5.4.5 (exit 0) · 2 files emitted
+   │
+   ├─ diff: skipped, since one rung builds no second tree to compare
+   │
+   ├─ alias seam: 0 unrewritten \`@src/\` or \`@/\` specifiers in dist/ (tsc-alias 1.8.10, typescript@5.4.5)
+   │
+   ├─ trees kept at: <temp>
+   │
+   └─ ✨ every rung built clean, and no alias specifier was left
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case12] the real registry, compiler, and tsc-alias when: [t3] the probe typechecks it on a real 7.0.2, then single-threaded then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '7.0.2 7.0.2:single'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   ├─ rungs (median [min–max] over 1 cold run)
+   │  ├─ typescript@7.0.2 (exit 0) · 53 files read · Version 7.0.2
+   │  │  ├─ wall: <n>s [<n>–<n>] · baseline
+   │  │  ├─ cpu:  <n>s [<n>–<n>]
+   │  │  └─ rss:  <n>MB [<n>–<n>]
+   │  │
+   │  └─ typescript@7.0.2:single (exit 0) · 53 files read · Version 7.0.2
+   │     ├─ wall: <n>s [<n>–<n>] · <verdict>
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     └─ rss:  <n>MB [<n>–<n>]
+   │
+   └─ ✨ every rung ran clean
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case13] the options a prober sets, and the rungs it leaves to default when: [t0] the probe reads another dir, a named tsconfig, under a label then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '9.0.0'
+   ├─ repo: <other>
+   ├─ tsconfig: tsconfig.custom.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck.mine/
+   │
+   ├─ rungs (median [min–max] over 1 cold run)
+   │  └─ typescript@9.0.0 (exit 0) · 2 files read · Version 9.0.0
+   │     ├─ wall: <n>s [<n>–<n>] · baseline
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     └─ rss:  <n>MB [<n>–<n>]
+   │
+   └─ ✨ every rung ran clean
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case13] the options a prober sets, and the rungs it leaves to default when: [t1] the probe typechecks with no --rungs then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '5.4.5 6.0.3 7.0.2 7.0.2:single'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   ├─ rungs (median [min–max] over 1 cold run)
+   │  ├─ typescript@5.4.5 (exit 0) · 2 files read · Version 5.4.5
+   │  │  ├─ wall: <n>s [<n>–<n>] · baseline
+   │  │  ├─ cpu:  <n>s [<n>–<n>]
+   │  │  └─ rss:  <n>MB [<n>–<n>]
+   │  │
+   │  ├─ typescript@6.0.3 (exit 0) · 2 files read · Version 6.0.3
+   │  │  ├─ wall: <n>s [<n>–<n>] · <verdict>
+   │  │  ├─ cpu:  <n>s [<n>–<n>]
+   │  │  └─ rss:  <n>MB [<n>–<n>]
+   │  │
+   │  ├─ typescript@7.0.2 (exit 0) · 2 files read · Version 7.0.2
+   │  │  ├─ wall: <n>s [<n>–<n>] · <verdict>
+   │  │  ├─ cpu:  <n>s [<n>–<n>]
+   │  │  └─ rss:  <n>MB [<n>–<n>]
+   │  │
+   │  └─ typescript@7.0.2:single (exit 0) · 2 files read · Version 7.0.2
+   │     ├─ wall: <n>s [<n>–<n>] · <verdict>
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     └─ rss:  <n>MB [<n>–<n>]
+   │
+   └─ ✨ every rung ran clean
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case13] the options a prober sets, and the rungs it leaves to default when: [t2] the probe builds with no --rungs then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what emit --rungs '5.4.5 7.0.2'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.build.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/emit/
+   │
+   ├─ builds
+   │  ├─ typescript@5.4.5 (exit 0) · 1 file emitted
+   │  └─ typescript@7.0.2 (exit 0) · 1 file emitted
+   │
+   ├─ diff 5.4.5 vs 7.0.2: 0 files differ
+   │  └─ full diff: .log/typescript.probe/emit/diff.5.4.5.vs.7.0.2.log
+   │
+   ├─ alias seam: 0 unrewritten \`@src/\` or \`@/\` specifiers in dist/ (tsc-alias 1.8.10, typescript@7.0.2)
+   │
+   ├─ trees kept at: <temp>
+   │
+   └─ ✨ every rung built clean, and no alias specifier was left
+
+🐢 righteous!
+--- stderr
+"
+`;
+
+exports[`typescript.probe skill given: [case14] a rung whose file count cannot be read when: [t0] tsc refuses --listFilesOnly then: the report reads as snapped 1`] = `
+"exit 0
+--- stdout
+🐢 lets ride...
+
+🐚 typescript.probe --what typecheck --runs 1 --rungs '9.0.0'
+   ├─ repo: .
+   ├─ tsconfig: tsconfig.json
+   ├─ machine: <machine>
+   ├─ logs: .log/typescript.probe/typecheck/
+   │
+   ├─ rungs (median [min–max] over 1 cold run)
+   │  └─ typescript@9.0.0 (exit 0) · n/a files read (--listFilesOnly failed; read .log/typescript.probe/typecheck/9.0.0.files) · Version 9.0.0
+   │     ├─ wall: <n>s [<n>–<n>] · baseline
+   │     ├─ cpu:  <n>s [<n>–<n>]
+   │     └─ rss:  <n>MB [<n>–<n>]
+   │
+   └─ ✨ every rung ran clean; 1 rung read no file count, so its scope is unproven
+
+🐢 righteous!
+--- stderr
+"
+`;

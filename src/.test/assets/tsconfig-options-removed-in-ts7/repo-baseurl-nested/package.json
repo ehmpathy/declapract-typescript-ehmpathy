@@ -1,0 +1,12 @@
+{
+  "name": "repo-prior-template",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "@tsconfig/node20": "20.1.5",
+    "@tsconfig/strictest": "2.0.5",
+    "@types/node": "22.15.21",
+    "tsc-alias": "1.8.10",
+    "typescript": "5.4.5"
+  }
+}

@@ -643,6 +643,23 @@ describe('useCases.yml — resolved-practice characterization', () => {
         });
       });
     }
+
+    when('a usecase takes typescript-node', () => {
+      then('it also takes tests-any, which owns the jest types the typescript-node tsconfig names', () => {
+        // typescript-node declares `types: ["node", "jest"]`; with no tests-any, tsc fails with TS2688
+        // read each usecase's practice set once, then derive both filters from it
+        const takens = Object.keys(expected).map((usecase) => ({
+          usecase,
+          practices: getAllPracticesForUsecase({ usecasesYmlPath, usecase }),
+        }));
+        const withNode = takens.filter((entry) => entry.practices.includes('typescript-node'));
+        expect(withNode).not.toEqual([]);
+        const withoutTests = withNode
+          .filter((entry) => !entry.practices.includes('tests-any'))
+          .map((entry) => entry.usecase);
+        expect(withoutTests).toEqual([]);
+      });
+    });
   });
 
   when('expo is compared to the core baseline', () => {

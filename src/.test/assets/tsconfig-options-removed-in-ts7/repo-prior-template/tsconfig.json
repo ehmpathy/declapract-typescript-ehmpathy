@@ -1,0 +1,22 @@
+{
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"],
+      "@src/*": ["src/*"],
+      "@vendor/*": ["vendor/*"] // an alias this repo added beside the template's
+    },
+    "importsNotUsedAsValues": "remove",
+    "noPropertyAccessFromIndexSignature": false,
+    "outDir": "dist",
+    "target": "es2020",
+    "module": "node16",
+    "moduleResolution": "node16"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}

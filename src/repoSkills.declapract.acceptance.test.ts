@@ -1147,4 +1147,670 @@ describe('repo skills', () => {
       });
     });
   });
+
+  /**
+   * .what = a walk's whole report, the tail of each named step masked to one `<tail>` branch
+   * .why  = a real tool's tail holds its own last lines (install times, package versions, npm
+   *         banners), which vary per run and per host; the mask keeps every line of the walk's own
+   *         shape, and a shim's tail, which never varies, stays whole
+   */
+  const asWalkMasked = (input: { stdout: string; steps: 'all' | string[] }): string =>
+    stripVTControlCharacters(input.stdout)
+      .split('\n')
+      .reduce<{ lines: string[]; isTail: boolean }>(
+        (state, line) => {
+          // a named step's header opens a tail, unless its first child is the plan's own to-author count
+          const step = /^ {3}├─ (\d\.\S+) \(exit/.exec(line)?.[1];
+          if (step) return { lines: [...state.lines, line], isTail: input.steps === 'all' || input.steps.includes(step) };
+          const isChild = /^ {3}│ {2}/.test(line);
+          if (state.isTail && isChild && /^ {3}│ {2}├─ to author:/.test(line)) return { lines: [...state.lines, line], isTail: false };
+          if (state.isTail && isChild) {
+            const last = state.lines[state.lines.length - 1];
+            if (last === '   │  └─ <tail>') return state;
+            return { lines: [...state.lines, '   │  └─ <tail>'], isTail: true };
+          }
+          return { lines: [...state.lines, line], isTail: false };
+        },
+        { lines: [], isTail: false },
+      )
+      // a real walk's tsc patch and cycle count vary with the registry; a shim's never do
+      .lines.map((line) =>
+        input.steps === 'all'
+          ? line.replace(/Version 7\.\d+\.\d+/, 'Version 7.<n>.<n>').replace(/7\.cycles \(exit \d/, '7.cycles (exit <n>')
+          : line,
+      )
+      .join('\n');
+
+  given('[case8] declapract.walk, from this repo', () => {
+    const repoRoot = path.join(__dirname, '..');
+
+    when('[t0] it is asked for help', () => {
+      then('it prints the header through its last guarantee, exit 0', () => {
+        const result = runSkill({ skill: 'declapract.walk', args: ['--help'], cwd: repoRoot, stdin: null, env: {} });
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('--build     run | skip');
+        expect(result.stdout).toContain('exit 0 = every gated step exited 0');
+        expect(result.stdout).not.toContain('set -euo pipefail');
+        expect(result.stdout).toMatchSnapshot('declapract.walk — help');
+      });
+    });
+
+    when('[t1] it is given bad input', () => {
+      then('an absent --usecase exits 2 and lists the declared usecases', () => {
+        const result = runSkill({ skill: 'declapract.walk', args: [], cwd: repoRoot, stdin: null, env: {} });
+        expect(result.status).toEqual(2);
+        expect(result.stderr).toContain('✋ ConstraintError: --usecase is required');
+        expect(result.stderr).toContain('└─ declared usecases');
+        expect(result.stderr).toMatchSnapshot('declapract.walk — no usecase');
+      });
+
+      then('an undeclared --usecase exits 2 and lists the declared usecases', () => {
+        const result = runSkill({ skill: 'declapract.walk', args: ['--usecase', 'nope'], cwd: repoRoot, stdin: null, env: {} });
+        expect(result.status).toEqual(2);
+        expect(result.stderr).toContain("usecase 'nope' is not declared in src/useCases.yml");
+        expect(result.stderr).toContain('├─ npm-package');
+        expect(result.stderr).toMatchSnapshot('declapract.walk — undeclared usecase');
+      });
+
+      then('a --compile or --build that is neither run nor skip exits 2 and shows a value', () => {
+        const compile = runSkill({
+          skill: 'declapract.walk',
+          args: ['--usecase', 'npm-package', '--compile', 'maybe'],
+          cwd: repoRoot,
+          stdin: null,
+          env: {},
+        });
+        expect(compile.status).toEqual(2);
+        expect(compile.stderr).toContain("--compile must be run or skip, got 'maybe'");
+        const build = runSkill({
+          skill: 'declapract.walk',
+          args: ['--usecase', 'npm-package', '--build', 'maybe'],
+          cwd: repoRoot,
+          stdin: null,
+          env: {},
+        });
+        expect(build.status).toEqual(2);
+        expect(build.stderr).toContain("--build must be run or skip, got 'maybe'");
+        expect(`${compile.stderr}${build.stderr}`).toMatchSnapshot('declapract.walk — bad run|skip values');
+      });
+
+      then('an unknown arg exits 2 and points at --help', () => {
+        const result = runSkill({ skill: 'declapract.walk', args: ['--usecases', 'x'], cwd: repoRoot, stdin: null, env: {} });
+        expect(result.status).toEqual(2);
+        expect(result.stderr).toContain("unknown arg '--usecases' (see --help)");
+        expect(result.stderr).toMatchSnapshot('declapract.walk — unknown arg');
+      });
+
+      then('a value flag with no value exits 2 and names the flag, never a bare exit 1', () => {
+        const result = runSkill({ skill: 'declapract.walk', args: ['--usecase'], cwd: repoRoot, stdin: null, env: {} });
+        expect(result.status).toEqual(2);
+        expect(result.stderr).toContain('✋ ConstraintError: --usecase needs a value (see --help)');
+        expect(result.stderr).toMatchSnapshot('declapract.walk — a flag with no value');
+      });
+
+      then('the selectors rhx forwards (--skill, --repo, --role) are skipped, never read as unknown', () => {
+        const result = runSkill({
+          skill: 'declapract.walk',
+          args: ['--skill', 'declapract.walk', '--repo', '.this', '--role', 'any', '--usecase', 'nope'],
+          cwd: repoRoot,
+          stdin: null,
+          env: {},
+        });
+        // the walk reaches its own usecase check, so each selector was consumed with its value
+        expect(result.status).toEqual(2);
+        expect(result.stderr).toContain("usecase 'nope' is not declared in src/useCases.yml");
+        expect(result.stderr).not.toContain('unknown arg');
+      });
+    });
+
+    when('[t2] it walks a usecase end to end, on the dist/ the acceptance run just built', () => {
+      // --build skip: the acceptance suite builds dist/ first and runs tests from it, so a rebuild here would clear it mid-run
+      const result = useBeforeAll(async () =>
+        runSkill({
+          skill: 'declapract.walk',
+          args: ['--usecase', 'npm-package', '--build', 'skip'],
+          cwd: repoRoot,
+          stdin: null,
+          env: {},
+        }),
+      );
+
+      then('every gated step exits 0, the apply converges, exit 0', () => {
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('0.build (skipped · --build skip reads the extant dist/)');
+        expect(result.stdout).toContain('└─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)');
+        expect(result.stdout).toContain('✨ every gated step exited 0, and the apply converged');
+      });
+
+      then('it names the tsc the compile ran, and marks the cycle check as report only', () => {
+        expect(result.stdout).toMatch(/├─ tsc: Version 7\.\d+\.\d+/);
+        expect(result.stdout).toMatch(/├─ 7\.cycles \(exit \d · report only, never gates\)/);
+      });
+
+      then('it keeps the consumer path for a later probe, outside this repo', async () => {
+        const consumer = (
+          await fs.readFile(path.join(repoRoot, '.log', 'declapract.walk', 'npm-package', 'repo.path'), 'utf8')
+        ).trim();
+        expect(path.relative(repoRoot, consumer).startsWith('..')).toEqual(true);
+      });
+
+      then('the step branches read as snapped', () => {
+        expect(asWalkMasked({ stdout: result.stdout, steps: 'all' })).toMatchSnapshot('declapract.walk — the branches of one walk');
+      });
+    });
+
+    when('[t3] --build skip runs in a repo with no built dist/', () => {
+      // a repo that declares the usecase but holds no dist/, so the skip has naught to read
+      const tempDir = genTempDir({ slug: 'declapract-walk-no-dist' });
+      const result = useBeforeAll(async () => {
+        await fs.mkdir(path.join(tempDir, 'src'), { recursive: true });
+        await fs.writeFile(path.join(tempDir, 'src', 'useCases.yml'), 'use-cases:\n  npm-package:\n    practices: []\n');
+        const init = spawnSync('git', ['init', '-q'], { cwd: tempDir, encoding: 'utf8', env: asSkillEnv({ env: {} }) });
+        if (init.status !== 0)
+          throw new MalfunctionError('git init of the no-dist repo failed', { stderr: init.stderr });
+        return runSkill({
+          skill: 'declapract.walk',
+          args: ['--usecase', 'npm-package', '--build', 'skip'],
+          cwd: tempDir,
+          stdin: null,
+          env: {},
+        });
+      });
+
+      then('it refuses before any step, names the fix, exit 2', () => {
+        expect(result.status).toEqual(2);
+        expect(result.stdout).toEqual('');
+        expect(result.stderr).toContain('✋ ConstraintError: --build skip needs a built dist/, and dist/useCases.yml is absent');
+        expect(result.stderr).toContain('└─ fix: drop --build skip, or run npm run build first');
+        expect(result.stderr).toMatchSnapshot('declapract.walk — --build skip with no dist/');
+      });
+    });
+
+    when('[t4] it walks a usecase with --compile skip', () => {
+      const result = useBeforeAll(async () =>
+        runSkill({
+          skill: 'declapract.walk',
+          args: ['--usecase', 'npm-package', '--compile', 'skip', '--build', 'skip'],
+          cwd: repoRoot,
+          stdin: null,
+          env: {},
+        }),
+      );
+
+      then('the apply converges, and no install, tsc, compile, or cycles step shows, exit 0', () => {
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('🐚 declapract.walk --usecase npm-package --compile skip --build skip');
+        expect(result.stdout).toContain('✨ every gated step exited 0, and the apply converged');
+        expect(result.stdout).not.toMatch(/5\.install|├─ tsc:|6\.compile|7\.cycles/);
+      });
+
+      then('the step branches read as snapped', () => {
+        expect(asWalkMasked({ stdout: result.stdout, steps: 'all' })).toMatchSnapshot('declapract.walk — the branches of a walk with --compile skip');
+      });
+    });
+  });
+
+  given('[case9] route.concerns.dispose', () => {
+    const tempDir = genTempDir({ slug: 'skill-route-concerns-dispose' });
+
+    /**
+     * .what = an `rhx` shim on PATH that answers `route.stone.set` per concern: nitpick.1 records,
+     *         nitpick.2 records and halts the stone, nitpick.3 is refused; each call's args are logged
+     * .mock = rhx route.stone.set, the call this skill makes once per concern
+     * .why  = a real call writes route state and needs a bound route with a live peer review;
+     *         the skill's contract is the call it builds and how it reads each answer
+     * .real = the driver ran it on this route's 5.1 stone, where every r11 concern was conceded
+     */
+    const shim = useBeforeAll(async () => {
+      const dir = path.join(tempDir, 'bin');
+      await fs.mkdir(dir, { recursive: true });
+      await fs.writeFile(
+        path.join(dir, 'rhx'),
+        [
+          '#!/usr/bin/env bash',
+          'echo "$*" >> "$0.args"',
+          'args=" $* "',
+          'if [[ "$args" == *" nitpick.2 "* ]]; then echo "so it is. a chance to slow down"; exit 2; fi',
+          'if [[ "$args" == *" nitpick.3 "* ]]; then echo "✋ ConstraintError: no concern nitpick.3 on this lane"; exit 2; fi',
+          'exit 0',
+          '',
+        ].join('\n'),
+        { mode: 0o755 },
+      );
+      return { dir, env: { PATH: `${dir}:${process.env.PATH}` } };
+    });
+
+    when('[t0] it is asked for help', () => {
+      then('it prints the header through its last guarantee, exit 0', () => {
+        const result = runSkill({ skill: 'route.concerns.dispose', args: ['--help'], cwd: tempDir, stdin: null, env: {} });
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('usage:');
+        expect(result.stdout).toContain('exit 0 = all recorded, 2 = bad input or any refusal');
+        expect(result.stdout).not.toContain('set -euo pipefail');
+        expect(result.stdout).toMatchSnapshot('route.concerns.dispose — help');
+      });
+    });
+
+    when('[t1] it is given bad input', () => {
+      const cases = [
+        { args: ['--with', 'repo-rules', '--concede', 'nitpick.1', '--severity', 'better'], says: '--stone and --with are required' },
+        { args: ['--stone', 's', '--with', 'r'], says: 'name at least one concern via --dispute or --concede' },
+        { args: ['--stone', 's', '--with', 'r', '--dispute', 'nitpick.1'], says: '--dispute needs --why <fulcrum-path>' },
+        { args: ['--stone', 's', '--with', 'r', '--concede', 'nitpick.1', '--severity', 'meh'], says: "--concede needs --severity better|urgent, got 'meh'" },
+        { args: ['--stone', 's', '--with', 'r', '--concede', 'nitpick.1', '--severity', ''], says: '--severity needs a value (see --help)' },
+        { args: ['--stone'], says: '--stone needs a value (see --help)' },
+        { args: ['--stone', 's', '--with', 'r', '--concede', 'nitpick.1'], says: "--concede needs --severity better|urgent, got ''" },
+        { args: ['--stone', 's', '--with', 'r', '--abut', 'x'], says: "unknown arg '--abut' (see --help)" },
+      ];
+      then('each refusal exits 2 and names what to fix', () => {
+        const stderrs = cases.map((thisCase) => {
+          const result = runSkill({ skill: 'route.concerns.dispose', args: thisCase.args, cwd: tempDir, stdin: null, env: shim.env });
+          expect(result.status).toEqual(2);
+          expect(result.stderr).toContain(thisCase.says);
+          return result.stderr;
+        });
+        expect(stderrs.join('')).toMatchSnapshot('route.concerns.dispose — refusals');
+      });
+    });
+
+    when('[t2] it disposes three concerns, one of which is refused', () => {
+      const result = useBeforeAll(async () =>
+        runSkill({
+          skill: 'route.concerns.dispose',
+          args: ['--stone', '5.3.verification', '--with', 'repo-rules', '--dispute', 'nitpick.1', '--why', 'f.md', '--concede', 'nitpick.2 nitpick.3', '--severity', 'better'],
+          cwd: tempDir,
+          stdin: null,
+          env: shim.env,
+        }),
+      );
+
+      then('it makes one route.stone.set call per concern, each with its disposition', async () => {
+        const calls = (await fs.readFile(path.join(shim.dir, 'rhx.args'), 'utf8')).trim().split('\n');
+        expect(calls).toEqual([
+          'route.stone.set --stone 5.3.verification --as disputed --with repo-rules --about nitpick.1 --why f.md',
+          'route.stone.set --stone 5.3.verification --as conceded --with repo-rules --about nitpick.2 --severity better',
+          'route.stone.set --stone 5.3.verification --as conceded --with repo-rules --about nitpick.3 --severity better',
+        ]);
+      });
+
+      then('a halt counts as recorded, a refusal is named with its output, exit 2', () => {
+        expect(result.status).toEqual(2);
+        expect(result.stdout).toContain('├─ disputed: nitpick.1');
+        expect(result.stdout).toContain('├─ conceded (better): nitpick.2 (recorded; the stone halts until its next --as arrived)');
+        expect(result.stdout).toContain('├─ ✋ refused: conceded (better): nitpick.3');
+        expect(result.stdout).toContain("└─ ✋ ConstraintError: 1 refused; each refusal's output is on stderr");
+        expect(result.stderr).toContain('✋ ConstraintError: route.stone.set refused conceded (better): nitpick.3');
+        expect(result.stdout).toContain('🐢 bummer dude...');
+        expect(result.stdout).not.toContain('└─ done');
+        expect(result.stderr).toContain('no concern nitpick.3 on this lane');
+        expect(`${result.stdout}--- stderr\n${result.stderr}`).toMatchSnapshot('route.concerns.dispose — one refused');
+      });
+    });
+
+    when('[t3] it disposes concerns that each record', () => {
+      const result = useBeforeAll(async () =>
+        runSkill({
+          skill: 'route.concerns.dispose',
+          args: ['--stone', '5.3.verification', '--with', 'repo-rules', '--concede', 'nitpick.1', '--severity', 'urgent', '--dispute', 'blocker.1', '--why', 'f.md'],
+          cwd: tempDir,
+          stdin: null,
+          env: shim.env,
+        }),
+      );
+
+      then('each concern reads as recorded, naught on stderr, exit 0', () => {
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('🐢 righteous!');
+        expect(result.stdout).toContain('├─ disputed: blocker.1');
+        expect(result.stdout).toContain('├─ conceded (urgent): nitpick.1');
+        expect(result.stdout).toContain('└─ done');
+        expect(result.stderr).toEqual('');
+        expect(result.stdout).toMatchSnapshot('route.concerns.dispose — all recorded');
+      });
+    });
+
+    when('[t4] its last concern records and halts the stone', () => {
+      const result = useBeforeAll(async () =>
+        runSkill({
+          skill: 'route.concerns.dispose',
+          args: ['--stone', '5.3.verification', '--with', 'repo-rules', '--concede', 'nitpick.1 nitpick.2', '--severity', 'better'],
+          cwd: tempDir,
+          stdin: null,
+          env: shim.env,
+        }),
+      );
+
+      then('the halt reads as recorded, never as refused, and the run closes done, exit 0', () => {
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('├─ conceded (better): nitpick.2 (recorded; the stone halts until its next --as arrived)');
+        expect(result.stdout).not.toContain('refused');
+        expect(result.stdout).toContain('└─ done');
+        expect(result.stdout).toContain('🐢 righteous!');
+        expect(result.stderr).toEqual('');
+        expect(result.stdout).toMatchSnapshot('route.concerns.dispose — the last concern halts the stone');
+      });
+    });
+
+    when('[t5] it receives the selectors rhx forwards beside its own call', () => {
+      const result = useBeforeAll(async () =>
+        runSkill({
+          skill: 'route.concerns.dispose',
+          args: ['--skill', 'route.concerns.dispose', '--repo', '.this', '--role', 'any', '--stone', '5.3.verification', '--with', 'repo-rules', '--concede', 'nitpick.1', '--severity', 'better'],
+          cwd: tempDir,
+          stdin: null,
+          env: shim.env,
+        }),
+      );
+
+      then('it skips them and records the concern, exit 0', () => {
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('├─ conceded (better): nitpick.1');
+        expect(result.stderr).toEqual('');
+      });
+    });
+  });
+
+  given('[case10] declapract.walk, in a scene whose declapract and pnpm are shims', () => {
+    /**
+     * .what = a git repo that declares one usecase, holds a built dist/, and shims the tools the walk calls
+     * .mock = declapract (plan, apply) and pnpm (install, exec tsc, run test:lint:cycles)
+     * .why  = a real walk never builds wrong, never fails to converge, and installs pg-pool only for an
+     *         rds usecase whose compile takes minutes; the shims reach each branch on demand
+     * .real = [case8] [t2] and [t4] walk `npm-package` through the real declapract, pnpm, and tsc
+     */
+    const genWalkScene = async (input: {
+      slug: string;
+      build: string;
+      isConverged: boolean;
+      manualFiles: string[];
+      planFailsOnCall: number | null;
+      applyFailsOnCall: number | null;
+      installExit: number;
+      isTscPresent: boolean;
+      compileExit: number;
+      cyclesExit: number;
+      pgPool: 'unpatched' | 'patched' | null;
+    }): Promise<{ root: string; env: Record<string, string> }> => {
+      const root = genTempDir({ slug: input.slug });
+      const usecases = 'use-cases:\n  demo:\n    practices: []\n';
+      await fs.mkdir(path.join(root, 'src'), { recursive: true });
+      await fs.mkdir(path.join(root, 'dist'), { recursive: true });
+      await fs.writeFile(path.join(root, 'src', 'useCases.yml'), usecases);
+      await fs.writeFile(path.join(root, 'dist', 'useCases.yml'), usecases);
+      await fs.writeFile(path.join(root, 'declapract.declare.yml'), '');
+      await fs.writeFile(
+        path.join(root, 'package.json'),
+        JSON.stringify({ name: 'walk-scene', version: '1.0.0', private: true, scripts: { build: input.build } }),
+      );
+      const npmBin = path.join(root, 'node_modules', '.bin');
+      await fs.mkdir(npmBin, { recursive: true });
+      await fs.writeFile(
+        path.join(npmBin, 'declapract'),
+        [
+          '#!/usr/bin/env bash',
+          // count each verb's calls, so a case can fail the first plan or apply, or only the second
+          'count="$(( $(cat "$0.$1.count" 2> /dev/null || echo 0) + 1 ))"',
+          'echo "$count" > "$0.$1.count"',
+          'if [[ "$1" == "plan" ]]; then',
+          '  echo "planned"',
+          ...input.manualFiles.map((file) => `  echo "  * [FIX_MANUAL] ${file}"`),
+          input.isConverged ? '' : '  echo "  * [FIX_AUTOMATIC] package.json"',
+          input.planFailsOnCall === null ? '' : `  if [[ "$count" == "${input.planFailsOnCall}" ]]; then echo "plan threw"; exit 1; fi`,
+          'fi',
+          'if [[ "$1" == "apply" ]]; then',
+          '  echo "applied"',
+          input.applyFailsOnCall === null ? '' : `  if [[ "$count" == "${input.applyFailsOnCall}" ]]; then echo "apply threw"; exit 1; fi`,
+          'fi',
+          'exit 0',
+          '',
+        ].join('\n'),
+        { mode: 0o755 },
+      );
+      // a patched install sits under a `_patch_hash=` dir and drops the `require('pg')` fallback
+      const pgPool = {
+        unpatched: { dir: 'node_modules/.pnpm/pg-pool@3.7.0/node_modules/pg-pool', body: "const Client = require('pg');" },
+        patched: { dir: 'node_modules/.pnpm/pg-pool@3.7.0_patch_hash=abc123/node_modules/pg-pool', body: 'const Client = null;' },
+      };
+      const pgPoolInstall = input.pgPool ? pgPool[input.pgPool] : null;
+      const shimBin = path.join(root, 'shim-bin');
+      await fs.mkdir(shimBin, { recursive: true });
+      // on a host where `npm` hands off to the `pnpm` on PATH, the walk's `npm --prefix … run build` reaches
+      // this shim too; so the shim answers only the walk's own pnpm calls and passes the rest to the real pnpm
+      const pnpmReal = spawnSync('bash', ['-c', 'command -v pnpm'], { encoding: 'utf8' }).stdout.trim();
+      if (!pnpmReal) throw new ConstraintError('the walk scene needs a real pnpm on PATH', { hint: 'corepack enable' });
+      await fs.writeFile(
+        path.join(shimBin, 'pnpm'),
+        [
+          '#!/usr/bin/env bash',
+          `if [[ "$1" != "install" && "$1" != "exec" && "$1" != "run" ]]; then exec ${pnpmReal} "$@"; fi`,
+          'args=" $* "',
+          pgPoolInstall
+            ? `if [[ "$1" == "install" ]]; then mkdir -p '${pgPoolInstall.dir}' && echo "${pgPoolInstall.body}" > '${pgPoolInstall.dir}/index.js'; fi`
+            : '',
+          `if [[ "$1" == "install" ]]; then echo "pnpm install ran"; exit ${input.installExit}; fi`,
+          input.isTscPresent
+            ? 'if [[ "$args" == *" --version "* ]]; then echo "Version 7.0.2"; exit 0; fi'
+            : 'if [[ "$args" == *" --version "* ]]; then exit 1; fi',
+          `if [[ "$args" == *" --noEmit "* ]]; then echo "pnpm exec tsc ran"; exit ${input.compileExit}; fi`,
+          `if [[ "$args" == *" test:lint:cycles "* ]]; then echo "pnpm run test:lint:cycles ran"; exit ${input.cyclesExit}; fi`,
+          'echo "pnpm $1 ran"',
+          'exit 0',
+          '',
+        ].join('\n'),
+        { mode: 0o755 },
+      );
+      const init = spawnSync('git', ['init', '-q'], { cwd: root, encoding: 'utf8', env: asSkillEnv({ env: {} }) });
+      if (init.status !== 0) throw new MalfunctionError('git init of the walk scene failed', { stderr: init.stderr });
+      return { root, env: { PATH: `${shimBin}:${process.env.PATH}` } };
+    };
+
+    // a scene where every shim succeeds; each case overrides the one branch it reaches
+    const WALK_SCENE_CLEAN: Omit<Parameters<typeof genWalkScene>[0], 'slug'> = {
+      build: 'echo build-ran',
+      isConverged: true,
+      manualFiles: [],
+      planFailsOnCall: null,
+      applyFailsOnCall: null,
+      installExit: 0,
+      isTscPresent: true,
+      compileExit: 0,
+      cyclesExit: 0,
+      pgPool: null,
+    };
+
+    // the build tail is the host's own npm (or the pnpm it hands off to) banner, so it alone varies; every other tail is a shim's
+    const WALK_SHIM_STEPS_MASKED = ['0.build'];
+
+    when('[t0] it builds, compiles, and installs pg-pool', () => {
+      const result = useBeforeAll(async () => {
+        const scene = await genWalkScene({ ...WALK_SCENE_CLEAN, slug: 'walk-scene-pgpool', pgPool: 'unpatched' });
+        return runSkill({ skill: 'declapract.walk', args: ['--usecase', 'demo'], cwd: scene.root, stdin: null, env: scene.env });
+      });
+
+      then('the build step runs, the pg-pool report shows, exit 0', () => {
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('├─ 0.build (exit 0)');
+        expect(result.stdout).toContain('├─ pg-pool (report)');
+        expect(result.stdout).toContain('│  ├─ install: pg-pool@3.7.0');
+        expect(result.stdout).toContain("│  └─ require('pg') left in index.js: 1");
+        expect(result.stdout).toContain('✨ every gated step exited 0, and the apply converged');
+      });
+
+      then('the report reads as snapped', () => {
+        expect(asWalkMasked({ stdout: result.stdout, steps: WALK_SHIM_STEPS_MASKED })).toMatchSnapshot('declapract.walk — build run, pg-pool report');
+      });
+    });
+
+    when('[t1] its build fails', () => {
+      const result = useBeforeAll(async () => {
+        const scene = await genWalkScene({ ...WALK_SCENE_CLEAN, slug: 'walk-scene-buildfail', build: 'exit 3' });
+        return runSkill({ skill: 'declapract.walk', args: ['--usecase', 'demo', '--compile', 'skip'], cwd: scene.root, stdin: null, env: scene.env });
+      });
+
+      then('it halts at the failed step, names it and its log, exit 1', () => {
+        expect(result.status).toEqual(1);
+        expect(result.stdout).toContain('├─ 0.build (exit 3)');
+        expect(result.stdout).toContain(
+          '└─ 💥 MalfunctionError: step 0.build failed; read .log/declapract.walk/demo/0.build.log',
+        );
+        expect(result.stdout).toContain('🐢 bummer dude...');
+        expect(result.stdout).not.toMatch(/1\.plan|2\.apply|✨/);
+      });
+
+      then('the report reads as snapped', () => {
+        expect(asWalkMasked({ stdout: result.stdout, steps: WALK_SHIM_STEPS_MASKED })).toMatchSnapshot('declapract.walk — a failed step');
+      });
+    });
+
+    when('[t2] its second apply leaves an automatic fix', () => {
+      const result = useBeforeAll(async () => {
+        const scene = await genWalkScene({ ...WALK_SCENE_CLEAN, slug: 'walk-scene-unconverged', isConverged: false });
+        return runSkill({
+          skill: 'declapract.walk',
+          args: ['--usecase', 'demo', '--compile', 'skip', '--build', 'skip'],
+          cwd: scene.root,
+          stdin: null,
+          env: scene.env,
+        });
+      });
+
+      then('it counts the fix left, names the final plan log, exit 1', () => {
+        expect(result.status).toEqual(1);
+        expect(result.stdout).toContain('└─ to fix: 1 file an apply rewrites (FIX_AUTOMATIC)');
+        expect(result.stdout).toContain(
+          '└─ 💥 MalfunctionError: the apply did not converge: 1 file an apply still rewrites; read .log/declapract.walk/demo/4.plan.final.log',
+        );
+        expect(result.stdout).toContain('│     └─ package.json');
+        expect(result.stdout).not.toContain('✨');
+      });
+
+      then('the report reads as snapped', () => {
+        expect(asWalkMasked({ stdout: result.stdout, steps: WALK_SHIM_STEPS_MASKED })).toMatchSnapshot('declapract.walk — the apply did not converge');
+      });
+    });
+
+    when('[t3] its compile fails', () => {
+      const result = useBeforeAll(async () => {
+        const scene = await genWalkScene({ ...WALK_SCENE_CLEAN, slug: 'walk-scene-compilefail', compileExit: 2 });
+        return runSkill({ skill: 'declapract.walk', args: ['--usecase', 'demo', '--build', 'skip'], cwd: scene.root, stdin: null, env: scene.env });
+      });
+
+      then('it halts at 6.compile, names it and its log, and runs no cycle check, exit 1', () => {
+        expect(result.status).toEqual(1);
+        expect(result.stdout).toContain('├─ 5.install (exit 0)');
+        expect(result.stdout).toContain('├─ 6.compile (exit 2)');
+        expect(result.stdout).toContain(
+          '└─ 💥 MalfunctionError: step 6.compile failed; read .log/declapract.walk/demo/6.compile.log',
+        );
+        expect(result.stdout).not.toMatch(/7\.cycles|✨/);
+      });
+
+      then('the report reads as snapped', () => {
+        expect(asWalkMasked({ stdout: result.stdout, steps: WALK_SHIM_STEPS_MASKED })).toMatchSnapshot('declapract.walk — a failed compile');
+      });
+    });
+
+    when('[t4] its cycle check exits 1', () => {
+      const result = useBeforeAll(async () => {
+        const scene = await genWalkScene({ ...WALK_SCENE_CLEAN, slug: 'walk-scene-cycles', cyclesExit: 1 });
+        return runSkill({ skill: 'declapract.walk', args: ['--usecase', 'demo', '--build', 'skip'], cwd: scene.root, stdin: null, env: scene.env });
+      });
+
+      then('it reports the cycles exit, and the walk still exits 0, since the check never gates', () => {
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('├─ 7.cycles (exit 1 · report only, never gates)');
+        expect(result.stdout).toContain('│  └─ pnpm run test:lint:cycles ran');
+        expect(result.stdout).toContain('✨ every gated step exited 0, and the apply converged');
+      });
+
+      then('the report reads as snapped', () => {
+        expect(asWalkMasked({ stdout: result.stdout, steps: WALK_SHIM_STEPS_MASKED })).toMatchSnapshot('declapract.walk — a cycle check that exits 1');
+      });
+    });
+
+    // each gated step owes its own halt: one call site per step, so each is reached on its own
+    const HALT_CASES = [
+      { tag: 't5', step: '1.plan', slug: 'walk-scene-planfail', overrides: { planFailsOnCall: 1 }, after: /2\.apply|to author/ },
+      { tag: 't6', step: '2.apply', slug: 'walk-scene-applyfail', overrides: { applyFailsOnCall: 1 }, after: /3\.apply\.again/ },
+      { tag: 't11', step: '3.apply.again', slug: 'walk-scene-reapplyfail', overrides: { applyFailsOnCall: 2 }, after: /4\.plan\.final/ },
+      { tag: 't12', step: '4.plan.final', slug: 'walk-scene-finalplanfail', overrides: { planFailsOnCall: 2 }, after: /did not converge|5\.install/ },
+      { tag: 't7', step: '5.install', slug: 'walk-scene-installfail', overrides: { installExit: 1 }, after: /├─ tsc:|6\.compile/ },
+    ];
+    HALT_CASES.map((thisCase) =>
+      when(`[${thisCase.tag}] its ${thisCase.step} step fails`, () => {
+        const result = useBeforeAll(async () => {
+          const scene = await genWalkScene({ ...WALK_SCENE_CLEAN, slug: thisCase.slug, ...thisCase.overrides });
+          return runSkill({ skill: 'declapract.walk', args: ['--usecase', 'demo', '--build', 'skip'], cwd: scene.root, stdin: null, env: scene.env });
+        });
+
+        then(`it halts at ${thisCase.step}, names it and its log, and runs no later step, exit 1`, () => {
+          expect(result.status).toEqual(1);
+          expect(result.stdout).toContain(`├─ ${thisCase.step} (exit 1)`);
+          expect(result.stdout).toContain(
+            `└─ 💥 MalfunctionError: step ${thisCase.step} failed; read .log/declapract.walk/demo/${thisCase.step}.log`,
+          );
+          expect(result.stdout).not.toMatch(thisCase.after);
+          expect(result.stdout).not.toContain('✨');
+        });
+
+        then('the report reads as snapped', () => {
+          expect(asWalkMasked({ stdout: result.stdout, steps: WALK_SHIM_STEPS_MASKED })).toMatchSnapshot(`declapract.walk — a failed ${thisCase.step}`);
+        });
+      }),
+    );
+
+    when('[t8] its plans flag files a human must author', () => {
+      const result = useBeforeAll(async () => {
+        const scene = await genWalkScene({ ...WALK_SCENE_CLEAN, slug: 'walk-scene-manual', manualFiles: ['README.md', 'docs/x.md'] });
+        return runSkill({ skill: 'declapract.walk', args: ['--usecase', 'demo', '--build', 'skip', '--compile', 'skip'], cwd: scene.root, stdin: null, env: scene.env });
+      });
+
+      then('it lists each file to author under its count, and still exits 0, since a manual fix is no defect', () => {
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('├─ to author: 2 files a human writes (FIX_MANUAL)');
+        expect(result.stdout).toContain('│  │  ├─ README.md');
+        expect(result.stdout).toContain('│  │  └─ docs/x.md');
+        expect(result.stdout).toContain('└─ ✨ every gated step exited 0, and the apply converged; 2 files left for a human to author');
+      });
+
+      then('the report reads as snapped', () => {
+        expect(asWalkMasked({ stdout: result.stdout, steps: WALK_SHIM_STEPS_MASKED })).toMatchSnapshot('declapract.walk — files to author');
+      });
+    });
+
+    when('[t9] its install holds no tsc', () => {
+      const result = useBeforeAll(async () => {
+        // with no tsc installed, the compile cannot start either, so it fails as a real one would
+        const scene = await genWalkScene({ ...WALK_SCENE_CLEAN, slug: 'walk-scene-notsc', isTscPresent: false, compileExit: 1 });
+        return runSkill({ skill: 'declapract.walk', args: ['--usecase', 'demo', '--build', 'skip'], cwd: scene.root, stdin: null, env: scene.env });
+      });
+
+      then('it names the tsc as absent, then halts at 6.compile, exit 1', () => {
+        expect(result.status).toEqual(1);
+        expect(result.stdout).toContain('├─ tsc: absent');
+        expect(result.stdout).toContain('└─ 💥 MalfunctionError: step 6.compile failed');
+      });
+
+      then('the report reads as snapped', () => {
+        expect(asWalkMasked({ stdout: result.stdout, steps: WALK_SHIM_STEPS_MASKED })).toMatchSnapshot('declapract.walk — no tsc installed');
+      });
+    });
+
+    when('[t10] its install holds a patched pg-pool', () => {
+      const result = useBeforeAll(async () => {
+        const scene = await genWalkScene({ ...WALK_SCENE_CLEAN, slug: 'walk-scene-pgpool-patched', pgPool: 'patched' });
+        return runSkill({ skill: 'declapract.walk', args: ['--usecase', 'demo', '--build', 'skip'], cwd: scene.root, stdin: null, env: scene.env });
+      });
+
+      then('the report names the patched install, its hash masked, and 0 requires left, exit 0', () => {
+        expect(result.status).toEqual(0);
+        expect(result.stdout).toContain('│  ├─ install: pg-pool@3.7.0_patch_hash=<hash>');
+        expect(result.stdout).toContain("│  └─ require('pg') left in index.js: 0");
+      });
+
+      then('the report reads as snapped', () => {
+        expect(asWalkMasked({ stdout: result.stdout, steps: WALK_SHIM_STEPS_MASKED })).toMatchSnapshot('declapract.walk — a patched pg-pool');
+      });
+    });
+  });
 });

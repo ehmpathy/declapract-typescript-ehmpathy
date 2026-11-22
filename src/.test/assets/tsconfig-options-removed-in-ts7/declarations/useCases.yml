@@ -1,0 +1,5 @@
+# minimal use case for the ts7 tsconfig removals integration test
+use-cases:
+  lambda-service:
+    practices:
+      - typescript-node

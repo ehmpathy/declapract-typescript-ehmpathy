@@ -2,7 +2,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { given, then, useBeforeAll, when } from 'test-fns';
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
+
+import { getAllDiagnosticsFromTscBinary } from '../../.test/getAllDiagnosticsFromTscBinary';
 
 /**
  * .what = type-checks the SHIPPED `withDatabaseTransaction` + `withDatabaseContext` templates, and
@@ -42,10 +44,50 @@ const COMPILER_OPTIONS: ts.CompilerOptions = {
   noUnusedParameters: false,
   target: ts.ScriptTarget.ES2020,
   lib: ['lib.es2020.d.ts'],
-  module: ts.ModuleKind.CommonJS,
-  moduleResolution: ts.ModuleResolutionKind.Node10,
+  module: ts.ModuleKind.Node16,
+  moduleResolution: ts.ModuleResolutionKind.Node16,
   types: [],
   noEmit: true,
+};
+
+// the same options in tsconfig form, for the installed typescript 7 binary
+const TSCONFIG_OPTIONS = {
+  strict: true,
+  noUncheckedIndexedAccess: true,
+  noImplicitReturns: true,
+  noFallthroughCasesInSwitch: true,
+  allowUnusedLabels: false,
+  allowUnreachableCode: false,
+  noPropertyAccessFromIndexSignature: false,
+  exactOptionalPropertyTypes: false,
+  noUnusedLocals: false,
+  noUnusedParameters: false,
+  target: 'es2020',
+  lib: ['es2020'],
+  module: 'node16',
+  moduleResolution: 'node16',
+  types: [],
+  noEmit: true,
+};
+
+/**
+ * .what = type-check the same fixture with the installed typescript 7 binary
+ * .why = adopters compile these templates with typescript 7, not the 6.0 checker above
+ */
+const getDiagnosticsFromTsc7 = (input: { slug: string; files: Record<string, string> }) => {
+  const files = Object.fromEntries(
+    Object.entries(input.files).map(([path, source]) => [path.replace('/fixture/', ''), source]),
+  );
+  const checked = getAllDiagnosticsFromTscBinary({
+    slug: input.slug,
+    files,
+    roots: Object.keys(files),
+    compilerOptions: TSCONFIG_OPTIONS,
+  });
+  return {
+    version: checked.version,
+    lines: checked.diagnostics.map((found) => `${found.file}:${found.line} ${found.code}: ${found.message}`),
+  };
 };
 
 /**
@@ -164,23 +206,20 @@ describe('persist-with-rds database wrappers type-check where they land (#627, #
   );
 
   given('[case1] an adopter with an async, a sync, and a generic op wrapped in withDatabaseTransaction', () => {
+    const files = {
+      [`${FIXTURE_DIR}/getOneDatabaseConnection.ts`]: STUB_CONNECTION,
+      [`${FIXTURE_DIR}/withDatabaseTransaction.ts`]: transactionTemplate,
+      [`${FIXTURE_DIR}/withDatabaseTransactionIssueBody.ts`]: transactionIssueBody,
+      [`${FIXTURE_DIR}/callersOfPracticeBody.ts`]: asTransactionCallers({
+        wrapperModule: 'withDatabaseTransaction',
+      }),
+      [`${FIXTURE_DIR}/callersOfIssueBody.ts`]: asTransactionCallers({
+        wrapperModule: 'withDatabaseTransactionIssueBody',
+      }),
+    };
+
     when('[t0] tsc runs over the practice body and the body #627 quotes', () => {
-      const diagnostics = useBeforeAll(async () => ({
-        lines: getDiagnostics({
-          files: {
-            [`${FIXTURE_DIR}/getOneDatabaseConnection.ts`]: STUB_CONNECTION,
-            [`${FIXTURE_DIR}/withDatabaseTransaction.ts`]: transactionTemplate,
-            [`${FIXTURE_DIR}/withDatabaseTransactionIssueBody.ts`]:
-              transactionIssueBody,
-            [`${FIXTURE_DIR}/callersOfPracticeBody.ts`]: asTransactionCallers({
-              wrapperModule: 'withDatabaseTransaction',
-            }),
-            [`${FIXTURE_DIR}/callersOfIssueBody.ts`]: asTransactionCallers({
-              wrapperModule: 'withDatabaseTransactionIssueBody',
-            }),
-          },
-        }),
-      }));
+      const diagnostics = useBeforeAll(async () => ({ lines: getDiagnostics({ files }) }));
 
       then('the issue body differs from the practice body (both bodies are under test)', () => {
         expect(transactionIssueBody).not.toEqual(transactionTemplate);
@@ -190,35 +229,56 @@ describe('persist-with-rds database wrappers type-check where they land (#627, #
         expect(diagnostics.lines).toEqual([]);
       });
     });
+
+    when('[t1] the installed typescript 7 binary runs over the same files', () => {
+      const checked = useBeforeAll(async () =>
+        getDiagnosticsFromTsc7({ slug: 'database-wrappers-tsc7-transaction', files }),
+      );
+
+      then('typescript 7 finds no diagnostic in the wrapper or its callers', () => {
+        expect(checked.version).toMatch(/Version 7\./);
+        expect(checked.lines).toEqual([]);
+      });
+    });
   });
 
   given('[case2] the jsdoc example that withDatabaseContext ships', () => {
+    const example = asJsdocExample({ source: contextTemplate });
+    const files = {
+      [`${FIXTURE_DIR}/getOneDatabaseConnection.ts`]: STUB_CONNECTION,
+      [`${FIXTURE_DIR}/withDatabaseContext.ts`]: contextTemplate,
+      [`${FIXTURE_DIR}/example.ts`]: [
+        "import type { DatabaseConnection } from './getOneDatabaseConnection';",
+        "import { withDatabaseContext } from './withDatabaseContext';",
+        '// the connection the example reuses, as an adopter inside a transaction holds it',
+        'declare const dbConnection: DatabaseConnection;',
+        'export const run = async (): Promise<void> => {',
+        example,
+        '};',
+      ].join('\n'),
+    };
+
     when('[t0] tsc runs over the example, as an adopter would paste it', () => {
-      const example = asJsdocExample({ source: contextTemplate });
-      const diagnostics = useBeforeAll(async () => ({
-        lines: getDiagnostics({
-          files: {
-            [`${FIXTURE_DIR}/getOneDatabaseConnection.ts`]: STUB_CONNECTION,
-            [`${FIXTURE_DIR}/withDatabaseContext.ts`]: contextTemplate,
-            [`${FIXTURE_DIR}/example.ts`]: [
-              "import type { DatabaseConnection } from './getOneDatabaseConnection';",
-              "import { withDatabaseContext } from './withDatabaseContext';",
-              '// the connection the example reuses, as an adopter inside a transaction holds it',
-              'declare const dbConnection: DatabaseConnection;',
-              'export const run = async (): Promise<void> => {',
-              example,
-              '};',
-            ].join('\n'),
-          },
-        }),
-      }));
+      const diagnostics = useBeforeAll(async () => ({ lines: getDiagnostics({ files }) }));
 
       then('the example compiles', () => {
         expect(diagnostics.lines).toEqual([]);
       });
 
-      then('the example matches snapshot', () => {
+      then('the example calls withDatabaseContext, and matches snapshot', () => {
+        expect(example).toContain('withDatabaseContext');
         expect(example).toMatchSnapshot('withDatabaseContext jsdoc example');
+      });
+    });
+
+    when('[t1] the installed typescript 7 binary runs over the example', () => {
+      const checked = useBeforeAll(async () =>
+        getDiagnosticsFromTsc7({ slug: 'database-wrappers-tsc7-example', files }),
+      );
+
+      then('typescript 7 compiles the example', () => {
+        expect(checked.version).toMatch(/Version 7\./);
+        expect(checked.lines).toEqual([]);
       });
     });
   });

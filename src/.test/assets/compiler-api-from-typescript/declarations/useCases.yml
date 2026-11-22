@@ -1,0 +1,5 @@
+# minimal use case for the compiler-api-from-typescript integration test
+use-cases:
+  lambda-service:
+    practices:
+      - typescript-node

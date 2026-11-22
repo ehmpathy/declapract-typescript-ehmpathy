@@ -3,7 +3,8 @@
     "tsc-alias": "@declapract{check.minVersion('1.8.10')}",
     "@tsconfig/node20": "@declapract{check.minVersion('20.1.5')}",
     "@tsconfig/strictest": "@declapract{check.minVersion('2.0.5')}",
-    "@types/node": "@declapract{check.minVersion('22.15.21')}"
+    "@types/node": "@declapract{check.minVersion('22.15.21')}",
+    "typescript": "@declapract{check.minVersion('7.0.2')}"
   },
   "scripts": {
     "build:clean:tsc": "(chmod -R u+w dist 2>/dev/null || true) && rm -rf dist/",

@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`typescript-node tsconfig-options-removed-in-ts7 given: [case1] the prior typescript-node template: baseUrl ".", bare paths, importsNotUsedAsValues when: [t0] the fix runs then: baseUrl and importsNotUsedAsValues leave, paths gain a ./ lead, this fix keeps comments: template — after 1`] = `
+"{
+  "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/node20/tsconfig.json"],
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"],
+      "@src/*": ["./src/*"]
+    },
+    "noUnusedLocals": false, // a linter warns on this, not the compiler
+    "outDir": "dist"
+  }
+}
+"
+`;

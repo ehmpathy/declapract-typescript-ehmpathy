@@ -1,0 +1,13 @@
+# F7 · the ts7 bad-practice fixes whole; it carries no manual part for moduleResolution or a lone baseUrl
+
+- fork: case=4 sketched a bad-practice split in two: an automatic part (`baseUrl`, `importsNotUsedAsValues`) and a manual part that flags `moduleResolution node` and a `baseUrl` that roots bare imports with no `paths`. options:
+  - (a) ship the split: a second, fix-less bad-practice on `tsconfig.json`
+  - (b) ship one automatic bad-practice; let the extant best-practice own `moduleResolution`
+- taken: (b).
+  - the typescript-node best-practice contains-check already sets `"moduleResolution": "node16"` and `"module": "node16"`, so `node` never survives an apply. the case2 integration test proves it on case=4's own drift (`"baseUrl": "./src"`, `"moduleResolution": "node"`): one apply lands node16, the repo's alias rebases to `./src/*`, a second apply is a no-op
+  - a fix-less bad-practice on `tsconfig.json` makes the whole file FIX_MANUAL, so apply would skip the automatic fold and the `types` add too: the split costs the part that works
+  - a nested `baseUrl` gains one lookup key per top-level entry of its dir at the head of `paths` (unless the repo declares its own `"*"`), or, with no `paths`, a `paths` block of those keys, so bare imports keep their lookup in tsc and in tsc-alias (F14: not tsc's hinted `"*"`, which tsc-alias never rewrites). a root `baseUrl` gets none: an org-wide search finds no adopter that imports bare from the repo root (`from 'src/`)
+- rework: clean. (a) is an added declaration dir plus a readme; no adopter has applied (b) yet.
+- confidence 88%: the moduleResolution half is proven by test. the residual is a repo whose code compiles under `node` but not under `node16` (a deep import no `exports` map allows); that break predates this pr, since the best-practice already forced node16, and tsc names each one.
+- where: `src/practices/typescript-node/bad-practices/tsconfig-options-removed-in-ts7/` · `tsconfig-options-removed-in-ts7.declapract.integration.test.ts` [case2] · `5.1.execution.from_vision.yield.md`.
+- verdict: overturned in part by peer review r011 (i004, blocker.1), and its second reason was wrong. a manual part now ships, `imports-not-used-as-values-kept`, for `"preserve"` and `"error"` alone. the claim that a fix-less check makes the whole file FIX_MANUAL does not hold inside one practice: declapract 0.13.27 counts a practice fixable when any of its failed checks has a fix (`FilePracticeEvaluation.js:11`), so apply still runs the fold and the `types` add, and the manual option is kept as written. pinned by `tsconfig-options-removed-in-ts7.declapract.integration.test.ts` [case3]. the moduleResolution half stands.

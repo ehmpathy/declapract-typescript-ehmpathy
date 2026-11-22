@@ -1,5 +1,5 @@
+import * as ts from '@typescript/typescript6';
 import type { FileCheckFunction, FileFixFunction } from 'declapract';
-import * as ts from 'typescript';
 
 // `Stage.DEVELOPMENT` (value `'dev'`) was overloaded across two axes: the access
 // (→ 'prep') and the deploy-stage slug (→ 'dev'). a rewrite cannot know which axis a given

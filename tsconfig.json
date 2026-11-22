@@ -4,7 +4,6 @@
     "@tsconfig/node20/tsconfig.json"
   ],
   "compilerOptions": {
-    "importsNotUsedAsValues": "remove",
     "noPropertyAccessFromIndexSignature": false,
     "resolveJsonModule": true,
     "sourceMap": true,
@@ -15,12 +14,12 @@
     "exactOptionalPropertyTypes": false,
     "noImplicitOverride": false,
     "target": "es2020",
-    "baseUrl": ".",
     "paths": {
       "@src/*": [
-        "src/*"
+        "./src/*"
       ]
     },
+    "types": ["node", "jest"],
     "incremental": true,
     "module": "node16",
     "moduleResolution": "node16"

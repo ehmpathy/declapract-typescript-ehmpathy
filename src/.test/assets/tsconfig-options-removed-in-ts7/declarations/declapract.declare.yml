@@ -1,0 +1,4 @@
+# declarations that isolate the typescript-node tsconfig best-practice and the ts7 removals bad-practice, so their joint fix on one tsconfig is the only diff
+declare:
+  practices: practices
+  use-cases: useCases.yml

@@ -1,0 +1,20 @@
+{
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "baseUrl": "./src", // bare imports like 'logic/x' look up from src/
+    "paths": {
+      "~/*": ["*"]
+    },
+    "importsNotUsedAsValues": "remove",
+    "types": ["vitest/globals"], // 🧪 the repo's own test globals
+    "outDir": "dist",
+    "target": "es2020",
+    "module": "commonjs",
+    "moduleResolution": "node"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}

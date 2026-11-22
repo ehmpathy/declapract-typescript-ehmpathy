@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 /**
  * .what = the review pointer stamped above a file whose pg client cannot be given tls safely

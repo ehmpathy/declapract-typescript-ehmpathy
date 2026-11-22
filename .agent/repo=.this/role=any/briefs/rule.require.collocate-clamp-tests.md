@@ -23,8 +23,10 @@ behavior. it is NOT a declaration (`.declapract.ts`) and NOT an `executeApply` p
   finds its clamp in the same dir, named after it. no hunt across a practice-root pile.
 - **declapract's compile strips it, so it never ships.** `compile` (the publish step) filters out
   `.declapract.test.ts` (+ `.snap`) before it copies a practice into the distributed package, so a
-  clamp test inside `best-practice/` is neither published nor applied to a consumer — even though
-  best-practice files are otherwise templates the loader enforces (`define.declapract-test-files`).
+  clamp test inside `best-practice/` is never published — even though the loader reads it as a
+  template like every other best-practice file (`define.declapract-test-files`). a test whose
+  subject is a `.declapract.ts` declaration, not a template, stays at the practice root: a walk off
+  `src/` emits the test with no declaration beside it to import.
 - **named for its subject** — a clamp test carries the clamped file's full basename with `.ts`
   (`useKeyrack.ts.declapract.test.ts`, not `useKeyrack.declapract.test.ts`), so the pair reads at
   a glance and matches the `jest.unit.env.ts.declapract.test.ts` precedent.
