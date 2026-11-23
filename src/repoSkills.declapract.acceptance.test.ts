@@ -32,6 +32,36 @@ const asSkillEnv = (input: { env: Record<string, string> }): NodeJS.ProcessEnv =
 });
 
 /**
+ * .what = a dir whose `pnpm` runs, via corepack, the pnpm this repo's `packageManager` pins
+ * .why  = the walk installs a consumer with pnpm, and a ci test job holds node but no pnpm on PATH;
+ *         corepack ships with node, so every host runs one pinned pnpm, never whatever PATH holds
+ */
+const genPnpmViaCorepack = async (): Promise<{ dir: string; bin: string }> => {
+  const pkg = JSON.parse(await fs.readFile(path.join(__dirname, '..', 'package.json'), 'utf8'));
+  const pnpmPinned: string = pkg.packageManager ?? MalfunctionError.throw('package.json pins no packageManager');
+  const dir = genTempDir({ slug: 'pnpm-via-corepack' });
+  const bin = path.join(dir, 'pnpm');
+  await fs.writeFile(
+    bin,
+    [
+      '#!/usr/bin/env bash',
+      // strict off: a consumer that pins its own packageManager still runs the pnpm this suite pins
+      `COREPACK_ENABLE_STRICT=0 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 exec corepack ${pnpmPinned} "$@"`,
+      '',
+    ].join('\n'),
+    { mode: 0o755 },
+  );
+  const probe = spawnSync(bin, ['--version'], { encoding: 'utf8' });
+  if (probe.status !== 0)
+    throw new ConstraintError('corepack could not run the pinned pnpm', {
+      pnpmPinned,
+      stderr: probe.stderr,
+      hint: 'install node >= 22, which ships corepack',
+    });
+  return { dir, bin };
+};
+
+/**
  * .what = runs one of this repo's own skills as a human would, and captures what they see
  * .why  = a skill is a contract of stdout, stderr, and exit code; only a real run proves each.
  *         `env` lets a case bound the git search (`GIT_CEILING_DIRECTORIES`), so a dir under
@@ -1265,15 +1295,16 @@ describe('repo skills', () => {
 
     when('[t2] it walks a usecase end to end, on the dist/ the acceptance run just built', () => {
       // --build skip: the acceptance suite builds dist/ first and runs tests from it, so a rebuild here would clear it mid-run
-      const result = useBeforeAll(async () =>
-        runSkill({
+      const result = useBeforeAll(async () => {
+        const pnpm = await genPnpmViaCorepack();
+        return runSkill({
           skill: 'declapract.walk',
           args: ['--usecase', 'npm-package', '--build', 'skip'],
           cwd: repoRoot,
           stdin: null,
-          env: {},
-        }),
-      );
+          env: { PATH: `${pnpm.dir}:${process.env.PATH}` },
+        });
+      });
 
       then('every gated step exits 0, the apply converges, exit 0', () => {
         expect(result.status).toEqual(0);
@@ -1576,8 +1607,7 @@ describe('repo skills', () => {
       await fs.mkdir(shimBin, { recursive: true });
       // on a host where `npm` hands off to the `pnpm` on PATH, the walk's `npm --prefix … run build` reaches
       // this shim too; so the shim answers only the walk's own pnpm calls and passes the rest to the real pnpm
-      const pnpmReal = spawnSync('bash', ['-c', 'command -v pnpm'], { encoding: 'utf8' }).stdout.trim();
-      if (!pnpmReal) throw new ConstraintError('the walk scene needs a real pnpm on PATH', { hint: 'corepack enable' });
+      const pnpmReal = (await genPnpmViaCorepack()).bin;
       await fs.writeFile(
         path.join(shimBin, 'pnpm'),
         [
