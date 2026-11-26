@@ -1,0 +1,8 @@
+{
+  "name": "repo-with-compiler-api-import",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "typescript": "5.4.5"
+  }
+}

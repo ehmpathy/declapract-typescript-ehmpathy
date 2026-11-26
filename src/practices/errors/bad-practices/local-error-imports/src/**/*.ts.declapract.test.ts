@@ -11,14 +11,14 @@ describe('local-error-imports bad practice source files', () => {
       expect(() => check(contents, {} as any)).not.toThrow();
     });
 
-    it('should match files that import BadRequestError from @src alias', () => {
-      const contents = `import { BadRequestError } from '@src/utils/errors/BadRequestError';`;
+    it('should match files that import BadRequestError from @/ alias', () => {
+      const contents = `import { BadRequestError } from '@/src/utils/errors/BadRequestError';`;
 
       expect(() => check(contents, {} as any)).not.toThrow();
     });
 
     it('should match files that import from domain.operations path', () => {
-      const contents = `import { UnexpectedCodePathError } from '@src/domain.operations/UnexpectedCodePathError';`;
+      const contents = `import { UnexpectedCodePathError } from '@/src/domain.operations/UnexpectedCodePathError';`;
 
       expect(() => check(contents, {} as any)).not.toThrow();
     });
@@ -98,8 +98,8 @@ export const doStuff = () => {
       expect(fixed).not.toContain('../../utils/errors/');
     });
 
-    it('should replace @src alias import with helpful-errors', async () => {
-      const contents = `import { BadRequestError } from '@src/utils/errors/BadRequestError';`;
+    it('should replace @/ alias import with helpful-errors', async () => {
+      const contents = `import { BadRequestError } from '@/src/utils/errors/BadRequestError';`;
 
       const { contents: fixed } = await fix(contents, {} as any);
 
@@ -107,7 +107,7 @@ export const doStuff = () => {
     });
 
     it('should replace domain.operations path import', async () => {
-      const contents = `import { UnexpectedCodePathError } from '@src/domain.operations/UnexpectedCodePathError';`;
+      const contents = `import { UnexpectedCodePathError } from '@/src/domain.operations/UnexpectedCodePathError';`;
 
       const { contents: fixed } = await fix(contents, {} as any);
 
@@ -139,7 +139,7 @@ import { UserInputError } from '../../utils/errors/UserInputError';`;
     it('should handle mixed imports in same file', async () => {
       const contents = `import { UnexpectedCodePathError } from '../../utils/errors/UnexpectedCodePathError';
 import { util } from 'other-package';
-import { HelpfulError } from '@src/errors/HelpfulError';`;
+import { HelpfulError } from '@/src/errors/HelpfulError';`;
 
       const { contents: fixed } = await fix(contents, {} as any);
 

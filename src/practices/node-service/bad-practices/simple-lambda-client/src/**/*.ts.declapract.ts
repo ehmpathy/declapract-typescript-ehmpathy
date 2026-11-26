@@ -79,8 +79,8 @@ export const fix: FileFixFunction = (contents) => {
           : []),
         ...(usesInvoke
           ? [
-              "import { sdkAwsLambdaAskAncient } from '@src/access/sdks/sdkAwsLambdaAskAncient';",
-              ...(hasLog ? [] : ["import { log } from '@src/utils/logger';"]),
+              "import { sdkAwsLambdaAskAncient } from '@/src/access/sdks/sdkAwsLambdaAskAncient';",
+              ...(hasLog ? [] : ["import { log } from '@/src/utils/logger';"]),
             ]
           : []),
       ].join('\n');

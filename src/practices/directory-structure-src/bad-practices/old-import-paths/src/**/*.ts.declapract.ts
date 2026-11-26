@@ -65,7 +65,7 @@ export const check: FileCheckFunction = (contents, context) => {
   );
   if (hasOldImport) return; // matches bad practice
 
-  // a bare barrel import ('@src/domain', '../../domain') — the same specifier set the fix repoints (#671)
+  // a bare barrel import ('@/src/domain', '../../domain') — the same specifier set the fix repoints (#671)
   if (
     hasBareDeprecatedDirSpecifier({
       contents,

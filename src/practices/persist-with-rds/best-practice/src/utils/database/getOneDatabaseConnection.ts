@@ -1,8 +1,8 @@
 import { HelpfulError, UnexpectedCodePathError } from 'helpful-errors';
 import pg, { Client, type QueryResult, type QueryResultRow } from 'pg';
 
-import { getConfig } from '@src/utils/config/getConfig';
-import { getEnvironment } from '@src/utils/environment';
+import { getConfig } from '@/src/utils/config/getConfig';
+import { getEnvironment } from '@/src/utils/environment';
 
 import { asDatabaseClientSsl } from './asDatabaseClientSsl';
 import { databaseClientTimeouts } from './databaseClientTimeouts';

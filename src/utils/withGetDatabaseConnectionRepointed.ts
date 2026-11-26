@@ -1,8 +1,8 @@
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 /**
  * .what = whether a module specifier names the retired `getDatabaseConnection` module, by any path
- *         (`./getDatabaseConnection`, `@src/utils/database/getDatabaseConnection`, …)
+ *         (`./getDatabaseConnection`, `@/src/utils/database/getDatabaseConnection`, …)
  * .why = the retired module is found by its file name; the path to it varies per importer
  */
 const isRetiredModuleSpecifier = (input: { specifier: string }): boolean =>

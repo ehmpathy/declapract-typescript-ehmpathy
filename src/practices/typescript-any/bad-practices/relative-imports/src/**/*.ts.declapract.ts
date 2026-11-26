@@ -3,7 +3,7 @@ import type { FileCheckFunction, FileFixFunction } from 'declapract';
 import { isDeferredToDeprecatedDirMove } from '../../../../../../utils/isDeferredToDeprecatedDirMove';
 
 /**
- * .what = detects relative imports that should use @src alias
+ * .what = detects relative imports that should use @/src alias
  * .why = relative paths are fragile and break when files move
  */
 
@@ -35,8 +35,8 @@ const asDirPartsWithinSrc = (input: { relativeFilePath: string }): string[] => {
 };
 
 /**
- * .what = whether a `../` run lands inside src/, where an @src alias can name its target
- * .why  = an import that climbs out of src/ (e.g. `../../jest.integration.env.db`) has no @src
+ * .what = whether a `../` run lands inside src/, where an @/src alias can name its target
+ * .why  = an import that climbs out of src/ (e.g. `../../jest.integration.env.db`) has no @/src
  *         form; the fix leaves it, so the check must too, or it flags a file no one can fix
  */
 const isUpCountWithinSrc = (input: {
@@ -85,7 +85,7 @@ export const fix: FileFixFunction = (contents, { relativeFilePath }) => {
   // get the directories between src/ and the current file
   const currentDirParts = asDirPartsWithinSrc({ relativeFilePath });
 
-  // replace relative imports with @src imports (only if they stay within src/)
+  // replace relative imports with @/src imports (only if they stay within src/)
   const fixed = contents.replace(
     /from\s+['"]((\.\.\/)+)(.*?)['"]/g,
     (match, dots, _, importPath) => {
@@ -100,13 +100,13 @@ export const fix: FileFixFunction = (contents, { relativeFilePath }) => {
 
       // if going up exactly as many levels as we have directories, target is at src root
       if (upCount === currentDirParts.length) {
-        return `from '@src/${importPath}'`;
+        return `from '@/src/${importPath}'`;
       }
 
       // otherwise, calculate the remaining path after going up
       const remainingParts = currentDirParts.slice(0, -upCount);
       const targetPath = [...remainingParts, importPath].join('/');
-      return `from '@src/${targetPath}'`;
+      return `from '@/src/${targetPath}'`;
     },
   );
 

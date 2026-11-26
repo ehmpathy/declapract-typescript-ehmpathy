@@ -42,7 +42,7 @@ export class SimpleClass {}`;
     });
 
     it('should handle content with only absolute imports (no relative transform)', async () => {
-      const contents = `import { helper } from '@src/utils/helper';
+      const contents = `import { helper } from '@/src/utils/helper';
 import { pkg } from 'external-package';`;
       const context = {
         relativeFilePath: 'src/domain/objects/WithAbsolute.ts',

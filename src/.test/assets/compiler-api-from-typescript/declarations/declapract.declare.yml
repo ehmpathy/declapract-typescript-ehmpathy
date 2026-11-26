@@ -1,0 +1,4 @@
+# declarations that isolate the typescript-node compiler-api-from-typescript bad-practice, so its flag is the only plan line
+declare:
+  practices: practices
+  use-cases: useCases.yml

@@ -11,7 +11,7 @@ jest.setTimeout(180_000);
  * .what = end-to-end proof of the domain barrel move and the bare barrel import repoint (#655, #671).
  * .why  = two barrels (`domain/index.ts` → `./objects`, and `domain/objects/index.ts`) both move onto
  *   `domain.objects/index.ts`; the outer one, stripped, held no export and could win the path. and
- *   a bare `'@src/domain'` / `'../domain'` import matched neither the check nor the fix. only the real
+ *   a bare `'@/src/domain'` / `'../domain'` import matched neither the check nor the fix. only the real
  *   pipeline proves which file lands on the shared path.
  * .note = the outer barrel is applied AFTER the inner one — the order in which it used to win.
  */
@@ -73,7 +73,7 @@ describe('directory-structure-src domain barrels and bare barrel imports', () =>
       });
 
       then('each bare barrel import is repointed, and a package subpath is left alone (#655, #671)', () => {
-        expect(after.importer).toContain("from '@src/domain.objects';");
+        expect(after.importer).toContain("from '@/src/domain.objects';");
         expect(after.importer).toContain("from '../domain.objects';");
         expect(after.importer).toContain("from 'some-pkg/domain';");
         expect(after.importer).toMatchSnapshot('importer — after');

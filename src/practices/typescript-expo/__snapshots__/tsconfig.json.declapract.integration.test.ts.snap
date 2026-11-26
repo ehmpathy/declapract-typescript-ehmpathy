@@ -6,7 +6,7 @@ exports[`typescript-expo tsconfig.json the emitted tsconfig template matches sna
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@src/*": ["src/*"],
+      "@/*": ["./*"],
       "@assets/*": ["assets/*"]
     }
   },

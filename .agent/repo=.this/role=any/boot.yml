@@ -69,8 +69,12 @@ skills:
   # - husky.lock.restamp: the timestamp brief names it at the one moment it is owed
   # - git.attr.get: a niche probe for `.gitattributes` work; its path line names it
   # - declapract.self.apply: the self-check failures name it at the moment it is owed
+  # - typescript.probe: a niche probe, owed only when a typescript major is weighed
+  # - route.concerns.dispose: owed only on a route's peer-review loop, where `--help` names its flags
   ref:
     - skills/use.apikeys.*
     - skills/husky.lock.restamp.sh
     - skills/git.attr.get.sh
     - skills/declapract.self.apply.sh
+    - skills/typescript.probe.sh
+    - skills/route.concerns.dispose.sh

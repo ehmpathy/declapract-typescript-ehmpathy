@@ -2,8 +2,9 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 import { given, then, useBeforeAll, when } from 'test-fns';
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
+import { getAllDiagnosticsFromTscBinary } from '../../.test/getAllDiagnosticsFromTscBinary';
 import { isPgClientWithoutSsl } from '../../utils/withPgClientSslDeclared';
 import { asDatabaseClientSsl } from './best-practice/src/utils/database/asDatabaseClientSsl';
 
@@ -19,7 +20,8 @@ import { asDatabaseClientSsl } from './best-practice/src/utils/database/asDataba
  *          reddens; drop the `mode` input and case2 reddens with TS2554; read `role.crud` under the
  *          plan grant and case2 reddens with TS2322 (a password that may be absent)
  * .note = `pg`, `helpful-errors`, `iso-time`, config, and environment are stubbed in memory, so the
- *         check needs none of them installed. INTEGRATION by `rule.forbid.unit.remote-boundaries`:
+ *         check needs none of them installed. [case2] runs twice: the 6.0 compiler api, then the
+ *         installed typescript 7 binary adopters compile with. INTEGRATION by `rule.forbid.unit.remote-boundaries`:
  *         it reads the shipped templates off the filesystem
  */
 
@@ -50,10 +52,28 @@ const COMPILER_OPTIONS: ts.CompilerOptions = {
   esModuleInterop: true,
   target: ts.ScriptTarget.ES2020,
   lib: ['lib.es2020.d.ts'],
-  module: ts.ModuleKind.CommonJS,
-  moduleResolution: ts.ModuleResolutionKind.Node10,
-  baseUrl: FIXTURE_ROOT,
-  paths: { '@src/*': ['src/*'] },
+  module: ts.ModuleKind.Node16,
+  moduleResolution: ts.ModuleResolutionKind.Node16,
+  paths: { '@/*': [join(FIXTURE_ROOT, '*')] }, // absolute, so no baseUrl (removed in typescript 7)
+  types: ['node'],
+  typeRoots: [join(__dirname, '../../../node_modules/@types')],
+  noEmit: true,
+};
+
+// the same options in tsconfig form, for the installed typescript 7 binary
+const TSCONFIG_OPTIONS = {
+  strict: true,
+  noUncheckedIndexedAccess: true,
+  noImplicitReturns: true,
+  noFallthroughCasesInSwitch: true,
+  allowUnreachableCode: false,
+  exactOptionalPropertyTypes: false,
+  esModuleInterop: true,
+  target: 'es2020',
+  lib: ['es2020'],
+  module: 'node16',
+  moduleResolution: 'node16',
+  paths: { '@/*': ['./*'] },
   types: ['node'],
   typeRoots: [join(__dirname, '../../../node_modules/@types')],
   noEmit: true,
@@ -214,33 +234,38 @@ describe('persist-with-rds pg client (#652, #664, #673)', () => {
   });
 
   given('[case2] the factory, its tls, and its bounds, where they land', () => {
+    const files = {
+      ...STUBS,
+      'src/utils/database/getOneDatabaseConnection.ts': readTemplate('getOneDatabaseConnection.ts'),
+      'src/utils/database/asDatabaseClientSsl.ts': readTemplate('asDatabaseClientSsl.ts'),
+      'src/utils/database/rdsCaBundleUsEast1.ts': readTemplate('rdsCaBundleUsEast1.ts'),
+      'src/utils/database/databaseClientTimeouts.ts': readTemplate('databaseClientTimeouts.ts'),
+      'src/utils/database/getOneDatabasePort.ts': readTemplate('getOneDatabasePort.ts'),
+      'src/utils/database/callers.ts': CALLERS,
+    };
+
     when('[t0] tsc runs over them and the calls an adopter makes', () => {
-      const diagnostics = useBeforeAll(async () => ({
-        lines: getDiagnostics({
-          files: {
-            ...STUBS,
-            'src/utils/database/getOneDatabaseConnection.ts': readTemplate(
-              'getOneDatabaseConnection.ts',
-            ),
-            'src/utils/database/asDatabaseClientSsl.ts': readTemplate(
-              'asDatabaseClientSsl.ts',
-            ),
-            'src/utils/database/rdsCaBundleUsEast1.ts': readTemplate(
-              'rdsCaBundleUsEast1.ts',
-            ),
-            'src/utils/database/databaseClientTimeouts.ts': readTemplate(
-              'databaseClientTimeouts.ts',
-            ),
-            'src/utils/database/getOneDatabasePort.ts': readTemplate(
-              'getOneDatabasePort.ts',
-            ),
-            'src/utils/database/callers.ts': CALLERS,
-          },
-        }),
-      }));
+      const diagnostics = useBeforeAll(async () => ({ lines: getDiagnostics({ files }) }));
 
       then('no diagnostic points into the factory or its callers', () => {
         expect(diagnostics.lines).toEqual([]);
+      });
+    });
+
+    when('[t1] the installed typescript 7 binary runs over the same files', () => {
+      // adopters compile these templates with typescript 7, not the 6.0 checker of [t0]
+      const checked = useBeforeAll(async () =>
+        getAllDiagnosticsFromTscBinary({
+          slug: 'database-client-tsc7',
+          files,
+          roots: Object.keys(files).filter((path) => !path.startsWith('node_modules/')),
+          compilerOptions: TSCONFIG_OPTIONS,
+        }),
+      );
+
+      then('typescript 7 finds no diagnostic in the factory or its callers', () => {
+        expect(checked.version).toMatch(/Version 7\./);
+        expect(checked.diagnostics).toEqual([]);
       });
     });
   });

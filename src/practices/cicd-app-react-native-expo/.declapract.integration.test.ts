@@ -126,19 +126,19 @@ describe('app-react-native-expo — graceful migration of an app-protools-shaped
         const moved = state.after2.movedLogic!;
         // plain value import
         expect(moved).toContain(
-          "import { daoCustomer } from '@src/access/daos/daoCustomer'",
+          "import { daoCustomer } from '@/src/access/daos/daoCustomer'",
         );
         // type-only import
         expect(moved).toContain(
-          "import type { Customer } from '@src/access/daos/daoCustomer'",
+          "import type { Customer } from '@/src/access/daos/daoCustomer'",
         );
         // barrel re-export
         expect(moved).toContain(
-          "export { daoCustomer as daoCustomerReExport } from '@src/access/daos/daoCustomer'",
+          "export { daoCustomer as daoCustomerReExport } from '@/src/access/daos/daoCustomer'",
         );
         // NO deprecated import PATH survives on any of the three (the quoted specifier
         // only — the file's own comment still names data/dao as prose, which is fine)
-        expect(moved).not.toContain("'@src/data/dao/daoCustomer'");
+        expect(moved).not.toContain("'@/src/data/dao/daoCustomer'");
       });
 
       then('the moved file\'s ../ relative import is aliased (relative-imports two-pass defer)', () => {
@@ -146,7 +146,7 @@ describe('app-react-native-expo — graceful migration of an app-protools-shaped
         // a peer in the same deprecated layer. relative-imports must DEFER it on pass 1 (the
         // file still sits under logic/, so its isDeferredToDeprecatedDirMove guard fires) while
         // old-logic-dir relocates the file, then fire on pass 2 once the file sits at
-        // domain.operations/ — the ../shared/formatCustomer path becomes the @src alias. this
+        // domain.operations/ — the ../shared/formatCustomer path becomes the @/ alias. this
         // proves the branch-new deferred-dir guard end-to-end (the r1 relative-imports blocker):
         // a relocate and an in-place rewrite of one file never collide in a single pass.
         // the peer util is itself relocated logic/shared/ -> domain.operations/shared/.
@@ -154,7 +154,7 @@ describe('app-react-native-expo — graceful migration of an app-protools-shaped
         expect(state.after2.oldShared).toBeNull();
         // the importer's relative path is aliased to @src at the file's NEW home
         expect(state.after2.movedLogic).toContain(
-          "import { formatCustomer } from '@src/domain.operations/shared/formatCustomer'",
+          "import { formatCustomer } from '@/src/domain.operations/shared/formatCustomer'",
         );
         expect(state.after2.movedLogic).not.toContain("'../shared/formatCustomer'");
       });
@@ -643,6 +643,23 @@ describe('useCases.yml — resolved-practice characterization', () => {
         });
       });
     }
+
+    when('a usecase takes typescript-node', () => {
+      then('it also takes tests-any, which owns the jest types the typescript-node tsconfig names', () => {
+        // typescript-node declares `types: ["node", "jest"]`; with no tests-any, tsc fails with TS2688
+        // read each usecase's practice set once, then derive both filters from it
+        const takens = Object.keys(expected).map((usecase) => ({
+          usecase,
+          practices: getAllPracticesForUsecase({ usecasesYmlPath, usecase }),
+        }));
+        const withNode = takens.filter((entry) => entry.practices.includes('typescript-node'));
+        expect(withNode).not.toEqual([]);
+        const withoutTests = withNode
+          .filter((entry) => !entry.practices.includes('tests-any'))
+          .map((entry) => entry.usecase);
+        expect(withoutTests).toEqual([]);
+      });
+    });
   });
 
   when('expo is compared to the core baseline', () => {

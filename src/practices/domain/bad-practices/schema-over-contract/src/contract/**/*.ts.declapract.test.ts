@@ -4,9 +4,9 @@ import { check, fix, getDobjNamesImported } from './*.ts.declapract';
 
 const HANDLER = `import { z } from 'zod';
 
-import { HomeService } from '@src/domain.objects/HomeService';
+import { HomeService } from '@/src/domain.objects/HomeService';
 import { LeadCaptureForm as Form } from '../../domain.objects/LeadCaptureForm';
-import type { Surfer } from '@src/domain.objects/Surfer';
+import type { Surfer } from '@/src/domain.objects/Surfer';
 import { WaveReport } from 'sdk-wave-reports';
 
 const schemaOutput = z.object({
@@ -62,7 +62,7 @@ describe('domain schema-over-contract (#565, #634)', () => {
 
   given('[case2] a contract that already reads X.contract()', () => {
     then('the check skips it', () => {
-      const contents = `import { HomeService } from '@src/domain.objects/HomeService';
+      const contents = `import { HomeService } from '@/src/domain.objects/HomeService';
 const schemaOutput = z.object({ service: HomeService.contract().nullable() });`;
       expect(() => check(contents, {} as any)).toThrow(
         'does not match bad practice',

@@ -1,0 +1,215 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`typescript-node tsconfig options removed in typescript 7 given: [case1] a repo on the prior template, with an alias of its own beside the template paths when: [t0] the practice is applied twice then: the plan before the apply flags the tsconfig for an automatic fix, and matches snapshot: plan — before apply 1`] = `
+"🔎 reading configs and declarations...
+🔬️ evaluating project...
+  ✓ evaluated practice:typescript-node
+📖 displaying results...
+  * [FIX_AUTOMATIC] package.json
+    ✕ practice:typescript-node.best-practice (fix:appliable)
+      - Expected toContain
+      + Received relevantKeys
+        {
+          "devDependencies": {
+            "tsc-alias": "1.8.10",
+            "@tsconfig/node20": "20.1.5",
+            "@tsconfig/strictest": "2.0.5",
+            "@types/node": "22.15.21",
+      -     "typescript": "a version greater than or equal to '7.0.2'"
+      -   },
+      -   "scripts": {
+      -     "build:clean:tsc": "(chmod -R u+w dist 2>/dev/null || true) && rm -rf dist/",
+      -     "build:clean:bun": "rm -f ./bin/*.bc",
+      -     "build:clean": "npm run build:clean:tsc && npm run build:clean:bun",
+      -     "build:compile:tsc": "tsc -p ./tsconfig.build.json && tsc-alias -p ./tsconfig.build.json",
+      -     "build:compile": "npm run build:compile:tsc && npm run build:compile:bun --if-present",
+      -     "build": "npm run build:clean && npm run build:compile && npm run build:complete --if-present"
+      +     "typescript": "5.4.5"
+          }
+        } 
+  * [FIX_AUTOMATIC] tsconfig.build.json
+    ✕ practice:typescript-node.best-practice (fix:appliable)
+      - Expected file to exist
+      + Received file does not exist 
+  * [FIX_AUTOMATIC] tsconfig.json
+    ✕ practice:typescript-node.bad-practice.tsconfig-options-removed-in-ts7 (fix:appliable)
+    ✕ practice:typescript-node.best-practice (fix:appliable)
+      - Expected toContain
+      + Received relevantKeys
+        {
+          "extends": {
+            "0": "@tsconfig/strictest/tsconfig.json",
+            "1": "@tsconfig/node20/tsconfig.json"
+          },
+          "compilerOptions": {
+            "paths": {
+              "@/*": {
+      -         "0": "./*"
+      +         "0": "*"
+              }
+            },
+      -     "types": [
+      -       "node",
+      -       "jest"
+      -     ],
+            "noPropertyAccessFromIndexSignature": false,
+      -     "noUnusedLocals": false,
+      -     "noUnusedParameters": false,
+      -     "exactOptionalPropertyTypes": false,
+      -     "noImplicitOverride": false,
+      -     "resolveJsonModule": true,
+      -     "sourceMap": true,
+            "outDir": "dist",
+            "target": "es2020",
+      -     "incremental": true,
+            "module": "node16",
+            "moduleResolution": "node16"
+          },
+          "include": {
+            "0": "**/*.ts"
+          },
+          "exclude": {
+      -     "0": ".agent/.cache",
+      -     "1": "dist",
+      -     "2": "coverage",
+      -     "3": "node_modules"
+      +     "0": "dist",
+      +     "1": "node_modules"
+          }
+        } "
+`;
+
+exports[`typescript-node tsconfig options removed in typescript 7 given: [case1] a repo on the prior template, with an alias of its own beside the template paths when: [t0] the practice is applied twice then: the removed options leave, the template paths replace the repo paths, and types lands: tsconfig.json — after 1`] = `
+"{
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "noPropertyAccessFromIndexSignature": false,
+    "outDir": "dist",
+    "target": "es2020",
+    "module": "node16",
+    "moduleResolution": "node16",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "types": [
+      "node",
+      "jest"
+    ],
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitOverride": false,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "incremental": true
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    ".agent/.cache",
+    "dist",
+    "coverage",
+    "node_modules"
+  ]
+}
+"
+`;
+
+exports[`typescript-node tsconfig options removed in typescript 7 given: [case1] a repo on the prior template, with an alias of its own beside the template paths when: [t0] the practice is applied twice then: the removed options leave, the template paths replace the repo paths, and types lands: tsconfig.json — before 1`] = `
+"{
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"],
+      "@src/*": ["src/*"],
+      "@vendor/*": ["vendor/*"] // an alias this repo added beside the template's
+    },
+    "importsNotUsedAsValues": "remove",
+    "noPropertyAccessFromIndexSignature": false,
+    "outDir": "dist",
+    "target": "es2020",
+    "module": "node16",
+    "moduleResolution": "node16"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}
+"
+`;
+
+exports[`typescript-node tsconfig options removed in typescript 7 given: [case2] a repo whose baseUrl roots bare imports in ./src, beside moduleResolution node when: [t0] the practice is applied twice then: baseUrl leaves with its paths, and the template paths land in their place: tsconfig.json — after 1`] = `
+"{
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "types": [
+      "node",
+      "jest",
+      "vitest/globals"
+    ],
+    "outDir": "dist",
+    "target": "es2020",
+    "module": "node16",
+    "moduleResolution": "node16",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "noPropertyAccessFromIndexSignature": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitOverride": false,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "incremental": true
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    ".agent/.cache",
+    "dist",
+    "coverage",
+    "node_modules"
+  ]
+}
+"
+`;
+
+exports[`typescript-node tsconfig options removed in typescript 7 given: [case2] a repo whose baseUrl roots bare imports in ./src, beside moduleResolution node when: [t0] the practice is applied twice then: moduleResolution node lands on node16, set by the best-practice: tsconfig.json — before 1`] = `
+"{
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "baseUrl": "./src", // bare imports like 'domain.operations/x' look up from src/
+    "paths": {
+      "~/*": ["*"]
+    },
+    "importsNotUsedAsValues": "remove",
+    "types": ["vitest/globals"], // 🧪 the repo's own test globals
+    "outDir": "dist",
+    "target": "es2020",
+    "module": "commonjs",
+    "moduleResolution": "node"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}
+"
+`;

@@ -7,7 +7,7 @@ const context = {} as any;
 const askHandlerBefore = `import { genLambdaEndpoint } from 'sdk-aws-lambda';
 import { z } from 'zod';
 
-import { log } from '@src/utils/logger';
+import { log } from '@/src/utils/logger';
 
 export const handler = genLambdaEndpoint(
   {

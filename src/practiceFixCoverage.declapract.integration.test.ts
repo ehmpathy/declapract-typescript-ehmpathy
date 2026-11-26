@@ -230,6 +230,8 @@ const UNFIXABLE_BY_DESIGN: Record<string, string> = {
   'tests-service best-practice: src/**/*.integration.test.ts':
     ADOPTER_AUTHORED_TEST,
   'tests-service best-practice: src/**/*.test.ts': ADOPTER_AUTHORED_TEST,
+  'typescript-node bad-practices/compiler-api-from-typescript: src/**/*.ts':
+    'the swap to @typescript/typescript6 also adds that package to the adopter deps, which a src file fix cannot reach; a swap alone breaks the build',
 };
 
 /**

@@ -16,7 +16,7 @@ import {
  *         inserts, once present, are kept under every scope — so a narrow
  *         `declapract apply --practice tests-node`, where persist-with-dynamodb goes dark from
  *         `context.projectPractices`, never strips them.
- * .note = the import is RELATIVE: a jest env loads before moduleNameMapper settles the `@src` alias.
+ * .note = the import is RELATIVE: a jest env loads before moduleNameMapper settles the `@/` alias.
  */
 export const DYNAMODB_INSERTS: UsecaseInsert[] = [
   {

@@ -24,7 +24,7 @@ const KNOWN_CLASSES = [
  *
  * examples that match:
  *   import { UnexpectedCodePathError } from '../../utils/errors/UnexpectedCodePathError'
- *   import type { BadRequestError } from '@src/domain.operations/BadRequestError'
+ *   import type { BadRequestError } from '@/src/domain.operations/BadRequestError'
  *
  * examples that do NOT match:
  *   from 'helpful-errors' (already correct)

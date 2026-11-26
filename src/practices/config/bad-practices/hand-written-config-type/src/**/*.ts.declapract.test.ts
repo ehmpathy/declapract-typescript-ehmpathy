@@ -20,10 +20,10 @@ const CASES = [
     after: `import { Config } from '../../utils/config/config.schema';\n`,
   },
   {
-    description: 'an @src alias import, double-quoted',
+    description: 'an @/ alias import, double-quoted',
     relativeFilePath: 'src/contract/handlers/getSurfLesson.ts',
-    before: `import type { Config } from "@src/utils/config/Config";\n`,
-    after: `import type { Config } from "@src/utils/config/config.schema";\n`,
+    before: `import type { Config } from "@/src/utils/config/Config";\n`,
+    after: `import type { Config } from "@/src/utils/config/config.schema";\n`,
   },
 ];
 

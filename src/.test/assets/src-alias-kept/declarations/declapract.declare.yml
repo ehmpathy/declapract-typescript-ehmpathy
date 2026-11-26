@@ -1,0 +1,4 @@
+# declarations that isolate the src-alias-kept bad-practice, so its rewrite is the only diff
+declare:
+  practices: practices
+  use-cases: useCases.yml

@@ -2,7 +2,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
-    "incremental": false
+    "incremental": false,
+    "paths": {
+      "@/src/*": ["./src/*"] // the `@/` alias, narrowed to a target inside rootDir, so tsc-alias rewrites it in dist
+    }
   },
   "include": [
     "src/**/*.ts",

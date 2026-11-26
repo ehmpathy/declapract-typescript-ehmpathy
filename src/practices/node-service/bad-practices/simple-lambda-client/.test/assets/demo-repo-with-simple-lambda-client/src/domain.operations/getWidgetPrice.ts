@@ -1,6 +1,6 @@
 import { invokeLambdaFunction } from 'simple-lambda-client';
 
-import { stage } from '@src/utils/environment';
+import { stage } from '@/src/utils/environment';
 
 /**
  * .what = asks svc-widgets for the price of one widget

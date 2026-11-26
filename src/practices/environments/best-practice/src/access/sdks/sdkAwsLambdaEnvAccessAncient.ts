@@ -1,6 +1,6 @@
 import type { EnvironmentAccessTier } from 'sdk-environment';
 
-import { envStatic } from '@src/utils/environment';
+import { envStatic } from '@/src/utils/environment';
 
 /**
  * .what = the fleet slug a caller addresses a peer lambda by.

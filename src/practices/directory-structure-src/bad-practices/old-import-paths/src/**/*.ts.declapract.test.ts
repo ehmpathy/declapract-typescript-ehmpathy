@@ -68,43 +68,43 @@ describe('old-import-paths bad practice', () => {
       expect(() => check(contents, {} as any)).toThrowErrorMatchingSnapshot();
     });
 
-    it('should match files with @src/data/dao imports', () => {
-      const contents = `import { userDao } from '@src/data/dao/userDao';`;
+    it('should match files with @/src/data/dao imports', () => {
+      const contents = `import { userDao } from '@/src/data/dao/userDao';`;
       expect(() => check(contents, {} as any)).not.toThrow();
       expect(check(contents, {} as any)).toMatchSnapshot();
     });
 
-    it('should match files with @src/domain/ imports', () => {
-      const contents = `import { User } from '@src/domain/objects/User';`;
+    it('should match files with @/src/domain/ imports', () => {
+      const contents = `import { User } from '@/src/domain/objects/User';`;
       expect(() => check(contents, {} as any)).not.toThrow();
       expect(check(contents, {} as any)).toMatchSnapshot();
     });
 
-    it('should match files with @src/logic/ imports', () => {
-      const contents = `import { calculate } from '@src/logic/calculate';`;
+    it('should match files with @/src/logic/ imports', () => {
+      const contents = `import { calculate } from '@/src/logic/calculate';`;
       expect(() => check(contents, {} as any)).not.toThrow();
       expect(check(contents, {} as any)).toMatchSnapshot();
     });
 
-    it('should match files with @src/model/ imports', () => {
-      const contents = `import { User } from '@src/model/User';`;
+    it('should match files with @/src/model/ imports', () => {
+      const contents = `import { User } from '@/src/model/User';`;
       expect(() => check(contents, {} as any)).not.toThrow();
       expect(check(contents, {} as any)).toMatchSnapshot();
     });
 
-    it('should match files with @src/services/ imports', () => {
-      const contents = `import { userService } from '@src/services/userService';`;
+    it('should match files with @/src/services/ imports', () => {
+      const contents = `import { userService } from '@/src/services/userService';`;
       expect(() => check(contents, {} as any)).not.toThrow();
       expect(check(contents, {} as any)).toMatchSnapshot();
     });
 
-    it('should not match files with @src/access/ imports', () => {
-      const contents = `import { userDao } from '@src/access/daos/userDao';`;
+    it('should not match files with @/src/access/ imports', () => {
+      const contents = `import { userDao } from '@/src/access/daos/userDao';`;
       expect(() => check(contents, {} as any)).toThrowErrorMatchingSnapshot();
     });
 
-    it('should not match files with @src/domain.objects imports', () => {
-      const contents = `import { User } from '@src/domain.objects/User';`;
+    it('should not match files with @/src/domain.objects imports', () => {
+      const contents = `import { User } from '@/src/domain.objects/User';`;
       expect(() => check(contents, {} as any)).toThrowErrorMatchingSnapshot();
     });
 
@@ -114,8 +114,8 @@ describe('old-import-paths bad practice', () => {
       expect(check(contents, {} as any)).toMatchSnapshot();
     });
 
-    it('should match files with @src/__nonpublished_modules__/ imports', () => {
-      const contents = `import { helper } from '@src/__nonpublished_modules__/helper';`;
+    it('should match files with @/src/__nonpublished_modules__/ imports', () => {
+      const contents = `import { helper } from '@/src/__nonpublished_modules__/helper';`;
       expect(() => check(contents, {} as any)).not.toThrow();
       expect(check(contents, {} as any)).toMatchSnapshot();
     });
@@ -158,7 +158,7 @@ describe('old-import-paths bad practice', () => {
   // in-place rewrite to one file in one apply and throws ENOENT on the unlinked
   // source. once moved to its new (non-deprecated) path, the rewrite fires.
   describe('deprecated-dir deferral (two-pass migration)', () => {
-    const oldImport = `import { userDao } from '@src/data/dao/userDao';`;
+    const oldImport = `import { userDao } from '@/src/data/dao/userDao';`;
 
     it('defers a file still under a deprecated dir (moved this pass)', () => {
       expect(() =>
@@ -316,76 +316,76 @@ import { calculate } from '../domain.operations/billing/calculate';
       expect(result).toMatchSnapshot();
     });
 
-    it('should fix @src/data/dao imports to @src/access/daos', async () => {
-      const contents = `import { userDao } from '@src/data/dao/userDao';`;
+    it('should fix @/src/data/dao imports to @/src/access/daos', async () => {
+      const contents = `import { userDao } from '@/src/data/dao/userDao';`;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(
-        `import { userDao } from '@src/access/daos/userDao';`,
+        `import { userDao } from '@/src/access/daos/userDao';`,
       );
       expect(result).toMatchSnapshot();
     });
 
-    it('should fix @src/data/clients imports to @src/access/sdks', async () => {
-      const contents = `import { stripe } from '@src/data/clients/stripe';`;
+    it('should fix @/src/data/clients imports to @/src/access/sdks', async () => {
+      const contents = `import { stripe } from '@/src/data/clients/stripe';`;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(
-        `import { stripe } from '@src/access/sdks/stripe';`,
+        `import { stripe } from '@/src/access/sdks/stripe';`,
       );
       expect(result).toMatchSnapshot();
     });
 
-    it('should fix @src/domain/objects imports to @src/domain.objects', async () => {
-      const contents = `import { User } from '@src/domain/objects/User';`;
+    it('should fix @/src/domain/objects imports to @/src/domain.objects', async () => {
+      const contents = `import { User } from '@/src/domain/objects/User';`;
       const result = await fix(contents, {} as any);
-      expect(result.contents).toEqual(`import { User } from '@src/domain.objects/User';`);
+      expect(result.contents).toEqual(`import { User } from '@/src/domain.objects/User';`);
       expect(result).toMatchSnapshot();
     });
 
-    it('should fix @src/domain/ imports to @src/domain.objects/', async () => {
-      const contents = `import { constants } from '@src/domain/constants';`;
+    it('should fix @/src/domain/ imports to @/src/domain.objects/', async () => {
+      const contents = `import { constants } from '@/src/domain/constants';`;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(
-        `import { constants } from '@src/domain.objects/constants';`,
+        `import { constants } from '@/src/domain.objects/constants';`,
       );
       expect(result).toMatchSnapshot();
     });
 
-    it('should fix @src/logic/ imports to @src/domain.operations/', async () => {
-      const contents = `import { calculate } from '@src/logic/calculate';`;
+    it('should fix @/src/logic/ imports to @/src/domain.operations/', async () => {
+      const contents = `import { calculate } from '@/src/logic/calculate';`;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(
-        `import { calculate } from '@src/domain.operations/calculate';`,
+        `import { calculate } from '@/src/domain.operations/calculate';`,
       );
       expect(result).toMatchSnapshot();
     });
 
-    it('should fix @src/model/ imports to @src/domain.objects/', async () => {
-      const contents = `import { User } from '@src/model/User';`;
+    it('should fix @/src/model/ imports to @/src/domain.objects/', async () => {
+      const contents = `import { User } from '@/src/model/User';`;
       const result = await fix(contents, {} as any);
-      expect(result.contents).toEqual(`import { User } from '@src/domain.objects/User';`);
+      expect(result.contents).toEqual(`import { User } from '@/src/domain.objects/User';`);
       expect(result).toMatchSnapshot();
     });
 
-    it('should fix @src/services/ imports to @src/domain.operations/', async () => {
-      const contents = `import { userService } from '@src/services/userService';`;
+    it('should fix @/src/services/ imports to @/src/domain.operations/', async () => {
+      const contents = `import { userService } from '@/src/services/userService';`;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(
-        `import { userService } from '@src/domain.operations/userService';`,
+        `import { userService } from '@/src/domain.operations/userService';`,
       );
       expect(result).toMatchSnapshot();
     });
 
-    it('should fix mixed relative and @src imports', async () => {
+    it('should fix mixed relative and @/src imports', async () => {
       const contents = `
-import { User } from '@src/domain/objects/User';
+import { User } from '@/src/domain/objects/User';
 import { userDao } from '../data/dao/userDao';
-import { calculate } from '@src/logic/billing/calculate';
+import { calculate } from '@/src/logic/billing/calculate';
 `;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(`
-import { User } from '@src/domain.objects/User';
+import { User } from '@/src/domain.objects/User';
 import { userDao } from '../access/daos/userDao';
-import { calculate } from '@src/domain.operations/billing/calculate';
+import { calculate } from '@/src/domain.operations/billing/calculate';
 `);
       expect(result).toMatchSnapshot();
     });
@@ -397,10 +397,10 @@ import { calculate } from '@src/domain.operations/billing/calculate';
       expect(result).toMatchSnapshot();
     });
 
-    it('should fix @src/__nonpublished_modules__/ imports to @src/_topublish/', async () => {
-      const contents = `import { helper } from '@src/__nonpublished_modules__/helper';`;
+    it('should fix @/src/__nonpublished_modules__/ imports to @/src/_topublish/', async () => {
+      const contents = `import { helper } from '@/src/__nonpublished_modules__/helper';`;
       const result = await fix(contents, {} as any);
-      expect(result.contents).toEqual(`import { helper } from '@src/_topublish/helper';`);
+      expect(result.contents).toEqual(`import { helper } from '@/src/_topublish/helper';`);
       expect(result).toMatchSnapshot();
     });
 
@@ -437,26 +437,26 @@ import { calculate } from '@src/domain.operations/billing/calculate';
   // clamped, not assumed.
   describe('import-shape robustness (r10 blocker 3)', () => {
     it('rewrites a type-only import', async () => {
-      const contents = `import type { User } from '@src/domain/objects/User';`;
+      const contents = `import type { User } from '@/src/domain/objects/User';`;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(
-        `import type { User } from '@src/domain.objects/User';`,
+        `import type { User } from '@/src/domain.objects/User';`,
       );
     });
 
     it('rewrites a barrel re-export (export { X } from …)', async () => {
-      const contents = `export { userDao } from '@src/data/dao/userDao';`;
+      const contents = `export { userDao } from '@/src/data/dao/userDao';`;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(
-        `export { userDao } from '@src/access/daos/userDao';`,
+        `export { userDao } from '@/src/access/daos/userDao';`,
       );
     });
 
     it('rewrites a star re-export (export * from …)', async () => {
-      const contents = `export * from '@src/logic/orders/calculate';`;
+      const contents = `export * from '@/src/logic/orders/calculate';`;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(
-        `export * from '@src/domain.operations/orders/calculate';`,
+        `export * from '@/src/domain.operations/orders/calculate';`,
       );
     });
 
@@ -469,34 +469,34 @@ import { calculate } from '@src/domain.operations/billing/calculate';
     });
 
     it('rewrites a multi-named import on one line', async () => {
-      const contents = `import { userDao, orderDao, invoiceDao } from '@src/data/dao/index';`;
+      const contents = `import { userDao, orderDao, invoiceDao } from '@/src/data/dao/index';`;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(
-        `import { userDao, orderDao, invoiceDao } from '@src/access/daos/index';`,
+        `import { userDao, orderDao, invoiceDao } from '@/src/access/daos/index';`,
       );
     });
 
     it('rewrites a default + named mixed import', async () => {
-      const contents = `import daoDefault, { userDao } from '@src/data/dao/userDao';`;
+      const contents = `import daoDefault, { userDao } from '@/src/data/dao/userDao';`;
       const result = await fix(contents, {} as any);
       expect(result.contents).toEqual(
-        `import daoDefault, { userDao } from '@src/access/daos/userDao';`,
+        `import daoDefault, { userDao } from '@/src/access/daos/userDao';`,
       );
     });
 
     it('rewrites every deprecated dir across a multi-line, multi-shape file at once', async () => {
-      const contents = `import type { User } from '@src/domain/objects/User';
+      const contents = `import type { User } from '@/src/domain/objects/User';
 import { userDao, orderDao } from '../../../data/dao/index';
-export { calculate } from '@src/logic/orders/calculate';
-export * from '@src/services/userService';
-import { stripe } from '@src/data/clients/stripe';`;
+export { calculate } from '@/src/logic/orders/calculate';
+export * from '@/src/services/userService';
+import { stripe } from '@/src/data/clients/stripe';`;
       const result = await fix(contents, {} as any);
       expect(result.contents)
-        .toEqual(`import type { User } from '@src/domain.objects/User';
+        .toEqual(`import type { User } from '@/src/domain.objects/User';
 import { userDao, orderDao } from '../../../access/daos/index';
-export { calculate } from '@src/domain.operations/orders/calculate';
-export * from '@src/domain.operations/userService';
-import { stripe } from '@src/access/sdks/stripe';`);
+export { calculate } from '@/src/domain.operations/orders/calculate';
+export * from '@/src/domain.operations/userService';
+import { stripe } from '@/src/access/sdks/stripe';`);
     });
   });
 
@@ -518,17 +518,17 @@ import { calculate } from '../logic/calculate';`;
 
   describe('bare barrel imports (#655, #671)', () => {
     const context = { relativeFilePath: 'src/domain.operations/quote/getQuote.ts' } as any;
-    const before = `import { Quote } from '@src/domain';
+    const before = `import { Quote } from '@/src/domain';
 import { Lead } from '../../domain';
 import { leadDao } from '../../data';
-import { genQuote } from '@src/logic';
+import { genQuote } from '@/src/logic';
 import { Widget } from 'some-pkg/domain';
 import { Other } from '../domain';
 `;
 
-    it('the check flags a bare @src/<dir> import, and a relative one that lands on src/<dir>', () => {
+    it('the check flags a bare @/src/<dir> import, and a relative one that lands on src/<dir>', () => {
       expect(() =>
-        check(`import { Quote } from '@src/domain';`, context),
+        check(`import { Quote } from '@/src/domain';`, context),
       ).not.toThrow();
       expect(() =>
         check(`import { Lead } from '../../domain';`, context),
@@ -547,10 +547,10 @@ import { Other } from '../domain';
 
     it('the fix repoints each bare barrel import and leaves the rest', async () => {
       const after = (await fix(before, context)).contents as string;
-      expect(after).toContain(`import { Quote } from '@src/domain.objects';`);
+      expect(after).toContain(`import { Quote } from '@/src/domain.objects';`);
       expect(after).toContain(`import { Lead } from '../../domain.objects';`);
       expect(after).toContain(`import { leadDao } from '../../access';`);
-      expect(after).toContain(`import { genQuote } from '@src/domain.operations';`);
+      expect(after).toContain(`import { genQuote } from '@/src/domain.operations';`);
       expect(after).toContain(`import { Widget } from 'some-pkg/domain';`);
       expect(after).toContain(`import { Other } from '../domain';`);
       expect(after).toMatchSnapshot('bare barrels — after');

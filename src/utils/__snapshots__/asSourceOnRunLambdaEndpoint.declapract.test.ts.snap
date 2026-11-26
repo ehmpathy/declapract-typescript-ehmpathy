@@ -2,8 +2,8 @@
 
 exports[`asSourceOnRunLambdaEndpoint given: [case1] a blackbox acceptance test on invokeLambdaForTesting when: [t0] it is moved then: the output matches snapshot 1`] = `
 "import { asLambdaEvent, runLambdaEndpoint } from 'sdk-aws-lambda';
-import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
-import { log } from '@src/utils/logger';
+import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@/src/utils/logger';
 import { given, then, when } from 'test-fns';
 
 import { locally } from '../environment';
@@ -65,8 +65,8 @@ describe('getWidget', () => {
 
 exports[`asSourceOnRunLambdaEndpoint given: [case4] an inline api gateway event literal, in a file with no example-event call then: the output matches snapshot: after 1`] = `
 "import { runLambdaEndpoint } from 'sdk-aws-lambda';
-import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
-import { log } from '@src/utils/logger';
+import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@/src/utils/logger';
 
 import { locally } from '../environment';
 
@@ -135,8 +135,8 @@ describe('getWidgetPublic', () => {
 
 exports[`asSourceOnRunLambdaEndpoint given: [case5] a call whose argument is not an object literal then: the output matches snapshot: after 1`] = `
 "import { runLambdaEndpoint } from 'sdk-aws-lambda';
-import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
-import { log } from '@src/utils/logger';
+import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@/src/utils/logger';
 
 import { requestFor } from './requestFor';
 
@@ -165,8 +165,8 @@ describe('getWidgetPublic', () => {
 
 exports[`asSourceOnRunLambdaEndpoint given: [case6] a moved file that reads a 400 off the flat body, and makes no http call then: the output matches snapshot: after 1`] = `
 "import { asLambdaEvent, runLambdaEndpoint } from 'sdk-aws-lambda';
-import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
-import { log } from '@src/utils/logger';
+import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@/src/utils/logger';
 
 import { locally } from '../environment';
 
@@ -247,8 +247,8 @@ describe('sendChatMessage', () => {
 exports[`asSourceOnRunLambdaEndpoint given: [case8] a moved file that also makes a real http call then: the output matches snapshot: after 1`] = `
 "import axios from 'axios';
 import { runLambdaEndpoint } from 'sdk-aws-lambda';
-import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
-import { log } from '@src/utils/logger';
+import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@/src/utils/logger';
 
 import { locally } from '../environment';
 

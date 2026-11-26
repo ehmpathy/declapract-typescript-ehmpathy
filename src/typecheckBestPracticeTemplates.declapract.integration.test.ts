@@ -8,6 +8,7 @@ import { ConstraintError, MalfunctionError } from 'helpful-errors';
 import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
 
 import { asPackageJSON } from './utils/asPackageJSON';
+import { getAllPracticesForUsecase } from './utils/getAllPracticesForUsecase';
 
 /**
  * .what = the pnpm this repo pins in its own `packageManager`, run via npx
@@ -83,6 +84,18 @@ const USECASES = [
   'app-react-native-expo',
 ] as const;
 type Usecase = (typeof USECASES)[number];
+
+// the typescript floor typescript-node held before typescript 7; a half-upgraded repo still runs it
+const TYPESCRIPT_PRIOR_FLOOR = '5.4.5';
+
+/**
+ * .what = true when the usecase carries typescript-node, whose floor moved to typescript 7
+ */
+const isTypescriptNodeUsecase = (input: { usecase: Usecase }): boolean =>
+  getAllPracticesForUsecase({
+    usecasesYmlPath: path.join(__dirname, 'useCases.yml'),
+    usecase: input.usecase,
+  }).includes('typescript-node');
 
 // the usecases whose install holds pg-pool; `[t3]` checks this set against each real install, so
 // a usecase that gains pg reddens until it joins, and its pg-pool verdict is never vacuous
@@ -212,6 +225,8 @@ const genTypecheckResult = async (input: {
   srcImportsPg: boolean;
   install: { status: number | null; output: string };
   compile: { status: number | null; output: string };
+  tscVersion: string;
+  compileOnPriorFloor: { status: number | null; output: string } | null; // null: the usecase holds no typescript-node
   cycles: { status: number | null; output: string };
 }> => {
   // declare the usecase this repo adopts, from declarations that live outside the repo
@@ -283,6 +298,32 @@ const genTypecheckResult = async (input: {
 
   const compiledAt = Date.now();
 
+  // name the compiler that ran, so a pass is proven against the floor the usecase pins
+  const tscVersion = await runInRepo({
+    cwd,
+    command: PNPM_VIA_NPX.command,
+    args: [...PNPM_VIA_NPX.argsBefore, 'exec', 'tsc', '--version'],
+  });
+
+  // compile the same tree on the prior floor, as a half-upgraded repo would (new tsconfig, old tsc)
+  const compileOnPriorFloor = isTypescriptNodeUsecase({ usecase: input.usecase })
+    ? await runInRepo({
+        cwd,
+        command: PNPM_VIA_NPX.command,
+        args: [
+          ...PNPM_VIA_NPX.argsBefore,
+          `--package=typescript@${TYPESCRIPT_PRIOR_FLOOR}`,
+          'dlx',
+          'tsc',
+          '--noEmit',
+          '--pretty',
+          'false',
+          '-p',
+          'tsconfig.json',
+        ],
+      })
+    : null;
+
   // run the emitted cycle check, as the adopter's `npm run test:lint` does
   const cycles = await runInRepo({
     cwd,
@@ -330,6 +371,11 @@ const genTypecheckResult = async (input: {
     compile: {
       status: compile.status,
       output: asMaskedOutput({ output: compile.output, dirs }),
+    },
+    tscVersion: tscVersion.output.trim(),
+    compileOnPriorFloor: compileOnPriorFloor && {
+      status: compileOnPriorFloor.status,
+      output: asMaskedOutput({ output: compileOnPriorFloor.output, dirs }),
     },
     cycles: {
       status: cycles.status,
@@ -479,6 +525,33 @@ describe('typecheck best-practice templates', () => {
           expect(getScene({ usecase }).compile.output).toMatchSnapshot(
             `${usecase} — tsc --noEmit diagnostics`,
           );
+        });
+
+        then('the compiler that ran is the major the usecase floors: 7 with typescript-node, else below 7', () => {
+          // typescript-node floors typescript at 7; typescript-expo stays on its sdk's pinned 6.x
+          const isNode = getAllPracticesForUsecase({
+            usecasesYmlPath: path.join(__dirname, 'useCases.yml'),
+            usecase,
+          }).includes('typescript-node');
+          const { tscVersion } = getScene({ usecase });
+          if (isNode) expect(tscVersion).toMatch(/^Version 7\./);
+          if (!isNode) expect(tscVersion).toMatch(/^Version [1-6]\./);
+        });
+
+        // only typescript-node moved its floor; typescript-expo never left its sdk's, so it owes no such case
+        if (isTypescriptNodeUsecase({ usecase }))
+          then('the same tree also compiles on the prior floor, as a half-upgraded repo would', () => {
+          // the migrated tsconfig must hold on the old compiler too, so a repo whose install lags its apply stays green
+          const scene = getScene({ usecase });
+          if (scene.compileOnPriorFloor === null)
+            throw new MalfunctionError('the prior-floor compile never ran for a typescript-node usecase', { usecase });
+          if (scene.compileOnPriorFloor.status !== 0)
+            throw new ConstraintError(`tsc ${TYPESCRIPT_PRIOR_FLOOR} --noEmit failed for ${usecase}`, {
+              status: scene.compileOnPriorFloor.status,
+              output: scene.compileOnPriorFloor.output,
+              hint: 'a migrated tsconfig or template does not compile on the prior floor; the diagnostics name it',
+            });
+          expect(scene.compileOnPriorFloor.status).toEqual(0);
         });
 
         then('tsc --noEmit exits 0', () => {

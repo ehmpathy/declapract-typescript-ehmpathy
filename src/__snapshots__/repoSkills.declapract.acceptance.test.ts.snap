@@ -510,3 +510,662 @@ exports[`repo skills given: [case7] declapract.self.apply, in a repo with real d
    └─ vs HEAD: new file, absent from HEAD
 "
 `;
+
+exports[`repo skills given: [case8] declapract.walk, from this repo when: [t0] it is asked for help then: it prints the header through its last guarantee, exit 0: declapract.walk — help 1`] = `
+"# .what = walk the adopter path for one usecase, by hand: a bare
+#         consumer repo runs \`declapract plan\`, \`apply\`, pins each dep
+#         floor as an install would, \`apply\` again, \`plan\` again, then
+#         installs and compiles what the apply emitted
+#
+# .why  = the integration suites drive \`executeApply\` from jest; a
+#         verification stone also owes the path a HUMAN runs, through the
+#         real cli, against the compiled \`dist/\` an adopter installs.
+#         \`npx declapract plan|apply\` is not a paved call on its own, and
+#         the bare repo must live outside this repo's tree, so its install
+#         and compile see only the deps the usecase emits
+#
+# usage:
+#   rhx declapract.walk --usecase lambda-service-with-rds
+#   rhx declapract.walk --usecase npm-package --compile skip
+#
+# options:
+#   --usecase   a usecase key from src/useCases.yml (required)
+#   --compile   run | skip — install the emitted deps + \`tsc --noEmit\` (default: run)
+#   --build     run | skip — rebuild dist/ first (default: run); skip reads the extant
+#               dist/, for a caller that just built it or runs from it (a test)
+#
+# guarantee:
+#   - rebuilds dist/ first, so the walk reads the declarations as shipped
+#     (with --build skip, it refuses where dist/ is absent)
+#   - the consumer repo is a fresh \`mktemp -d\` dir, never inside this repo
+#   - each step's full output is kept in .log/declapract.walk/<usecase>/
+#   - the consumer repo's path is kept in .log/declapract.walk/<usecase>/repo.path
+#   - the treestruct shows each step's exit code and its last lines
+#   - it halts at the first gated step that fails, so no later step reads
+#     a broken state; the halt names the step and its log
+#   - each plan splits its flags: \`to author\` (FIX_MANUAL, a file a
+#     human writes) vs \`to fix\` (FIX_AUTOMATIC, a file an apply rewrites);
+#     on the final plan, a \`to fix\` count above 0 means the apply did not
+#     converge, a defect, and the walk halts on it. files to author are
+#     named on each plan, and the close counts those left; they never fail
+#     the walk, since a manual fix is the adopter's work
+#   - a plan that fails prints its exit and last lines, never a count
+#   - with --compile run, it names the tsc version the compile ran
+#   - with --compile run, it also runs the emitted \`test:lint:cycles\`
+#     and, where pg-pool is installed, reports whether its
+#     \`require('pg')\` fallback is gone. both report, never gate
+#     (a bare repo still holds cycles in floor-version packages)
+#   - exit 0 = every gated step exited 0, the final plan holds no automatic
+#     fix, and tsc passed; 1 = a step failed or the apply did not
+#     converge (named); 2 = bad input
+"
+`;
+
+exports[`repo skills given: [case8] declapract.walk, from this repo when: [t1] it is given bad input then: a --compile or --build that is neither run nor skip exits 2 and shows a value: declapract.walk — bad run|skip values 1`] = `
+"✋ ConstraintError: --compile must be run or skip, got 'maybe'
+   └─ e.g. --compile skip
+✋ ConstraintError: --build must be run or skip, got 'maybe'
+   └─ e.g. --build skip
+"
+`;
+
+exports[`repo skills given: [case8] declapract.walk, from this repo when: [t1] it is given bad input then: a value flag with no value exits 2 and names the flag, never a bare exit 1: declapract.walk — a flag with no value 1`] = `
+"✋ ConstraintError: --usecase needs a value (see --help)
+"
+`;
+
+exports[`repo skills given: [case8] declapract.walk, from this repo when: [t1] it is given bad input then: an absent --usecase exits 2 and lists the declared usecases: declapract.walk — no usecase 1`] = `
+"✋ ConstraintError: --usecase is required (a key from src/useCases.yml)
+   └─ declared usecases
+      ├─ typescript-project-core
+      ├─ typescript-project
+      ├─ npm-package
+      ├─ rhachet-roles-package
+      ├─ lambda-service
+      ├─ lambda-service-with-rds
+      └─ app-react-native-expo
+"
+`;
+
+exports[`repo skills given: [case8] declapract.walk, from this repo when: [t1] it is given bad input then: an undeclared --usecase exits 2 and lists the declared usecases: declapract.walk — undeclared usecase 1`] = `
+"✋ ConstraintError: usecase 'nope' is not declared in src/useCases.yml
+   └─ declared usecases
+      ├─ typescript-project-core
+      ├─ typescript-project
+      ├─ npm-package
+      ├─ rhachet-roles-package
+      ├─ lambda-service
+      ├─ lambda-service-with-rds
+      └─ app-react-native-expo
+"
+`;
+
+exports[`repo skills given: [case8] declapract.walk, from this repo when: [t1] it is given bad input then: an unknown arg exits 2 and points at --help: declapract.walk — unknown arg 1`] = `
+"✋ ConstraintError: unknown arg '--usecases' (see --help)
+"
+`;
+
+exports[`repo skills given: [case8] declapract.walk, from this repo when: [t2] it walks a usecase end to end, on the dist/ the acceptance run just built then: the step branches read as snapped: declapract.walk — the branches of one walk 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase npm-package --compile run --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/npm-package/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ <tail>
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ <tail>
+   │
+   ├─ 4.plan.final (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 5.install (exit 0)
+   │  └─ <tail>
+   │
+   ├─ tsc: Version 7.<n>.<n>
+   │
+   ├─ 6.compile (exit 0)
+   │
+   ├─ 7.cycles (exit <n> · report only, never gates)
+   │  └─ <tail>
+   │
+   └─ ✨ every gated step exited 0, and the apply converged
+
+🐢 righteous!
+"
+`;
+
+exports[`repo skills given: [case8] declapract.walk, from this repo when: [t3] --build skip runs in a repo with no built dist/ then: it refuses before any step, names the fix, exit 2: declapract.walk — --build skip with no dist/ 1`] = `
+"✋ ConstraintError: --build skip needs a built dist/, and dist/useCases.yml is absent
+   └─ fix: drop --build skip, or run npm run build first
+"
+`;
+
+exports[`repo skills given: [case8] declapract.walk, from this repo when: [t4] it walks a usecase with --compile skip then: the step branches read as snapped: declapract.walk — the branches of a walk with --compile skip 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase npm-package --compile skip --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/npm-package/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ <tail>
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ <tail>
+   │
+   ├─ 4.plan.final (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   └─ ✨ every gated step exited 0, and the apply converged
+
+🐢 righteous!
+"
+`;
+
+exports[`repo skills given: [case9] route.concerns.dispose when: [t0] it is asked for help then: it prints the header through its last guarantee, exit 0: route.concerns.dispose — help 1`] = `
+"# .what = record a disposition on many concerns of one peer reviewer,
+#         in one call
+#
+# .why  = a lane with ten nitpicks owes ten \`route.stone.set\` calls
+#         (one per concern, by contract). a shell loop is not a paved
+#         command, so the driver would issue each by hand. this runs
+#         the same per-concern calls, in order, and names each refusal
+#
+# usage:
+#   rhx route.concerns.dispose --stone <stone> --with <reviewer> \\
+#     [--dispute 'nitpick.1 nitpick.2' --why <fulcrum-path>] \\
+#     [--concede 'nitpick.3' --severity better|urgent]
+#
+# guarantee:
+#   - one \`rhx route.stone.set\` per concern; no --about all
+#   - each dispute carries the --why fulcrum; each concede carries --severity
+#   - a recorded disposition that halts the stone counts as recorded
+#   - a refused call is printed with its full output to stderr
+#   - exit 0 = all recorded, 2 = bad input or any refusal
+"
+`;
+
+exports[`repo skills given: [case9] route.concerns.dispose when: [t1] it is given bad input then: each refusal exits 2 and names what to fix: route.concerns.dispose — refusals 1`] = `
+"✋ ConstraintError: --stone and --with are required
+   └─ e.g. rhx route.concerns.dispose --stone 5.3.verification --with repo-rules --concede 'nitpick.1' --severity better
+✋ ConstraintError: name at least one concern via --dispute or --concede
+   └─ e.g. --concede 'nitpick.1 nitpick.2' --severity better
+✋ ConstraintError: --dispute needs --why <fulcrum-path>
+   └─ e.g. --dispute 'nitpick.1' --why .behavior/<route>/.fulcrums/inventory.of=fulcrums.case=F1-<slug>.md
+✋ ConstraintError: --concede needs --severity better|urgent, got 'meh'
+   └─ e.g. --concede 'nitpick.1' --severity better (urgent only for a nameable shipped harm)
+✋ ConstraintError: --severity needs a value (see --help)
+✋ ConstraintError: --stone needs a value (see --help)
+✋ ConstraintError: --concede needs --severity better|urgent, got ''
+   └─ e.g. --concede 'nitpick.1' --severity better (urgent only for a nameable shipped harm)
+✋ ConstraintError: unknown arg '--abut' (see --help)
+"
+`;
+
+exports[`repo skills given: [case9] route.concerns.dispose when: [t2] it disposes three concerns, one of which is refused then: a halt counts as recorded, a refusal is named with its output, exit 2: route.concerns.dispose — one refused 1`] = `
+"🐢 lets ride...
+
+🐚 route.concerns.dispose --stone 5.3.verification --with repo-rules
+   ├─ disputed: nitpick.1
+   ├─ conceded (better): nitpick.2 (recorded; the stone halts until its next --as arrived)
+   ├─ ✋ refused: conceded (better): nitpick.3
+   └─ ✋ ConstraintError: 1 refused; each refusal's output is on stderr
+
+🐢 bummer dude...
+--- stderr
+✋ ConstraintError: route.stone.set refused conceded (better): nitpick.3
+   └─ ✋ ConstraintError: no concern nitpick.3 on this lane
+"
+`;
+
+exports[`repo skills given: [case9] route.concerns.dispose when: [t3] it disposes concerns that each record then: each concern reads as recorded, naught on stderr, exit 0: route.concerns.dispose — all recorded 1`] = `
+"🐢 lets ride...
+
+🐚 route.concerns.dispose --stone 5.3.verification --with repo-rules
+   ├─ disputed: blocker.1
+   ├─ conceded (urgent): nitpick.1
+   └─ done
+
+🐢 righteous!
+"
+`;
+
+exports[`repo skills given: [case9] route.concerns.dispose when: [t4] its last concern records and halts the stone then: the halt reads as recorded, never as refused, and the run closes done, exit 0: route.concerns.dispose — the last concern halts the stone 1`] = `
+"🐢 lets ride...
+
+🐚 route.concerns.dispose --stone 5.3.verification --with repo-rules
+   ├─ conceded (better): nitpick.1
+   ├─ conceded (better): nitpick.2 (recorded; the stone halts until its next --as arrived)
+   └─ done
+
+🐢 righteous!
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t0] it builds, compiles, and installs pg-pool then: the report reads as snapped: declapract.walk — build run, pg-pool report 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile run --build run
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (exit 0)
+   │  └─ <tail>
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ applied
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ applied
+   │
+   ├─ 4.plan.final (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 5.install (exit 0)
+   │  └─ pnpm install ran
+   │
+   ├─ tsc: Version 7.0.2
+   │
+   ├─ 6.compile (exit 0)
+   │  └─ pnpm exec tsc ran
+   │
+   ├─ 7.cycles (exit 0 · report only, never gates)
+   │  └─ pnpm run test:lint:cycles ran
+   │
+   ├─ pg-pool (report)
+   │  ├─ install: pg-pool@3.7.0
+   │  └─ require('pg') left in index.js: 1
+   │
+   └─ ✨ every gated step exited 0, and the apply converged
+
+🐢 righteous!
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t1] its build fails then: the report reads as snapped: declapract.walk — a failed step 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile skip --build run
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (exit 3)
+   │  └─ <tail>
+   │
+   └─ 💥 MalfunctionError: step 0.build failed; read .log/declapract.walk/demo/0.build.log
+
+🐢 bummer dude...
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t2] its second apply leaves an automatic fix then: the report reads as snapped: declapract.walk — the apply did not converge 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile skip --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 1 file an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ applied
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ applied
+   │
+   ├─ 4.plan.final (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 1 file an apply rewrites (FIX_AUTOMATIC)
+   │     └─ package.json
+   │
+   └─ 💥 MalfunctionError: the apply did not converge: 1 file an apply still rewrites; read .log/declapract.walk/demo/4.plan.final.log
+
+🐢 bummer dude...
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t3] its compile fails then: the report reads as snapped: declapract.walk — a failed compile 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile run --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ applied
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ applied
+   │
+   ├─ 4.plan.final (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 5.install (exit 0)
+   │  └─ pnpm install ran
+   │
+   ├─ tsc: Version 7.0.2
+   │
+   ├─ 6.compile (exit 2)
+   │  └─ pnpm exec tsc ran
+   │
+   └─ 💥 MalfunctionError: step 6.compile failed; read .log/declapract.walk/demo/6.compile.log
+
+🐢 bummer dude...
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t4] its cycle check exits 1 then: the report reads as snapped: declapract.walk — a cycle check that exits 1 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile run --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ applied
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ applied
+   │
+   ├─ 4.plan.final (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 5.install (exit 0)
+   │  └─ pnpm install ran
+   │
+   ├─ tsc: Version 7.0.2
+   │
+   ├─ 6.compile (exit 0)
+   │  └─ pnpm exec tsc ran
+   │
+   ├─ 7.cycles (exit 1 · report only, never gates)
+   │  └─ pnpm run test:lint:cycles ran
+   │
+   └─ ✨ every gated step exited 0, and the apply converged
+
+🐢 righteous!
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t5] its 1.plan step fails then: the report reads as snapped: declapract.walk — a failed 1.plan 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile run --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 1)
+   │  ├─ planned
+   │  └─ plan threw
+   │
+   └─ 💥 MalfunctionError: step 1.plan failed; read .log/declapract.walk/demo/1.plan.log
+
+🐢 bummer dude...
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t6] its 2.apply step fails then: the report reads as snapped: declapract.walk — a failed 2.apply 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile run --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 1)
+   │  ├─ applied
+   │  └─ apply threw
+   │
+   └─ 💥 MalfunctionError: step 2.apply failed; read .log/declapract.walk/demo/2.apply.log
+
+🐢 bummer dude...
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t7] its 5.install step fails then: the report reads as snapped: declapract.walk — a failed 5.install 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile run --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ applied
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ applied
+   │
+   ├─ 4.plan.final (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 5.install (exit 1)
+   │  └─ pnpm install ran
+   │
+   └─ 💥 MalfunctionError: step 5.install failed; read .log/declapract.walk/demo/5.install.log
+
+🐢 bummer dude...
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t8] its plans flag files a human must author then: the report reads as snapped: declapract.walk — files to author 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile skip --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 2 files a human writes (FIX_MANUAL)
+   │  │  ├─ README.md
+   │  │  └─ docs/x.md
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ applied
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ applied
+   │
+   ├─ 4.plan.final (exit 0)
+   │  ├─ to author: 2 files a human writes (FIX_MANUAL)
+   │  │  ├─ README.md
+   │  │  └─ docs/x.md
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   └─ ✨ every gated step exited 0, and the apply converged; 2 files left for a human to author
+
+🐢 righteous!
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t9] its install holds no tsc then: the report reads as snapped: declapract.walk — no tsc installed 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile run --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ applied
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ applied
+   │
+   ├─ 4.plan.final (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 5.install (exit 0)
+   │  └─ pnpm install ran
+   │
+   ├─ tsc: absent
+   │
+   ├─ 6.compile (exit 1)
+   │  └─ pnpm exec tsc ran
+   │
+   └─ 💥 MalfunctionError: step 6.compile failed; read .log/declapract.walk/demo/6.compile.log
+
+🐢 bummer dude...
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t10] its install holds a patched pg-pool then: the report reads as snapped: declapract.walk — a patched pg-pool 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile run --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ applied
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ applied
+   │
+   ├─ 4.plan.final (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 5.install (exit 0)
+   │  └─ pnpm install ran
+   │
+   ├─ tsc: Version 7.0.2
+   │
+   ├─ 6.compile (exit 0)
+   │  └─ pnpm exec tsc ran
+   │
+   ├─ 7.cycles (exit 0 · report only, never gates)
+   │  └─ pnpm run test:lint:cycles ran
+   │
+   ├─ pg-pool (report)
+   │  ├─ install: pg-pool@3.7.0_patch_hash=<hash>
+   │  └─ require('pg') left in index.js: 0
+   │
+   └─ ✨ every gated step exited 0, and the apply converged
+
+🐢 righteous!
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t11] its 3.apply.again step fails then: the report reads as snapped: declapract.walk — a failed 3.apply.again 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile run --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ applied
+   │
+   ├─ 3.apply.again (exit 1)
+   │  ├─ applied
+   │  └─ apply threw
+   │
+   └─ 💥 MalfunctionError: step 3.apply.again failed; read .log/declapract.walk/demo/3.apply.again.log
+
+🐢 bummer dude...
+"
+`;
+
+exports[`repo skills given: [case10] declapract.walk, in a scene whose declapract and pnpm are shims when: [t12] its 4.plan.final step fails then: the report reads as snapped: declapract.walk — a failed 4.plan.final 1`] = `
+"🐢 lets ride...
+
+🐚 declapract.walk --usecase demo --compile run --build skip
+   ├─ repo: <repo> (a fresh dir outside this repo)
+   ├─ logs: .log/declapract.walk/demo/
+   │
+   ├─ 0.build (skipped · --build skip reads the extant dist/)
+   │
+   ├─ 1.plan (exit 0)
+   │  ├─ to author: 0 files a human writes (FIX_MANUAL)
+   │  └─ to fix: 0 files an apply rewrites (FIX_AUTOMATIC)
+   │
+   ├─ 2.apply (exit 0)
+   │  └─ applied
+   │
+   ├─ 3.apply.again (exit 0)
+   │  └─ applied
+   │
+   ├─ 4.plan.final (exit 1)
+   │  ├─ planned
+   │  └─ plan threw
+   │
+   └─ 💥 MalfunctionError: step 4.plan.final failed; read .log/declapract.walk/demo/4.plan.final.log
+
+🐢 bummer dude...
+"
+`;

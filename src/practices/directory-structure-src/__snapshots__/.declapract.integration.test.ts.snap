@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`directory-structure-src domain barrels and bare barrel imports given: [case1] a repo with two domain barrels and bare barrel imports when: [t0] the input (before any fix) then: the barrels and the importer match snapshot: importer — before 1`] = `
-"import type { Quote } from '@src/domain';
+"import type { Quote } from '@/src/domain';
 import type { Quote as QuoteRelative } from '../domain';
 import type { Widget } from 'some-pkg/domain';
 
@@ -27,7 +27,7 @@ exports[`directory-structure-src domain barrels and bare barrel imports given: [
 `;
 
 exports[`directory-structure-src domain barrels and bare barrel imports given: [case1] a repo with two domain barrels and bare barrel imports when: [t1] the moves and the import repoint are applied then: each bare barrel import is repointed, and a package subpath is left alone (#655, #671): importer — after 1`] = `
-"import type { Quote } from '@src/domain.objects';
+"import type { Quote } from '@/src/domain.objects';
 import type { Quote as QuoteRelative } from '../domain.objects';
 import type { Widget } from 'some-pkg/domain';
 

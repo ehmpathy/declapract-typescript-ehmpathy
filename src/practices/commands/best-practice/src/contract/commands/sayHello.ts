@@ -1,8 +1,8 @@
 import { asCommand } from '@ehmpathy/as-command';
 import { getResourceNameFromFileName } from 'visualogic';
 
-import { access } from '@src/utils/environment';
-import { log } from '@src/utils/logger';
+import { access } from '@/src/utils/environment';
+import { log } from '@/src/utils/logger';
 
 import { COMMANDS_OUTPUT_DIRECTORY } from './__tmp__/directory';
 

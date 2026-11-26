@@ -76,9 +76,9 @@ describe('asSourceOnRunLambdaEndpoint', () => {
 
       then('the caller context imports land', () => {
         expect(after).toContain(
-          "import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';",
+          "import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';",
         );
-        expect(after).toContain("import { log } from '@src/utils/logger';");
+        expect(after).toContain("import { log } from '@/src/utils/logger';");
       });
 
       then('each call is on onSerialized, with which + at, and no stage', () => {
@@ -122,7 +122,7 @@ describe('asSourceOnRunLambdaEndpoint', () => {
         );
         expect(after).toContain('runLambdaEndpoint.onReferenced({ event');
         expect(after).not.toMatch(/invokeHandlerForTesting\s*\(/);
-        expect(after).not.toContain('@src/utils/logger');
+        expect(after).not.toContain('@/src/utils/logger');
       });
 
       then('each run narrows through asLambdaEndpointOutput, so a caller fault still throws', () => {

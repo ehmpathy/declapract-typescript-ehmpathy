@@ -24,7 +24,8 @@ describe('typescript-expo tsconfig.json', () => {
     // extends the expo base (jsx + react-native resolution), NOT @tsconfig/node20
     expect(template.extends).toEqual('expo/tsconfig.base');
     // the core path aliases a consumer relies on
-    expect(template.compilerOptions.paths['@src/*']).toEqual(['src/*']);
+    expect(template.compilerOptions.paths['@/*']).toEqual(['./*']);
+    expect(template.compilerOptions.paths['@src/*']).toBeUndefined();
     expect(template.compilerOptions.paths['@assets/*']).toEqual(['assets/*']);
     // tsx is included (a react-native app has jsx), unlike the node tsconfig
     expect(template.include).toContain('**/*.tsx');

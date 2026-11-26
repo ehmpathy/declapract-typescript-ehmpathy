@@ -1,6 +1,6 @@
 ignores:
-  - "@src/*"
-  - "@src/.*"
+  - "@/*"
+  - "@/.*"
   # all rhachet packages (roles/brains churn as prepare:rhachet installs vary)
   - "rhachet*"
   # runtime deps of role skills installed via prepare:rhachet (ghlitch tunnel,

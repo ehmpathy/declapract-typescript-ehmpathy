@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`typescript-any src-alias-kept given: [case1] a repo that imports through @src/ and declares the @src/* paths key when: [t0] the practice is applied twice then: each quoted @src/ specifier reads @/src/, in src and blackbox alike: blackbox/useSurfReport.ts — after 1`] = `
+"import { getSurfReport } from '@/src/contract/getSurfReport';
+
+jest.mock('@/src/domain.operations/getWaveHeight');
+
+export const useSurfReport = () => getSurfReport({ spot: 'pipeline' });
+"
+`;
+
+exports[`typescript-any src-alias-kept given: [case1] a repo that imports through @src/ and declares the @src/* paths key when: [t0] the practice is applied twice then: each quoted @src/ specifier reads @/src/, in src and blackbox alike: src/contract/getSurfReport.ts — after 1`] = `
+"import { getWaveHeight } from '@/src/domain.operations/getWaveHeight';
+
+// the retired @src/ alias in a comment stays as written; only a quoted specifier moves
+export const getSurfReport = (input: { spot: string }): string =>
+  \`\${input.spot}: \${getWaveHeight({ spot: input.spot })}ft\`;
+"
+`;
+
+exports[`typescript-any src-alias-kept given: [case1] a repo that imports through @src/ and declares the @src/* paths key when: [t0] the practice is applied twice then: the tsconfig drops @src/* and keeps the repo own alias: tsconfig.json — after 1`] = `
+"{
+  "compilerOptions": {
+    "paths": {
+      "@vendor/*": [
+        "./vendor/*"
+      ]
+    },
+    "outDir": "dist"
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}
+"
+`;

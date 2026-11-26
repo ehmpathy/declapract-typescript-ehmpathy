@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { genTempDir, given, then, useThen, when } from 'test-fns';
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 /**
  * .what = clamps that the expo `jest.*.prepare.ts` templates find the types of the

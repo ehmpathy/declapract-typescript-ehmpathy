@@ -29,22 +29,31 @@ WHY=""
 CONCEDE=""
 SEVERITY=""
 
+# reject a flag that arrives with no value, before `shift 2` fails silent under set -e
+# usage: require_value <flag> <value>
+require_value() {
+  if [[ -z "${2:-}" || "${2:-}" == --* ]]; then
+    echo "✋ ConstraintError: $1 needs a value (see --help)" >&2
+    exit 2
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --stone) STONE="$2"; shift 2 ;;
-    --with) WITH="$2"; shift 2 ;;
-    --dispute) DISPUTE="$2"; shift 2 ;;
-    --why) WHY="$2"; shift 2 ;;
-    --concede) CONCEDE="$2"; shift 2 ;;
-    --severity) SEVERITY="$2"; shift 2 ;;
+    --stone) require_value "$1" "${2:-}"; STONE="$2"; shift 2 ;;
+    --with) require_value "$1" "${2:-}"; WITH="$2"; shift 2 ;;
+    --dispute) require_value "$1" "${2:-}"; DISPUTE="$2"; shift 2 ;;
+    --why) require_value "$1" "${2:-}"; WHY="$2"; shift 2 ;;
+    --concede) require_value "$1" "${2:-}"; CONCEDE="$2"; shift 2 ;;
+    --severity) require_value "$1" "${2:-}"; SEVERITY="$2"; shift 2 ;;
     # the rhx dispatcher passes its own selector args; skip them
     --skill|--repo|--role) shift 2 ;;
     --help|-h)
-      sed -n '2,24p' "$0"
+      awk 'NR > 2 && /^#####/ { exit } NR > 2' "$0"
       exit 0
       ;;
     *)
-      echo "✋ ConstraintError: unknown arg '$1'" >&2
+      echo "✋ ConstraintError: unknown arg '$1' (see --help)" >&2
       exit 2
       ;;
   esac
@@ -53,18 +62,26 @@ done
 # reject absent required inputs
 if [[ -z "$STONE" || -z "$WITH" ]]; then
   echo "✋ ConstraintError: --stone and --with are required" >&2
+  echo "   └─ e.g. rhx route.concerns.dispose --stone 5.3.verification --with repo-rules --concede 'nitpick.1' --severity better" >&2
+  exit 2
+fi
+if [[ -z "$DISPUTE" && -z "$CONCEDE" ]]; then
+  echo "✋ ConstraintError: name at least one concern via --dispute or --concede" >&2
+  echo "   └─ e.g. --concede 'nitpick.1 nitpick.2' --severity better" >&2
   exit 2
 fi
 if [[ -n "$DISPUTE" && -z "$WHY" ]]; then
   echo "✋ ConstraintError: --dispute needs --why <fulcrum-path>" >&2
+  echo "   └─ e.g. --dispute 'nitpick.1' --why .behavior/<route>/.fulcrums/inventory.of=fulcrums.case=F1-<slug>.md" >&2
   exit 2
 fi
-if [[ -n "$CONCEDE" && -z "$SEVERITY" ]]; then
-  echo "✋ ConstraintError: --concede needs --severity better|urgent" >&2
+if [[ -n "$CONCEDE" && "$SEVERITY" != "better" && "$SEVERITY" != "urgent" ]]; then
+  echo "✋ ConstraintError: --concede needs --severity better|urgent, got '${SEVERITY}'" >&2
+  echo "   └─ e.g. --concede 'nitpick.1' --severity better (urgent only for a nameable shipped harm)" >&2
   exit 2
 fi
 
-echo "🐢 righteous"
+echo "🐢 lets ride..."
 echo ""
 echo "🐚 route.concerns.dispose --stone $STONE --with $WITH"
 
@@ -77,12 +94,14 @@ recordOne() {
   local output
   output="$(rhx route.stone.set "$@" 2>&1)" && { echo "   ├─ $label"; return; }
   if [[ "$output" == *"so it is"* ]]; then
-    echo "   ├─ $label (recorded; the stone halts until re-arrival)"
+    echo "   ├─ $label (recorded; the stone halts until its next --as arrived)"
     return
   fi
   echo "   ├─ ✋ refused: $label"
-  printf '%s\n' "$output" | sed 's/^/   │  /' >&2
-  FAILED=1
+  # the refusal's own lines, as child branches under its label
+  echo "✋ ConstraintError: route.stone.set refused ${label}" >&2
+  printf '%s\n' "$output" | awk '{ a[NR] = $0 } END { for (i = 1; i <= NR; i++) printf "   %s %s\n", (i == NR ? "└─" : "├─"), a[i] }' >&2
+  FAILED=$((FAILED + 1))
 }
 
 # record each dispute
@@ -95,5 +114,13 @@ for concern in $CONCEDE; do
   recordOne "conceded ($SEVERITY): $concern" --stone "$STONE" --as conceded --with "$WITH" --about "$concern" --severity "$SEVERITY"
 done
 
+# close on the outcome: any refusal reads as one, never as done
+if [[ "$FAILED" -ne 0 ]]; then
+  echo "   └─ ✋ ConstraintError: ${FAILED} refused; each refusal's output is on stderr"
+  echo ""
+  echo "🐢 bummer dude..."
+  exit 2
+fi
 echo "   └─ done"
-if [[ "$FAILED" -ne 0 ]]; then exit 2; fi
+echo ""
+echo "🐢 righteous!"

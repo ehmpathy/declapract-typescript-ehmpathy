@@ -1,0 +1,11 @@
+{
+  // a repo on the retired alias, beside one of its own
+  "compilerOptions": {
+    "paths": {
+      "@src/*": ["./src/*"],
+      "@vendor/*": ["./vendor/*"]
+    },
+    "outDir": "dist"
+  },
+  "include": ["**/*.ts"]
+}

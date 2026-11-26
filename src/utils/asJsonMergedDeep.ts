@@ -10,6 +10,31 @@ export type JsonLeafKeepRule = (input: {
 }) => boolean;
 
 /**
+ * .what = a rule that says whether a declared json array unions with the found one at a path
+ * .why  = some arrays list entries a repo may extend (a tsconfig `exclude`, an alias's targets); the
+ *         merge keeps each found-only entry after the declared ones, so a contains-check, which reads
+ *         the declared indices alone, still passes on the output
+ */
+export type JsonArrayUnionRule = (input: { path: string[] }) => boolean;
+
+/**
+ * .what = the declared entries, then each found entry the declared ones lack, in found order
+ * .why  = declared entries lead, so their indices match the declaration; found-only entries stay
+ */
+const asJsonArrayUnion = (input: {
+  declared: unknown[];
+  found: unknown[];
+}): unknown[] => {
+  const declaredKeys = input.declared.map((entry) => JSON.stringify(entry));
+  return [
+    ...input.declared,
+    ...input.found.filter(
+      (entry) => !declaredKeys.includes(JSON.stringify(entry)),
+    ),
+  ];
+};
+
+/**
  * .what = whether a value is a plain json object (never an array or null)
  */
 export const isJsonObject = (
@@ -30,6 +55,7 @@ export const asJsonMergedDeep = (input: {
   found: unknown;
   path: string[];
   isLeafKept: JsonLeafKeepRule;
+  isArrayUnioned: JsonArrayUnionRule;
 }): unknown => {
   // a declared object merges key by key into a found object
   if (isJsonObject(input.declared) && isJsonObject(input.found)) {
@@ -48,6 +74,7 @@ export const asJsonMergedDeep = (input: {
               found: found[key],
               path: [...input.path, key],
               isLeafKept: input.isLeafKept,
+              isArrayUnioned: input.isArrayUnioned,
             })
           : found[key],
       ]),
@@ -56,6 +83,14 @@ export const asJsonMergedDeep = (input: {
 
   // a declared object over a non-object takes the declared shape
   if (isJsonObject(input.declared)) return input.declared;
+
+  // a declared array over a found array unions with it, where the rule asks
+  if (
+    Array.isArray(input.declared) &&
+    Array.isArray(input.found) &&
+    input.isArrayUnioned({ path: input.path })
+  )
+    return asJsonArrayUnion({ declared: input.declared, found: input.found });
 
   // a leaf: keep the found value where the rule accepts it, else the declared value
   const isKept =

@@ -23,11 +23,11 @@ export const MODULE_SPECIFIER_PATTERN =
 
 /**
  * .what = the replacement for a module specifier that ends at a deprecated src dir's barrel
- *         (`'@src/domain'`, `'../../domain'`), or null when the specifier is not such a one.
+ *         (`'@/src/domain'`, `'../../domain'`), or null when the specifier is not such a one.
  * .why  = ONE specifier set for the old-import-paths check AND fix (#655, #671), so the check
  *         cannot pass a bare barrel import the fix would skip. the extant patterns all need a
  *         `/` after the dir, so a bare barrel import matched neither.
- * .note = only the repo's own src dirs count: `@src/<dir>`, or a relative specifier that lands on
+ * .note = only the repo's own src dirs count: `@/src/<dir>` (or the retired `@src/<dir>`), or a relative specifier that lands on
  *         exactly `src/<dir>` from the importer's path. a package subpath (`some-pkg/domain`) and
  *         a relative specifier with no importer path to land it from are left alone.
  */
@@ -35,11 +35,11 @@ export const asBareDeprecatedDirSpecifierReplacement = (input: {
   specifier: string;
   relativeFilePath: string | null;
 }): string | null => {
-  // the alias form: '@src/<dir>'
-  const aliasDir = input.specifier.match(/^@src\/([^/]+)$/)?.[1];
+  // the alias form: '@/src/<dir>', or the retired '@src/<dir>' (repointed at '@/src/' on the way)
+  const aliasDir = input.specifier.match(/^@\/?src\/([^/]+)$/)?.[1];
   if (aliasDir !== undefined) {
     const into = DEPRECATED_DIR_REPLACEMENTS[aliasDir];
-    return into ? `@src/${into}` : null;
+    return into ? `@/src/${into}` : null;
   }
 
   // the relative form: lands on exactly 'src/<dir>' from the importer (posix.join collapses `..`)

@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 /**
  * .what = the review pointer stamped above a file whose pg client cannot be given tls safely
@@ -6,12 +6,12 @@ import ts from 'typescript';
  *        elsewhere a human must choose it, so the file is flagged and `plan` stays red
  */
 export const PG_CLIENT_SSL_REVIEW_MARKER =
-  '// @declapract:review: a pg Client here connects with no tls. pass `ssl: asDatabaseClientSsl({ clusterEndpoint })` from @src/utils/database/asDatabaseClientSsl';
+  '// @declapract:review: a pg Client here connects with no tls. pass `ssl: asDatabaseClientSsl({ clusterEndpoint })` from @/src/utils/database/asDatabaseClientSsl';
 
 const SSL_PROPERTY =
   'ssl: asDatabaseClientSsl({ clusterEndpoint: config.database.tunnel.lambda?.host ?? null }),';
 const SSL_IMPORT =
-  "import { asDatabaseClientSsl } from '@src/utils/database/asDatabaseClientSsl';";
+  "import { asDatabaseClientSsl } from '@/src/utils/database/asDatabaseClientSsl';";
 
 const asSourceFile = (input: { source: string }): ts.SourceFile =>
   ts.createSourceFile(

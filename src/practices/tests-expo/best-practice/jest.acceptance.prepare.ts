@@ -17,8 +17,8 @@ import { useWakeOfLivedb } from './src/.test/useWakeOfLivedb';
  *   - COMPOSES the wake with test-fns autoprune in jest's ONE globalSetup: wake FIRST (best-effort),
  *     THEN autoprune mints the run id. `globalConfig` is FORWARDED to autoprune unchanged, so its
  *     half-wired-state check reads the real `globalTeardown` slot.
- * .note = `useWakeOfLivedb` is imported by RELATIVE path, never the `@src` alias — a globalSetup is
- *         loaded BEFORE jest's moduleNameMapper exists, so `@src` here fails at startup.
+ * .note = `useWakeOfLivedb` is imported by RELATIVE path, never the `@/` alias — a globalSetup is
+ *         loaded BEFORE jest's moduleNameMapper exists, so `@/` here fails at startup.
  */
 // biome-ignore lint/style/noDefaultExport: jest globalSetup api requires default export
 export default async (globalConfig: { globalTeardown?: string | null }): Promise<void> => {

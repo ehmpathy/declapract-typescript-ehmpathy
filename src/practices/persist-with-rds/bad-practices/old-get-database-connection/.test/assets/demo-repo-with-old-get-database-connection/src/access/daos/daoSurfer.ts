@@ -1,4 +1,4 @@
-import type { DatabaseConnection } from '@src/utils/database/getDatabaseConnection';
+import type { DatabaseConnection } from '@/src/utils/database/getDatabaseConnection';
 
 // a getDatabaseConnection from another module must never be renamed
 import { getDatabaseConnection as getLegacyWarehouse } from 'surf-warehouse-sdk';

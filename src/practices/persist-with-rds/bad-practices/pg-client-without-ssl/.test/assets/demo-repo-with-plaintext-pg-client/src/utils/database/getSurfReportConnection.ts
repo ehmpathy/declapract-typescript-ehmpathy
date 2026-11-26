@@ -1,6 +1,6 @@
 import { Client } from 'pg';
 
-import { getConfig } from '@src/utils/config/getConfig';
+import { getConfig } from '@/src/utils/config/getConfig';
 
 /**
  * .what = a second connection the repo built on its own, for the surf report replica
