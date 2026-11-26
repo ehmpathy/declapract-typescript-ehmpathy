@@ -44,12 +44,12 @@ const getAllTemplatePaths = (input: { dir: string }): string[] => {
 
 /**
  * .what = cast an import specifier to its package name, or null when it names no package
- * .why  = relative paths, the `@src/` alias, and node builtins are no dependency
+ * .why  = relative paths, the `@/` alias, and node builtins are no dependency
  */
 const asPackageName = (input: { specifier: string }): string | null => {
   const { specifier } = input;
   if (specifier.startsWith('.') || specifier.startsWith('/')) return null;
-  if (specifier.startsWith('@src/') || specifier.startsWith('node:')) return null;
+  if (specifier.startsWith('@/') || specifier.startsWith('node:')) return null;
   const parts = specifier.split('/');
   const name = specifier.startsWith('@') ? parts.slice(0, 2).join('/') : parts[0]!;
   if (builtinModules.includes(name)) return null;

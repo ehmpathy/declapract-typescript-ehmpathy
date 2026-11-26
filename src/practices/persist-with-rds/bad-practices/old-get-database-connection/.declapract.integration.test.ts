@@ -196,7 +196,7 @@ describe('old-get-database-connection (#659)', () => {
       then('the dao is repointed, its foreign import untouched, and matches snapshot', async () => {
         const after = await read('src/access/daos/daoSurfer.ts');
         expect(after).toContain(
-          "from '@src/utils/database/getOneDatabaseConnection'",
+          "from '@/src/utils/database/getOneDatabaseConnection'",
         );
         expect(after).toContain(
           "import { getDatabaseConnection as getLegacyWarehouse } from 'surf-warehouse-sdk'",

@@ -7,15 +7,15 @@ import { getAllPathsUnderDir } from './utils/getAllPathsUnderDir';
 
 /**
  * .what = clamps that no best-practice template under `src/` reaches a peer `src/` file through a
- *         `../` import; it must use the `@src/` alias (#630).
+ *         `../` import; it must use the `@/src/` alias (#630).
  * .why  = a template is one file of a tree that several practices write. a `../` import pins the
  *         template to the exact dir depth its author saw, so an adopter who moves the peer (or a
- *         practice that relocates it) breaks the compile. `@src/` names the peer by its place in
+ *         practice that relocates it) breaks the compile. `@/src/` names the peer by its place in
  *         the repo, which the shipped tsconfig paths, jest moduleNameMapper, and tsc-alias all map.
  * .teeth = put `import { access } from '../environment';` back into
  *          `config/best-practice/src/utils/config/getConfig.ts` and case1 goes red with that line.
  * .note = an import that leaves `src/` (e.g. `src/.test/*` to a repo-root jest helper) has no
- *         `@src/` form, so it is out of scope.
+ *         `@/src/` form, so it is out of scope.
  */
 
 const practicesDir = join(__dirname, 'practices');
@@ -58,7 +58,7 @@ const getAllParentImportsInsideSrc = (input: {
   );
 };
 
-describe('best-practice src templates import peers via @src/, never ../ (#630)', () => {
+describe('best-practice src templates import peers via @/src/, never ../ (#630)', () => {
   const templates = getAllSrcTemplates();
 
   given('[case0] the src templates', () => {

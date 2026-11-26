@@ -4,7 +4,7 @@
     "@tsconfig/node20/tsconfig.json"
   ],
   "compilerOptions": {
-    "baseUrl": "./src", // bare imports like 'logic/x' look up from src/
+    "baseUrl": "./src", // bare imports like 'domain.operations/x' look up from src/
     "paths": {
       "~/*": ["*"]
     },

@@ -1,6 +1,6 @@
 import type { EnvironmentAccessTier } from 'sdk-environment';
 
-import { envStatic } from '@src/utils/environment';
+import { envStatic } from '@/src/utils/environment';
 
 /**
  * .what = address a **contemp** peer, or **self** — one that publishes `-prep-`.

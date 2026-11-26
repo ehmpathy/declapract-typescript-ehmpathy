@@ -5,7 +5,7 @@
   ],
   "compilerOptions": {
     "paths": {
-      "@src/*": ["./src/*"]
+      "@/*": ["./*"]
     },
     "types": ["node", "jest"], // typescript 6+ loads no @types by default
     "noPropertyAccessFromIndexSignature": false,

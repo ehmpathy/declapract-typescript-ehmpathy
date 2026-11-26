@@ -1,5 +1,5 @@
-// an import through the template's `@src/` alias, the one a `rootDir: src` build can rewrite
-import { getWaveHeight } from '@src/logic/getWaveHeight';
+// an import through the template's `@/` alias, which the build must rewrite past the `rootDir: src` lead
+import { getWaveHeight } from '@/src/domain.operations/getWaveHeight';
 
 /**
  * .what = a surf report line for a swell height in meters

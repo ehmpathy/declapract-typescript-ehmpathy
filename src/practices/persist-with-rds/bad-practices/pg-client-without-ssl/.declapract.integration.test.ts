@@ -55,7 +55,7 @@ describe('pg-client-without-ssl (#652)', () => {
           'ssl: asDatabaseClientSsl({ clusterEndpoint: config.database.tunnel.lambda?.host ?? null }),',
         );
         expect(after).toContain(
-          "import { asDatabaseClientSsl } from '@src/utils/database/asDatabaseClientSsl';",
+          "import { asDatabaseClientSsl } from '@/src/utils/database/asDatabaseClientSsl';",
         );
         expect(after).toMatchSnapshot(`${files[0]} — after`);
       });

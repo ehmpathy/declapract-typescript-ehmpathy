@@ -277,7 +277,7 @@ exports[`typescript.probe skill given: [case6] an emit whose alias rewrite leave
    │
    ├─ alias seam: 1 unrewritten specifier in dist/ (tsc-alias 1.8.10, typescript@9.0.0)
    │  ├─ dist/index.js:1:const x = require("@src/logic/x");
-   │  └─ fix: an alias whose target sits outside the build rootDir (e.g. \`@/\` beside \`rootDir: src\`) is one tsc-alias cannot map; point those imports at one under it (\`@src/…\`). if \`@src/\` itself is left, tsc-alias does not yet map \`paths\` with no \`baseUrl\`: keep typescript below 7 in this repo until it does
+   │  └─ fix: an alias whose target sits outside the build rootDir (e.g. \`@/\` beside \`rootDir: src\`) is one tsc-alias cannot map; narrow it in tsconfig.build.json to a target under rootDir (\`"@/src/*": ["./src/*"]\`). if the narrowed alias itself is left, tsc-alias does not yet map \`paths\` with no \`baseUrl\`: keep typescript below 7 in this repo until it does
    │
    ├─ trees kept at: <temp>
    │

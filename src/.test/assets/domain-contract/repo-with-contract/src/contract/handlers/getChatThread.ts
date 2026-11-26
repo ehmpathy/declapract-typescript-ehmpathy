@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { ChatThread } from '@src/domain.objects/ChatThread';
-import { Transmission } from '@src/domain.objects/Transmission';
+import { ChatThread } from '@/src/domain.objects/ChatThread';
+import { Transmission } from '@/src/domain.objects/Transmission';
 
 const schemaInput = z.object({
   thread: ChatThread.contract.ref('primary'),

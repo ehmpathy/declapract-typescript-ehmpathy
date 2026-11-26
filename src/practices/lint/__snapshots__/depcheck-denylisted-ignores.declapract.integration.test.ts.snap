@@ -18,7 +18,8 @@ ignores:
   - "@src/*"
   # repo-own reason for a repo-own ignore
   - my-own-dep
-  - "@src/.*"
+  - "@/*"
+  - "@/.*"
   - rhachet*
   - declastruct-aws
   - declastruct-unix-network

@@ -32,8 +32,8 @@ exports[`tests-any old-acceptance-test-utils given: [case1] a repo on the old-ac
 
 import { exampleEmailClickEvent } from '../../src/.test/assets/exampleEmailClickEvent';
 import { runLambdaEndpoint } from 'sdk-aws-lambda';
-import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
-import { log } from '@src/utils/logger';
+import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@/src/utils/logger';
 import { locally } from '../environment';
 
 describe('consumeSESEmailEventFromSNS', () => {
@@ -86,8 +86,8 @@ describe('addDecoratedImage', () => {
 
 exports[`tests-any old-acceptance-test-utils given: [case2] a repo on the old-acceptance-test-utils-2 shape when: [t1] the fix is applied then: no template token leaks, and the file matches snapshot: old-acceptance-test-utils-2 — after 1`] = `
 "import { runLambdaEndpoint } from 'sdk-aws-lambda';
-import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
-import { log } from '@src/utils/logger';
+import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@/src/utils/logger';
 
 import { locally } from '../environment';
 
@@ -136,8 +136,8 @@ describe('addDecoratedImage', () => {
 
 exports[`tests-any old-acceptance-test-utils given: [case3] a repo on the old-acceptance-test-utils-3 shape when: [t1] the fix is applied then: no template token leaks, and the file matches snapshot: old-acceptance-test-utils-3 — after 1`] = `
 "import { runLambdaEndpoint } from 'sdk-aws-lambda';
-import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
-import { log } from '@src/utils/logger';
+import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@/src/utils/logger';
 
 import { locally } from '../environment';
 

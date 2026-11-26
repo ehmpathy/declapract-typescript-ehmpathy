@@ -1,0 +1,5 @@
+# minimal use case for the src-alias-kept integration test
+use-cases:
+  lambda-service:
+    practices:
+      - typescript-any

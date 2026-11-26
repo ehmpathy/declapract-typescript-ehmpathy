@@ -78,8 +78,8 @@ describe('#598 livedb-wake composite globalSetup', () => {
       });
 
       when('[t1] the composite globalSetup is read', () => {
-        then('it imports useWakeOfLivedb by RELATIVE path (not the @src alias)', () => {
-          // a globalSetup loads before jest moduleNameMapper, so @src fails at startup
+        then('it imports useWakeOfLivedb by RELATIVE path (not the @/ alias)', () => {
+          // a globalSetup loads before jest moduleNameMapper, so @/ fails at startup
           expect(setupContents).toContain("from './src/.test/useWakeOfLivedb'");
         });
 

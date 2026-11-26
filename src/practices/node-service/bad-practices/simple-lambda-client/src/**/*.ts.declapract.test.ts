@@ -38,9 +38,9 @@ describe('simple-lambda-client source files', () => {
       const { contents: fixed } = await fix(contents, {} as any);
 
       expect(fixed).toContain(
-        "import { sdkAwsLambdaAskAncient } from '@src/access/sdks/sdkAwsLambdaAskAncient';",
+        "import { sdkAwsLambdaAskAncient } from '@/src/access/sdks/sdkAwsLambdaAskAncient';",
       );
-      expect(fixed).toContain("import { log } from '@src/utils/logger';");
+      expect(fixed).toContain("import { log } from '@/src/utils/logger';");
       expect(fixed).not.toContain('invokeLambdaFunction');
     });
 

@@ -43,9 +43,9 @@ exports[`typescript-node tsconfig options removed in typescript 7 given: [case1]
           },
           "compilerOptions": {
             "paths": {
-              "@src/*": {
-      -         "0": "./src/*"
-      +         "0": "src/*"
+              "@/*": {
+      -         "0": "./*"
+      +         "0": "*"
               }
             },
       -     "types": [
@@ -92,8 +92,8 @@ exports[`typescript-node tsconfig options removed in typescript 7 given: [case1]
     "module": "node16",
     "moduleResolution": "node16",
     "paths": {
-      "@src/*": [
-        "./src/*"
+      "@/*": [
+        "./*"
       ]
     },
     "types": [
@@ -164,8 +164,8 @@ exports[`typescript-node tsconfig options removed in typescript 7 given: [case2]
     "module": "node16",
     "moduleResolution": "node16",
     "paths": {
-      "@src/*": [
-        "./src/*"
+      "@/*": [
+        "./*"
       ]
     },
     "noPropertyAccessFromIndexSignature": false,
@@ -197,7 +197,7 @@ exports[`typescript-node tsconfig options removed in typescript 7 given: [case2]
     "@tsconfig/node20/tsconfig.json"
   ],
   "compilerOptions": {
-    "baseUrl": "./src", // bare imports like 'logic/x' look up from src/
+    "baseUrl": "./src", // bare imports like 'domain.operations/x' look up from src/
     "paths": {
       "~/*": ["*"]
     },

@@ -8,7 +8,7 @@ import { fix } from './best-practice/tsconfig.json.declapract';
 const DECLARED = `{
   "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/node20/tsconfig.json"],
   "compilerOptions": {
-    "paths": { "@src/*": ["./src/*"] },
+    "paths": { "@/*": ["./*"] },
     "types": ["node", "jest"],
     "outDir": "dist",
   },
@@ -38,14 +38,14 @@ describe('typescript-node tsconfig.json fix, with the ts7 bad-practice fix', () 
       const tsconfig = JSON.parse(bestFirst!);
       expect(tsconfig.compilerOptions.baseUrl).toBeUndefined();
       expect(tsconfig.compilerOptions.importsNotUsedAsValues).toBeUndefined();
-      expect(tsconfig.compilerOptions.paths).toEqual({ '@src/*': ['./src/*'] });
+      expect(tsconfig.compilerOptions.paths).toEqual({ '@/*': ['./*'] });
     });
 
     then('the best-practice fix alone clears the removed options', () => {
       const tsconfig = JSON.parse(bestAlone.contents!);
       expect(tsconfig.compilerOptions.baseUrl).toBeUndefined();
       expect(tsconfig.compilerOptions.importsNotUsedAsValues).toBeUndefined();
-      expect(tsconfig.compilerOptions.paths).toEqual({ '@src/*': ['./src/*'] });
+      expect(tsconfig.compilerOptions.paths).toEqual({ '@/*': ['./*'] });
     });
   });
 });

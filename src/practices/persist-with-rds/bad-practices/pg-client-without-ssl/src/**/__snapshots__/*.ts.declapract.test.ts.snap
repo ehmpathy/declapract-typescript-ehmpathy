@@ -3,8 +3,8 @@
 exports[`pg-client-without-ssl (#652) given: [case1] a pg Client built from the app config with no ssl when: [t1] fix runs then: the client declares verified tls from the cluster endpoint 1`] = `
 "import { Client } from 'pg';
 
-import { getConfig } from '@src/utils/config/getConfig';
-import { asDatabaseClientSsl } from '@src/utils/database/asDatabaseClientSsl';
+import { getConfig } from '@/src/utils/config/getConfig';
+import { asDatabaseClientSsl } from '@/src/utils/database/asDatabaseClientSsl';
 
 export const getSurfDatabaseConnection = async () => {
   const config = await getConfig();

@@ -9,7 +9,7 @@ import { getModuleExportsFromTsSource } from '../../utils/getModuleExportsFromTs
  *         AND their actual runtime behavior.
  * .why  = each helper is a plain `.ts` template (no `.declapract.ts` companion), so it sits
  *         OUTSIDE this repo's own tsconfig (`include: src/**​/*.declapract.ts`) and is never
- *         type-checked here — by design, since its imports (`@src/utils/environment`) look up
+ *         type-checked here — by design, since its imports (`@/src/utils/environment`) look up
  *         in the CONSUMER's tree, not this repo's. so a text pin alone cannot prove behavior:
  *         a logic bug that preserves the pinned text would sail through green. this test
  *         transpiles each template + executes its function with a stubbed `envStatic`, so it
@@ -31,7 +31,7 @@ const CONTEMP_PATH = `${SDK_DIR}/sdkAwsLambdaEnvAccessContemp.ts`;
 /**
  * .what = transpile one helper template + execute its sole export with a stubbed
  *         `envStatic.access`, returning the named function.
- * .why  = the template's `@src/utils/environment` import looks up in the consumer's tree, so
+ * .why  = the template's `@/src/utils/environment` import looks up in the consumer's tree, so
  *         this repo cannot import it directly; transpile-to-CommonJS + a require-stub lets the
  *         real source run here, so the assertions prove behavior rather than source text.
  */

@@ -23,7 +23,6 @@ const config: Config = {
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
-    '^@src/(.*)$': '<rootDir>/src/$1',
     '^@assets/(.*)$': '<rootDir>/assets/$1',
   },
   // the jest-expo preset's transformIgnorePatterns assume a hoisted (flat) node_modules.

@@ -11,7 +11,7 @@ export class SimpleClass {}",
 
 exports[`domain-dir bad practice fix edge cases should handle content with only absolute imports (no relative transform) 1`] = `
 {
-  "contents": "import { helper } from '@src/utils/helper';
+  "contents": "import { helper } from '@/src/utils/helper';
 import { pkg } from 'external-package';",
   "relativeFilePath": "src/domain.objects/WithAbsolute.ts",
 }

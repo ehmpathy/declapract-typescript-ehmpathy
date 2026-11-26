@@ -39,9 +39,9 @@
             "groups": [
               ":SIDE_EFFECT:",
               ":BLANK_LINE:",
-              [":PACKAGE:", "!@src", "!@src/**"],
+              [":PACKAGE:", "!@/**"],
               ":BLANK_LINE:",
-              ["@src", "@src/**"],
+              ["@/**"],
               ":BLANK_LINE:",
               ":RELATIVE:"
             ]

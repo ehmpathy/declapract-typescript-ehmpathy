@@ -2,7 +2,7 @@ import { given, then, when } from 'test-fns';
 
 import { check, fix } from './*.ts.declapract';
 
-const FORK = `import { log } from '@src/utils/logger';
+const FORK = `import { log } from '@/src/utils/logger';
 
 /**
  * enables input output logs for a function

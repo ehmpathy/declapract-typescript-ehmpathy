@@ -23,7 +23,6 @@ const config: Config = {
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
-    '^@src/(.*)$': '<rootDir>/src/$1',
     '^@assets/(.*)$': '<rootDir>/assets/$1',
   },
   // pnpm-nested react-native/expo ESM must still transform (see jest.unit.config.ts).

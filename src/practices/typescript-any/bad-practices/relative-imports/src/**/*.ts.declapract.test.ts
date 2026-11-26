@@ -63,15 +63,15 @@ describe('relative-imports bad practice', () => {
       ).not.toThrow();
     });
 
-    it('should not match files with @src/ imports', () => {
-      const contents = `import { something } from '@src/utils/helper';`;
+    it('should not match files with @/src/ imports', () => {
+      const contents = `import { something } from '@/src/utils/helper';`;
       expect(() =>
         check(contents, { relativeFilePath: 'src/contract/index.ts' } as any),
       ).toThrow('does not match bad practice');
     });
 
     // the tests-node template src/.test/useWakeOfTestdb.ts imports the repo-root
-    // jest.integration.env.db, which has no @src form. the fix leaves it, so the check must too,
+    // jest.integration.env.db, which has no @/src form. the fix leaves it, so the check must too,
     // or it flags a file no fix and no human can clear
     it('should not match an import that climbs out of src/, which the fix cannot rewrite', () => {
       const contents = `import { probeTestDb } from '../../jest.integration.env.db';`;
@@ -107,7 +107,7 @@ import { helper } from '../utils/helper';`;
 
   // clamps the two-pass deferral: a file STILL UNDER a deprecated dir is
   // relocated this pass by its peer dir-move (logic-dir/data-dir/…), so this
-  // in-place `../`→`@src/` rewrite must DEFER — else declapract applies a
+  // in-place `../`→`@/src/` rewrite must DEFER — else declapract applies a
   // relocate and an in-place rewrite to one file in one apply and throws ENOENT
   // on the unlinked source. once moved to its new (non-deprecated) path, the
   // rewrite fires. shares the guard with old-import-paths via
@@ -156,14 +156,14 @@ import { helper } from '../utils/helper';`;
   });
 
   describe('fix', () => {
-    it('should rewrite single ../ import to @src/', async () => {
+    it('should rewrite single ../ import to @/src/', async () => {
       const contents = `import { helper } from '../utils/helper';`;
       const result = await fix(contents, {
         relativeFilePath: 'src/contract/index.ts',
       } as any);
 
       expect(result.contents).toBe(
-        `import { helper } from '@src/utils/helper';`,
+        `import { helper } from '@/src/utils/helper';`,
       );
     });
 
@@ -174,7 +174,7 @@ import { helper } from '../utils/helper';`;
       } as any);
 
       expect(result.contents).toBe(
-        `import { helper } from '@src/utils/helper';`,
+        `import { helper } from '@/src/utils/helper';`,
       );
     });
 
@@ -186,7 +186,7 @@ import { parent } from '../parent';`;
       } as any);
 
       expect(result.contents).toContain(`from './local'`);
-      expect(result.contents).toContain(`from '@src/parent'`);
+      expect(result.contents).toContain(`from '@/src/parent'`);
     });
 
     it('should handle multiple imports', async () => {
@@ -197,8 +197,8 @@ import { c } from './local/c';`;
         relativeFilePath: 'src/contract/sub/index.ts',
       } as any);
 
-      expect(result.contents).toContain(`from '@src/contract/utils/a'`);
-      expect(result.contents).toContain(`from '@src/shared/b'`);
+      expect(result.contents).toContain(`from '@/src/contract/utils/a'`);
+      expect(result.contents).toContain(`from '@/src/shared/b'`);
       expect(result.contents).toContain(`from './local/c'`);
     });
 
@@ -227,7 +227,7 @@ import { c } from './local/c';`;
           'src/practices/lint/bad-practices/example/src/utils/index.ts.declapract.ts',
       } as any);
 
-      expect(result.contents).toContain(`from '@src/`);
+      expect(result.contents).toContain(`from '@/src/`);
     });
 
     it('should return empty object for null contents', async () => {
@@ -257,7 +257,7 @@ import { c } from './local/c';`;
         relativeFilePath: 'src/index.ts',
       } as any);
 
-      // ../package.json from src/index.ts goes OUTSIDE src, so should NOT become @src/package.json
+      // ../package.json from src/index.ts goes OUTSIDE src, so should NOT become @/src/package.json
       expect(result.contents).toBe(`import pkg from '../package.json';`);
     });
 
@@ -267,7 +267,7 @@ import { c } from './local/c';`;
         relativeFilePath: 'src/utils/index.ts',
       } as any);
 
-      // ../../package.json from src/utils/index.ts goes OUTSIDE src, so should NOT become @src/package.json
+      // ../../package.json from src/utils/index.ts goes OUTSIDE src, so should NOT become @/src/package.json
       expect(result.contents).toBe(`import pkg from '../../package.json';`);
     });
 
@@ -278,8 +278,8 @@ import pkg from '../../package.json';`;
         relativeFilePath: 'src/contract/index.ts',
       } as any);
 
-      // ../utils/helper stays within src, should become @src/utils/helper
-      expect(result.contents).toContain(`from '@src/utils/helper'`);
+      // ../utils/helper stays within src, should become @/src/utils/helper
+      expect(result.contents).toContain(`from '@/src/utils/helper'`);
       // ../../package.json goes outside src, should remain unchanged
       expect(result.contents).toContain(`from '../../package.json'`);
     });
@@ -295,7 +295,7 @@ import pkg from '../../package.json';`;
       expect(twice).toBe(once);
     });
 
-    it('check throws on the fixed output — the @src/ import no longer matches, so declapract fix cannot loop', async () => {
+    it('check throws on the fixed output — the @/src/ import no longer matches, so declapract fix cannot loop', async () => {
       const contents = `import { helper } from '../utils/helper';`;
       const fixed = (await fix(contents, ctx)).contents as string;
       expect(() => check(fixed, ctx)).toThrow('does not match bad practice');

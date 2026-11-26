@@ -6,8 +6,8 @@ exports[`*.ts.declapract should be able to fix a test file using old acceptance 
 
 import { exampleEmailClickEvent } from '../../src/__test_assets__/exampleEmailClickEvent';
 import { runLambdaEndpoint } from 'sdk-aws-lambda';
-import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';
-import { log } from '@src/utils/logger';
+import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';
+import { log } from '@/src/utils/logger';
 import { locally } from '../environment';
 
 describe('consumeSESEmailEventFromSNS', () => {

@@ -1,7 +1,7 @@
 import { askLambdaEndpoint } from 'sdk-aws-lambda';
 import type { EnvironmentAccessTier } from 'sdk-environment';
 
-import { sdkAwsLambdaEnvAccessAncient } from '@src/access/sdks/sdkAwsLambdaEnvAccessAncient';
+import { sdkAwsLambdaEnvAccessAncient } from '@/src/access/sdks/sdkAwsLambdaEnvAccessAncient';
 
 /**
  * .what = ask an ancient peer — one that publishes `-dev-` only, and reads a flat event.

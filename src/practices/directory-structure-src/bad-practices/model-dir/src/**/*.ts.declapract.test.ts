@@ -33,34 +33,34 @@ import { SomethingCool } from '../../../model/domainObjects/sub/thing';
     );
     expect(fixedContents).toContain('../../../domain.objects/sub/thing');
   });
-  it('should replace @src/model imports w/ @src/domain.objects', async () => {
+  it('should replace @/src/model imports w/ @/src/domain.objects', async () => {
     const { contents: fixedContents } = await fix(
       `
-import { SomethingCool } from '@src/model';
+import { SomethingCool } from '@/src/model';
     `.trim(),
       { relativeFilePath: 'src/logic/some/cool/thing.ts' } as any,
     );
-    expect(fixedContents).not.toContain('@src/model');
-    expect(fixedContents).toContain('@src/domain.objects');
+    expect(fixedContents).not.toContain('@/src/model');
+    expect(fixedContents).toContain('@/src/domain.objects');
   });
-  it('should replace @src/model/something imports w/ @src/domain.objects/something', async () => {
+  it('should replace @/src/model/something imports w/ @/src/domain.objects/something', async () => {
     const { contents: fixedContents } = await fix(
       `
-import { SomethingCool } from '@src/model/objects/User';
+import { SomethingCool } from '@/src/model/objects/User';
     `.trim(),
       { relativeFilePath: 'src/logic/some/cool/thing.ts' } as any,
     );
-    expect(fixedContents).not.toContain('@src/model/objects/User');
-    expect(fixedContents).toContain('@src/domain.objects/objects/User');
+    expect(fixedContents).not.toContain('@/src/model/objects/User');
+    expect(fixedContents).toContain('@/src/domain.objects/objects/User');
   });
-  it('should replace @src/model/domainObjects imports w/ @src/domain.objects', async () => {
+  it('should replace @/src/model/domainObjects imports w/ @/src/domain.objects', async () => {
     const { contents: fixedContents } = await fix(
       `
-import { SomethingCool } from '@src/model/domainObjects/User';
+import { SomethingCool } from '@/src/model/domainObjects/User';
     `.trim(),
       { relativeFilePath: 'src/logic/some/cool/thing.ts' } as any,
     );
-    expect(fixedContents).not.toContain('@src/model/domainObjects/User');
-    expect(fixedContents).toContain('@src/domain.objects/User');
+    expect(fixedContents).not.toContain('@/src/model/domainObjects/User');
+    expect(fixedContents).toContain('@/src/domain.objects/User');
   });
 });

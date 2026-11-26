@@ -3,7 +3,7 @@
 exports[`environments practice — the EnvAccess helper primitive (north-star clamp) given: [case1] the shipped helper templates — their source shape when: [t0] the contents are read then: the ancient file source matches snapshot (a structural edit vibechecks in a review): sdkAwsLambdaEnvAccessAncient.ts source 1`] = `
 "import type { EnvironmentAccessTier } from 'sdk-environment';
 
-import { envStatic } from '@src/utils/environment';
+import { envStatic } from '@/src/utils/environment';
 
 /**
  * .what = the fleet slug a caller addresses a peer lambda by.
@@ -47,7 +47,7 @@ export const sdkAwsLambdaEnvAccessAncient = (input?: {
 exports[`environments practice — the EnvAccess helper primitive (north-star clamp) given: [case1] the shipped helper templates — their source shape when: [t0] the contents are read then: the contemp file source matches snapshot: sdkAwsLambdaEnvAccessContemp.ts source 1`] = `
 "import type { EnvironmentAccessTier } from 'sdk-environment';
 
-import { envStatic } from '@src/utils/environment';
+import { envStatic } from '@/src/utils/environment';
 
 /**
  * .what = address a **contemp** peer, or **self** — one that publishes \`-prep-\`.

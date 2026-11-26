@@ -4,7 +4,7 @@ import {
 } from 'sdk-config';
 import { createCache } from 'simple-in-memory-cache';
 
-import { envStatic } from '@src/utils/environment';
+import { envStatic } from '@/src/utils/environment';
 
 import { type Config, type Grant, schema } from './config.schema';
 

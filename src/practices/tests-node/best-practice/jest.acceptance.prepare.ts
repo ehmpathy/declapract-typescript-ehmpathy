@@ -28,8 +28,8 @@ import { useWakeOfLivedb } from './src/.test/useWakeOfLivedb';
  *   - `globalConfig` is FORWARDED to autoprune unchanged: test-fns reads its `globalTeardown`
  *     slot to detect the half-wired state, and a dropped/defaulted arg would falsely accuse a
  *     correctly-wired consumer (see test-fns autoprune.setup.jest .note).
- * .note = each util is imported by RELATIVE path, never the `@src` alias — a globalSetup is
- *         loaded by node's plain require BEFORE jest's moduleNameMapper exists, so `@src` here
+ * .note = each util is imported by RELATIVE path, never the `@/` alias — a globalSetup is
+ *         loaded by node's plain require BEFORE jest's moduleNameMapper exists, so `@/` here
  *         fails with `Cannot find module` and kills the run at startup (the same trap test-fns'
  *         own autoprune.setup.jest documents).
  */

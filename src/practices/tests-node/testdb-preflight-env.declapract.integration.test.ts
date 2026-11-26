@@ -14,7 +14,7 @@ import { given, then, when } from 'test-fns';
  *         `livedb-wake-prepare.declapract.integration.test.ts`, which pins the livedb wake into
  *         the prepare composite.
  * .teeth = drop the `useWakeOfTestdb` import or its call from `jest.integration.env.ts` and the
- *          matched case reddens. swap the relative import for the `@src` alias (which fails at
+ *          matched case reddens. swap the relative import for the `@/` alias (which fails at
  *          startup, before jest's moduleNameMapper exists) and the relative-path case reddens.
  * .note = subject is the shipped TEMPLATE text, read as a string. this file sits at the PRACTICE
  *         root (not under `best-practice/`), so declapract's loader — which walks only
@@ -32,7 +32,7 @@ describe('testdb preflight is wired into the integration env', () => {
     const envContents = read('jest.integration.env.ts');
 
     when('[t0] the env is read', () => {
-      then('it imports useWakeOfTestdb by RELATIVE path (not the @src alias)', () => {
+      then('it imports useWakeOfTestdb by RELATIVE path (not the @/ alias)', () => {
         // a jest env loads before some resolvers settle; the shipped code uses the relative path
         expect(envContents).toContain("from './src/.test/useWakeOfTestdb'");
       });

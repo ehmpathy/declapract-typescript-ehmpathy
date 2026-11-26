@@ -49,7 +49,7 @@ const parseAccessByStage = (src: string): Record<string, string> => {
 /**
  * .what = transpile the ancient helper template + execute it with a stubbed `envStatic.access`, and
  *         return the slug it actually emits for that access.
- * .why  = the helper is a plain `.ts` template whose `@src/utils/environment` import looks up in the
+ * .why  = the helper is a plain `.ts` template whose `@/src/utils/environment` import looks up in the
  *         CONSUMER's tree, so this repo cannot import it directly. transpile-to-CommonJS + a
  *         require-stub runs the real source here, so the round-trip asserts the helper's ACTUAL
  *         return value per access — not a re-derived model tied to source only by a text pin (which a

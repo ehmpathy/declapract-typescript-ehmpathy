@@ -1,11 +1,5 @@
 import { asJsoncParsed } from './asJsoncParsed';
-
-/**
- * .what = true when a parsed json value is a plain object.
- * .why  = narrows the parsed tsconfig and its `compilerOptions` with no cast.
- */
-const isJsonObject = (value: unknown): value is Record<string, unknown> =>
-  !!value && typeof value === 'object' && !Array.isArray(value);
+import { isJsonObject } from './asJsonMergedDeep';
 
 /**
  * .what = true when a tsconfig's top-level `compilerOptions` sets `baseUrl` or `importsNotUsedAsValues`,

@@ -11,4 +11,4 @@
 - rework: dirty for (b): a sweep of every `@src/` site, a new bad-practice to rewrite adopter imports, and a build seam test that proves tsc-alias maps `@/src/*`.
 - confidence 75%: the comment's words name `@/src`; its reason, consistency, names the extant anchor.
 - where: `src/practices/typescript-node/best-practice/tsconfig.json`, `src/practices/tests-node/best-practice/jest.{integration,acceptance}.config.ts`; the reply on #839 thread `discussion_r4695871121`.
-- verdict: —
+- verdict: overturned by the commander (seed S3): the anchor is `@/`, and `@src` leaves. (b) is taken, with its sweep, an adopter rewrite, and a build seam proof.

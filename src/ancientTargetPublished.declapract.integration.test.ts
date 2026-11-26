@@ -43,7 +43,7 @@ const SERVERLESS_PATH = `${__dirname}/practices/serverless/best-practice/serverl
 /**
  * .what = transpile one target-op template + execute its sole export with a stubbed
  *         `envStatic.access`, returning its emitted slug.
- * .why  = the template's `@src/utils/environment` import looks up in the CONSUMER's tree, so
+ * .why  = the template's `@/src/utils/environment` import looks up in the CONSUMER's tree, so
  *         this repo cannot import it directly; transpile-to-CommonJS + a require-stub runs the
  *         real source here, so the slug is the op's actual return, not a text guess.
  */

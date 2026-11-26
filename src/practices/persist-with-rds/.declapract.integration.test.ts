@@ -169,7 +169,7 @@ describe('persist-with-rds — getConfig has a single declarer (D55 clamp)', () 
       then('persist-with-rds imports getConfig from the config-supplied path', async () => {
         // the consumer receives config's real getConfig at this exact path, so the import resolves
         const dbConn = await fs.readFile(rdsDbConnection, 'utf-8');
-        expect(dbConn).toContain("from '@src/utils/config/getConfig'");
+        expect(dbConn).toContain("from '@/src/utils/config/getConfig'");
       });
     });
   });

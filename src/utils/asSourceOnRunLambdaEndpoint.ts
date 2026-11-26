@@ -184,11 +184,11 @@ const withImportsMoved = (input: {
         })
           ? []
           : [
-              "import { sdkAwsLambdaEnvAccessContemp } from '@src/access/sdks/sdkAwsLambdaEnvAccessContemp';",
+              "import { sdkAwsLambdaEnvAccessContemp } from '@/src/access/sdks/sdkAwsLambdaEnvAccessContemp';",
             ]),
         ...(isNameImported({ contents: input.contents, name: 'log' })
           ? []
-          : ["import { log } from '@src/utils/logger';"]),
+          : ["import { log } from '@/src/utils/logger';"]),
       ]
     : [];
 

@@ -442,7 +442,7 @@ if [[ "$WHAT" == "emit" ]]; then
     if [[ "$UNREWRITTEN" -gt 0 ]]; then
       echo "   ├─ alias seam: $(as_count count="$UNREWRITTEN" one='unrewritten specifier' many='unrewritten specifiers') in dist/ (tsc-alias ${TSC_ALIAS_VERSION}, typescript@${LAST})"
       head -n 10 "$LOG_DIR/alias.unrewritten.log" | sed -E "s#${OUT_DIR}/${LAST}/#dist/#g; s#^#   │  ├─ #"
-      echo "   │  └─ fix: an alias whose target sits outside the build rootDir (e.g. \`@/\` beside \`rootDir: src\`) is one tsc-alias cannot map; point those imports at one under it (\`@src/…\`). if \`@src/\` itself is left, tsc-alias does not yet map \`paths\` with no \`baseUrl\`: keep typescript below 7 in this repo until it does"
+      echo "   │  └─ fix: an alias whose target sits outside the build rootDir (e.g. \`@/\` beside \`rootDir: src\`) is one tsc-alias cannot map; narrow it in tsconfig.build.json to a target under rootDir (\`\"@/src/*\": [\"./src/*\"]\`). if the narrowed alias itself is left, tsc-alias does not yet map \`paths\` with no \`baseUrl\`: keep typescript below 7 in this repo until it does"
       echo "   │"
       FAILED="$(as_count count="$UNREWRITTEN" one='unrewritten alias specifier' many='unrewritten alias specifiers') under typescript@${LAST}"
     else

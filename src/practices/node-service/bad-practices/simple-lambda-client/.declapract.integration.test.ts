@@ -62,9 +62,9 @@ describe('simple-lambda-client migration', () => {
           // the import moves onto the ancient ask helper, plus the logger it needs
           expect(after).not.toContain("from 'simple-lambda-client'");
           expect(after).toContain(
-            "import { sdkAwsLambdaAskAncient } from '@src/access/sdks/sdkAwsLambdaAskAncient';",
+            "import { sdkAwsLambdaAskAncient } from '@/src/access/sdks/sdkAwsLambdaAskAncient';",
           );
-          expect(after).toContain("import { log } from '@src/utils/logger';");
+          expect(after).toContain("import { log } from '@/src/utils/logger';");
 
           // the call binds address + payload together, and the retired field has no slot
           expect(after).not.toContain('invokeLambdaFunction(');

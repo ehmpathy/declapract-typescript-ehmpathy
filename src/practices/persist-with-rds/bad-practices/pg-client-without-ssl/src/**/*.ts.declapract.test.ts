@@ -13,7 +13,7 @@ const asFixed = (contents: string): string =>
 
 const clientFromConfig = `import { Client } from 'pg';
 
-import { getConfig } from '@src/utils/config/getConfig';
+import { getConfig } from '@/src/utils/config/getConfig';
 
 export const getSurfDatabaseConnection = async () => {
   const config = await getConfig();
@@ -60,7 +60,7 @@ describe('pg-client-without-ssl (#652)', () => {
           '    port: config.database.tunnel.local.port,\n    ssl: asDatabaseClientSsl({ clusterEndpoint: config.database.tunnel.lambda?.host ?? null }),\n  });',
         );
         expect(fixed).toContain(
-          "import { getConfig } from '@src/utils/config/getConfig';\nimport { asDatabaseClientSsl } from '@src/utils/database/asDatabaseClientSsl';",
+          "import { getConfig } from '@/src/utils/config/getConfig';\nimport { asDatabaseClientSsl } from '@/src/utils/database/asDatabaseClientSsl';",
         );
         expect(fixed).toMatchSnapshot();
       });

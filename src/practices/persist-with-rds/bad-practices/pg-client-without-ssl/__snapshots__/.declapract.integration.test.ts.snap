@@ -14,7 +14,7 @@ export const getWaveArchiveClient = () =>
 exports[`pg-client-without-ssl (#652) given: [case1] a repo with two plaintext pg clients of its own when: [t0] the input, before any fix then: each client file matches snapshot: src/utils/database/getSurfReportConnection.ts — before 1`] = `
 "import { Client } from 'pg';
 
-import { getConfig } from '@src/utils/config/getConfig';
+import { getConfig } from '@/src/utils/config/getConfig';
 
 /**
  * .what = a second connection the repo built on its own, for the surf report replica
@@ -35,7 +35,7 @@ export const getSurfReportConnection = async () => {
 `;
 
 exports[`pg-client-without-ssl (#652) given: [case1] a repo with two plaintext pg clients of its own when: [t1] apply runs then: the client outside the config is flagged, not guessed at, and matches snapshot: src/access/sdks/sdkWaveArchive.ts — after 1`] = `
-"// @declapract:review: a pg Client here connects with no tls. pass \`ssl: asDatabaseClientSsl({ clusterEndpoint })\` from @src/utils/database/asDatabaseClientSsl
+"// @declapract:review: a pg Client here connects with no tls. pass \`ssl: asDatabaseClientSsl({ clusterEndpoint })\` from @/src/utils/database/asDatabaseClientSsl
 import pg from 'pg';
 
 /**
@@ -49,8 +49,8 @@ export const getWaveArchiveClient = () =>
 exports[`pg-client-without-ssl (#652) given: [case1] a repo with two plaintext pg clients of its own when: [t1] apply runs then: the config-backed client declares verified tls, and matches snapshot: src/utils/database/getSurfReportConnection.ts — after 1`] = `
 "import { Client } from 'pg';
 
-import { getConfig } from '@src/utils/config/getConfig';
-import { asDatabaseClientSsl } from '@src/utils/database/asDatabaseClientSsl';
+import { getConfig } from '@/src/utils/config/getConfig';
+import { asDatabaseClientSsl } from '@/src/utils/database/asDatabaseClientSsl';
 
 /**
  * .what = a second connection the repo built on its own, for the surf report replica

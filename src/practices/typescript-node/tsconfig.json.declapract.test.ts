@@ -9,7 +9,7 @@ import { fix } from './best-practice/tsconfig.json.declapract';
 const DECLARED = `{
   "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/node20/tsconfig.json"],
   "compilerOptions": {
-    "paths": { "@src/*": ["./src/*"] },
+    "paths": { "@/*": ["./*"] },
     "types": ["node", "jest"], // typescript 6+ loads no @types by default
     "outDir": "dist",
   },
@@ -37,7 +37,7 @@ describe('typescript-node tsconfig.json fix', () => {
   given('[case2] an adopter tsconfig that extends include, exclude, an alias, and extends', () => {
     const found = `{
   "extends": ["@tsconfig/node18/tsconfig.json", "./tsconfig.shared.json"],
-  "compilerOptions": { "paths": { "@src/*": ["./src/*", "./generated/*"] }, "strict": true },
+  "compilerOptions": { "paths": { "@/*": ["./*", "./generated/*"] }, "strict": true },
   "include": ["**/*.ts", "scripts/**/*.mts"],
   "exclude": ["dist", "tmp", "fixtures"]
 }`;
@@ -47,7 +47,7 @@ describe('typescript-node tsconfig.json fix', () => {
       const tsconfig = JSON.parse(fixed.contents!);
       expect(tsconfig.include).toEqual(['**/*.ts', 'scripts/**/*.mts']);
       expect(tsconfig.exclude).toEqual(['dist', 'tmp', 'fixtures']);
-      expect(tsconfig.compilerOptions.paths).toEqual({ '@src/*': ['./src/*', './generated/*'] });
+      expect(tsconfig.compilerOptions.paths).toEqual({ '@/*': ['./*', './generated/*'] });
       expect(tsconfig.compilerOptions.strict).toEqual(true);
     });
 

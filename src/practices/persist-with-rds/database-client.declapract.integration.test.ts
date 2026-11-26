@@ -54,7 +54,7 @@ const COMPILER_OPTIONS: ts.CompilerOptions = {
   lib: ['lib.es2020.d.ts'],
   module: ts.ModuleKind.Node16,
   moduleResolution: ts.ModuleResolutionKind.Node16,
-  paths: { '@src/*': [join(FIXTURE_ROOT, 'src/*')] }, // absolute, so no baseUrl (removed in typescript 7)
+  paths: { '@/*': [join(FIXTURE_ROOT, '*')] }, // absolute, so no baseUrl (removed in typescript 7)
   types: ['node'],
   typeRoots: [join(__dirname, '../../../node_modules/@types')],
   noEmit: true,
@@ -73,7 +73,7 @@ const TSCONFIG_OPTIONS = {
   lib: ['es2020'],
   module: 'node16',
   moduleResolution: 'node16',
-  paths: { '@src/*': ['./src/*'] },
+  paths: { '@/*': ['./*'] },
   types: ['node'],
   typeRoots: [join(__dirname, '../../../node_modules/@types')],
   noEmit: true,

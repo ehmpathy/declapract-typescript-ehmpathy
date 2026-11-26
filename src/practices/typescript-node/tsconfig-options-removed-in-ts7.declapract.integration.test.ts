@@ -159,7 +159,7 @@ describe('typescript-node tsconfig options removed in typescript 7', () => {
         expect(tsconfig.compilerOptions.baseUrl).toBeUndefined();
         expect(tsconfig.compilerOptions.importsNotUsedAsValues).toBeUndefined();
         // the repo's own `@vendor/*` resolved against baseUrl, so it leaves with it: one alias shape
-        expect(tsconfig.compilerOptions.paths).toEqual({ '@src/*': ['./src/*'] });
+        expect(tsconfig.compilerOptions.paths).toEqual({ '@/*': ['./*'] });
         expect(tsconfig.compilerOptions.types).toEqual(['node', 'jest']);
         expect(result.before).toMatchSnapshot('tsconfig.json — before');
         expect(result.once.tsconfig).toMatchSnapshot('tsconfig.json — after');
@@ -199,10 +199,10 @@ describe('typescript-node tsconfig options removed in typescript 7', () => {
         expect(result.typecheck).toEqual({ status: 0, output: '' });
       });
 
-      then('tsc-alias rewrites @src/ to a relative path in dist, past the rootDir src lead', () => {
+      then('tsc-alias rewrites @/src/ to a relative path in dist, past the rootDir src lead', () => {
         expect(result.build.status).toEqual(0);
         expect(result.alias.status).toEqual(0);
-        expect(getAllRequireSpecifiers(result)).toEqual(['../logic/getWaveHeight']);
+        expect(getAllRequireSpecifiers(result)).toEqual(['../domain.operations/getWaveHeight']);
       });
     });
 
@@ -241,7 +241,7 @@ describe('typescript-node tsconfig options removed in typescript 7', () => {
         const tsconfig = JSON.parse(result.once.tsconfig);
         expect(tsconfig.compilerOptions.baseUrl).toBeUndefined();
         expect(tsconfig.compilerOptions.importsNotUsedAsValues).toBeUndefined();
-        expect(tsconfig.compilerOptions.paths).toEqual({ '@src/*': ['./src/*'] });
+        expect(tsconfig.compilerOptions.paths).toEqual({ '@/*': ['./*'] });
         expect(result.once.tsconfig).toMatchSnapshot('tsconfig.json — after');
       });
 
@@ -276,9 +276,9 @@ describe('typescript-node tsconfig options removed in typescript 7', () => {
 
       then('the imports that leaned on baseUrl break loud, and the template alias still finds its file', () => {
         expect(result.status).not.toEqual(0);
-        expect(result.output).toMatch(/error TS2307: Cannot find module 'logic\/getWaveHeight'/);
-        expect(result.output).toMatch(/error TS2307: Cannot find module '~\/logic\/getWaveHeight'/);
-        expect(result.output).not.toContain("'@src/logic/getWaveHeight'");
+        expect(result.output).toMatch(/error TS2307: Cannot find module 'domain\.operations\/getWaveHeight'/);
+        expect(result.output).toMatch(/error TS2307: Cannot find module '~\/domain\.operations\/getWaveHeight'/);
+        expect(result.output).not.toContain("'@/src/domain.operations/getWaveHeight'");
       });
     });
   });

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`old-get-database-connection (#659) given: [case4] a repo with the old factory, its test, and two importers when: [t0] the input, before any fix then: each importer matches snapshot: src/access/daos/daoSurfer.ts — before 1`] = `
-"import type { DatabaseConnection } from '@src/utils/database/getDatabaseConnection';
+"import type { DatabaseConnection } from '@/src/utils/database/getDatabaseConnection';
 
 // a getDatabaseConnection from another module must never be renamed
 import { getDatabaseConnection as getLegacyWarehouse } from 'surf-warehouse-sdk';
@@ -38,7 +38,7 @@ export const getSurfLesson = async (input: { uuid: string }) => {
 `;
 
 exports[`old-get-database-connection (#659) given: [case4] a repo with the old factory, its test, and two importers when: [t1] apply runs over each affected file then: the dao is repointed, its foreign import untouched, and matches snapshot: src/access/daos/daoSurfer.ts — after 1`] = `
-"import type { DatabaseConnection } from '@src/utils/database/getOneDatabaseConnection';
+"import type { DatabaseConnection } from '@/src/utils/database/getOneDatabaseConnection';
 
 // a getDatabaseConnection from another module must never be renamed
 import { getDatabaseConnection as getLegacyWarehouse } from 'surf-warehouse-sdk';

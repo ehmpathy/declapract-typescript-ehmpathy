@@ -25,4 +25,5 @@
 | F21 | the manual-fix stderr notice stays until declapract prints practice readmes | clean | superseded: no manual part left (seed S2) | 80% |
 | F22 | the plan snapshots keep declapract's plan output whole | clean | best-guessed | 90% |
 | F23 | the root `.husky/check.lockfile.sh` lands the husky practice template, byte for byte | clean | best-guessed | 90% |
-| F24 | the one alias anchor is `@src/`; the root `@/*` leaves | dirty | best-guessed | 75% |
+| F24 | the one alias anchor is `@src/`; the root `@/*` leaves | dirty | overturned: `@/` (seed S3) | 75% |
+| F25 | `@/` reaches expo too; the rewrite lives in typescript-any | clean | best-guessed | 85% |

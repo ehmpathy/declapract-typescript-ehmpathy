@@ -1,4 +1,4 @@
-import type { Quote } from '@src/domain';
+import type { Quote } from '@/src/domain';
 import type { Quote as QuoteRelative } from '../domain';
 import type { Widget } from 'some-pkg/domain';
 
