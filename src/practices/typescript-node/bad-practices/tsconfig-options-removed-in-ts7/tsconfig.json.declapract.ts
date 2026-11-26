@@ -1,32 +1,26 @@
 import type { FileCheckFunction, FileFixFunction } from 'declapract';
 
-import { asTsconfigWithTs7OptionsFolded } from '../../../../utils/asTsconfigWithTs7OptionsFolded';
-import { isTsconfigTs7OptionFoldable } from '../../../../utils/isTsconfigTs7OptionFoldable';
+import { asTsconfigWithTs7OptionsRemoved } from '../../../../utils/asTsconfigWithTs7OptionsRemoved';
+import { isTsconfigWithTs7OptionsKept } from '../../../../utils/isTsconfigWithTs7OptionsKept';
 
 /**
- * .what = flags a tsconfig whose `compilerOptions` sets an option typescript 7 removed: `baseUrl`
- *         (TS5102) or `importsNotUsedAsValues: "remove"` (TS5023).
- * .why  = the typescript-node floor is typescript 7, where each option is a hard error; and the
- *         best-practice contains-check adds keys but never deletes one.
+ * .what = flags a tsconfig whose `compilerOptions` sets `baseUrl` or `importsNotUsedAsValues`.
+ * .why  = typescript 7 removed both (TS5102, TS5023); the best-practice contains-check adds keys but
+ *         never deletes one.
  */
 export const check: FileCheckFunction = (contents) => {
-  if (isTsconfigTs7OptionFoldable({ contents: contents ?? '' })) return; // bad practice detected
+  if (isTsconfigWithTs7OptionsKept({ contents: contents ?? '' })) return; // bad practice detected
   throw new Error(
-    'does not match bad practice: no baseUrl, no importsNotUsedAsValues "remove"',
+    'does not match bad practice: no baseUrl, no importsNotUsedAsValues',
   );
 };
 
 /**
- * .what = drops `importsNotUsedAsValues: "remove"`, and folds `baseUrl` into `paths`, as a text edit.
- * .why  = the fold lives in `asTsconfigWithTs7OptionsFolded`, which the best-practice tsconfig fix
- *         calls too, so the tsconfig converges whichever of the two declapract fixes first.
+ * .what = removes `baseUrl` (with the `paths` it anchored) and `importsNotUsedAsValues`.
+ * .why  = the best-practice tsconfig then lays down the template's `paths`; it calls the same removal,
+ *         so the tsconfig converges whichever fix declapract runs first.
  */
-export const fix: FileFixFunction = (contents, context) => {
+export const fix: FileFixFunction = (contents) => {
   if (!contents) return { contents };
-  return {
-    contents: asTsconfigWithTs7OptionsFolded({
-      contents,
-      root: context.getProjectRootDirectory(),
-    }),
-  };
+  return { contents: asTsconfigWithTs7OptionsRemoved({ contents }) };
 };

@@ -19,7 +19,6 @@ const config: Config = {
   testEnvironment: 'node',
   moduleFileExtensions: ['js', 'ts'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
     '^@src/(.*)$': '<rootDir>/src/$1',
   },
   transform: {

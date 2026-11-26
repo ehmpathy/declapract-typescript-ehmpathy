@@ -1,5 +1,3 @@
-import path from 'node:path';
-
 import type { FileCheckContext } from 'declapract';
 import { given, then, useThen } from 'test-fns';
 
@@ -19,29 +17,20 @@ const DECLARED = `{
 }
 `;
 
-// a repo whose ./src holds the dirs contract/ and logic/; the fold reads that dir, so this is integration grain
-const REPO_BASEURL_NESTED = path.join(
-  __dirname,
-  '..',
-  '..',
-  '.test',
-  'assets',
-  'tsconfig-options-removed-in-ts7',
-  'repo-baseurl-nested',
-);
+// note: declapract's FileCheckContext carries members these fixes never read; only the two below are supplied
 const context = {
   declaredFileContents: DECLARED,
-  getProjectRootDirectory: () => REPO_BASEURL_NESTED,
+  getProjectRootDirectory: () => __dirname,
 } as FileCheckContext;
 
-describe('typescript-node tsconfig.json fix, over a nested baseUrl dir', () => {
+describe('typescript-node tsconfig.json fix, with the ts7 bad-practice fix', () => {
   given('[case1] a tsconfig with a nested baseUrl, fixed by both declarations in either order', () => {
-    const found = `{ "compilerOptions": { "baseUrl": "./src", "paths": { "@src/*": ["*"] }, "importsNotUsedAsValues": "remove" } }`;
+    const found = `{ "compilerOptions": { "baseUrl": "./src", "paths": { "logic/*": ["logic/*"], "@vendor/*": ["../vendor/*"] }, "importsNotUsedAsValues": "preserve" } }`;
 
-    // the best-practice fix alone, read once: it reads the nested baseUrl dir off disk
+    // the best-practice fix alone, read once
     const bestAlone = useThen('the best-practice fix runs', async () => fix(found, context));
 
-    then('both orders land the same tsconfig, and no value is rebased twice', async () => {
+    then('both orders land the same tsconfig, with only the template alias', async () => {
       // declapract sorts bad-practice before best-practice; the clamp proves the result never leans on it
       const badFirst = (await fix((await fixRemovedOptions(found, context)).contents, context)).contents;
       const bestFirst = (await fixRemovedOptions(bestAlone.contents, context)).contents;
@@ -49,17 +38,14 @@ describe('typescript-node tsconfig.json fix, over a nested baseUrl dir', () => {
       const tsconfig = JSON.parse(bestFirst!);
       expect(tsconfig.compilerOptions.baseUrl).toBeUndefined();
       expect(tsconfig.compilerOptions.importsNotUsedAsValues).toBeUndefined();
-      expect(tsconfig.compilerOptions.paths).toEqual({
-        'contract/*': ['./src/contract/*'],
-        'logic/*': ['./src/logic/*'],
-        '@src/*': ['./src/*'],
-      });
+      expect(tsconfig.compilerOptions.paths).toEqual({ '@src/*': ['./src/*'] });
     });
 
     then('the best-practice fix alone clears the removed options', () => {
       const tsconfig = JSON.parse(bestAlone.contents!);
       expect(tsconfig.compilerOptions.baseUrl).toBeUndefined();
-      expect(tsconfig.compilerOptions.paths['@src/*']).toEqual(['./src/*']);
+      expect(tsconfig.compilerOptions.importsNotUsedAsValues).toBeUndefined();
+      expect(tsconfig.compilerOptions.paths).toEqual({ '@src/*': ['./src/*'] });
     });
   });
 });

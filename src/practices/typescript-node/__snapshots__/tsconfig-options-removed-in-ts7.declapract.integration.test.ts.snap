@@ -43,10 +43,6 @@ exports[`typescript-node tsconfig options removed in typescript 7 given: [case1]
           },
           "compilerOptions": {
             "paths": {
-              "@/*": {
-      -         "0": "./*"
-      +         "0": "*"
-              },
               "@src/*": {
       -         "0": "./src/*"
       +         "0": "src/*"
@@ -80,33 +76,26 @@ exports[`typescript-node tsconfig options removed in typescript 7 given: [case1]
       +     "0": "dist",
       +     "1": "node_modules"
           }
-        } 
-  * [NO_CHANGE] tsconfig.json.declapract.test.ts"
+        } "
 `;
 
-exports[`typescript-node tsconfig options removed in typescript 7 given: [case1] a repo on the prior template, with an alias of its own beside the template paths when: [t0] the practice is applied twice then: the removed options leave, every paths value gains a ./ lead, and types lands: tsconfig.json — after 1`] = `
+exports[`typescript-node tsconfig options removed in typescript 7 given: [case1] a repo on the prior template, with an alias of its own beside the template paths when: [t0] the practice is applied twice then: the removed options leave, the template paths replace the repo paths, and types lands: tsconfig.json — after 1`] = `
 "{
   "extends": [
     "@tsconfig/strictest/tsconfig.json",
     "@tsconfig/node20/tsconfig.json"
   ],
   "compilerOptions": {
-    "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@src/*": [
-        "./src/*"
-      ],
-      "@vendor/*": [
-        "./vendor/*"
-      ]
-    },
     "noPropertyAccessFromIndexSignature": false,
     "outDir": "dist",
     "target": "es2020",
     "module": "node16",
     "moduleResolution": "node16",
+    "paths": {
+      "@src/*": [
+        "./src/*"
+      ]
+    },
     "types": [
       "node",
       "jest"
@@ -132,7 +121,7 @@ exports[`typescript-node tsconfig options removed in typescript 7 given: [case1]
 "
 `;
 
-exports[`typescript-node tsconfig options removed in typescript 7 given: [case1] a repo on the prior template, with an alias of its own beside the template paths when: [t0] the practice is applied twice then: the removed options leave, every paths value gains a ./ lead, and types lands: tsconfig.json — before 1`] = `
+exports[`typescript-node tsconfig options removed in typescript 7 given: [case1] a repo on the prior template, with an alias of its own beside the template paths when: [t0] the practice is applied twice then: the removed options leave, the template paths replace the repo paths, and types lands: tsconfig.json — before 1`] = `
 "{
   "extends": [
     "@tsconfig/strictest/tsconfig.json",
@@ -158,30 +147,13 @@ exports[`typescript-node tsconfig options removed in typescript 7 given: [case1]
 "
 `;
 
-exports[`typescript-node tsconfig options removed in typescript 7 given: [case2] a repo whose baseUrl roots bare imports in ./src, beside moduleResolution node when: [t0] the practice is applied twice then: its own alias is rebased onto ./src, and the template paths stay on the tsconfig dir: tsconfig.json — after 1`] = `
+exports[`typescript-node tsconfig options removed in typescript 7 given: [case2] a repo whose baseUrl roots bare imports in ./src, beside moduleResolution node when: [t0] the practice is applied twice then: baseUrl leaves with its paths, and the template paths land in their place: tsconfig.json — after 1`] = `
 "{
   "extends": [
     "@tsconfig/strictest/tsconfig.json",
     "@tsconfig/node20/tsconfig.json"
   ],
   "compilerOptions": {
-    "paths": {
-      "contract/*": [
-        "./src/contract/*"
-      ],
-      "logic/*": [
-        "./src/logic/*"
-      ],
-      "~/*": [
-        "./src/*"
-      ],
-      "@/*": [
-        "./*"
-      ],
-      "@src/*": [
-        "./src/*"
-      ]
-    },
     "types": [
       "node",
       "jest",
@@ -191,6 +163,11 @@ exports[`typescript-node tsconfig options removed in typescript 7 given: [case2]
     "target": "es2020",
     "module": "node16",
     "moduleResolution": "node16",
+    "paths": {
+      "@src/*": [
+        "./src/*"
+      ]
+    },
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
@@ -235,28 +212,4 @@ exports[`typescript-node tsconfig options removed in typescript 7 given: [case2]
   "exclude": ["dist", "node_modules"]
 }
 "
-`;
-
-exports[`typescript-node tsconfig options removed in typescript 7 given: [case3] a repo on the prior template whose importsNotUsedAsValues reads "preserve" when: [t0] the practice is applied twice then: stderr names the move beside the first plan: TS5023, the fixes, and the readme: manual-fix notice 1`] = `
-"🟡 importsNotUsedAsValues "preserve" kept in tsconfig.json — typescript 7 rejects the option (TS5023)
-   ├─ no automatic fix: a drop would change the build in silence
-   └─ remedy
-      ├─ for a module a type-only import loads for its side effect, add \`import './x';\` beside it
-      ├─ or, on an esm module, set "verbatimModuleSyntax": true
-      ├─ then delete importsNotUsedAsValues
-      └─ see typescript-node/bad-practices/imports-not-used-as-values-kept/.declapract.readme.md (declapract-typescript-ehmpathy)
-
-"
-`;
-
-exports[`typescript-node tsconfig options removed in typescript 7 given: [case3] a repo on the prior template whose importsNotUsedAsValues reads "preserve" when: [t0] the practice is applied twice then: the plan after the apply flags the tsconfig manual, by the kept-option practice alone: plan — after apply 1`] = `
-"🔎 reading configs and declarations...
-🔬️ evaluating project...
-  ✓ evaluated practice:typescript-node
-📖 displaying results...
-  * [NO_CHANGE] package.json
-  * [NO_CHANGE] tsconfig.build.json
-  * [FIX_MANUAL] tsconfig.json
-    ✕ practice:typescript-node.bad-practice.imports-not-used-as-values-kept 
-  * [NO_CHANGE] tsconfig.json.declapract.test.ts"
 `;

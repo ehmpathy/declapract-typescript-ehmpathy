@@ -6,7 +6,7 @@ import {
   asJsonMergedDeep,
   type JsonArrayUnionRule,
 } from '../../../utils/asJsonMergedDeep';
-import { asTsconfigWithTs7OptionsFolded } from '../../../utils/asTsconfigWithTs7OptionsFolded';
+import { asTsconfigWithTs7OptionsRemoved } from '../../../utils/asTsconfigWithTs7OptionsRemoved';
 
 export const check = FileCheckType.CONTAINS;
 
@@ -29,10 +29,10 @@ const isTsconfigArrayUnioned: JsonArrayUnionRule = (input) =>
  * .note = with no tsconfig, the template lands verbatim, its comments kept, as the default fix writes
  *         it; a merge that changes aught writes `JSON.stringify(…, null, 2)`, as the default fix does;
  *         a merge that changes naught leaves the file as written.
- * .note = it folds the options typescript 7 removed first, the same fold the bad-practice
- *         `tsconfig-options-removed-in-ts7` runs: a merge over an unfolded `baseUrl` would add the
- *         template's `./src/*` beside the adopter's bare `src/*`, and a later fold would rebase the
- *         template's value onto a nested `baseUrl` too. so the file converges in either fix order
+ * .note = it first removes the options typescript 7 removed, as the bad-practice
+ *         `tsconfig-options-removed-in-ts7` does: a merge over a kept `baseUrl` would union the
+ *         template's `paths` beside the adopter's ones that resolved against it. so the file converges
+ *         in either fix order
  */
 export const fix: FileFixFunction = (contents, context) => {
   const declaredContents = context.declaredFileContents;
@@ -43,12 +43,9 @@ export const fix: FileFixFunction = (contents, context) => {
     );
   if (!contents) return { contents: declaredContents };
 
-  // fold the removed options before the merge, so the merge never reads a stale baseUrl
-  const folded = asTsconfigWithTs7OptionsFolded({
-    contents,
-    root: context.getProjectRootDirectory(),
-  });
-  const found = asJsoncParsed({ contents: folded });
+  // remove the options typescript 7 removed before the merge, so the merge never reads them
+  const cleared = asTsconfigWithTs7OptionsRemoved({ contents });
+  const found = asJsoncParsed({ contents: cleared });
   const merged = asJsonMergedDeep({
     declared: asJsoncParsed({ contents: declaredContents }),
     found,
@@ -57,8 +54,8 @@ export const fix: FileFixFunction = (contents, context) => {
     isArrayUnioned: isTsconfigArrayUnioned,
   });
 
-  // a tsconfig the merge would not change keeps its folded bytes, comments and all, so a fix converges
+  // a tsconfig the merge would not change keeps its cleared bytes, comments and all, so a fix converges
   if (JSON.stringify(merged) === JSON.stringify(found))
-    return { contents: folded };
+    return { contents: cleared };
   return { contents: JSON.stringify(merged, null, 2) };
 };

@@ -232,8 +232,6 @@ const UNFIXABLE_BY_DESIGN: Record<string, string> = {
   'tests-service best-practice: src/**/*.test.ts': ADOPTER_AUTHORED_TEST,
   'typescript-node bad-practices/compiler-api-from-typescript: src/**/*.ts':
     'the swap to @typescript/typescript6 also adds that package to the adopter deps, which a src file fix cannot reach; a swap alone breaks the build',
-  'typescript-node bad-practices/imports-not-used-as-values-kept: tsconfig.json':
-    'which modules lean on a preserved type-only import is a read of the code, not of the tsconfig; a drop alone changes emit in silence',
 };
 
 /**

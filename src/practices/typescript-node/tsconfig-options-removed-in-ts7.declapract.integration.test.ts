@@ -3,12 +3,11 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { executeApply, type FileCheckContext } from 'declapract';
+import { executeApply } from 'declapract';
 import { MalfunctionError } from 'helpful-errors';
 import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
 
 import { getPlanOutputFromDeclapract } from '../../.test/getPlanOutputFromDeclapract';
-import { check as checkPreserved } from './bad-practices/imports-not-used-as-values-kept/tsconfig.json.declapract';
 
 /**
  * .what = the plan text an adopter reads: blank lines cut, the temp dir masked
@@ -111,8 +110,9 @@ const getAllRequireSpecifiers = (input: { emitted: string | null }): string[] =>
 
 /**
  * .what = end-to-end proof that a tsconfig on the prior typescript-node template lands on the
- *   typescript 7 shape in one apply, that a second apply is a no-op, and that the shipped build then
- *   compiles under typescript 7 with every alias rewritten.
+ *   typescript 7 shape in one apply, that a second apply is a no-op, that the shipped build then
+ *   compiles under typescript 7 with the template alias rewritten, and that an import which leaned on
+ *   the removed `baseUrl` breaks loud rather than silent.
  * .why  = two declarations edit the same tsconfig: the bad-practice that removes `baseUrl` +
  *   `importsNotUsedAsValues` (it fixes first, since bad-practices sort before best-practice), then
  *   the best-practice contains-check (which adds `types` and the template's `paths`, unions the
@@ -154,15 +154,12 @@ describe('typescript-node tsconfig options removed in typescript 7', () => {
         ).toEqual([]);
       });
 
-      then('the removed options leave, every paths value gains a ./ lead, and types lands', () => {
+      then('the removed options leave, the template paths replace the repo paths, and types lands', () => {
         const tsconfig = JSON.parse(result.once.tsconfig);
         expect(tsconfig.compilerOptions.baseUrl).toBeUndefined();
         expect(tsconfig.compilerOptions.importsNotUsedAsValues).toBeUndefined();
-        expect(tsconfig.compilerOptions.paths).toEqual({
-          '@/*': ['./*'],
-          '@src/*': ['./src/*'],
-          '@vendor/*': ['./vendor/*'],
-        });
+        // the repo's own `@vendor/*` resolved against baseUrl, so it leaves with it: one alias shape
+        expect(tsconfig.compilerOptions.paths).toEqual({ '@src/*': ['./src/*'] });
         expect(tsconfig.compilerOptions.types).toEqual(['node', 'jest']);
         expect(result.before).toMatchSnapshot('tsconfig.json — before');
         expect(result.once.tsconfig).toMatchSnapshot('tsconfig.json — after');
@@ -240,20 +237,11 @@ describe('typescript-node tsconfig options removed in typescript 7', () => {
     when('[t0] the practice is applied twice', () => {
       const result = applied;
 
-      then('its own alias is rebased onto ./src, and the template paths stay on the tsconfig dir', () => {
-        // bad-practices fix before best-practice, so the fold sees only this repo's paths;
-        // the template's paths land after it and are never rebased onto ./src
+      then('baseUrl leaves with its paths, and the template paths land in their place', () => {
         const tsconfig = JSON.parse(result.once.tsconfig);
         expect(tsconfig.compilerOptions.baseUrl).toBeUndefined();
         expect(tsconfig.compilerOptions.importsNotUsedAsValues).toBeUndefined();
-        expect(tsconfig.compilerOptions.paths).toEqual({
-          // bare imports like 'logic/x' keep the lookup baseUrl gave them, one key per dir of ./src
-          'contract/*': ['./src/contract/*'],
-          'logic/*': ['./src/logic/*'],
-          '~/*': ['./src/*'],
-          '@/*': ['./*'],
-          '@src/*': ['./src/*'],
-        });
+        expect(tsconfig.compilerOptions.paths).toEqual({ '@src/*': ['./src/*'] });
         expect(result.once.tsconfig).toMatchSnapshot('tsconfig.json — after');
       });
 
@@ -276,29 +264,21 @@ describe('typescript-node tsconfig options removed in typescript 7', () => {
       });
     });
 
-    when('[t1] the shipped build runs under typescript 7', () => {
-      // the build reads the repo the given-level apply wrote; the guard fails loud if it never ran
-      const result = useThen('build', async () => {
+    when('[t1] typescript 7 typechecks the applied repo', () => {
+      // the typecheck reads the repo the given-level apply wrote; the guard fails loud if it never ran
+      const result = useThen('typecheck', async () => {
         if (!applied.once.tsconfig.includes('"types"'))
           throw new MalfunctionError('the given-level apply did not land the template tsconfig', {
             tempDir,
           });
-        return runShippedBuild({ tempDir });
+        return runTypecheckOn({ tempDir, tsconfig: 'tsconfig.build.json' });
       });
 
-      then('typescript 7 finds the bare import through its lookup key, and each alias', () => {
-        expect(result.version.output).toMatch(/Version 7\./);
-        expect(result.typecheck).toEqual({ status: 0, output: '' });
-      });
-
-      then('tsc-alias rewrites the bare import and each alias to a relative path in dist', () => {
-        expect(result.build.status).toEqual(0);
-        expect(result.alias.status).toEqual(0);
-        expect(getAllRequireSpecifiers(result)).toEqual([
-          '../logic/getWaveHeight',
-          '../logic/getWaveHeight',
-          '../logic/getWaveHeight',
-        ]);
+      then('the imports that leaned on baseUrl break loud, and the template alias still finds its file', () => {
+        expect(result.status).not.toEqual(0);
+        expect(result.output).toMatch(/error TS2307: Cannot find module 'logic\/getWaveHeight'/);
+        expect(result.output).toMatch(/error TS2307: Cannot find module '~\/logic\/getWaveHeight'/);
+        expect(result.output).not.toContain("'@src/logic/getWaveHeight'");
       });
     });
   });
@@ -313,7 +293,7 @@ describe('typescript-node tsconfig options removed in typescript 7', () => {
       ],
     });
 
-    // the one change from [case1]: a value whose drop would change emit
+    // the one change from [case1]: a value other than the default "remove"
     const applied = useBeforeAll(async () => {
       const tsconfigPath = path.join(tempDir, 'tsconfig.json');
       const prior = await fs.readFile(tsconfigPath, 'utf-8');
@@ -321,59 +301,29 @@ describe('typescript-node tsconfig options removed in typescript 7', () => {
         tsconfigPath,
         prior.replace('"importsNotUsedAsValues": "remove"', '"importsNotUsedAsValues": "preserve"'),
       );
-      // the notice prints once per repo per process, so the first read (the plan before apply) holds it
       const config = path.join(tempDir, 'declapract.use.yml');
-      const planBefore = await getPlanOutputFromDeclapract({ config });
       const applies = await applyTwice({ tempDir });
       const planAfter = await getPlanOutputFromDeclapract({ config });
-      return { ...applies, planBefore, planAfter };
+      return { ...applies, planAfter };
     });
 
     when('[t0] the practice is applied twice', () => {
-      // declapract applies a practice's fixable checks even when a check beside them has no fix
-      then('the automatic edits land, and "preserve" is kept for a human', () => {
+      then('"preserve" is removed like any other value, beside the other edits', () => {
         expect(applied.before).toContain('"importsNotUsedAsValues": "preserve"');
         const tsconfig = JSON.parse(applied.once.tsconfig);
-        expect(tsconfig.compilerOptions.importsNotUsedAsValues).toEqual('preserve');
+        expect(tsconfig.compilerOptions.importsNotUsedAsValues).toBeUndefined();
         expect(tsconfig.compilerOptions.baseUrl).toBeUndefined();
         expect(tsconfig.compilerOptions.types).toEqual(['node', 'jest']);
       });
 
-      then('the plan after the apply flags the tsconfig manual, by the kept-option practice alone', () => {
+      then('the plan after the apply no longer flags the tsconfig', () => {
         expect(
           getAllPlanFlags(applied.planAfter).filter((flag) => flag.endsWith(' tsconfig.json')),
-        ).toEqual(['* [FIX_MANUAL] tsconfig.json']);
-        const planText = asPlanText({ lines: applied.planAfter.lines, tempDir });
-        expect(planText).toContain('practice:typescript-node.bad-practice.imports-not-used-as-values-kept');
-        expect(planText).not.toContain('practice:typescript-node.bad-practice.tsconfig-options-removed-in-ts7');
-        expect(planText).toMatchSnapshot('plan — after apply');
-      });
-
-      then('stderr names the move beside the first plan: TS5023, the fixes, and the readme', () => {
-        expect(applied.planBefore.stderr).toContain('importsNotUsedAsValues "preserve" kept in tsconfig.json');
-        expect(applied.planBefore.stderr).toContain('TS5023');
-        expect(applied.planBefore.stderr).toContain('verbatimModuleSyntax');
-        expect(applied.planBefore.stderr).toContain('imports-not-used-as-values-kept/.declapract.readme.md');
-        expect(applied.planBefore.stderr).toMatchSnapshot('manual-fix notice');
-      });
-
-      then('the manual check agrees on the applied tsconfig', () => {
-        const context = { getProjectRootDirectory: () => tempDir } as FileCheckContext;
-        expect(() => checkPreserved(applied.once.tsconfig, context)).not.toThrow();
+        ).toEqual([]);
       });
 
       then('the second apply is a no-op', () => {
         expect(applied.twice).toEqual(applied.once);
-      });
-    });
-
-    when('[t1] typescript 7 reads the applied tsconfig, "preserve" kept', () => {
-      const result = useThen('typecheck', async () => runTypecheckOn({ tempDir, tsconfig: 'tsconfig.json' }));
-
-      then('it fails loud on the kept option, the error the notice names', () => {
-        expect(result.status).not.toEqual(0);
-        expect(result.output).toMatch(/error TS5023: .*importsNotUsedAsValues/);
-        expect(result.output).not.toContain('baseUrl');
       });
     });
   });
