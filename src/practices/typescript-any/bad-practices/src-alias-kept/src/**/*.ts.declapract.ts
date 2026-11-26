@@ -10,7 +10,11 @@ import { isSourceWithSrcAliasKept } from '../../../../../../utils/isSourceWithSr
  *         pass, then this rewrite fires at the new path next pass, so no relocate+rewrite ENOENT
  */
 export const check: FileCheckFunction = (contents, context) => {
-  if (isDeferredToDeprecatedDirMove({ relativeFilePath: context?.relativeFilePath }))
+  if (
+    isDeferredToDeprecatedDirMove({
+      relativeFilePath: context?.relativeFilePath,
+    })
+  )
     throw new Error('deferred to peer dir-move this pass');
   if (contents && isSourceWithSrcAliasKept({ contents })) return; // bad practice detected
   throw new Error('does not match bad practice: no @src/ specifier');
@@ -21,7 +25,11 @@ export const check: FileCheckFunction = (contents, context) => {
  */
 export const fix: FileFixFunction = (contents, context) => {
   if (!contents) return { contents };
-  if (isDeferredToDeprecatedDirMove({ relativeFilePath: context?.relativeFilePath }))
+  if (
+    isDeferredToDeprecatedDirMove({
+      relativeFilePath: context?.relativeFilePath,
+    })
+  )
     return { contents };
   return { contents: asSourceWithSrcAliasRepointed({ contents }) };
 };
