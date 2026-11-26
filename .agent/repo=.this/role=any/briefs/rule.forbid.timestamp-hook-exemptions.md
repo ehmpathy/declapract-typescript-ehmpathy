@@ -24,6 +24,9 @@ a glob, an allowlist, a flag, or a looser pattern. zero exceptions.
 - this repo applies the practice to its own `.husky/`. after any edit to the practice hook (a tighter
   pattern, a reworded comment), run `rhx husky.lock.restamp`: it copies the hook to the root and
   re-stamps the root lock. `husky/self-application.declapract.integration.test.ts` fails until you do.
+- before any edit to the hook's pattern ships, run `rhx check.timestamps.probe --cases @tracked`
+  twice, once with `--hook @head` (the old hook): every file the new hook halts beyond the old must
+  hold a real clock, never a false positive.
 
 ## .what to do instead
 

@@ -105,3 +105,10 @@ exports[`check.timestamps.lock given: [case2] a repo whose timestamp hook was ha
    └─ fix: npx declapract apply --practice husky
 "
 `;
+
+exports[`check.timestamps.lock given: [case4] a repo upgraded to the new hook and its restamped lock when: [t1] the next commit edits an older file that holds a newly-caught clock then: the halt the upgrader sees, its clock masked, matches snapshot 1`] = `
+"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions
+   ├─ why: a timestamp is a privacy leak, and churns every diff
+   └─ runbook.md:3:paged at [timestamp]
+"
+`;

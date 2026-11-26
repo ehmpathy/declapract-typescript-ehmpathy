@@ -1,0 +1,196 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`check.timestamps.probe given: [case1] a cases file with one clock and one date alone when: [t0] the probe runs in verdict mode then: the output, masked, matches snapshot 1`] = `
+"🐢 lets ride...
+
+🐚 check.timestamps.probe --cases [temp]/case1.txt --show verdict
+   └─ hook: src/practices/husky/best-practice/.husky/check.timestamps.sh
+
+halt	paged at [timestamp]
+pass	shipped on 2026-11-25
+"
+`;
+
+exports[`check.timestamps.probe given: [case1] a cases file with one clock and one date alone when: [t1] the probe runs with --show full then: the output, masked, matches snapshot 1`] = `
+"🐢 lets ride...
+
+🐚 check.timestamps.probe --cases [temp]/case1.txt --show full
+   └─ hook: src/practices/husky/best-practice/.husky/check.timestamps.sh
+
+$ git commit  # pre-commit: check.timestamps, exit 2
+✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions
+   ├─ why: a timestamp is a privacy leak, and churns every diff
+   └─ case.0001.md:1:paged at [timestamp]
+
+halt	paged at [timestamp]
+pass	shipped on 2026-11-25
+"
+`;
+
+exports[`check.timestamps.probe given: [case2] a cases file with clocks on lines 1 and 3, and passes between when: [t0] the probe runs then: the output, masked, matches snapshot 1`] = `
+"🐢 lets ride...
+
+🐚 check.timestamps.probe --cases [temp]/case2.txt --show verdict
+   └─ hook: src/practices/husky/best-practice/.husky/check.timestamps.sh
+
+halt	paged at [timestamp]
+pass	no time here
+halt	ack at [timestamp]
+pass	shipped on 2026-11-25
+"
+`;
+
+exports[`check.timestamps.probe given: [case3] a dir that holds no clock when: [t0] the probe reads every tracked file (--cases @tracked) then: the output, masked, matches snapshot 1`] = `
+"🐢 lets ride...
+
+🐚 check.timestamps.probe --cases @tracked --hook [repo]/src/practices/husky/best-practice/.husky/check.timestamps.sh --show verdict
+   └─ hook: [repo]/src/practices/husky/best-practice/.husky/check.timestamps.sh
+
+files halted: 0 of 1
+"
+`;
+
+exports[`check.timestamps.probe given: [case3] a dir that holds no clock when: [t1] the probe scans it (--scan notes) then: the output matches snapshot 1`] = `
+"🐢 lets ride...
+
+🐚 check.timestamps.probe --scan notes --hook [repo]/src/practices/husky/best-practice/.husky/check.timestamps.sh --show verdict
+   └─ hook: [repo]/src/practices/husky/best-practice/.husky/check.timestamps.sh
+
+files halted: 0 of 1
+"
+`;
+
+exports[`check.timestamps.probe given: [case4] the hook as committed at HEAD when: [t0] the probe runs with --hook @head then: the output, its scratch dir masked, matches snapshot 1`] = `
+"🐢 lets ride...
+
+🐚 check.timestamps.probe --cases [temp]/case4.txt --hook @head --show verdict
+   └─ hook: [scratch]/.git/hook.head.sh
+
+pass	shipped on 2026-11-25
+"
+`;
+
+exports[`check.timestamps.probe given: [case5] bad input when: [t0] the probe runs with no input named then: the refusal, masked, matches snapshot 1`] = `
+"✋ ConstraintError: pass --cases <file|@tracked> or --scan <dir>; see --help
+"
+`;
+
+exports[`check.timestamps.probe given: [case5] bad input when: [t1] the probe runs with both inputs named then: the refusal, masked, matches snapshot 1`] = `
+"✋ ConstraintError: pass --cases or --scan, not both
+"
+`;
+
+exports[`check.timestamps.probe given: [case5] bad input when: [t2] the probe runs with a flag with no value then: the refusal, masked, matches snapshot 1`] = `
+"✋ ConstraintError: --cases needs a value; see --help
+"
+`;
+
+exports[`check.timestamps.probe given: [case5] bad input when: [t3] the probe runs with an unknown flag then: the refusal, masked, matches snapshot 1`] = `
+"✋ ConstraintError: unknown arg '--loud'; see --help
+"
+`;
+
+exports[`check.timestamps.probe given: [case5] bad input when: [t4] the probe runs with a --show value outside the set then: the refusal, masked, matches snapshot 1`] = `
+"✋ ConstraintError: --show must be verdict or full, not 'loud'
+"
+`;
+
+exports[`check.timestamps.probe given: [case5] bad input when: [t5] the probe runs with a cases file not found then: the refusal, masked, matches snapshot 1`] = `
+"✋ ConstraintError: --cases file not found: [temp]/absent.txt
+"
+`;
+
+exports[`check.timestamps.probe given: [case5] bad input when: [t6] the probe runs with a scan dir not found then: the refusal, masked, matches snapshot 1`] = `
+"✋ ConstraintError: --scan dir not found: absent-dir
+"
+`;
+
+exports[`check.timestamps.probe given: [case5] bad input when: [t7] the probe runs with a hook not found then: the refusal, masked, matches snapshot 1`] = `
+"✋ ConstraintError: hook not found: [temp]/absent.sh
+"
+`;
+
+exports[`check.timestamps.probe given: [case5] bad input when: [t8] the probe runs with a cwd outside any git repo then: the refusal, masked, matches snapshot 1`] = `
+"✋ ConstraintError: run inside a git repo
+"
+`;
+
+exports[`check.timestamps.probe given: [case6] a hook whose pattern grep cannot compile when: [t0] the probe runs it then: the fault, its grep line dropped, matches snapshot 1`] = `
+"💥 MalfunctionError: the hook exited 1, neither a pass (0) nor a halt (2)
+   └─ hook stderr
+      ├─
+      │
+      │  💥 MalfunctionError: check.timestamps could not run its pattern; the guard is broken
+      │     └─ case.0001.md (grep exit 2)
+      │
+      └─
+"
+`;
+
+exports[`check.timestamps.probe given: [case7] a repo with clocks in two tracked files, one untracked, one ignored when: [t0] the probe reads every tracked file (--cases @tracked) then: the output, masked, matches snapshot 1`] = `
+"🐢 lets ride...
+
+🐚 check.timestamps.probe --cases @tracked --hook [repo]/src/practices/husky/best-practice/.husky/check.timestamps.sh --show verdict
+   └─ hook: [repo]/src/practices/husky/best-practice/.husky/check.timestamps.sh
+
+halt	notes/a.md:1:paged at [timestamp]
+halt	notes/c.md:1:ack at [timestamp]
+
+files halted: 2 of 4
+"
+`;
+
+exports[`check.timestamps.probe given: [case7] a repo with clocks in two tracked files, one untracked, one ignored when: [t1] the probe scans the dir (--scan notes) then: the output, masked, matches snapshot 1`] = `
+"🐢 lets ride...
+
+🐚 check.timestamps.probe --scan notes --hook [repo]/src/practices/husky/best-practice/.husky/check.timestamps.sh --show verdict
+   └─ hook: [repo]/src/practices/husky/best-practice/.husky/check.timestamps.sh
+
+halt	notes/a.md:1:paged at [timestamp]
+halt	notes/c.md:1:ack at [timestamp]
+halt	notes/d.md:1:retro at [timestamp]
+
+files halted: 3 of 4
+"
+`;
+
+exports[`check.timestamps.probe given: [case8] a maintainer who asks for usage when: [t0] the probe runs with --help then: the usage matches snapshot 1`] = `
+"######################################################################
+# .what = run the check.timestamps hook itself over candidate lines or
+#         over a corpus of files; print which halt and which pass
+#
+# .why  = a change to the hook's regex owes a fast read of which forms
+#         it halts and which it lets through, before the slower jest
+#         suite runs. the probe stages each candidate in a scratch repo
+#         and runs the real hook on it, so its verdict is the hook's own
+#         verdict: no copy of the pattern or the scan loop can drift
+#
+# usage:
+#   rhx check.timestamps.probe --cases .temp/cases.txt
+#   rhx check.timestamps.probe --cases .temp/cases.txt --hook <path>
+#   rhx check.timestamps.probe --cases @tracked     # false-positive read
+#   rhx check.timestamps.probe --cases @tracked --hook @head   # same read, old hook
+#   rhx check.timestamps.probe --scan .behavior/<route>   # would a dir commit?
+#   rhx check.timestamps.probe --cases .temp/cases.txt --show full   # the halt a dev sees
+#
+# options:
+#   --cases   a file with one candidate line per line, or
+#             @tracked to run every tracked file through the hook
+#   --scan    a dir; run every file under it a commit could stage
+#             (tracked, or untracked and not gitignored)
+#             (exactly one of --cases or --scan is required)
+#   --hook    the hook to run (it runs as code: pass only a hook you
+#             trust), or @head for the practice hook as committed at
+#             HEAD (to compare old vs new)
+#             (default: src/practices/husky/best-practice/.husky/check.timestamps.sh)
+#   --show    verdict | full. full also prints the hook's whole stderr for each
+#             halt, as a dev at git commit would see it (default: verdict)
+#
+# guarantee:
+#   - each verdict is the hook's exit: 2 = halt, 0 = pass
+#   - corpus mode prints the first halted line per file, as a commit would
+#   - any other hook exit halts the probe loud, with the hook's stderr
+#   - exit 0 = probe ran; exit 1 = malfunction; exit 2 = bad input
+######################################################################
+"
+`;

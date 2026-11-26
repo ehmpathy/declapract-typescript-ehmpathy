@@ -6,3 +6,63 @@ exports[`check.timestamps guard given: [case1] a non-code file with an iso times
    └─ snapshot.json:1:{ "createdAt": "[timestamp]" }
 "
 `;
+
+exports[`check.timestamps guard given: [case16] a staged file whose blob git cannot read (#681) when: [t0] the guard runs then: the fault output, the hook lines alone, matches snapshot 1`] = `
+"💥 MalfunctionError: check.timestamps could not read the staged blob
+   └─ notes.md
+"
+`;
+
+exports[`check.timestamps guard given: [case18] a guard whose pattern grep cannot compile when: [t0] the guard runs on a clean file then: the fault output, the hook lines alone, matches snapshot 1`] = `
+"💥 MalfunctionError: check.timestamps could not run its pattern; the guard is broken
+   └─ notes.md (grep exit 2)
+"
+`;
+
+exports[`check.timestamps guard given: [case18] a guard whose pattern grep cannot compile when: [t1] the guard runs with a duration pattern sed cannot compile then: the fault output, the hook lines alone, matches snapshot 1`] = `
+"💥 MalfunctionError: check.timestamps could not strip durations; the pattern is broken
+   └─ notes.md
+"
+`;
+
+exports[`check.timestamps guard given: [case21] a file with a newly-caught form, per form family when: [t0] the guard runs on a bare zoned basic clock then: the halt output, its clock masked, matches snapshot 1`] = `
+"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions
+   ├─ why: a timestamp is a privacy leak, and churns every diff
+   └─ yield.md:1:paged at [timestamp]
+"
+`;
+
+exports[`check.timestamps guard given: [case21] a file with a newly-caught form, per form family when: [t1] the guard runs on a zoned colon clock after a colon edge then: the halt output, its clock masked, matches snapshot 1`] = `
+"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions
+   ├─ why: a timestamp is a privacy leak, and churns every diff
+   └─ yield.md:1:alarm at:[timestamp]
+"
+`;
+
+exports[`check.timestamps guard given: [case21] a file with a newly-caught form, per form family when: [t2] the guard runs on a date then a bare clock then: the halt output, its clock masked, matches snapshot 1`] = `
+"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions
+   ├─ why: a timestamp is a privacy leak, and churns every diff
+   └─ yield.md:1:paged on 2026-11-25 [timestamp]
+"
+`;
+
+exports[`check.timestamps guard given: [case21] a file with a newly-caught form, per form family when: [t3] the guard runs on a one-digit colon (a ratio, F1) then: the halt output, its clock masked, matches snapshot 1`] = `
+"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions
+   ├─ why: a timestamp is a privacy leak, and churns every diff
+   └─ yield.md:1:scale [timestamp]
+"
+`;
+
+exports[`check.timestamps guard given: [case21] a file with a newly-caught form, per form family when: [t4] the guard runs on an hour-only meridiem (F2) then: the halt output, its clock masked, matches snapshot 1`] = `
+"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions
+   ├─ why: a timestamp is a privacy leak, and churns every diff
+   └─ yield.md:1:quota resets at [timestamp]
+"
+`;
+
+exports[`check.timestamps guard given: [case21] a file with a newly-caught form, per form family when: [t5] the guard runs on a date then a number then: the halt output, its clock masked, matches snapshot 1`] = `
+"✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions
+   ├─ why: a timestamp is a privacy leak, and churns every diff
+   └─ yield.md:1:on 2026-11-25 [timestamp] items
+"
+`;
