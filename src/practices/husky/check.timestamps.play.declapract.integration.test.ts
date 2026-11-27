@@ -173,6 +173,41 @@ describe('check.timestamps guard', () => {
     });
   });
 
+  // pre-commit is `#!/bin/sh` and SOURCES the guard, so the guard must parse and run under
+  // posix sh too; a bash-only quote ($'...') once broke every commit while bash runs passed
+  given('[case25] the guard sourced by posix sh, as pre-commit does', () => {
+    const runGuardSourcedBySh = (input: { dir: string }) => {
+      const res = spawnSync('sh', ['-c', '. "$1"', 'pre-commit', guardPath], {
+        cwd: input.dir,
+        encoding: 'utf-8',
+      });
+      return { code: res.status, stderr: res.stderr };
+    };
+
+    when('[t0] a staged file holds a clock masked by an asterisk', () => {
+      const result = runGuardSourcedBySh({
+        dir: genStagedRepo({ 'yield.md': 'at １４:３*\n' }),
+      });
+
+      then('it halts with exit 2 and names the file, no parse fault', () => {
+        expect(result.code).toEqual(2);
+        expect(result.stderr).toContain('   └─ yield.md:1:');
+        expect(result.stderr).not.toContain('Syntax error');
+      });
+    });
+
+    when('[t1] a staged file holds a date alone', () => {
+      const result = runGuardSourcedBySh({
+        dir: genStagedRepo({ 'notes.md': 'shipped on 2026-11-27\n' }),
+      });
+
+      then('it allows the commit with exit 0, silent', () => {
+        expect(result.code).toEqual(0);
+        expect(result.stderr).toEqual('');
+      });
+    });
+  });
+
   given('[case5] a clean non-code file with no timestamp', () => {
     when('[t0] the guard runs', () => {
       const dir = genStagedRepo({ 'notes.md': 'hello world, no times here\n' });
@@ -369,6 +404,32 @@ describe('check.timestamps guard', () => {
       { form: 'a dash time id after a date and T', content: 'log ２０２６-１１-２６T１４-３０-０７-１２３Z.log\n' },
       { form: 'a dash time id after a date, no zone', content: 'log ２０２６-１１-２６_１４-３０-０７-１２３.log\n' },
       { form: 'a masked dash time id', content: 'ran １x-３０-０７-１２３Z\n' },
+      // pr #843 review: any mask character, not only x, still leaks the clock (F17)
+      { form: 'an asterisk mask, colon clock', content: 'at １４:３*\n' },
+      { form: 'a hash mask, colon clock', content: 'at １４:３#\n' },
+      { form: 'a question mark mask, colon clock', content: 'at １４:３?\n' },
+      { form: 'an underscore mask, colon clock', content: 'at １４:３_\n' },
+      { form: 'a bullet mask, colon clock', content: 'at １４:３•\n' },
+      { form: 'a block mask, colon clock', content: 'at １４:３█\n' },
+      { form: 'a letter mask after a real digit, colon clock', content: 'at １４:３o\n' },
+      { form: 'an asterisk mask in the hour', content: 'at １*:３０\n' },
+      { form: 'a lead asterisk mask in the hour and a masked minute', content: 'at *４:３*\n' },
+      { form: 'a fully masked minute, colon clock', content: 'at １４:**\n' },
+      { form: 'an asterisk mask, dash clock after a date and T', content: 'log ２０２６-１１-２６T１４-３*-０７-１２３Z.log\n' },
+      { form: 'a hash mask, basic clock after a date and T', content: 'log ２０２６-１１-２６T１#３０Z\n' },
+      { form: 'a bullet mask, colon clock after a date and T', content: 'log ２０２６-１１-２６T１４:３•:０７Z\n' },
+      { form: 'a question mark mask after a lone T', content: 'at T１４-３?\n' },
+      { form: 'an asterisk mask, bare dash time id', content: 'ran １４-３*-０７-１２３Z\n' },
+      { form: 'masked milliseconds, bare dash time id', content: 'ran １４-３０-０７-１**Z\n' },
+      { form: 'masked milliseconds, dash time id after a date', content: 'log ２０２６-１１-２６_１４-３０-０７-１##.log\n' },
+      // pr #843 compact-clock gap: a zoned compact clock with no date, glued to a dot or a letter
+      { form: 'a compact zoned clock after a dot and T', content: 'snapshot.T１３４２０７Z.tab0\n' },
+      { form: 'a compact zoned clock after a letter and T', content: 'runT１３４２０７Z\n' },
+      { form: 'a compact zoned clock after a dot, no T', content: 'snapshot.１３４２０７Z\n' },
+      { form: 'a compact zoned clock after a space and T', content: 'snapshot T１３４２０７Z\n' },
+      { form: 'a masked compact zoned clock after a dot and T', content: 'snapshot.T１x４２０７z\n' },
+      // the known side effect of F17: a bold verse ref reads as a masked clock and halts
+      { form: 'a bold verse ref, the F17 side effect', content: 'see **１２:３**\n' },
     ].map((row) => ({ ...row, content: asAsciiDigits(row.content) }));
     haltTable.forEach((row, index) => {
       when(`[t${index}] the guard runs on ${row.form}`, () => {
@@ -438,6 +499,22 @@ describe('check.timestamps guard', () => {
       { form: 'a bare dash triple, as a dd-mm-yy date', content: 'on 14-30-07\n' },
       { form: 'a part number with a dash-id shape, no zone', content: 'part 12-34-56-789\n' },
       { form: 'a date alone, #845 negative', content: 'shipped on 2026-11-26\n' },
+      // F17 look-alikes: a hex letter, a phrase end, a cell edge, or an offset is no mask
+      { form: 'a verse ref then a close paren', content: 'see John 12:3)\n' },
+      { form: 'a verse ref then a period', content: 'see John 12:3.\n' },
+      { form: 'a verse ref then a comma', content: 'see John 12:3, then on\n' },
+      { form: 'a verse ref in a table cell', content: '| 12:3 |\n' },
+      { form: 'a mac address, lowercase', content: 'mac 00:1a:2b:3c\n' },
+      { form: 'a mac address, uppercase', content: 'mac 00:1A:2B:3C\n' },
+      { form: 'a hex pair', content: 'hash a1:bc\n' },
+      { form: 'an ipv6 tail', content: 'ipv6 fe80::1:2c\n' },
+      { form: 'a word with a digit, a colon, then a word', content: 'set v1:on\n' },
+      { form: 'an all-asterisk placeholder clock', content: 'format **:**\n' },
+      { form: 'a part number with masked digits, no zone', content: 'part 12-34-56-7**\n' },
+      { form: 'a minute then an offset sign', content: 'offset 12:3+\n' },
+      // compact-clock look-alikes: no zone, so a ticket id stays legal wherever it sits
+      { form: 'a T-prefixed id after a dot, no zone', content: 'see build.T1342\n' },
+      { form: 'a T-prefixed id glued to a word, no zone', content: 'see runT1342\n' },
     ];
     passTable.forEach((row, index) => {
       when(`[t${index}] the guard runs on ${row.form}`, () => {

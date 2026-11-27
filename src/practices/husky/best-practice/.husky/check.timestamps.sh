@@ -29,10 +29,25 @@ set -eu
 H24='([01][0-9]|2[0-3])'
 H12='(1[0-2]|0?[1-9])'
 MM='[0-5][0-9]'
-# a masked slot: a clock digit swapped for an x still leaks the rest of the clock. the hour
-# slot keeps at least one real digit, so an all-x placeholder (xx:xx) passes
-H24X='([01][0-9xX]|2[0-3xX]|[xX][0-9])'
-MMX='[0-5xX][0-9xX]'
+# a masked slot: a clock digit swapped for any mask character (x, *, #, ?, _, •, …) still leaks
+# the rest of the clock. a mask is any character but these, each of which a non-clock shares:
+#   - a hex letter, a-f or A-F: a mac address (nn:na:nb), ipv6, and hex ids share the slot shape
+#   - a blank, or a clock join (: . -)
+#   - punctuation that ends a phrase or a cell, so a verse ref at a sentence end passes
+#   - + and =, an offset or an assignment after a minute
+# a multibyte character (•, █) is one mask. a letter g-z other than x masks only after a real
+# digit in its slot, so a word such as v1:on passes. the hour slot keeps at least one real
+# digit, so an all-mask placeholder (xx:xx, **:**) passes.
+# pre-commit SOURCES this file under posix sh, so no bash-only quote ($'...'): the tab, the
+# carriage return, and the utf-8 byte ranges come from printf octal escapes instead
+MASK_TAB=$(printf '\011')
+MASK_CR=$(printf '\015')
+MASK_MULTI="[$(printf '\302')-$(printf '\364')][$(printf '\200')-$(printf '\277')]{1,3}"
+MASK_ANY="([^]0-9A-Fa-f ${MASK_TAB}${MASK_CR}:.,;)}>|\"'\`!/+=-]|${MASK_MULTI})"
+MASK_LEAD="([^]0-9A-Za-z ${MASK_TAB}${MASK_CR}:.,;)}>|\"'\`!/+=-]|[xX]|${MASK_MULTI})"
+H24X="([01]([0-9]|${MASK_ANY})|2([0-3]|${MASK_ANY})|${MASK_LEAD}[0-9])"
+MMX="([0-5]([0-9]|${MASK_ANY})|${MASK_LEAD}([0-9]|${MASK_LEAD}))"
+FFFX="([0-9]|${MASK_LEAD}){3}"
 ZONE='(Z|[+-][0-9][0-9]:?[0-9][0-9])?'
 ZONE_NAMED='(Z|z| ?(UTC|GMT|Utc|Gmt|utc|gmt|Zulu|zulu))'
 DATE_ISO='[0-9]{4}-?[01][0-9]-?[0-3][0-9]'
@@ -85,16 +100,22 @@ FORM_MERIDIEM="(^|[^0-9:])${H12}([:.hH-]?${MM}([:.-]?${MM})?)? ?[aApP]\.?[mM]\.?
 # before, or a named zone after. a bare one passes, as a score would.
 # `[:]` is a plain colon, kept in a class so this source line holds no end-of-day stamp
 FORM_END_OF_DAY="(${DATE_ISO}T24(:?00(:?00)?)?${ZONE}([^0-9]|$)|T24[:]00([:]00)?([^0-9]|$)|${DATE_BEFORE}[ _-]24[:.-]?00([:.-]?00)?([^0-9-]|$)|(^|[^0-9])24[:]00([:]00)?${ZONE_NAMED}${EDGE_END})"
-# a masked clock: one or more digits swapped for an x, as in Thh-mx-ss or yyyy-mm-ddThxmm.
+# a masked clock: one or more digits swapped for a mask, as in Thh-m*-ss or yyyy-mm-ddTh#mm.
 # a lead T needs a join, so a ticket id (Thhmm) passes; a date before needs none. a colon
 # clock needs the same edges as FORM_COLON, plus no letter before. a zone may follow
 FORM_MASKED="(T${H24X}[-:]${MMX}|${DATE_ISO}[Tt]${H24X}[-:]?${MMX}|(^|[^0-9A-Za-z:])${H24X}:${MMX})([-:]${MMX})?${ZONE}${EDGE_END}"
 # a dash time id: hh-mm-ss-fff. bare, it needs its zone (hh-mm-ss-fffZ), so a part number
 # nn-nn-nn-nnn passes; after a date and a join or T, the zone is optional. a bare hh-mm-ss
 # (a dd-mm-yy date) still passes
-FORM_DASH_ID="((^|[^0-9A-Za-z:-])${H24X}-${MMX}-${MMX}-[0-9xX]{3}(Z|z)|${DATE_ISO}[-_Tt]${H24X}-${MMX}-${MMX}-[0-9xX]{3}(Z|z)?)${EDGE_END}"
+FORM_DASH_ID="((^|[^0-9A-Za-z:-])${H24X}-${MMX}-${MMX}-${FFFX}(Z|z)|${DATE_ISO}[-_Tt]${H24X}-${MMX}-${MMX}-${FFFX}(Z|z)?)${EDGE_END}"
 
-TIMESTAMP_PATTERN="${FORM_T_COLON}|${FORM_T_DASH}|${FORM_COLON}|${FORM_COLON_ZONED}|${FORM_ZONED}|${FORM_DATE_T}|${FORM_DATE_CLOCK}|${FORM_H_MARK}|${FORM_MERIDIEM}|${FORM_END_OF_DAY}|${FORM_MASKED}|${FORM_DASH_ID}"
+# a compact zoned clock with no date ahead, glued to what precedes it: a lead T plus a named zone
+# anchors it whatever sits before (snapshot.ThhmmssZ.tab0, runThhmmssZ); a bare one after a dot
+# owes the same (snapshot.hhmmssZ). slots admit a mask, so the masked twin halts too. with no
+# zone, a ticket id (Thhmm, build.Thhmm) passes
+FORM_COMPACT_ZONED="(T|\\.)${H24X}${MMX}(${MMX})?${ZONE_NAMED}${EDGE_END}"
+
+TIMESTAMP_PATTERN="${FORM_T_COLON}|${FORM_T_DASH}|${FORM_COLON}|${FORM_COLON_ZONED}|${FORM_ZONED}|${FORM_DATE_T}|${FORM_DATE_CLOCK}|${FORM_H_MARK}|${FORM_MERIDIEM}|${FORM_END_OF_DAY}|${FORM_MASKED}|${FORM_DASH_ID}|${FORM_COMPACT_ZONED}"
 
 # an iso-8601 DURATION is a fixed span, not an instant — a valid, stable value to assert on.
 # a duration carries a lead `P` designator and a `T` with NO date part (PThh:mm:ss,

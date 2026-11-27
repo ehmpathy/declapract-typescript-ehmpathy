@@ -13,7 +13,7 @@
 #    sanctioned change to the timestamp hook is a practice upgrade, which rewrites both at once.
 
 # the blob id of the declared hook (stamped by the practice on apply)
-TIMESTAMPS_LOCK_EXPECTED='dd928819cb6c98951a9078848ef9a31babfada50'
+TIMESTAMPS_LOCK_EXPECTED='24778bb664eabf2c03f647d3cc204809fd2c9a59'
 
 # the hook under lock; $0 is the hook dir whether sourced by pre-commit or run direct
 TIMESTAMPS_LOCK_HOOK="$(dirname -- "$0")/check.timestamps.sh"
