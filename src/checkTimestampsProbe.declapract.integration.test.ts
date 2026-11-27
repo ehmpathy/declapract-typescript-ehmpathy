@@ -5,6 +5,8 @@ import path from 'node:path';
 
 import { given, then, when } from 'test-fns';
 
+import { asAsciiDigits } from './practices/husky/.test/asAsciiDigits';
+
 /**
  * .what = integration test for the repo-local check.timestamps.probe skill
  * .why = the probe is the read a maintainer runs before any edit to the hook's pattern ships
@@ -12,6 +14,8 @@ import { given, then, when } from 'test-fns';
  *        exits would mislead that read in silence
  * .how = spawn the probe from the repo root over temp case files; mask temp paths and clocks
  *        before each snapshot, since a .snap is scanned by the very hook the probe runs
+ * .note = this source is itself scanned by that hook, so the one clock the cases use is spelled
+ *         in fullwidth digits (０-９); asAsciiDigits restores it wherever a file is written or read
  */
 
 // the repo root, where the probe expects to run
@@ -32,7 +36,7 @@ afterAll(() => fs.rmSync(tempRoot, { recursive: true, force: true }));
 // write a cases file, one candidate per line, at a fixed name so a masked snapshot is stable
 const genCasesFile = (input: { name: string; lines: string[] }): string => {
   const file = path.join(tempRoot, `${input.name}.txt`);
-  fs.writeFileSync(file, `${input.lines.join('\n')}\n`);
+  fs.writeFileSync(file, asAsciiDigits(`${input.lines.join('\n')}\n`));
   return file;
 };
 
@@ -59,8 +63,12 @@ const asMasked = (input: { text: string }): string =>
     .split(repoDir)
     .join('[repo]')
     .replace(/\S*\/\.git\/hook\.head\.sh/g, '[scratch]/.git/hook.head.sh')
-    .split('1342Z')
+    .split(asAsciiDigits('１３４２Z'))
     .join('[timestamp]');
+
+// write a text file with its fullwidth digits restored
+const setText = (input: { file: string; text: string }): void =>
+  fs.writeFileSync(input.file, asAsciiDigits(input.text));
 
 // a consumer-shaped corpus: tracked files, one untracked file, one ignored file
 const genCorpusRepo = (input: { name: string }): string => {
@@ -68,12 +76,12 @@ const genCorpusRepo = (input: { name: string }): string => {
   fs.mkdirSync(path.join(dir, 'notes'), { recursive: true });
   spawnSync('git', ['init', '-q'], { cwd: dir });
   fs.writeFileSync(path.join(dir, '.gitignore'), 'notes/e.md\n');
-  fs.writeFileSync(path.join(dir, 'notes/a.md'), 'paged at 1342Z\n');
-  fs.writeFileSync(path.join(dir, 'notes/b.md'), 'shipped on 2026-11-25\n');
-  fs.writeFileSync(path.join(dir, 'notes/c.md'), 'ack at 1342Z\n');
+  setText({ file: path.join(dir, 'notes/a.md'), text: 'paged at １３４２Z\n' });
+  setText({ file: path.join(dir, 'notes/b.md'), text: 'shipped on 2026-11-25\n' });
+  setText({ file: path.join(dir, 'notes/c.md'), text: 'ack at １３４２Z\n' });
   spawnSync('git', ['add', '-A'], { cwd: dir });
-  fs.writeFileSync(path.join(dir, 'notes/d.md'), 'retro at 1342Z\n');
-  fs.writeFileSync(path.join(dir, 'notes/e.md'), 'scratch at 1342Z\n');
+  setText({ file: path.join(dir, 'notes/d.md'), text: 'retro at １３４２Z\n' });
+  setText({ file: path.join(dir, 'notes/e.md'), text: 'scratch at １３４２Z\n' });
   return dir;
 };
 
@@ -81,7 +89,7 @@ describe('check.timestamps.probe', () => {
   given('[case1] a cases file with one clock and one date alone', () => {
     const casesFile = genCasesFile({
       name: 'case1',
-      lines: ['paged at 1342Z', 'shipped on 2026-11-25'],
+      lines: ['paged at １３４２Z', 'shipped on 2026-11-25'],
     });
 
     when('[t0] the probe runs in verdict mode', () => {
@@ -91,7 +99,7 @@ describe('check.timestamps.probe', () => {
         expect(result.code).toEqual(0);
       });
       then('it marks the clock halt', () => {
-        expect(result.stdout).toContain('halt\tpaged at 1342Z\n');
+        expect(result.stdout).toContain(asAsciiDigits('halt\tpaged at １３４２Z\n'));
       });
       then('it marks the date alone pass', () => {
         expect(result.stdout).toContain('pass\tshipped on 2026-11-25\n');
@@ -111,7 +119,7 @@ describe('check.timestamps.probe', () => {
         expect(result.stdout).toContain(
           '✋ ConstraintError: timestamps are forbidden in tracked files',
         );
-        expect(result.stdout).toContain('   └─ case.0001.md:1:paged at 1342Z\n');
+        expect(result.stdout).toContain(asAsciiDigits('   └─ case.0001.md:1:paged at １３４２Z\n'));
       });
       then('the output, masked, matches snapshot', () => {
         expect(asMasked({ text: result.stdout })).toMatchSnapshot();
@@ -123,7 +131,7 @@ describe('check.timestamps.probe', () => {
   given('[case2] a cases file with clocks on lines 1 and 3, and passes between', () => {
     const casesFile = genCasesFile({
       name: 'case2',
-      lines: ['paged at 1342Z', 'no time here', 'ack at 1342Z', 'shipped on 2026-11-25'],
+      lines: ['paged at １３４２Z', 'no time here', 'ack at １３４２Z', 'shipped on 2026-11-25'],
     });
 
     when('[t0] the probe runs', () => {
@@ -134,13 +142,15 @@ describe('check.timestamps.probe', () => {
       });
       then('it gives one verdict per line, in input order', () => {
         expect(result.stdout).toContain(
-          [
-            'halt\tpaged at 1342Z',
-            'pass\tno time here',
-            'halt\tack at 1342Z',
-            'pass\tshipped on 2026-11-25',
-            '',
-          ].join('\n'),
+          asAsciiDigits(
+            [
+              'halt\tpaged at １３４２Z',
+              'pass\tno time here',
+              'halt\tack at １３４２Z',
+              'pass\tshipped on 2026-11-25',
+              '',
+            ].join('\n'),
+          ),
         );
       });
       then('the output, masked, matches snapshot', () => {
@@ -308,7 +318,9 @@ describe('check.timestamps.probe', () => {
       });
       then('it prints one halt row per tracked file that halts, in name order', () => {
         expect(result.stdout).toContain(
-          'halt\tnotes/a.md:1:paged at 1342Z\nhalt\tnotes/c.md:1:ack at 1342Z\n\nfiles halted: 2 of 4\n',
+          asAsciiDigits(
+            'halt\tnotes/a.md:1:paged at １３４２Z\nhalt\tnotes/c.md:1:ack at １３４２Z\n\nfiles halted: 2 of 4\n',
+          ),
         );
       });
       then('it leaves the untracked and the ignored file unread', () => {
@@ -331,7 +343,9 @@ describe('check.timestamps.probe', () => {
       });
       then('it prints a halt row for the tracked and the untracked file that halt', () => {
         expect(result.stdout).toContain(
-          'halt\tnotes/a.md:1:paged at 1342Z\nhalt\tnotes/c.md:1:ack at 1342Z\nhalt\tnotes/d.md:1:retro at 1342Z\n\nfiles halted: 3 of 4\n',
+          asAsciiDigits(
+            'halt\tnotes/a.md:1:paged at １３４２Z\nhalt\tnotes/c.md:1:ack at １３４２Z\nhalt\tnotes/d.md:1:retro at １３４２Z\n\nfiles halted: 3 of 4\n',
+          ),
         );
       });
       then('it leaves the ignored file unread, as a commit would', () => {

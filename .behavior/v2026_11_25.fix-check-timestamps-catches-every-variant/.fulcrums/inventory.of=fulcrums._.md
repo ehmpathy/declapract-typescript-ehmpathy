@@ -15,3 +15,6 @@
 | F11 | the upgrade journey runs the lock then the scan, not a real `git commit` | clean | open | 85% |
 | F12 | the probe's `--help` keeps the repo-local header shape | clean | open | 85% |
 | F13 | the upgrade journey's steps share one repo, in order | clean | open | 85% |
+| F14 | test fixtures spell clock digits fullwidth, restored at runtime, once code files are scanned | clean | open | 75% |
+| F15 | a bare dash time id halts only with its zone; after a date the zone is optional | clean | open | 85% |
+| F16 | a masked clock halts while its hour keeps one real digit; `xx:xx` passes | clean | open | 80% |

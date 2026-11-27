@@ -12,15 +12,17 @@ a glob, an allowlist, a flag, or a looser pattern. zero exceptions.
   forever; git history cannot take it back once pushed. it also churns every diff.
 - **the hook exists to block all of them.** an exemption is how they return — one dir today,
   every dir tomorrow. a request to exempt a path is a request to fix the writer of that path.
-- the only skip is `*.ts | *.sh`: code that computes time, not data that records it. it never widens.
+- no skip at all: code files are scanned too. code that needs a clock builds it from parts at
+  runtime, so its source holds no stamp; a test fixture spells its digits in fullwidth form and
+  restores them at runtime (`src/practices/husky/.test/asAsciiDigits.ts`).
 
 ## .how it is enforced
 
 - `check.timestamps.lock.sh` runs first in `pre-commit`. it halts any commit while the timestamp
   hook differs, on disk or in the index, from the git blob id the practice stamped at apply:
   "revert the hook, zero exceptions — remove all timestamps".
-- `check.timestamps.lock.play.declapract.integration.test.ts` [case3] fails if the hook's skip list
-  grows past `*.ts | *.sh`.
+- `check.timestamps.lock.play.declapract.integration.test.ts` [case3] fails if the hook gains any
+  skip: a file kind, a path, or a glob.
 - this repo applies the practice to its own `.husky/`. after any edit to the practice hook (a tighter
   pattern, a reworded comment), run `rhx husky.lock.restamp`: it copies the hook to the root and
   re-stamps the root lock. `husky/self-application.declapract.integration.test.ts` fails until you do.
