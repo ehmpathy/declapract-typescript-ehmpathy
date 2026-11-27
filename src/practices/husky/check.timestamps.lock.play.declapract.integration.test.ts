@@ -6,6 +6,7 @@ import { executeApply } from 'declapract';
 import { genTempDir, given, then, useThen, when } from 'test-fns';
 
 import { asGitBlobId } from './best-practice/.husky/check.timestamps.lock.sh.declapract';
+import { asAsciiDigits } from './.test/asAsciiDigits';
 
 /**
  * .what = end-to-end proof of the timestamp lock: a second husky hook that halts every commit
@@ -136,8 +137,7 @@ describe('check.timestamps.lock', () => {
       });
 
       then('the hook equals the declared template, byte for byte', () => {
-        // no snapshot here: the template's comments hold example stamps, and a .snap is a tracked
-        // file the timestamp hook scans. the byte-equal assert IS the full after-state proof
+        // no snapshot here: the byte-equal assert IS the full after-state proof
         const after = read(hookRel);
         expect(after).toEqual(fs.readFileSync(hookTemplatePath, 'utf-8'));
         expect(after).not.toContain('.goals/');
@@ -203,10 +203,11 @@ describe('check.timestamps.lock', () => {
     const hook = fs.readFileSync(hookTemplatePath, 'utf-8');
 
     when('[t0] its skip list is inspected', () => {
-      then('the only skip is code that computes time: *.ts and *.sh, never a new path', () => {
-        // a clamp on the no-exemption rule: any new `case` arm, path glob, or allowlist reddens this
+      then('it holds no skip at all: no file kind, path, or glob (#845)', () => {
+        // a clamp on the no-exemption rule: any `case` arm, path glob, or allowlist reddens this
         const skips = hook.match(/^\s*\*[^\n]*\)\s*continue\s*;;/gm) ?? [];
-        expect(skips).toEqual(['    *.ts | *.sh) continue ;;']);
+        expect(skips).toEqual([]);
+        expect(hook).not.toMatch(/case "\$file" in/);
       });
       then('it never names permadrift, and it names the privacy reason', () => {
         expect(hook).not.toContain('permadrift');
@@ -214,6 +215,107 @@ describe('check.timestamps.lock', () => {
       });
       then('it declares, loud, that it takes no exemption', () => {
         expect(hook).toContain('NEVER ADD AN EXEMPTION TO THIS HOOK');
+      });
+    });
+  });
+
+  // vision case=4: an upgrader applies the new hook and its restamped lock, then commits. a clean
+  // file passes; an older file with a newly-caught clock halts; the mask is the way through
+  given('[case4] a repo upgraded to the new hook and its restamped lock', () => {
+    const tempDir = genTempDir({
+      slug: 'declapract-husky-timestamps-upgrade',
+      clone:
+        './src/practices/husky/.test/assets/demo-repo-with-edited-timestamp-hook',
+      symlink: [{ at: 'declarations', to: 'src' }],
+    });
+    const hookRel = '.husky/check.timestamps.sh';
+    const lockRel = '.husky/check.timestamps.lock.sh';
+    const applyFile = (file: string) =>
+      executeApply({
+        config: path.join(tempDir, 'declapract.use.yml'),
+        practice: 'husky',
+        file,
+      });
+    // stage one file, as a dev would before `git commit`
+    const stageFile = (input: { rel: string; content: string }) => {
+      fs.writeFileSync(path.join(tempDir, input.rel), input.content);
+      execFileSync('git', ['add', '--', input.rel], { cwd: tempDir });
+    };
+    // pre-commit runs the lock, then the scan; the first to halt stops the commit
+    const runPreCommit = () => {
+      const lock = spawnSync('bash', [lockRel], { cwd: tempDir, encoding: 'utf-8' });
+      if (lock.status !== 0) return { step: 'lock', code: lock.status, stderr: lock.stderr };
+      const scan = spawnSync('bash', [hookRel], { cwd: tempDir, encoding: 'utf-8' });
+      return { step: 'scan', code: scan.status, stderr: scan.stderr };
+    };
+
+    when('[t0] the upgrade lands and the next commit touches only a clean file', () => {
+      const result = useThen('apply hook and lock, stage them and a clean file', async () => {
+        await applyFile(lockRel);
+        await applyFile(hookRel);
+        execFileSync('git', ['init', '-q'], { cwd: tempDir });
+        execFileSync('git', ['add', '--', hookRel, lockRel], { cwd: tempDir });
+        stageFile({ rel: 'notes.md', content: 'shipped on 2026-11-25\n' });
+        return runPreCommit();
+      });
+
+      then('the hook on disk is the declared template', () => {
+        expect(fs.readFileSync(path.join(tempDir, hookRel), 'utf-8')).toEqual(
+          fs.readFileSync(hookTemplatePath, 'utf-8'),
+        );
+      });
+      then('the commit passes both the lock and the scan, silent', () => {
+        expect(result.step).toEqual('scan');
+        expect(result.code).toEqual(0);
+        expect(result.stderr).toEqual('');
+      });
+    });
+
+    when('[t1] the next commit edits an older file that holds a newly-caught clock', () => {
+      const result = useThen('stage the older text', async () => {
+        stageFile({ rel: 'runbook.md', content: asAsciiDigits('# runbook\n\npaged at １３４２Z\n') });
+        return runPreCommit();
+      });
+
+      then('the lock passes and the scan halts with exit 2', () => {
+        expect(result.step).toEqual('scan');
+        expect(result.code).toEqual(2);
+      });
+      then('the halt names the old line', () => {
+        expect(result.stderr).toContain('   └─ runbook.md:3:paged at');
+      });
+      then('the halt the upgrader sees, its clock masked, matches snapshot', () => {
+        // the .snap is itself scanned by this hook, so the clock is masked first
+        expect(result.stderr.replace(asAsciiDigits('１３４２Z'), '[timestamp]')).toMatchSnapshot();
+      });
+    });
+
+    when('[t2] the dev masks the clock and commits again', () => {
+      const result = useThen('stage the masked text', async () => {
+        stageFile({ rel: 'runbook.md', content: '# runbook\n\npaged at [time]\n' });
+        return runPreCommit();
+      });
+
+      then('the commit passes both the lock and the scan', () => {
+        expect(result.step).toEqual('scan');
+        expect(result.code).toEqual(0);
+        expect(result.stderr).toEqual('');
+      });
+    });
+
+    when('[t3] the next commit edits a .ts file that reads a log by its stamped name (#845)', () => {
+      const result = useThen('stage the .ts file', async () => {
+        stageFile({
+          rel: 'read.ts',
+          content: asAsciiDigits("const log = '.log/run/２０２６-１１-２６T１４-３x-０７-１２３Z.md';\n"),
+        });
+        return runPreCommit();
+      });
+
+      then('the lock passes and the scan halts with exit 2 on the .ts file', () => {
+        expect(result.step).toEqual('scan');
+        expect(result.code).toEqual(2);
+        expect(result.stderr).toContain('   └─ read.ts:1:');
       });
     });
   });

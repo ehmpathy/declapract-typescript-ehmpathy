@@ -69,8 +69,10 @@ skills:
   # - husky.lock.restamp: the timestamp brief names it at the one moment it is owed
   # - git.attr.get: a niche probe for `.gitattributes` work; its path line names it
   # - declapract.self.apply: the self-check failures name it at the moment it is owed
+  # - check.timestamps.probe: the timestamp brief names it for any edit to the hook's pattern
   ref:
     - skills/use.apikeys.*
     - skills/husky.lock.restamp.sh
+    - skills/check.timestamps.probe.sh
     - skills/git.attr.get.sh
     - skills/declapract.self.apply.sh
